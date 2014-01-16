@@ -107,7 +107,7 @@ def GetFileContents(path):
     IOError: An error occurred opening or reading the file.
 
   """
-  fileobj = open(path)
+  fileobj = open(path, encoding='utf-8')
   try:
     return fileobj.read()
   finally:

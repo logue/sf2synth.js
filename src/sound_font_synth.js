@@ -32,18 +32,18 @@ SoundFont.Synthesizer = function(input) {
   this.bufSrc = this.ctx.createBufferSource();
   /** @type {Array.<number>} */
   this.channelInstrument =
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 0, 10, 11, 12, 13, 14, 15];
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   /** @type {Array.<number>} */
   this.channelVolume =
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    [127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127];
   /** @type {Array.<number>} */
   this.channelPanpot =
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64];
   /** @type {Array.<number>} */
   this.channelPitchBend =
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   this.channelPitchBendSensitivity =
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2];
   this.channelExpression =
     [127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127];
   this.channelRelease =
@@ -121,12 +121,14 @@ SoundFont.Synthesizer.prototype.getAudioContext = function() {
 };
 
 /**
+ * GM Synth set
+ * http://amei.or.jp/specifications/GM2_japanese.pdf
  * @type {Array.<string>}
  * @const
  */
 SoundFont.Synthesizer.ProgramNames = [
   "Acoustic Piano",
-  "Bright Piano",
+  "Bright Acoustic Piano",
   "Electric Grand Piano",
   "Honky-tonk Piano",
   "Electric Piano",
@@ -156,7 +158,7 @@ SoundFont.Synthesizer.ProgramNames = [
   "Electric Guitar (muted)",
   "Overdriven Guitar",
   "Distortion Guitar",
-  "Guitar harmonics",
+  "Guitar Harmonics",
   "Acoustic Bass",
   "Electric Bass (finger)",
   "Electric Bass (pick)",
@@ -213,7 +215,7 @@ SoundFont.Synthesizer.ProgramNames = [
   "Lead 6 (voice)",
   "Lead 7 (fifths)",
   "Lead 8 (bass + lead)",
-  "Pad 1 (Fantasia)",
+  "Pad 1 (new age)",
   "Pad 2 (warm)",
   "Pad 3 (polysynth)",
   "Pad 4 (choir)",
@@ -255,6 +257,142 @@ SoundFont.Synthesizer.ProgramNames = [
   "Gunshot"
 ];
 
+/**
+ * GM2 Drum Set List
+ * @type {Array.<string>}
+ * @const
+ */
+SoundFont.Synthesizer.DrumProgramNames = [
+  "Standard Set",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Room Set",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Power Set",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Electronic Set",
+  "Analog Set",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Jazz Set",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Brush Set",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Orchestra Set",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "SFX Set",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "" // CM-64/CM-32L
+];
+
 SoundFont.Synthesizer.prototype.init = function() {
   /** @type {number} */
   var i;
@@ -270,7 +408,7 @@ SoundFont.Synthesizer.prototype.init = function() {
   this.isGS = false;
 
   for (i = 0; i < 16; ++i) {
-    this.programChange(i, i);
+    this.programChange(i, 0x00);
     this.volumeChange(i, 0x64);
     this.panpotChange(i, 0x40);
     this.pitchBend(i, 0x00, 0x40); // 8192
@@ -589,7 +727,7 @@ SoundFont.Synthesizer.prototype.setReverb = function(reverb) {
  * @type {!Array.<string>}
  * @const
  */
-SoundFont.Synthesizer.TableHeader = ['Instrument', 'Vol', 'Pan', 'Bend', 'Range'];
+SoundFont.Synthesizer.TableHeader = ['Instrument', 'Vol', 'Pan', 'Bend', 'Range', 'GM Mode'];
 
 SoundFont.Synthesizer.prototype.drawSynth = function() {
   /** @type {HTMLTableElement} */
@@ -636,26 +774,22 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
     })(this, i), false);
     firstColumn.appendChild(checkbox);
 
-    if (i !== 9) {
-      // not percussion
-      select = document.createElement('select');
-
-      for (j = 0; j < 128; ++j) {
-        option = document.createElement('option');
-        option.textContent = SoundFont.Synthesizer.ProgramNames[j];
-        select.appendChild(option);
-      }
-      firstColumn.appendChild(select);
-      select.addEventListener('change', (function(synth, channel) {
-        return function(event) {
-          synth.programChange(channel, event.target.selectedIndex);
-        }
-      })(this, i), false);
-      select.selectedIndex = this.channelInstrument[i];
-    } else {
-      // percussion
-      firstColumn.appendChild(document.createTextNode('[ RHYTHM TRACK ]'));
+    select = document.createElement('select');
+    for (j = 0; j < 128; ++j) {
+      var content = (i !== 9 ) ? SoundFont.Synthesizer.ProgramNames[j] : SoundFont.Synthesizer.DrumProgramNames[j];
+      option = document.createElement('option');
+      if (content === "") continue;
+      option.textContent = content;
+      option.value = j;
+      select.appendChild(option);
     }
+    firstColumn.appendChild(select);
+    select.addEventListener('change', (function(synth, channel) {
+      return function(event) {
+        synth.programChange(channel, event.target.value);
+      }
+    })(this, i), false);
+    select.selectedIndex = this.channelInstrument[i];
 
     notes = tableLine.querySelectorAll('td:nth-last-child(-n+128)');
     for (j = 0; j < 128; ++j) {
@@ -727,6 +861,7 @@ SoundFont.Synthesizer.prototype.createTableLine = function(array, isTitleLine) {
       /** @type {HTMLTableCellElement} */
       (document.createElement(isTitleLine ? 'th' : 'td'));
     cell.textContent = (isArray && array[i] !== void 0) ? array[i] : '';
+    if (isTitleLine && il === i+1) cell.setAttribute( 'colspan', 129 );	// Mode
     tr.appendChild(cell);
   }
 
@@ -742,8 +877,33 @@ SoundFont.Synthesizer.prototype.createTableLine = function(array, isTitleLine) {
 SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   /** @type {number} */
   var bankIndex = this.channelBankMsb[channel];
+  
+  var drumBank = 128;
+  if (this.isXG) {
+    // XG音源のドラムキットのバンクは127
+    drumBank = 127;
+    // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
+    if (bankIndex === 64){
+      // Bank Select MSB #64 (Voice Type: SFX)
+      bankIndex = 125;
+    }else if (this.channelBankLsb[channel] !== 0 && bankIndex !== 0 && bankIndex !== 126 && bankIndex !== 127){
+      // Bank Select MSB #0 (Voice Type: Normal)
+      // Bank Select MSB #126 (Voice Type: Drum)
+      // Bank Select MSB #127 (Voice Type: Drum)
+      bankIndex = this.channelBankLsb[channel];
+    }
+    this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'XG Mode';
+  }else if (this.isGS){
+    this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GS Mode';
+  }else{
+    this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GM Mode';
+    bankIndex = 0;
+  }
+  if (channel == 9) bankIndex = drumBank;
+
   /** @type {Object} */
-  var bank = this.bankSet[bankIndex];
+  // var bank = this.bankSet[bankIndex];
+  var bank = this.bankSet[bankIndex] !== void 0 ? this.bankSet[bankIndex] : this.bankSet[channel === 9 ? drumBank : 0];
   /** @type {Object} */
   var instrument = bank[this.channelInstrument[channel]];
   /** @type {Object} */
@@ -752,11 +912,13 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   var note;
 
   if (this.table) {
-    this.table.querySelector(
+    var query = this.table.querySelector(
       'tbody > ' +
         'tr:nth-child(' + (channel+1) + ') > ' +
         'td:nth-child(' + (SoundFont.Synthesizer.TableHeader.length+key+1) + ')'
-    ).classList.add('note-on');
+    )
+    query.classList.add('note-on');
+    query.style.opacity = velocity/127;
   }
 
   if (!instrument) {
@@ -837,16 +999,18 @@ SoundFont.Synthesizer.prototype.noteOff = function(channel, key, velocity) {
   var hold = this.channelHold[channel];
 
   if (this.table) {
-    this.table.querySelector(
+    var query = this.table.querySelector(
       'tbody > ' +
       'tr:nth-child(' + (channel+1) + ') > ' +
       'td:nth-child(' + (key+SoundFont.Synthesizer.TableHeader.length+1) + ')'
-    ).classList.remove('note-on');
+    );
+    query.classList.remove('note-on');
+    query.style.opacity = 1;
   }
 
-  if (!instrument) {
-    return;
-  }
+//  if (!instrument) {
+//    return;
+//  }
 
   for (i = 0, il = currentNoteOn.length; i < il; ++i) {
     note = currentNoteOn[i];
@@ -895,10 +1059,10 @@ SoundFont.Synthesizer.prototype.hold = function(channel, value) {
  */
 SoundFont.Synthesizer.prototype.bankSelectMsb = function(channel, value) {
   // TODO: GS,XG の bank マッピングを実装したら bank 切り替えを有効にする
-  if (false) {
+  //if (false) {
   //if (this.isXG || this.isGS) {
     this.channelBankMsb[channel] = value;
-  }
+  //}
 };
 
 /**
@@ -907,10 +1071,10 @@ SoundFont.Synthesizer.prototype.bankSelectMsb = function(channel, value) {
  */
 SoundFont.Synthesizer.prototype.bankSelectLsb = function(channel, value) {
   // TODO: GS,XG の bank マッピングを実装したら bank 切り替えを有効にする
-  if (false) {
+  //if (false) {
   //if (this.isXG || this.isGS) {
     this.channelBankLsb[channel] = value;
-  }
+  //}
 };
 
 /**
@@ -919,15 +1083,19 @@ SoundFont.Synthesizer.prototype.bankSelectLsb = function(channel, value) {
  */
 SoundFont.Synthesizer.prototype.programChange = function(channel, instrument) {
   if (this.table) {
+/*
     if (channel !== 9) {
       this.table.querySelector('tbody > tr:nth-child(' + (channel+1) + ') > td:first-child > select').selectedIndex = instrument;
     }
+*/
+    this.table.querySelector('tbody > tr:nth-child(' + (channel+1) + ') > td:first-child > select').value = instrument;
   }
+/*
   // GM音源の場合リズムトラックは無視する
   if (channel === 9 && !this.isXG && !this.isGS) {
     return;
   }
-
+*/
   this.channelInstrument[channel] = instrument;
 };
 

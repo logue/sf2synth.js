@@ -10,4 +10,3 @@ goog.addDependency('../src/sound_font_synth.js', ['SoundFont.Synthesizer'], ['So
 goog.addDependency('../src/sound_font_synth_note.js', ['SoundFont.SynthesizerNote'], []);
 goog.addDependency('../src/typedef.js', ['Typedef'], []);
 goog.addDependency('../src/wml.js', ['SoundFont.WebMidiLink'], ['SoundFont.Synthesizer']);
-goog.addDependency('../tmp/sf2synth_note.js', ['SoundFontSynthNote'], []);
