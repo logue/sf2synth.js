@@ -75,9 +75,9 @@ SoundFont.SynthesizerNote = function(ctx, destination, instrument) {
   this.bufferSource;
   /** @type {AudioPannerNode} */
   this.panner;
-  /** @type {AudioGainNode} */
+  /** @type {GainNode} */
   this.gainOutput;
-  /** @type {AudioGainNode} */
+  /** @type {GainNode} */
   this.expressionGain;
   /** @type {BiquadFilterNode} */
   this.filter;
@@ -109,7 +109,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   var filter;
   /** @type {AudioPannerNode} */
   var panner;
-  /** @type {AudioGainNode} */
+  /** @type {GainNode} */
   var output;
   /** @type {AudioGain} */
   var outputGain;
@@ -161,9 +161,9 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
 
   // audio node
   panner = this.panner = ctx.createPanner();
-  output = this.gainOutput = ctx.createGainNode();
+  output = this.gainOutput = ctx.createGain();
   outputGain = output.gain;
-  this.expressionGain = ctx.createGainNode();
+  this.expressionGain = ctx.createGain();
   this.expressionGain.gain.value = this.expression / 127;
 
     // filter
@@ -190,7 +190,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   // volume envelope
   outputGain.setValueAtTime(0, now);
   outputGain.setValueAtTime(0, volDelay);
-  outputGain.setTargetValueAtTime(volume, volDelay, instrument['volAttack']);
+//  outputGain.setTargetValueAtTime(volume, volDelay, instrument['volAttack']);
   outputGain.setValueAtTime(volume, volHold);
   outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
 
@@ -201,7 +201,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
   filter.frequency.setValueAtTime(baseFreq, now);
   filter.frequency.setValueAtTime(baseFreq, modDelay);
-  filter.frequency.setTargetValueAtTime(peekFreq, modDelay, instrument['modAttack']);
+//  filter.frequency.setTargetValueAtTime(peekFreq, modDelay, instrument['modAttack']);
   filter.frequency.setValueAtTime(peekFreq, modHold);
   filter.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
 
@@ -248,7 +248,7 @@ SoundFont.SynthesizerNote.prototype.release = function() {
   var instrument = this.instrument;
   /** @type {AudioBufferSourceNode} */
   var bufferSource = this.bufferSource;
-  /** @type {AudioGainNode} */
+  /** @type {GainNode} */
   var output = this.gainOutput;
   /** @type {number} */
   var now = this.ctx.currentTime;

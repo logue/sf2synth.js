@@ -26,8 +26,8 @@ SoundFont.Synthesizer = function(input) {
   this.bufferSize = 1024;
   /** @type {AudioContext} */
   this.ctx = this.getAudioContext();
-  /** @type {AudioGainNode} */
-  this.gainMaster = this.ctx.createGainNode();
+  /** @type {GainNode} */
+  this.gainMaster = this.ctx.createGain();
   /** @type {AudioBufferSourceNode} */
   this.bufSrc = this.ctx.createBufferSource();
   /** @type {Array.<number>} */
@@ -88,13 +88,13 @@ SoundFont.Synthesizer = function(input) {
   /** @type {HTMLTableElement} */
   this.table;
 
-  this.ir = SoundFont.Synthesizer.IR;
+//  this.ir = SoundFont.Synthesizer.IR;
   /** @type {boolean} */
   this.reverb = true;
   /** @type {ConvolverNode} */
   this.reverbNode = this.ctx.createConvolver();
-  /** @type {AudioGainNode} */
-  this.reverbLevel = this.ctx.createGainNode();
+  /** @type {GainNode} */
+  this.reverbLevel = this.ctx.createGain();
 };
 /**
  * @returns {AudioContext}
@@ -401,8 +401,8 @@ SoundFont.Synthesizer.prototype.init = function() {
   this.bankSet = this.createAllInstruments();
 
   // reverbNode
-  this.reverbNode.buffer = this.ir;
-  this.reverbLevel.gain.value = 1;
+//  this.reverbNode.buffer = this.ir;
+//  this.reverbLevel.gain.value = 1;
 
   this.isXG = false;
   this.isGS = false;
@@ -652,14 +652,15 @@ SoundFont.Synthesizer.StringToUint8Array = function(string) {
 /**
  * @type {AudioBuffer}
  */
-SoundFont.Synthesizer.IR =
+SoundFont.Synthesizer.IR = null;
+/*
   SoundFont.Synthesizer.prototype.getAudioContext().createBuffer(
     SoundFont.Synthesizer.StringToUint8Array(
       window.atob(SoundFont.DefaultIR)
     ).buffer,
     false
   );
-
+*/
 SoundFont.Synthesizer.prototype.connect = function() {
   this.bufSrc.connect(this.gainMaster);
   this.gainMaster.connect(this.ctx.destination);
@@ -692,11 +693,13 @@ SoundFont.Synthesizer.prototype.setMasterVolume = function(volume) {
  * @param {AudioBuffer|ArrayBuffer} ir
  */
 SoundFont.Synthesizer.prototype.loadIR = function(ir) {
+/*
   if (ir instanceof ArrayBuffer) {
     ir = this.ctx.createBuffer(ir, false);
   }
   this.ir = ir;
   this.reverbNode.buffer = ir;
+*/
 };
 
 SoundFont.Synthesizer.prototype.stop =
