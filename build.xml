@@ -60,7 +60,6 @@
       <arg line="--js_output_file=${outfile}"/>
       <arg line="--create_source_map=${outfile}.map"/>
       <arg line="--manage_closure_dependencies"/>
-      <arg line="--externs=${externs}/w3c_audio.js"/>
       <arg line="--js=${closure_primitives}"/>
       <arg line="--js=${def}/typedarray/hybrid.js"/>
       <arg line="${srcfiles}"/>
@@ -88,7 +87,6 @@
       <arg line="--js_output_file=${outfile}"/>
       <arg line="--create_source_map=${outfile}.map"/>
       <arg line="--manage_closure_dependencies"/>
-      <arg line="--externs=${externs}/w3c_audio.js"/>
       <arg line="--js=${closure_primitives}"/>
       <arg line="--js=${def}/typedarray/hybrid.js"/>
       <arg line="${export}/synth.js"/>

@@ -8,7 +8,7 @@ goog.require('SoundFont.DefaultIR');
 /**
  * @constructor
  */
-SoundFont.Synthesizer = function(input) {
+SoundFont.Synthesizer = function(input, document) {
   /** @type {number} */
   var i;
   /** @type {number} */
@@ -63,7 +63,9 @@ SoundFont.Synthesizer = function(input) {
   this.isGS = false;
   /** @type {boolean} */
   this.isXG = false;
-
+  
+  /** @type {Object} */
+  this.document = document;
 
   /** @type {Array.<boolean>} */
   this.channelMute = [
@@ -735,14 +737,14 @@ SoundFont.Synthesizer.TableHeader = ['Instrument', 'Vol', 'Pan', 'Bend', 'Range'
 SoundFont.Synthesizer.prototype.drawSynth = function() {
   /** @type {HTMLTableElement} */
   var table = this.table =
-    /** @type {HTMLTableElement} */(document.createElement('table'));
+    /** @type {HTMLTableElement} */(this.document.createElement('table'));
   /** @type {HTMLTableSectionElement} */
   var head =
-    /** @type {HTMLTableSectionElement} */(document.createElement('thead'));
+    /** @type {HTMLTableSectionElement} */(this.document.createElement('thead'));
   /** @type {HTMLTableSectionElement} */
   var body =
     /** @type {HTMLTableSectionElement} */
-    (document.createElement('tbody'));
+    (this.document.createElement('tbody'));
   /** @type {HTMLTableRowElement} */
   var tableLine;
   /** @type {NodeList} */
@@ -768,7 +770,7 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
 
     // mute checkbox
     firstColumn = tableLine.querySelector('td:nth-child(1)');
-    checkbox = document.createElement('input');
+    checkbox = this.document.createElement('input');
     checkbox.setAttribute('type', 'checkbox');
     checkbox.addEventListener('change', (function (synth, channel) {
       return function(event) {
@@ -777,10 +779,10 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
     })(this, i), false);
     firstColumn.appendChild(checkbox);
 
-    select = document.createElement('select');
+    select = this.document.createElement('select');
     for (j = 0; j < 128; ++j) {
       var content = (i !== 9 ) ? SoundFont.Synthesizer.ProgramNames[j] : SoundFont.Synthesizer.DrumProgramNames[j];
-      option = document.createElement('option');
+      option = this.document.createElement('option');
       if (content === "") continue;
       option.textContent = content;
       option.value = j;
@@ -849,7 +851,7 @@ SoundFont.Synthesizer.prototype.removeSynth = function() {
  */
 SoundFont.Synthesizer.prototype.createTableLine = function(array, isTitleLine) {
   /** @type {HTMLTableRowElement} */
-  var tr = /** @type {HTMLTableRowElement} */(document.createElement('tr'));
+  var tr = /** @type {HTMLTableRowElement} */(this.document.createElement('tr'));
   /** @type {HTMLTableCellElement} */
   var cell;
   /** @type {boolean} */
@@ -862,7 +864,7 @@ SoundFont.Synthesizer.prototype.createTableLine = function(array, isTitleLine) {
   for (i = 0; i < il; ++i) {
     cell =
       /** @type {HTMLTableCellElement} */
-      (document.createElement(isTitleLine ? 'th' : 'td'));
+      (this.document.createElement(isTitleLine ? 'th' : 'td'));
     cell.textContent = (isArray && array[i] !== void 0) ? array[i] : '';
     if (isTitleLine && il === i+1) cell.setAttribute( 'colspan', 129 );	// Mode
     tr.appendChild(cell);
@@ -895,14 +897,21 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
       // Bank Select MSB #127 (Voice Type: Drum)
       bankIndex = this.channelBankLsb[channel];
     }
-    this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'XG Mode';
-  }else if (this.isGS){
-    this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GS Mode';
-  }else{
-    this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GM Mode';
-    bankIndex = 0;
   }
-  if (channel == 9) bankIndex = drumBank;
+  
+  if (this.table){
+    if (this.isXG) {
+      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'XG Mode';
+    }else if (this.isGS){
+      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GS Mode';
+    }else{
+      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GM Mode';
+      bankIndex = 0;
+    }
+  }
+  if (channel === 9){
+    bankIndex = drumBank;
+  }
 
   /** @type {Object} */
   // var bank = this.bankSet[bankIndex];
@@ -918,14 +927,14 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
     var query = this.table.querySelector(
       'tbody > ' +
         'tr:nth-child(' + (channel+1) + ') > ' +
-        'td:nth-child(' + (SoundFont.Synthesizer.TableHeader.length+key+1) + ')'
+        'td:nth-child(' + (SoundFont.Synthesizer.TableHeader.length+key) + ')'
     )
     query.classList.add('note-on');
     query.style.opacity = velocity/127;
   }
 
-  if (!instrument) {
-    instrument = bank[bankIndex];
+  if (instrument === void 0) {
+    instrument = bank[0];
     /*
     // TODO
     goog.global.console.warn(
@@ -1005,7 +1014,7 @@ SoundFont.Synthesizer.prototype.noteOff = function(channel, key, velocity) {
     var query = this.table.querySelector(
       'tbody > ' +
       'tr:nth-child(' + (channel+1) + ') > ' +
-      'td:nth-child(' + (key+SoundFont.Synthesizer.TableHeader.length+1) + ')'
+      'td:nth-child(' + (key+SoundFont.Synthesizer.TableHeader.length) + ')'
     );
     query.classList.remove('note-on');
     query.style.opacity = 1;
@@ -1062,10 +1071,9 @@ SoundFont.Synthesizer.prototype.hold = function(channel, value) {
  */
 SoundFont.Synthesizer.prototype.bankSelectMsb = function(channel, value) {
   // TODO: GS,XG の bank マッピングを実装したら bank 切り替えを有効にする
-  //if (false) {
-  //if (this.isXG || this.isGS) {
+  if (this.isXG) {
     this.channelBankMsb[channel] = value;
-  //}
+  }
 };
 
 /**
@@ -1074,10 +1082,9 @@ SoundFont.Synthesizer.prototype.bankSelectMsb = function(channel, value) {
  */
 SoundFont.Synthesizer.prototype.bankSelectLsb = function(channel, value) {
   // TODO: GS,XG の bank マッピングを実装したら bank 切り替えを有効にする
-  //if (false) {
-  //if (this.isXG || this.isGS) {
+  if (this.isXG) {
     this.channelBankLsb[channel] = value;
-  //}
+  }
 };
 
 /**

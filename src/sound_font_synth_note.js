@@ -168,10 +168,10 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
 
     // filter
   filter = this.filter = ctx.createBiquadFilter();
-  filter.type = filter.LOWPASS;
+  filter.type = 'lowpass';
 
   // panpot
-  panner.panningModel = 0;
+  panner.panningModel = 'equalpower';
   panner.setPosition(
     Math.sin(this.panpot * Math.PI / 2),
     0,
@@ -195,7 +195,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
 
   // modulation envelope
-  filter.Q.setValueAtTime(instrument['initialFilterQ'] * Math.pow(10, 200), now);
+  filter.Q.setValueAtTime(Math.pow(10, instrument['initialFilterQ'] / 200), now);
   baseFreq = this.amountToFreq(instrument['initialFilterFc']);
   peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
   sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);

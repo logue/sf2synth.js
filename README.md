@@ -7,14 +7,17 @@ sf2synth.js は [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) 対応
 ## 使い方
 
 ```js
-var url = './soundfont/A320U.sf2';
+var url = '//cdn.rawgit.com/logue/smfplayer.js/gh-pages/Yamaha%20XG%20Sound%20Set.sf2';
 var wml = new SoundFont.WebMidiLink();
 wml.setLoadCallback(function(arraybuffer) {
     // ロード完了時の処理
 });
 wml.setup(url);
 ```
-
+キーボード表示を無効化したい場合は、wmlの定義を以下のようにしてください。
+```js
+var wml = new SoundFont.WebMidiLink({disableDrawSynth:true});
+```
 
 ## 対応ブラウザ
 
@@ -22,15 +25,18 @@ wml.setup(url);
 
 - Google Chrome 25+
 - Google Chrome for Android 28+
-
+- FireFox 25+
+- Edge
 
 ## WebMidiLink 対応
 
 sf2synth.js は WebMidiLink の Link Level 1 に対応しています。
-現在、シンセサイザ固有の情報はありません。
+GM Level 2およびXG Lite相当です。
 
 
 ## ライセンス
 
 Copyright &copy; 2013 imaya / GREE Inc.
 Licensed under the MIT License.
+
+Modified by Logue.
