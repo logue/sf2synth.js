@@ -56,7 +56,7 @@
       <arg line="--summary_detail_level=3"/>
       <arg line="--language_in=ECMASCRIPT5_STRICT"/>
       <arg line="--source_map_format=V3"/>
-      <arg line="--output_wrapper='${license}(function() {%output%}).call(this); //@ sourceMappingURL=${basename}.map'"/>
+      <arg line="--output_wrapper='${license}(function() {%output%}).call(this); //# sourceMappingURL=${basename}.map'"/>
       <arg line="--js_output_file=${outfile}"/>
       <arg line="--create_source_map=${outfile}.map"/>
       <arg line="--manage_closure_dependencies"/>
@@ -83,7 +83,7 @@
       <arg line="--summary_detail_level=3"/>
       <arg line="--language_in=ECMASCRIPT5_STRICT"/>
       <arg line="--source_map_format=V3"/>
-      <arg line="--output_wrapper='${license}(function() {%output%}).call(this); //@ sourceMappingURL=${basename}.map'"/>
+      <arg line="--output_wrapper='${license}(function() {%output%}).call(this); //# sourceMappingURL=${basename}.map'"/>
       <arg line="--js_output_file=${outfile}"/>
       <arg line="--create_source_map=${outfile}.map"/>
       <arg line="--manage_closure_dependencies"/>
