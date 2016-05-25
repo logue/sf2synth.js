@@ -64,7 +64,7 @@ SoundFont.Synthesizer = function(input, document) {
   /** @type {boolean} */
   this.isXG = false;
   
-  /** @type {Object} */
+  /** @type {Document} */
   this.document = document;
 
   /** @type {Array.<boolean>} */

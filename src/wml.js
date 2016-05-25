@@ -28,7 +28,7 @@ SoundFont.WebMidiLink = function(option) {
   this.xhr;
   /** @type {boolean} */
   this.rpnMode = true;
-  /** @type {Object} */
+  /** @type {Window} */
   this.window = window;
   /** @type {Array} */
   this.option = option || {};
