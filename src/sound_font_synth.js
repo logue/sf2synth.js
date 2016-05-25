@@ -1265,3 +1265,20 @@ SoundFont.Synthesizer.prototype.mute = function(channel, mute) {
     }
   }
 };
+
+/**
+ * @param {number} channel TODO:ドラムパートとしてセットするチャンネル
+ */
+SoundFont.Synthesizer.prototype.setDrumPart = function(channel) {
+  // デフォルトのドラムバンク
+  this.drumBank = 128;
+  if (this.isXG) {
+    // XG音源のドラムキットのバンクは127
+    this.drumBank = 127;
+  }else if(this.isGS){
+    // GS
+    // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
+  }else{
+    this.drumBank = 0;
+  }
+}

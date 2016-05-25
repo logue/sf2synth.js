@@ -346,13 +346,19 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
       // Vendor
       switch (message[2]) {
         case 0x43: // Yamaha XG
+          if (message[5] === 0x08){
+            // XG Dram Part: F0 43 [dev] 4C 08 [partNum] 07 [Part Mode] F7
+            // but there is no file to use much this parameter...
+            synth.setDrumPart(message[6]);
+            //goog.global.console.log(message);
+          }
           switch (message[7]) {
             case 0x04:
-              // XG Master Volume: FO 43 10 4C 00 00 04 [value] F7
+              // XG Master Volume: F0 43 [dev] 4C 00 00 04 [value] F7
               synth.setMasterVolume(message[8] << 7 );
               break;
             case 0x7E:
-              // XG Reset: F0 43 10 4C 00 00 7E 00 F7
+              // XG Reset: F0 43 [dev] 4C 00 00 7E 00 F7
               synth.init();
               synth.isXG = true;
               break;
@@ -369,6 +375,23 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
               // GS Reset: F0 41 [dev] 42 12 40 00 7F 00 41 F7
               synth.init();
               synth.isGS = true;
+              break;
+            case 0x15:
+              // GS Dram part: F0 41 [dev] 42 12 40 1[part no] [Map] [sum] F7
+              // Notice: [Map] and [sum] is ignroe in this program.
+              // http://www.ssw.co.jp/dtm/drums/drsetup.htm
+              // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
+              var part = message[7] - 0x0F;
+              if (part === 0){
+                // 10 Ch.
+                synth.setDrumPart(9);
+              }else if(part >= 10){
+                // 1~9 Ch.
+                synth.setDrumPart(part - 1);
+              }else{
+                // 11~16 Ch.
+                synth.setDrumPart(part);
+              }
               break;
             }
           break;
