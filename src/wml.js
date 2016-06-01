@@ -28,32 +28,40 @@ SoundFont.WebMidiLink = function(option) {
   this.xhr;
   /** @type {boolean} */
   this.rpnMode = true;
-  /** @type {Window} */
-  this.window = window;
   /** @type {Array} */
   this.option = option || {};
   /** @type {boolean} */
   this.disableDrawSynth = this.option.disableDrawSynth !== void 0;
+  /** @type {Window} */
+  this.opener;
 
-  this.window.addEventListener('DOMContentLoaded', function() {
+  goog.global.window.addEventListener('DOMContentLoaded', function() {
     this.ready = true;
   }.bind(this), false);
 };
 
 SoundFont.WebMidiLink.prototype.setup = function(url) {
   if (!this.ready) {
-    this.window.addEventListener('DOMContentLoaded', function onload() {
-      this.window.removeEventListener('DOMContentLoaded', onload, false);
+    goog.global.window.addEventListener('DOMContentLoaded', function onload() {
+      goog.global.window.removeEventListener('DOMContentLoaded', onload, false);
       this.load(url);
     }.bind(this), false);
   } else {
     this.load(url);
   }
+  if (goog.global.window.opener) {
+    this.opener = goog.global.window.opener;
+  } else if (goog.global.window.parent !== goog.global.window) {
+    this.opener = goog.global.window.parent;
+  }
+  
 };
 
 SoundFont.WebMidiLink.prototype.load = function(url) {
   /** @type {XMLHttpRequest} */
   var xhr;
+  /** @type {Window} */
+  var opener = this.opener;
 
   this.cancelLoading();
 
@@ -61,13 +69,23 @@ SoundFont.WebMidiLink.prototype.load = function(url) {
   xhr.open('GET', url, true);
   xhr.responseType = 'arraybuffer';
 
-  xhr.addEventListener('load', function(ev) {
+  xhr.addEventListener('load',function(ev){
     this.onload(ev.target.response);
     if (typeof this.loadCallback === 'function') {
       this.loadCallback(ev.target.response);
     }
-
     this.xhr = null;
+  }.bind(this), false);
+
+  xhr.onabort = function(e){
+    this.cancelLoading();
+  }
+
+  xhr.addEventListener('progress', function (ev) {
+    if (ev.lengthComputable) {
+      opener.postMessage('link,progress,' + ev.loaded + ',' + ev.total, '*');
+    }
+    goog.global.console.log(ev);
   }.bind(this), false);
 
   xhr.send();
@@ -108,24 +126,20 @@ SoundFont.WebMidiLink.prototype.loadSoundFont = function(input) {
   this.cancelLoading();
 
   if (!this.synth) {
-    synth = this.synth = new SoundFont.Synthesizer(input, this.window.document);
+    synth = this.synth = new SoundFont.Synthesizer(input);
     if (!this.disableDrawSynth){
-      this.window.document.body.appendChild(synth.drawSynth());
+      goog.global.window.document.body.appendChild(synth.drawSynth());
     }
     synth.init();
     synth.start();
-    this.window.addEventListener('message', this.messageHandler, false);
+    goog.global.window.addEventListener('message', this.messageHandler, false);
   } else {
     synth = this.synth;
     synth.refreshInstruments(input);
   }
 
   // link ready
-  if (this.window.opener) {
-    this.window.opener.postMessage("link,ready", '*');
-  } else if (this.window.parent !== this.window) {
-    this.window.parent.postMessage("link,ready", '*');
-  }
+  this.opener.postMessage("link,ready", '*');
 };
 
 /**
@@ -149,11 +163,7 @@ SoundFont.WebMidiLink.prototype.onmessage = function(ev) {
       switch (command) {
         case 'reqpatch':
           // TODO: dummy data
-          if (this.window.opener) {
-            this.window.opener.postMessage("link,patch", '*');
-          } else if (this.window.parent !== this.window) {
-            this.window.parent.postMessage("link,patch", '*');
-          }
+          this.opener.postMessage("link,patch", '*');
           break;
         case 'setpatch':
           // TODO: NOP
