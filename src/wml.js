@@ -85,7 +85,7 @@ SoundFont.WebMidiLink.prototype.load = function(url) {
     if (ev.lengthComputable) {
       opener.postMessage('link,progress,' + ev.loaded + ',' + ev.total, '*');
     }
-    goog.global.console.log(ev);
+//    goog.global.console.log(ev);
   }.bind(this), false);
 
   xhr.send();
