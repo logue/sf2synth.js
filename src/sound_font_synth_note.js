@@ -16,6 +16,7 @@ goog.provide('SoundFont.SynthesizerNote');
  * @constructor
  */
 SoundFont.SynthesizerNote = function(ctx, destination, instrument) {
+  if (instrument['sample'] === void 0) return;
   /** @type {AudioContext} */
   this.ctx = ctx;
   /** @type {AudioNode} */

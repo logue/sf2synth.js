@@ -139,7 +139,7 @@ SoundFont.WebMidiLink.prototype.loadSoundFont = function(input) {
   }
 
   // link ready
-  this.opener.postMessage("link,ready", '*');
+  goog.global.window.postMessage("link,ready", '*');
 };
 
 /**
@@ -166,6 +166,8 @@ SoundFont.WebMidiLink.prototype.onmessage = function(ev) {
           this.opener.postMessage("link,patch", '*');
           break;
         case 'setpatch':
+        case 'ready':
+           this.opener.postMessage("link,ready", '*');
           // TODO: NOP
           break;
         default:
@@ -359,7 +361,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
           if (message[5] === 0x08){
             // XG Dram Part: F0 43 [dev] 4C 08 [partNum] 07 [Part Mode] F7
             // but there is no file to use much this parameter...
-            synth.setDrumPart(message[6]);
+            synth.setPercussionPart(message[6]);
             //goog.global.console.log(message);
           }
           switch (message[7]) {
@@ -394,13 +396,13 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
               var part = message[7] - 0x0F;
               if (part === 0){
                 // 10 Ch.
-                synth.setDrumPart(9);
+                synth.setPercussionPart(9);
               }else if(part >= 10){
                 // 1~9 Ch.
-                synth.setDrumPart(part - 1);
+                synth.setPercussionPart(part - 1);
               }else{
                 // 11~16 Ch.
-                synth.setDrumPart(part);
+                synth.setPercussionPart(part);
               }
               break;
             }
@@ -408,6 +410,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
         }
       break;
     default: // not supported
+      synth.setPercussionPart(9);
       break;
   }
 };

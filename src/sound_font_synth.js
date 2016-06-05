@@ -42,12 +42,16 @@ SoundFont.Synthesizer = function(input) {
   /** @type {Array.<number>} */
   this.channelPitchBend =
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  /** @type {Array.<number>} */
   this.channelPitchBendSensitivity =
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2];
+  /** @type {Array.<number>} */
   this.channelExpression =
     [127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127];
+  /** @type {Array.<number>} */
   this.channelRelease =
     [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64];
+  /** @type {Array.<boolean>} */
   this.channelHold = [
     false, false, false, false, false, false, false, false,
     false, false, false, false, false, false, false, false
@@ -78,6 +82,12 @@ SoundFont.Synthesizer = function(input) {
   this.baseVolume = 1 / 0xffff;
   /** @type {number} */
   this.masterVolume = 16384;
+
+  /** @type {Array.<boolean>} */
+  this.percussionPart = [
+    false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false
+  ];
 
   this.percussionVolume = new Array(128);
   for (i = 0, il = this.percussionVolume.length; i < il; ++i) {
@@ -416,6 +426,11 @@ SoundFont.Synthesizer.prototype.init = function() {
     this.channelExpression[i] = 127;
     this.bankSelectMsb(i, i === 9 ? 128 : 0x00);
     this.bankSelectLsb(i, 0x00);
+    if (i === 9){
+      this.isPercussionPart = true;
+    }else{
+      this.isPercussionPart = false;
+    }
   }
 
   for (i = 0; i < 128; ++i) {
@@ -678,8 +693,6 @@ SoundFont.Synthesizer.prototype.connectReverb = function() {
 SoundFont.Synthesizer.prototype.start = function() {
   this.connect();
   this.bufSrc.start(0);
-
-
   this.setMasterVolume(16383);
 };
 
@@ -878,41 +891,9 @@ SoundFont.Synthesizer.prototype.createTableLine = function(array, isTitleLine) {
  */
 SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   /** @type {number} */
-  var bankIndex = this.channelBankMsb[channel];
-  /** @type {number} */
-  var drumBank = 128;
-  if (this.isXG) {
-    // XG音源のドラムキットのバンクは127
-    drumBank = 127;
-    // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
-    if (bankIndex === 64){
-      // Bank Select MSB #64 (Voice Type: SFX)
-      bankIndex = 125;
-    }else if (this.channelBankLsb[channel] !== 0 && bankIndex !== 0 && bankIndex !== 126 && bankIndex !== 127){
-      // Bank Select MSB #0 (Voice Type: Normal)
-      // Bank Select MSB #126 (Voice Type: Drum)
-      // Bank Select MSB #127 (Voice Type: Drum)
-      bankIndex = this.channelBankLsb[channel];
-    }
-  }
-  
-  if (this.table){
-    if (this.isXG) {
-      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'XG Mode';
-    }else if (this.isGS){
-      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GS Mode';
-    }else{
-      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GM Mode';
-      bankIndex = 0;
-    }
-  }
-  if (channel === 9){
-    bankIndex = drumBank;
-  }
-
+  var bankIndex = this.getBank(channel);
   /** @type {Object} */
-  // var bank = this.bankSet[bankIndex];
-  var bank = this.bankSet[bankIndex] !== void 0 ? this.bankSet[bankIndex] : this.bankSet[channel === 9 ? drumBank : 0];
+  var bank = this.bankSet[bankIndex];
   /** @type {Object} */
   var instrument = bank[this.channelInstrument[channel]];
   /** @type {Object} */
@@ -921,6 +902,13 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   var note;
 
   if (this.table) {
+    if (this.isXG) {
+      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'XG Mode';
+    }else if (this.isGS){
+      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GS Mode';
+    }else{
+      this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GM Mode';
+    }
     var query = this.table.querySelector(
       'tbody > ' +
         'tr:nth-child(' + (channel+1) + ') > ' +
@@ -932,19 +920,17 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
 
   if (instrument === void 0) {
     instrument = bank[0];
-    /*
     // TODO
     goog.global.console.warn(
       "instrument not found: bank=%s instrument=%s channel=%s",
-      channel === 9 ? 128 : this.bank,
+      bankIndex,
       this.channelInstrument[channel],
       channel
     );
-    return;
-    */
   }
+  instrumentKey = instrument[key];
 
-  if (instrument[key] === void 0) {
+  if (instrumentKey === void 0) {
     // TODO
     goog.global.console.warn(
       "instrument not found: bank=%s instrument=%s channel=%s key=%s",
@@ -953,9 +939,6 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
       channel,
       key
     );
-    instrumentKey = bank[0];
-  }else{
-    instrumentKey = instrument[key];
   }
 
   var panpot = this.channelPanpot[channel] - 64;
@@ -974,7 +957,7 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   instrumentKey['releaseTime'] = this.channelRelease[channel];
 
   // percussion
-  if (channel === 9) {
+  if (this.percussionPart[channel]) {
     instrument['volume'] *= this.percussionVolume[key] / 127;
   }
 
@@ -991,9 +974,9 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
  */
 SoundFont.Synthesizer.prototype.noteOff = function(channel, key, velocity) {
   /** @type {number} */
-  var bankIndex = this.channelBankMsb[channel];
+  var bankIndex = this.getBank(channel);
   /** @type {Object} */
-  var bank = this.bankSet[bankIndex];
+  var bank = this.bankSet[bankIndex] !== void 0 ? this.bankSet[bankIndex] : this.bankSet[channel === 9 ? 128 : 0];
   /** @type {Object} */
   var instrument = bank[this.channelInstrument[channel]];
   /** @type {number} */
@@ -1067,10 +1050,7 @@ SoundFont.Synthesizer.prototype.hold = function(channel, value) {
  * @param {number} value 値
  */
 SoundFont.Synthesizer.prototype.bankSelectMsb = function(channel, value) {
-  // TODO: GS,XG の bank マッピングを実装したら bank 切り替えを有効にする
-  if (this.isXG) {
-    this.channelBankMsb[channel] = value;
-  }
+  this.channelBankMsb[channel] = value;
 };
 
 /**
@@ -1078,10 +1058,7 @@ SoundFont.Synthesizer.prototype.bankSelectMsb = function(channel, value) {
  * @param {number} value 値
  */
 SoundFont.Synthesizer.prototype.bankSelectLsb = function(channel, value) {
-  // TODO: GS,XG の bank マッピングを実装したら bank 切り替えを有効にする
-  if (this.isXG) {
-    this.channelBankLsb[channel] = value;
-  }
+  this.channelBankLsb[channel] = value;
 };
 
 /**
@@ -1090,19 +1067,8 @@ SoundFont.Synthesizer.prototype.bankSelectLsb = function(channel, value) {
  */
 SoundFont.Synthesizer.prototype.programChange = function(channel, instrument) {
   if (this.table) {
-/*
-    if (channel !== 9) {
-      this.table.querySelector('tbody > tr:nth-child(' + (channel+1) + ') > td:first-child > select').selectedIndex = instrument;
-    }
-*/
     this.table.querySelector('tbody > tr:nth-child(' + (channel+1) + ') > td:first-child > select').value = instrument;
   }
-/*
-  // GM音源の場合リズムトラックは無視する
-  if (channel === 9 && !this.isXG && !this.isGS) {
-    return;
-  }
-*/
   this.channelInstrument[channel] = instrument;
 };
 
@@ -1264,18 +1230,55 @@ SoundFont.Synthesizer.prototype.mute = function(channel, mute) {
 };
 
 /**
+ * @param {number} channel バンクを変更するチャンネル.
+ */
+SoundFont.Synthesizer.prototype.getBank = function(channel){
+  /** @type {number} */
+  var bankIndex = this.channelBankMsb[channel];
+  /** @type {number} */
+  var drumBank = 128;
+
+  if (channel === 9){
+    this.percussionPart[9] = true;
+    return !this.isXG ? 128 :127;
+  }
+
+  if (this.isXG) {
+    // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
+    if (bankIndex === 64){
+      // Bank Select MSB #64 (Voice Type: SFX)
+      bankIndex = 125;
+    }else if (this.channelBankLsb[channel] !== 0 && bankIndex !== 0 && bankIndex !== 126 && bankIndex !== 127){
+      // TODO:XG音源のバンクセレクトで存在しない音色の場合バンク0の音を鳴らす
+      // Bank Select MSB #0 (Voice Type: Normal)
+      // Bank Select MSB #126 (Voice Type: Drum)
+      // Bank Select MSB #127 (Voice Type: Drum)
+      if (!this.channelInstrument[channel]){
+        bankIndex = 0;
+      }
+      
+      bankIndex = this.channelBankLsb[channel];
+    }
+    if (bankIndex === 126 || bankIndex === 127){
+      this.percussionPart[channel] = true;
+    }
+  }else if (this.isGS){
+    // GS音源
+    bankIndex = 0;
+    if (this.percussionPart[channel]) {
+      // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
+      bankIndex = 128;
+    }
+  }else{
+    // GM音源の場合バンクセレクト無効化
+    bankIndex = 0;
+  }
+  return bankIndex;
+}
+
+/**
  * @param {number} channel TODO:ドラムパートとしてセットするチャンネル
  */
-SoundFont.Synthesizer.prototype.setDrumPart = function(channel) {
-  // デフォルトのドラムバンク
-  this.drumBank = 128;
-  if (this.isXG) {
-    // XG音源のドラムキットのバンクは127
-    this.drumBank = 127;
-  }else if(this.isGS){
-    // GS
-    // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
-  }else{
-    this.drumBank = 0;
-  }
+SoundFont.Synthesizer.prototype.setPercussionPart = function(channel) {
+  this.percussionPart[channel] = true;
 }
