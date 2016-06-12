@@ -97,13 +97,14 @@ SoundFont.Synthesizer = function(input) {
   /** @type {HTMLTableElement} */
   this.table;
 
-//  this.ir = SoundFont.Synthesizer.IR;
   /** @type {boolean} */
   this.reverb = true;
   /** @type {ConvolverNode} */
   this.reverbNode = this.ctx.createConvolver();
   /** @type {GainNode} */
   this.reverbLevel = this.ctx.createGain();
+
+  this.loadIR(SoundFont.Synthesizer.IR);
 };
 /**
  * @returns {AudioContext}
@@ -399,7 +400,7 @@ SoundFont.Synthesizer.DrumProgramNames = [
   "",
   "",
   "",
-  "" // CM-64/CM-32L
+  "(CM-64/CM-32L)"
 ];
 
 SoundFont.Synthesizer.prototype.init = function() {
@@ -410,8 +411,8 @@ SoundFont.Synthesizer.prototype.init = function() {
   this.bankSet = this.createAllInstruments();
 
   // reverbNode
-//  this.reverbNode.buffer = this.ir;
-//  this.reverbLevel.gain.value = 1;
+  this.reverbNode.buffer = this.ir;
+  this.reverbLevel.gain.value = 1;
 
   this.isXG = false;
   this.isGS = false;
@@ -426,11 +427,7 @@ SoundFont.Synthesizer.prototype.init = function() {
     this.channelExpression[i] = 127;
     this.bankSelectMsb(i, i === 9 ? 128 : 0x00);
     this.bankSelectLsb(i, 0x00);
-    if (i === 9){
-      this.isPercussionPart = true;
-    }else{
-      this.isPercussionPart = false;
-    }
+    this.setPercussionPart(i, false);
   }
 
   for (i = 0; i < 128; ++i) {
@@ -651,30 +648,26 @@ SoundFont.Synthesizer.prototype.getModGenAmount = function(generator, enumerator
   return generator[enumeratorType] ? generator[enumeratorType].amount : opt_default;
 };
 
-SoundFont.Synthesizer.StringToUint8Array = function(string) {
-  var i;
-  var il = string.length;
-  var array = new Uint8Array(il);
-
-  for (i = 0; i < il; ++i) {
-    array[i] = string.charCodeAt(i);
+/**
+ * @param {string} string
+ * @returns {ArrayBuffer|null}
+ */
+SoundFont.Synthesizer.base64ToArrayBuffer = function(string) {
+  var binary_string =  window.atob(string);
+  var len = binary_string.length;
+  var bytes = new Uint8Array( len );
+  for (var i = 0; i < len; i++)        {
+      bytes[i] = binary_string.charCodeAt(i);
   }
-
-  return array;
+  return bytes.buffer;
 };
 
-/**
- * @type {AudioBuffer}
- */
-SoundFont.Synthesizer.IR = null;
-/*
-  SoundFont.Synthesizer.prototype.getAudioContext().createBuffer(
-    SoundFont.Synthesizer.StringToUint8Array(
-      window.atob(SoundFont.DefaultIR)
-    ).buffer,
-    false
-  );
-*/
+
+SoundFont.Synthesizer.IR = 
+  new AudioContext().createBuffer(2, 22050, 44100).buffer =
+    SoundFont.Synthesizer.base64ToArrayBuffer(SoundFont.DefaultIR)
+  ;
+
 SoundFont.Synthesizer.prototype.connect = function() {
   this.bufSrc.connect(this.gainMaster);
   this.gainMaster.connect(this.ctx.destination);
@@ -705,13 +698,13 @@ SoundFont.Synthesizer.prototype.setMasterVolume = function(volume) {
  * @param {AudioBuffer|ArrayBuffer} ir
  */
 SoundFont.Synthesizer.prototype.loadIR = function(ir) {
-/*
+  var t = this;
   if (ir instanceof ArrayBuffer) {
-    ir = this.ctx.createBuffer(ir, false);
+    this.ctx.decodeAudioData(ir, function(buffer) {
+      t.ir = buffer;
+      t.reverbNode.buffer = buffer;
+    });
   }
-  this.ir = ir;
-  this.reverbNode.buffer = ir;
-*/
 };
 
 SoundFont.Synthesizer.prototype.stop =
@@ -745,16 +738,19 @@ SoundFont.Synthesizer.prototype.setReverb = function(reverb) {
 SoundFont.Synthesizer.TableHeader = ['Instrument', 'Vol', 'Pan', 'Bend', 'Range', 'GM Mode'];
 
 SoundFont.Synthesizer.prototype.drawSynth = function() {
+  /** @type {Document} */
+  var doc = goog.global.window.document;
+
   /** @type {HTMLTableElement} */
   var table = this.table =
-    /** @type {HTMLTableElement} */(goog.global.window.document.createElement('table'));
+    /** @type {HTMLTableElement} */(doc.createElement('table'));
   /** @type {HTMLTableSectionElement} */
   var head =
-    /** @type {HTMLTableSectionElement} */(goog.global.window.document.createElement('thead'));
+    /** @type {HTMLTableSectionElement} */(doc.createElement('thead'));
   /** @type {HTMLTableSectionElement} */
   var body =
     /** @type {HTMLTableSectionElement} */
-    (goog.global.window.document.createElement('tbody'));
+    (doc.createElement('tbody'));
   /** @type {HTMLTableRowElement} */
   var tableLine;
   /** @type {NodeList} */
@@ -780,7 +776,7 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
 
     // mute checkbox
     firstColumn = tableLine.querySelector('td:nth-child(1)');
-    checkbox = goog.global.window.document.createElement('input');
+    checkbox = doc.createElement('input');
     checkbox.setAttribute('type', 'checkbox');
     checkbox.addEventListener('change', (function (synth, channel) {
       return function(event) {
@@ -789,10 +785,10 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
     })(this, i), false);
     firstColumn.appendChild(checkbox);
 
-    select = goog.global.window.document.createElement('select');
+    select = doc.createElement('select');
     for (j = 0; j < 128; ++j) {
       var content = (i !== 9 ) ? SoundFont.Synthesizer.ProgramNames[j] : SoundFont.Synthesizer.DrumProgramNames[j];
-      option = goog.global.window.document.createElement('option');
+      option = doc.createElement('option');
       if (content === "") continue;
       option.textContent = content;
       option.value = j;
@@ -860,8 +856,10 @@ SoundFont.Synthesizer.prototype.removeSynth = function() {
  * @returns {HTMLTableRowElement}
  */
 SoundFont.Synthesizer.prototype.createTableLine = function(array, isTitleLine) {
+  /** @type {Document} */
+  var doc = goog.global.window.document;
   /** @type {HTMLTableRowElement} */
-  var tr = /** @type {HTMLTableRowElement} */(goog.global.window.document.createElement('tr'));
+  var tr = /** @type {HTMLTableRowElement} */(doc.createElement('tr'));
   /** @type {HTMLTableCellElement} */
   var cell;
   /** @type {boolean} */
@@ -874,7 +872,7 @@ SoundFont.Synthesizer.prototype.createTableLine = function(array, isTitleLine) {
   for (i = 0; i < il; ++i) {
     cell =
       /** @type {HTMLTableCellElement} */
-      (goog.global.window.document.createElement(isTitleLine ? 'th' : 'td'));
+      (doc.createElement(isTitleLine ? 'th' : 'td'));
     cell.textContent = (isArray && array[i] !== void 0) ? array[i] : '';
     if (isTitleLine && il === i+1) cell.setAttribute( 'colspan', 129 );	// Mode
     tr.appendChild(cell);
@@ -895,7 +893,7 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   /** @type {Object} */
   var bank = this.bankSet[bankIndex];
   /** @type {Object} */
-  var instrument = bank[this.channelInstrument[channel]];
+  var instrument = bank[this.channelInstrument[channel]] ;
   /** @type {Object} */
   var instrumentKey;
   /** @type {SoundFont.SynthesizerNote} */
@@ -919,7 +917,7 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   }
 
   if (instrument === void 0) {
-    instrument = bank[0];
+    instrument = this.bankSet[0][this.channelInstrument[channel]][channel];
     // TODO
     goog.global.console.warn(
       "instrument not found: bank=%s instrument=%s channel=%s",
@@ -928,9 +926,8 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
       channel
     );
   }
-  instrumentKey = instrument[key];
 
-  if (instrumentKey === void 0) {
+  if (instrument[key] === void 0) {
     // TODO
     goog.global.console.warn(
       "instrument not found: bank=%s instrument=%s channel=%s key=%s",
@@ -939,7 +936,9 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
       channel,
       key
     );
+    return;
   }
+  instrumentKey = instrument[key];
 
   var panpot = this.channelPanpot[channel] - 64;
   panpot /= panpot < 0 ? 64 : 63;
@@ -952,12 +951,23 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   instrumentKey['volume'] = this.channelVolume[channel] / 127;
   instrumentKey['pitchBend'] = this.channelPitchBend[channel] - 8192;
   instrumentKey['expression'] = this.channelExpression[channel];
-  instrumentKey['pitchBendSensitivity'] = this.channelPitchBendSensitivity[channel];
+  instrumentKey['pitchBendSensitivity'] = Math.round(this.channelPitchBendSensitivity[channel]);
   instrumentKey['mute'] = this.channelMute[channel];
   instrumentKey['releaseTime'] = this.channelRelease[channel];
 
   // percussion
   if (this.percussionPart[channel]) {
+    if (key === 42 || key === 44){
+      // 42: Closed Hi-Hat
+      // 44: Pedal Hi-Hat
+      // 46: Open Hi-Hat
+      this.noteOff(channel, 46, 0);
+    }
+    if (key === 80) {
+      // 80: Mute Triangle
+      // 81: Open Triangle
+      this.noteOff(channel, 81, 0);
+    }
     instrument['volume'] *= this.percussionVolume[key] / 127;
   }
 
@@ -976,9 +986,7 @@ SoundFont.Synthesizer.prototype.noteOff = function(channel, key, velocity) {
   /** @type {number} */
   var bankIndex = this.getBank(channel);
   /** @type {Object} */
-  var bank = this.bankSet[bankIndex] !== void 0 ? this.bankSet[bankIndex] : this.bankSet[channel === 9 ? 128 : 0];
-  /** @type {Object} */
-  var instrument = bank[this.channelInstrument[channel]];
+  var bank = this.bankSet[bankIndex];
   /** @type {number} */
   var i;
   /** @type {number} */
@@ -1234,13 +1242,11 @@ SoundFont.Synthesizer.prototype.mute = function(channel, mute) {
  */
 SoundFont.Synthesizer.prototype.getBank = function(channel){
   /** @type {number} */
-  var bankIndex = this.channelBankMsb[channel];
-  /** @type {number} */
-  var drumBank = 128;
+  var bankIndex = 0;
 
   if (channel === 9){
-    this.percussionPart[9] = true;
-    return !this.isXG ? 128 :127;
+    this.setPercussionPart(9, true);
+    return this.isXG ? 127 : 128;
   }
 
   if (this.isXG) {
@@ -1248,26 +1254,24 @@ SoundFont.Synthesizer.prototype.getBank = function(channel){
     if (bankIndex === 64){
       // Bank Select MSB #64 (Voice Type: SFX)
       bankIndex = 125;
-    }else if (this.channelBankLsb[channel] !== 0 && bankIndex !== 0 && bankIndex !== 126 && bankIndex !== 127){
-      // TODO:XG音源のバンクセレクトで存在しない音色の場合バンク0の音を鳴らす
-      // Bank Select MSB #0 (Voice Type: Normal)
+    }else if (this.channelBankMsb[channel] === 126 || this.channelBankMsb[channel] === 127){
       // Bank Select MSB #126 (Voice Type: Drum)
       // Bank Select MSB #127 (Voice Type: Drum)
-      if (!this.channelInstrument[channel]){
-        bankIndex = 0;
-      }
-      
-      bankIndex = this.channelBankLsb[channel];
-    }
-    if (bankIndex === 126 || bankIndex === 127){
-      this.percussionPart[channel] = true;
+      bankIndex = this.channelBankMsb[channel];
+    }else{
+      // Bank Select MSB #0 (Voice Type: Normal)
+      //bankIndex = this.channelBankLsb[channel];  // 本来こちらが正しいが、バンクの存在しない楽器の処理ができていないためコメントアウト
+      bankIndex = 0;
     }
   }else if (this.isGS){
     // GS音源
     bankIndex = 0;
+    
     if (this.percussionPart[channel]) {
       // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
       bankIndex = 128;
+    }else{
+      //bankIndex = this.channelBankMsb[channel];
     }
   }else{
     // GM音源の場合バンクセレクト無効化
@@ -1278,7 +1282,8 @@ SoundFont.Synthesizer.prototype.getBank = function(channel){
 
 /**
  * @param {number} channel TODO:ドラムパートとしてセットするチャンネル
+ * @param {boolean} sw ドラムか通常かのスイッチ
  */
-SoundFont.Synthesizer.prototype.setPercussionPart = function(channel) {
-  this.percussionPart[channel] = true;
+SoundFont.Synthesizer.prototype.setPercussionPart = function(channel, sw) {
+  this.percussionPart[channel] = sw;
 }
