@@ -169,7 +169,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
 
     // filter
   filter = this.filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
+  filter.type = 'notch';
 
   // panpot
   panner.panningModel = 'equalpower';
@@ -178,6 +178,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
     0,
     Math.cos(this.panpot * Math.PI / 2)
   );
+  panner.distanceModel = 'linear';
 
   //---------------------------------------------------------------------------
   // Delay, Attack, Hold, Decay, Sustain
@@ -191,7 +192,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   // volume envelope
   outputGain.setValueAtTime(0, now);
   outputGain.setValueAtTime(0, volDelay);
-//  outputGain.setTargetValueAtTime(volume, volDelay, instrument['volAttack']);
+  outputGain.setTargetAtTime(volume, volDelay, instrument['volAttack']);
   outputGain.setValueAtTime(volume, volHold);
   outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
 
@@ -202,7 +203,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
   filter.frequency.setValueAtTime(baseFreq, now);
   filter.frequency.setValueAtTime(baseFreq, modDelay);
-//  filter.frequency.setTargetValueAtTime(peekFreq, modDelay, instrument['modAttack']);
+  filter.frequency.setTargetAtTime(peekFreq, modDelay, instrument['modAttack']);
   filter.frequency.setValueAtTime(peekFreq, modHold);
   filter.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
 
