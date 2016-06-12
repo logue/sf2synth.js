@@ -28,10 +28,10 @@ SoundFont.WebMidiLink = function(option) {
   this.xhr;
   /** @type {boolean} */
   this.rpnMode = true;
-  /** @type {Array} */
+  /** @type {Object} */
   this.option = option || {};
   /** @type {boolean} */
-  this.disableDrawSynth = this.option.disableDrawSynth !== void 0;
+  this.disableDrawSynth = option.disableDrawSynth !== void 0;
   /** @type {Window} */
   this.opener;
 
@@ -41,18 +41,20 @@ SoundFont.WebMidiLink = function(option) {
 };
 
 SoundFont.WebMidiLink.prototype.setup = function(url) {
+  /** @type {Window} */
+  var w = goog.global.window;
   if (!this.ready) {
-    goog.global.window.addEventListener('DOMContentLoaded', function onload() {
+    w.addEventListener('DOMContentLoaded', function onload() {
       goog.global.window.removeEventListener('DOMContentLoaded', onload, false);
       this.load(url);
     }.bind(this), false);
   } else {
     this.load(url);
   }
-  if (goog.global.window.opener) {
-    this.opener = goog.global.window.opener;
-  } else if (goog.global.window.parent !== goog.global.window) {
-    this.opener = goog.global.window.parent;
+  if (w.opener) {
+    this.opener = w.opener;
+  } else if (w.parent !== w) {
+    this.opener = w.parent;
   }
   
 };
@@ -77,15 +79,14 @@ SoundFont.WebMidiLink.prototype.load = function(url) {
     this.xhr = null;
   }.bind(this), false);
 
-  xhr.onabort = function(e){
+  xhr.addEventListener('abort', function(e){
     this.cancelLoading();
-  }
+  }.bind(this), false);
 
   xhr.addEventListener('progress', function (ev) {
     if (ev.lengthComputable) {
       opener.postMessage('link,progress,' + ev.loaded + ',' + ev.total, '*');
     }
-//    goog.global.console.log(ev);
   }.bind(this), false);
 
   xhr.send();
@@ -93,10 +94,6 @@ SoundFont.WebMidiLink.prototype.load = function(url) {
 
 SoundFont.WebMidiLink.prototype.setReverb = function(reverb) {
   this.synth.setReverb(reverb);
-};
-
-SoundFont.WebMidiLink.prototype.loadIR = function(data) {
-  this.synth.loadIR(data);
 };
 
 SoundFont.WebMidiLink.prototype.cancelLoading = function() {
@@ -148,6 +145,7 @@ SoundFont.WebMidiLink.prototype.loadSoundFont = function(input) {
 SoundFont.WebMidiLink.prototype.onmessage = function(ev) {
   var msg = typeof ev.data.split === 'function' ? ev.data.split(',') : '';
   var type = msg !== '' ? msg.shift() : '';
+  var opener = this.opener;
   var command;
 
   switch (type) {
@@ -159,15 +157,18 @@ SoundFont.WebMidiLink.prototype.onmessage = function(ev) {
       );
       break;
     case 'link':
+      if (opener === void 0){
+        return;
+      }
       command = msg.shift();
       switch (command) {
         case 'reqpatch':
           // TODO: dummy data
-          this.opener.postMessage("link,patch", '*');
+          opener.postMessage("link,patch", '*');
           break;
         case 'setpatch':
         case 'ready':
-           this.opener.postMessage("link,ready", '*');
+           opener.postMessage("link,ready", '*');
           // TODO: NOP
           break;
         default:
@@ -334,8 +335,10 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
       switch (message[1]) {
         case 0x7e: // non-realtime
           // TODO
-          // GM Reset: 7F 09 01
+          // GM Reset: F0 7E 7F 09 01 F7
           if (message[2] === 0x7f && message[3] === 0x09 && message[4] === 0x01) {
+            synth.isXG = false;
+            synth.isGS = false;
             synth.init();
           }
           break;
@@ -346,7 +349,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
             case 0x04: // device control
               // sub ID 2
               switch (message[4]) {
-                case 0x01: // master volume
+                case 0x01: // master volume: F0 7F 7F 04 01 00 [value] F7
                   synth.setMasterVolume(message[5] + (message[6] << 7));
                   break;
               }
@@ -359,15 +362,19 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
       switch (message[2]) {
         case 0x43: // Yamaha XG
           if (message[5] === 0x08){
-            // XG Dram Part: F0 43 [dev] 4C 08 [partNum] 07 [Part Mode] F7
+            // XG Dram Part: F0 43 [dev] 4C 08 [partNum] 07 [map] F7
             // but there is no file to use much this parameter...
-            synth.setPercussionPart(message[6]);
+            if (message[7] !== 0x00){ // [map]
+              synth.setPercussionPart(message[6], true);
+            }else{
+              synth.setPercussionPart(message[6], false);
+            }
             //goog.global.console.log(message);
           }
           switch (message[7]) {
             case 0x04:
               // XG Master Volume: F0 43 [dev] 4C 00 00 04 [value] F7
-              synth.setMasterVolume(message[8] << 7 );
+              synth.setMasterVolume(message[8] << 7);
               break;
             case 0x7E:
               // XG Reset: F0 43 [dev] 4C 00 00 7E 00 F7
@@ -390,19 +397,33 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
               break;
             case 0x15:
               // GS Dram part: F0 41 [dev] 42 12 40 1[part no] [Map] [sum] F7
-              // Notice: [Map] and [sum] is ignroe in this program.
+              // Notice: [sum] is ignroe in this program.
               // http://www.ssw.co.jp/dtm/drums/drsetup.htm
               // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
+              
               var part = message[7] - 0x0F;
+              var map = message[8];
               if (part === 0){
                 // 10 Ch.
-                synth.setPercussionPart(9);
+                if (map !== 0x00) {
+                  synth.setPercussionPart(9, true);
+                }else{
+                  synth.setPercussionPart(9, false);
+                }
               }else if(part >= 10){
                 // 1~9 Ch.
-                synth.setPercussionPart(part - 1);
+                if (map !== 0x00) {
+                  synth.setPercussionPart(part - 1, true);
+                }else{
+                  synth.setPercussionPart(part - 1, false);
+                }
               }else{
                 // 11~16 Ch.
-                synth.setPercussionPart(part);
+                if (map !== 0x00) {
+                  synth.setPercussionPart(part, true);
+                }else{
+                  synth.setPercussionPart(part, false);
+                }
               }
               break;
             }
@@ -410,7 +431,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
         }
       break;
     default: // not supported
-      synth.setPercussionPart(9);
+      synth.setPercussionPart(9, true);
       break;
   }
 };
