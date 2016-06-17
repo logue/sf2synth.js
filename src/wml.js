@@ -43,14 +43,16 @@ SoundFont.WebMidiLink = function(option) {
 SoundFont.WebMidiLink.prototype.setup = function(url) {
   /** @type {Window} */
   var w = goog.global.window;
+
   if (!this.ready) {
     w.addEventListener('DOMContentLoaded', function onload() {
-      goog.global.window.removeEventListener('DOMContentLoaded', onload, false);
+      w.removeEventListener('DOMContentLoaded', onload, false);
       this.load(url);
     }.bind(this), false);
   } else {
     this.load(url);
   }
+
   if (w.opener) {
     this.opener = w.opener;
   } else if (w.parent !== w) {
@@ -84,7 +86,7 @@ SoundFont.WebMidiLink.prototype.load = function(url) {
   }.bind(this), false);
 
   xhr.addEventListener('progress', function (ev) {
-    if (ev.lengthComputable) {
+    if (ev.lengthComputable && opener) {
       opener.postMessage('link,progress,' + ev.loaded + ',' + ev.total, '*');
     }
   }.bind(this), false);
@@ -119,24 +121,26 @@ SoundFont.WebMidiLink.prototype.onload = function(response) {
 SoundFont.WebMidiLink.prototype.loadSoundFont = function(input) {
   /** @type {SoundFont.Synthesizer} */
   var synth;
+  /** @type {Window} */
+  var w = goog.global.window;
 
   this.cancelLoading();
 
   if (!this.synth) {
     synth = this.synth = new SoundFont.Synthesizer(input);
     if (!this.disableDrawSynth){
-      goog.global.window.document.body.appendChild(synth.drawSynth());
+      w.document.body.appendChild(synth.drawSynth());
     }
     synth.init();
     synth.start();
-    goog.global.window.addEventListener('message', this.messageHandler, false);
+    w.addEventListener('message', this.messageHandler, false);
   } else {
     synth = this.synth;
     synth.refreshInstruments(input);
   }
 
   // link ready
-  goog.global.window.postMessage("link,ready", '*');
+  w.postMessage("link,ready", '*');
 };
 
 /**

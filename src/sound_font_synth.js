@@ -104,7 +104,7 @@ SoundFont.Synthesizer = function(input) {
   /** @type {GainNode} */
   this.reverbLevel = this.ctx.createGain();
 
-  this.loadIR(SoundFont.Synthesizer.IR);
+  this.loadIR(this.IR());
 };
 /**
  * @returns {AudioContext}
@@ -272,7 +272,7 @@ SoundFont.Synthesizer.ProgramNames = [
  * @type {Array.<string>}
  * @const
  */
-SoundFont.Synthesizer.DrumProgramNames = [
+SoundFont.Synthesizer.PercussionProgramNames = [
   "Standard Set",
   "",
   "",
@@ -400,7 +400,7 @@ SoundFont.Synthesizer.DrumProgramNames = [
   "",
   "",
   "",
-  "(CM-64/CM-32L)"
+  "" //CM-64/CM-32L
 ];
 
 SoundFont.Synthesizer.prototype.init = function() {
@@ -411,7 +411,9 @@ SoundFont.Synthesizer.prototype.init = function() {
   this.bankSet = this.createAllInstruments();
 
   // reverbNode
-  this.reverbNode.buffer = this.ir;
+  if (this.ir !== void 0) {
+    this.reverbNode.buffer = this.ir;
+  }
   this.reverbLevel.gain.value = 1;
 
   this.isXG = false;
@@ -653,8 +655,11 @@ SoundFont.Synthesizer.prototype.getModGenAmount = function(generator, enumerator
  * @returns {ArrayBuffer|null}
  */
 SoundFont.Synthesizer.base64ToArrayBuffer = function(string) {
-  var binary_string =  window.atob(string);
+  /** @type {string} */
+  var binary_string =  goog.global.window.atob(string);
+  /** @type {number} */
   var len = binary_string.length;
+  /** @type {Uint8Array} */
   var bytes = new Uint8Array( len );
   for (var i = 0; i < len; i++)        {
       bytes[i] = binary_string.charCodeAt(i);
@@ -662,12 +667,14 @@ SoundFont.Synthesizer.base64ToArrayBuffer = function(string) {
   return bytes.buffer;
 };
 
-
-SoundFont.Synthesizer.IR = 
-  new AudioContext().createBuffer(2, 22050, 44100).buffer =
+/**
+ * @returns {ArrayBuffer}
+ */
+SoundFont.Synthesizer.prototype.IR = function(){
+  return this.ctx.createBuffer(1, this.ctx.sampleRate*2, this.ctx.sampleRate).buffer =
     SoundFont.Synthesizer.base64ToArrayBuffer(SoundFont.DefaultIR)
   ;
-
+}
 SoundFont.Synthesizer.prototype.connect = function() {
   this.bufSrc.connect(this.gainMaster);
   this.gainMaster.connect(this.ctx.destination);
@@ -767,6 +774,8 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
   var i;
   /** @type {number} */
   var j;
+  /** @type {string} */
+  var programName;
 
   head.appendChild(this.createTableLine(SoundFont.Synthesizer.TableHeader, true));
 
@@ -787,10 +796,10 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
 
     select = doc.createElement('select');
     for (j = 0; j < 128; ++j) {
-      var content = (i !== 9 ) ? SoundFont.Synthesizer.ProgramNames[j] : SoundFont.Synthesizer.DrumProgramNames[j];
+      programName = (i !== 9 ) ? SoundFont.Synthesizer.ProgramNames[j] : SoundFont.Synthesizer.PercussionProgramNames[j];
       option = doc.createElement('option');
-      if (content === "") continue;
-      option.textContent = content;
+      if (programName === "") continue;
+      option.textContent = programName;
       option.value = j;
       select.appendChild(option);
     }
@@ -913,11 +922,12 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
         'td:nth-child(' + (SoundFont.Synthesizer.TableHeader.length+key) + ')'
     )
     query.classList.add('note-on');
-    query.style.opacity = velocity/127;
+    query.style.opacity = velocity / 127;
   }
 
   if (instrument === void 0) {
-    instrument = this.bankSet[0][this.channelInstrument[channel]][channel];
+    
+    instrument = this.bankSet[0][this.channelInstrument[channel]];
     // TODO
     goog.global.console.warn(
       "instrument not found: bank=%s instrument=%s channel=%s",
@@ -957,6 +967,7 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
 
   // percussion
   if (this.percussionPart[channel]) {
+/*
     if (key === 42 || key === 44){
       // 42: Closed Hi-Hat
       // 44: Pedal Hi-Hat
@@ -968,6 +979,7 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
       // 81: Open Triangle
       this.noteOff(channel, 81, 0);
     }
+*/
     instrument['volume'] *= this.percussionVolume[key] / 127;
   }
 
@@ -1277,6 +1289,12 @@ SoundFont.Synthesizer.prototype.getBank = function(channel){
     // GM音源の場合バンクセレクト無効化
     bankIndex = 0;
   }
+/*
+  if (this.percussionPart[channel] && SoundFont.Synthesizer.PercussionProgramNames[this.channelInstrument[channel]] === ''){
+    // パーカッションチャンネルで、GM 2に存在しないドラムセットが呼び出された時は、Standard Setを呼び出す。
+    this.channelInstrument[channel] = 0;
+  }
+*/
   return bankIndex;
 }
 

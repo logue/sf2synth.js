@@ -203,7 +203,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
   filter.frequency.setValueAtTime(baseFreq, now);
   filter.frequency.setValueAtTime(baseFreq, modDelay);
-  filter.frequency.setTargetAtTime(peekFreq, modDelay, instrument['modAttack']);
+  filter.frequency.setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack']+1));	// For FireFox fix
   filter.frequency.setValueAtTime(peekFreq, modHold);
   filter.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
 

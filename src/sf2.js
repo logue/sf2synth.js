@@ -451,10 +451,8 @@ SoundFont.Parser.prototype.parseShdr = function(chunk) {
 
     sampleHeader.push({
       sampleName: sampleName,
-      /*
       start: start,
       end: end,
-      */
       startLoop: startLoop,
       endLoop: endLoop,
       sampleRate: sampleRate,
@@ -938,6 +936,8 @@ SoundFont.Parser.GeneratorEnumeratorTable = [
   'scaleTuning',
   'exclusiveClass',
   'overridingRootKey'
+  , // 59
+  'endOper'
 ];
 
 });
