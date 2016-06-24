@@ -16,6 +16,8 @@ SoundFont.Parser = function(input, opt_params) {
   this.input = input;
   /** @type {(Object|undefined)} */
   this.parserOption = opt_params['parserOption'];
+  /** @type {(Number|undefined)} */
+  this.sampleRate = opt_params['sampleRate'] || 22050;	// よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
   /** @type {Array.<Object>} */
   this.presetHeader;
@@ -477,7 +479,7 @@ SoundFont.Parser.prototype.adjustSampleData = function(sample, sampleRate) {
   var multiply = 1;
 
   // buffer
-  while (sampleRate < 22050) {
+  while (sampleRate < (this.sampleRate)) {	// AudioContextのサンプルレートに変更
     newSample = new Int16Array(sample.length * 2);
     for (i = j = 0, il = sample.length; i < il; ++i) {
       newSample[j++] = sample[i];

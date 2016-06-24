@@ -169,7 +169,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
 
     // filter
   filter = this.filter = ctx.createBiquadFilter();
-  filter.type = 'notch';
+  filter.type = 'allpass';
 
   // panpot
   panner.panningModel = 'equalpower';

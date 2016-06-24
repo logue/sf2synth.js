@@ -25,7 +25,7 @@ SoundFont.Synthesizer = function(input) {
   /** @type {number} */
   this.bufferSize = 1024;
   /** @type {AudioContext} */
-  this.ctx = this.getAudioContext();
+  this.ctx = this.getAudioContext(44100);
   /** @type {GainNode} */
   this.gainMaster = this.ctx.createGain();
   /** @type {AudioBufferSourceNode} */
@@ -105,29 +105,54 @@ SoundFont.Synthesizer = function(input) {
   this.reverbLevel = this.ctx.createGain();
 
   this.loadIR(this.IR());
+//  console.log(this.ctx.sampleRate);
 };
 /**
  * @returns {AudioContext}
  */
-SoundFont.Synthesizer.prototype.getAudioContext = function() {
-  /** @type {AudioContext} */
-  var ctx;
+SoundFont.Synthesizer.prototype.getAudioContext = function(desiredSampleRate) {
+  /** @type {function()} */
+  var AudioCtor;
 
   if (goog.global['AudioContext'] !== void 0) {
-    ctx = new goog.global['AudioContext']();
+    AudioCtor = goog.global['AudioContext'];
   } else if (goog.global['webkitAudioContext'] !== void 0) {
-    ctx = new goog.global['webkitAudioContext']();
+    AudioCtor = goog.global['webkitAudioContext'];
   } else if (goog.global['mozAudioContext'] !== void 0) {
-    ctx = new goog.global['mozAudioContext']();
+    AudioCtor = goog.global['mozAudioContext'];
   } else {
-    throw new Error('Web Audio not supported');
+    throw Error('Web Audio not supported');
+  }
+  
+  desiredSampleRate = typeof desiredSampleRate === 'number'
+    ? desiredSampleRate
+    : 44100;
+
+  /** @type {AudioContext} */
+  var context = new AudioCtor();
+
+  // Check if hack is necessary. Only occurs in iOS6+ devices
+  // and only when you first boot the iPhone, or play a audio/video
+  // with a different sample rate
+  if (/(iPhone|iPad)/i.test(navigator.userAgent) &&
+      context.sampleRate !== desiredSampleRate) {
+    
+    var buffer = context.createBuffer(1, 1, desiredSampleRate);
+    var dummy = context.createBufferSource();
+    dummy.buffer = buffer;
+    dummy.connect(context.destination);
+    dummy.start(0);
+    dummy.disconnect();
+    
+    context.close(); // dispose old context
+    context = new AudioCtor();
   }
 
-  if (ctx.createGainNode === void 0) {
-    ctx.createGainNode = ctx.createGain;
+  if (context.createGainNode === void 0) {
+    context.createGainNode = context.createGain;
   }
 
-  return ctx;
+  return context;
 };
 
 /**
@@ -407,7 +432,7 @@ SoundFont.Synthesizer.prototype.init = function() {
   /** @type {number} */
   var i;
 
-  this.parser = new SoundFont.Parser(this.input);
+  this.parser = new SoundFont.Parser(this.input, {sampleRate: this.ctx.sampleRate});
   this.bankSet = this.createAllInstruments();
 
   // reverbNode
@@ -671,7 +696,7 @@ SoundFont.Synthesizer.base64ToArrayBuffer = function(string) {
  * @returns {ArrayBuffer}
  */
 SoundFont.Synthesizer.prototype.IR = function(){
-  return this.ctx.createBuffer(1, this.ctx.sampleRate*2, this.ctx.sampleRate).buffer =
+  return this.ctx.createBuffer(2, this.ctx.sampleRate*2, this.ctx.sampleRate).buffer =
     SoundFont.Synthesizer.base64ToArrayBuffer(SoundFont.DefaultIR)
   ;
 }
