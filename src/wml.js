@@ -147,9 +147,13 @@ SoundFont.WebMidiLink.prototype.loadSoundFont = function(input) {
  * @param {Event} ev
  */
 SoundFont.WebMidiLink.prototype.onmessage = function(ev) {
-  var msg = typeof ev.data.split === 'function' ? ev.data.split(',') : '';
-  var type = msg !== '' ? msg.shift() : '';
+  /** @type {Array|null} */
+  var msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
+  /** @type {string} */
+  var type = msg !== [] ? msg.shift() : '';
+  /** @type {Window} */
   var opener = this.opener;
+  /** @type {string} */
   var command;
 
   switch (type) {
@@ -213,9 +217,13 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
       }
       break;
     case 0xB0: // Control Change: Bn cc dd
+      /** @type {number} */
+      var value = message[2];
       switch (message[1]) {
         case 0x00: // Bank Select MSB: Bn 00 dd
-          synth.bankSelectMsb(channel,message[2]);
+          synth.bankSelectMsb(channel, value);
+          break;
+        case 0x01: // Modulation
           break;
         case 0x06: // Data Entry(MSB): Bn 06 dd
           if (this.rpnMode) {
@@ -224,7 +232,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
               case 0:
                 switch (this.RpnLsb[channel]) {
                   case 0: // Pitch Bend Sensitivity
-                    synth.pitchBendSensitivity(channel, message[2]);
+                    synth.pitchBendSensitivity(channel, value);
                     break;
                   case 1:
                     //console.log("fine");
@@ -245,7 +253,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
             // NRPN
             switch (this.NrpnMsb[channel]) {
               case 26: // Drum Instrument Level
-                synth.drumInstrumentLevel(this.NrpnLsb[channel], message[2]);
+                synth.drumInstrumentLevel(this.NrpnLsb[channel], value);
                 break;
               default:
                 //console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
@@ -262,7 +270,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
                   case 0: // Pitch Bend Sensitivity
                     synth.pitchBendSensitivity(
                       channel,
-                      synth.getPitchBendSensitivity(channel) + message[2] / 100
+                      synth.getPitchBendSensitivity(channel) + value / 100
                     );
                     break;
                   case 1:
@@ -278,10 +286,10 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
           // NRPN で LSB が必要なものは今のところない
           break;
         case 0x07: // Volume Change: Bn 07 dd
-          synth.volumeChange(channel, message[2]);
+          synth.volumeChange(channel, value);
           break;
         case 0x0A: // Panpot Change: Bn 0A dd
-          synth.panpotChange(channel, message[2]);
+          synth.panpotChange(channel, value);
           break;
         case 0x78: // All Sound Off: Bn 78 00
           synth.allSoundOff(channel);
@@ -290,7 +298,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
           synth.resetAllControl(channel);
           break;
         case 0x20: // BankSelect LSB: Bn 00 dd
-          synth.bankSelectLsb(channel, message[2]);
+          synth.bankSelectLsb(channel, value);
           break;
         case 0x60: //
           //console.log(60);
@@ -300,28 +308,37 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
           break;
         case 0x62: // NRPN LSB
           this.rpnMode = false;
-          this.NrpnLsb[channel] = message[2];
+          this.NrpnLsb[channel] = value;
           break;
         case 0x63: // NRPN MSB
           this.rpnMode = false;
-          this.NrpnMsb[channel] = message[2];
+          this.NrpnMsb[channel] = value;
           break;
         case 0x64: // RPN LSB
           this.rpnMode = true;
-          this.RpnLsb[channel] = message[2];
+          this.RpnLsb[channel] = value;
           break;
         case 0x65: // RPN MSB
           this.rpnMode = true;
-          this.RpnMsb[channel] = message[2];
+          this.RpnMsb[channel] = value;
           break;
         case 0x40: // Hold
-          synth.hold(channel, message[2]);
+          synth.hold(channel, value);
           break;
         case 0x0b: // Expression
-          synth.expression(channel, message[2]);
+          synth.expression(channel, value);
           break;
-        case 0x4a: // ReleaseTime
-          synth.releaseTime(channel, message[2]);
+        case 0x47: // Cutoff Fequency (Brightness)
+          synth.cutOffFrequency[channel] = value;
+          break;
+        case 0x48: // DecayTyme
+//          synth.decayTime[channel] = value;
+          break;
+        case 0x49: // ReleaseTime
+          synth.releaseTime(channel, value);
+          break;
+        case 0x4A: // Hermonic Content (Resonance)
+          synth.harmonicContent[channel] = value;
           break;
         default:
         // not supported
@@ -353,7 +370,7 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
             case 0x04: // device control
               // sub ID 2
               switch (message[4]) {
-                case 0x01: // master volume: F0 7F 7F 04 01 00 [value] F7
+                case 0x01: // master volume: F0 7F 7F 04 01 [value] [value] F7
                   synth.setMasterVolume(message[5] + (message[6] << 7));
                   break;
               }
@@ -378,7 +395,8 @@ SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
           switch (message[7]) {
             case 0x04:
               // XG Master Volume: F0 43 [dev] 4C 00 00 04 [value] F7
-              synth.setMasterVolume(message[8] << 7);
+              synth.setMasterVolume((message[8] << 7) * 2);
+              console.log(message[8]<< 7);
               break;
             case 0x7E:
               // XG Reset: F0 43 [dev] 4C 00 00 7E 00 F7

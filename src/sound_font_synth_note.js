@@ -57,6 +57,10 @@ SoundFont.SynthesizerNote = function(ctx, destination, instrument) {
   this.modEnvToPitch = instrument['modEnvToPitch'];
   /** @type {number} */
   this.expression = instrument['expression'];
+  /** @type {number} */
+  this.cutOffFrequency = instrument['cutOffFrequency'];
+  /** @type {number} */
+  this.hermonicContent = instrument['hermonicContent'];
 
   // state
   /** @type {number} */
@@ -74,7 +78,7 @@ SoundFont.SynthesizerNote = function(ctx, destination, instrument) {
   this.audioBuffer;
   /** @type {AudioBufferSourceNode} */
   this.bufferSource;
-  /** @type {AudioPannerNode} */
+  /** @type {StereoPannerNode} */
   this.panner;
   /** @type {GainNode} */
   this.gainOutput;
@@ -82,6 +86,8 @@ SoundFont.SynthesizerNote = function(ctx, destination, instrument) {
   this.expressionGain;
   /** @type {BiquadFilterNode} */
   this.filter;
+  /** @type {BiquadFilterNode} */
+  this.modulator;
 };
 
 SoundFont.SynthesizerNote.prototype.noteOn = function() {
@@ -108,7 +114,9 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   var bufferSource;
   /** @type {BiquadFilterNode} */
   var filter;
-  /** @type {AudioPannerNode} */
+  /** @type {BiquadFilterNode} */
+  var modulator;
+  /** @type {StereoPannerNode} */
   var panner;
   /** @type {GainNode} */
   var output;
@@ -146,6 +154,11 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   var sustainFreq;
   /** @type {number} */
   var volume;
+  
+  /** @type {number} */
+  var cutOffFrequency = instrument['cutOffFrequency'];	// (Brightness)
+  /** @type {number} */
+  var harmonicContent = instrument['harmonicContent'];	// (Resonance)
 
   sample = sample.subarray(0, sample.length + instrument['end']);
   buffer = this.audioBuffer = ctx.createBuffer(1, sample.length, this.sampleRate);
@@ -161,24 +174,14 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   this.updatePitchBend(this.pitchBend);
 
   // audio node
-  panner = this.panner = ctx.createPanner();
+  panner = this.panner = ctx.createStereoPanner();
   output = this.gainOutput = ctx.createGain();
   outputGain = output.gain;
   this.expressionGain = ctx.createGain();
   this.expressionGain.gain.value = this.expression / 127;
 
-    // filter
-  filter = this.filter = ctx.createBiquadFilter();
-  filter.type = 'allpass';
-
   // panpot
-  panner.panningModel = 'equalpower';
-  panner.setPosition(
-    Math.sin(this.panpot * Math.PI / 2),
-    0,
-    Math.cos(this.panpot * Math.PI / 2)
-  );
-  panner.distanceModel = 'linear';
+  panner.pan.value = Math.sin(this.panpot * Math.PI / 2);
 
   //---------------------------------------------------------------------------
   // Delay, Attack, Hold, Decay, Sustain
@@ -196,22 +199,36 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
   outputGain.setValueAtTime(volume, volHold);
   outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
 
+
   // modulation envelope
-  filter.Q.setValueAtTime(Math.pow(10, instrument['initialFilterQ'] / 200), now);
+  modulator = this.modulator = ctx.createBiquadFilter();
+  modulator.Q.setValueAtTime(Math.pow(10, instrument['initialFilterQ'] / 200), now);
   baseFreq = this.amountToFreq(instrument['initialFilterFc']);
   peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
   sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
-  filter.frequency.setValueAtTime(baseFreq, now);
-  filter.frequency.setValueAtTime(baseFreq, modDelay);
-  filter.frequency.setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack']+1));	// For FireFox fix
-  filter.frequency.setValueAtTime(peekFreq, modHold);
-  filter.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
+  modulator.frequency.setValueAtTime(baseFreq, now);
+  modulator.frequency.setValueAtTime(baseFreq, modDelay);
+  modulator.frequency.setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack']+1));	// For FireFox fix
+  modulator.frequency.setValueAtTime(peekFreq, modHold);
+  modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
+  
+    // filter
+//  filter = this.filter = ctx.createBiquadFilter();
+// 一応反映されるが重いのでコメントアウト
+//  filter.type = 'lowpass';
+//  filter.frequency.value = (this.sampleRate * cutOffFrequency)/ 560;	// Brightness
+//  filter.Q.value = harmonicContent * .393;	// Resonance
+//  goog.global.console.log('Brightness:', cutOffFrequency, ' = ', filter.frequency.value, 'Hz ,Resonance:', harmonicContent, ' = ', filter.Q.value);
 
   // connect
-  bufferSource.connect(filter);
-  filter.connect(panner);
+  bufferSource.connect(modulator);
+  modulator.connect(panner);
   panner.connect(this.expressionGain);
+
+//  this.expressionGain.connect(filter);
+//  filter.connect(output);
   this.expressionGain.connect(output);
+
   if (!instrument['mute']) {
     this.connect();
   }
@@ -270,6 +287,8 @@ SoundFont.SynthesizerNote.prototype.release = function() {
   //---------------------------------------------------------------------------
   /** @type {BiquadFilterNode} */
   var filter = this.filter;
+  /** @type {BiquadFilterNode} */
+  var modulator = this.modulator;
   /** @type {number} */
   var baseFreq = this.amountToFreq(instrument['initialFilterFc']);
   /** @type {number} */
@@ -279,7 +298,7 @@ SoundFont.SynthesizerNote.prototype.release = function() {
     (
       baseFreq === peekFreq ?
       1 :
-      (filter.frequency.value - baseFreq) / (peekFreq - baseFreq)
+      (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq)
     );
   //var modEndTime = now + instrument['modRelease'] * (1 - instrument['modSustain']);
 
@@ -299,9 +318,13 @@ SoundFont.SynthesizerNote.prototype.release = function() {
       output.gain.setValueAtTime(output.gain.value, now);
       output.gain.linearRampToValueAtTime(0, volEndTime);
 
-      filter.frequency.cancelScheduledValues(0);
-      filter.frequency.setValueAtTime(filter.frequency.value, now);
-      filter.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
+//      filter.frequency.cancelScheduledValues(0);
+//      filter.frequency.setValueAtTime(filter.frequency.value, now);
+//      filter.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
+      
+      modulator.frequency.cancelScheduledValues(0);
+      modulator.frequency.setValueAtTime(modulator.frequency.value, now);
+      modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
 
       bufferSource.playbackRate.cancelScheduledValues(0);
       bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);

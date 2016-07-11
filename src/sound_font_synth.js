@@ -62,6 +62,12 @@ SoundFont.Synthesizer = function(input) {
   /** @type {Array.<number>} */
   this.channelBankLsb =
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  /** @type {Array.<number>} */
+  this.harmonicContent = 
+    [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64];
+  /** @type {Array.<number>} */
+  this.cutOffFrequency = 
+    [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64];
 
   /** @type {boolean} */
   this.isGS = false;
@@ -107,7 +113,9 @@ SoundFont.Synthesizer = function(input) {
   this.loadIR(this.IR());
 //  console.log(this.ctx.sampleRate);
 };
+
 /**
+ * @param {number|null} desiredSampleRate
  * @returns {AudioContext}
  */
 SoundFont.Synthesizer.prototype.getAudioContext = function(desiredSampleRate) {
@@ -516,7 +524,7 @@ SoundFont.Synthesizer.prototype.createAllInstruments = function() {
       banks[preset.header.bank] = [];
     }
     bank = banks[preset.header.bank];
-    bank[presetNumber] = [];
+    bank[presetNumber] = {};
     bank[presetNumber].name = preset.name;
 
     for (j = 0, jl = instrument.info.length; j < jl; ++j) {
@@ -696,7 +704,7 @@ SoundFont.Synthesizer.base64ToArrayBuffer = function(string) {
  * @returns {ArrayBuffer}
  */
 SoundFont.Synthesizer.prototype.IR = function(){
-  return this.ctx.createBuffer(2, this.ctx.sampleRate*2, this.ctx.sampleRate).buffer =
+  return this.ctx.createBuffer(1, this.ctx.sampleRate, this.ctx.sampleRate).buffer =
     SoundFont.Synthesizer.base64ToArrayBuffer(SoundFont.DefaultIR)
   ;
 }
@@ -989,6 +997,8 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
   instrumentKey['pitchBendSensitivity'] = Math.round(this.channelPitchBendSensitivity[channel]);
   instrumentKey['mute'] = this.channelMute[channel];
   instrumentKey['releaseTime'] = this.channelRelease[channel];
+  instrumentKey['cutOffFrequency'] = this.cutOffFrequency[channel];
+  instrumentKey['harmonicContent'] = this.harmonicContent[channel];
 
   // percussion
   if (this.percussionPart[channel]) {
@@ -1288,7 +1298,7 @@ SoundFont.Synthesizer.prototype.getBank = function(channel){
 
   if (this.isXG) {
     // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
-    if (bankIndex === 64){
+    if (this.channelBankMsb[channel] === 64){
       // Bank Select MSB #64 (Voice Type: SFX)
       bankIndex = 125;
     }else if (this.channelBankMsb[channel] === 126 || this.channelBankMsb[channel] === 127){
