@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="project" default="all" basedir="bin">
+  <!-- ディレクトリ設定 -->
+  <property name="bin" value="."/>
   <property name="rootpath" value=".."/>
   <property name="rootdir" location="${rootpath}"/>
-  <property name="bin" value="."/>
-  <property name="level" value="ADVANCED_OPTIMIZATIONS"/>
-  <property name="src" value="${rootpath}/src"/>
   <property name="def" value="${rootpath}/define"/>
-  <property name="vendor" value="${rootpath}/vendor"/>
-  <property name="compiler" value="${vendor}/google-closure-compiler/compiler.jar"/>
-  <property name="closure_primitives" value="${rootpath}/closure-primitives/base.js"/>
-  <property name="depswriter" value="${rootpath}/closure-primitives/depswriter.py"/>
-  <property name="depend" value="${rootpath}/closure-primitives/deps.js"/>
   <property name="export" value="${rootpath}/export"/>
   <property name="externs" value="${rootpath}/externs"/>
+  <property name="src" value="${rootpath}/src"/>
+  <property name="vendor" value="${rootpath}/vendor"/>
+  <!-- バイナリ指定 -->
+  <property name="closure_primitives" value="${rootpath}/closure-primitives/base.js"/>
+  <property name="compiler" value="${vendor}/google-closure-compiler/closure-compiler-v20170218.jar"/>
+  <property name="depend" value="${rootpath}/closure-primitives/deps.js"/>
+  <property name="depswriter" value="${rootpath}/closure-primitives/depswriter.py"/>
+  <!-- コンパイラ設定 -->
+  <property name="level" value="ADVANCED_OPTIMIZATIONS"/>
+  <property name="language_in" value="ECMASCRIPT5"/>
+  <property name="language_out" value="ES5_STRICT"/>
 
   <!-- ライセンスとビルドされたファイルをプロパティとして読み込む -->
   <loadfile property="license" srcfile="../LICENSE.min"/>
@@ -54,7 +59,8 @@
       <arg line="--define=goog.DEBUG=false"/>
       <arg line="--define=SF2_PARSER_EXPORT=true"/>
       <arg line="--summary_detail_level=3"/>
-      <arg line="--language_in=ECMASCRIPT5_STRICT"/>
+      <arg line="--language_in=${language_in}"/>
+      <arg line="--language_out=${language_out}"/>
       <arg line="--source_map_format=V3"/>
       <arg line="--output_wrapper='${license}(function() {%output%}).call(this); //# sourceMappingURL=${basename}.map'"/>
       <arg line="--js_output_file=${outfile}"/>
@@ -81,7 +87,8 @@
       <arg line="--define=goog.DEBUG=false"/>
       <arg line="--define=SF2_SYNTH_EXPORT=true"/>
       <arg line="--summary_detail_level=3"/>
-      <arg line="--language_in=ECMASCRIPT5_STRICT"/>
+      <arg line="--language_in=${language_in}"/>
+      <arg line="--language_out=${language_out}"/>
       <arg line="--source_map_format=V3"/>
       <arg line="--output_wrapper='${license}(function() {%output%}).call(this); //# sourceMappingURL=${basename}.map'"/>
       <arg line="--js_output_file=${outfile}"/>
