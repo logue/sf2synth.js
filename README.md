@@ -1,8 +1,6 @@
-sf2synth.js
-===========
+# sf2synth.js
 
 sf2synth.js は [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) 対応の SoundFont シンセサイザです。
-
 
 ## 使い方
 
@@ -14,7 +12,9 @@ wml.setLoadCallback(function(arraybuffer) {
 });
 wml.setup(url);
 ```
+
 キーボード表示を無効化したい場合は、wmlの定義を以下のようにしてください。
+
 ```js
 var wml = new SoundFont.WebMidiLink({disableDrawSynth:true});
 ```
@@ -32,7 +32,6 @@ var wml = new SoundFont.WebMidiLink({disableDrawSynth:true});
 
 sf2synth.js は WebMidiLink の Link Level 1 に対応しています。
 GM Level 2およびXG Lite相当です。
-
 
 ## ライセンス
 

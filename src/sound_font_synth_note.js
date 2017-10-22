@@ -184,13 +184,15 @@ SoundFont.SynthesizerNote.prototype.noteOn = function() {
     this.updatePitchBend(this.pitchBend);
 
     // audio node
-    panner = this.panner = ctx.createStereoPanner();
     output = this.gainOutput = ctx.createGain();
     outputGain = output.gain;
+
+    // expression
     this.expressionGain = ctx.createGain();
     this.expressionGain.gain.value = this.expression / 127;
 
     // panpot
+    panner = this.panner = ctx.createStereoPanner();
     panner.pan.value = Math.sin(pan * Math.PI / 2);
 
     //---------------------------------------------------------------------------

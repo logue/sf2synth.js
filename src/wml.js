@@ -67,7 +67,7 @@ goog.scope(function() {
         /** @type {XMLHttpRequest} */
         var xhr;
         /** @type {Window} */
-        var opener = this.opener;
+        var opener = goog.global.window.opener ? goog.global.window.opener : goog.global.window.parent;
 
         this.cancelLoading();
 
@@ -79,7 +79,7 @@ goog.scope(function() {
 
         xhr.addEventListener('load', function(ev) {
             this.onload(ev.target.response);
-            if (typeof this.loadCallback === 'function') {
+            if (goog.isFunction(this.loadCallback)) {
                 this.loadCallback(ev.target.response);
             }
             this.xhr = null;
@@ -154,12 +154,12 @@ goog.scope(function() {
      * @param {Event} ev
      */
     SoundFont.WebMidiLink.prototype.onmessage = function(ev) {
-        /** @type {Array|null} */
-        var msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
+        /** @type {Array} */
+        var msg = goog.isFunction(ev.data.split) ? ev.data.split(',') : [];
         /** @type {string} */
         var type = msg !== [] ? msg.shift() : '';
         /** @type {Window} */
-        var opener = this.opener;
+        var opener = goog.global.window.opener ? goog.global.window.opener : goog.global.window.parent;
         /** @type {string} */
         var command;
 
@@ -185,6 +185,9 @@ goog.scope(function() {
                     case 'ready':
                         opener.postMessage("link,ready", '*');
                         // TODO: NOP
+                        break;
+                    case 'progress':
+                        opener.postMessage("link,progress", '*');
                         break;
                     default:
                         goog.global.console.error('unknown link message:', command);
@@ -346,6 +349,9 @@ goog.scope(function() {
                         break;
                     case 0x4A: // Hermonic Content (Resonance)
                         synth.harmonicContent[channel] = value;
+                        break;
+                    case 0x5B: // Effect1 Depth（Reverb Send Level）
+                        synth.reverbDepth[channel] = value;
                         break;
                     default:
                         // not supported

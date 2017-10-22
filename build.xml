@@ -11,13 +11,14 @@
   <property name="vendor" value="${rootpath}/vendor"/>
   <!-- バイナリ指定 -->
   <property name="closure_primitives" value="${rootpath}/closure-primitives/base.js"/>
-  <property name="compiler" value="${vendor}/google-closure-compiler/closure-compiler-v20170218.jar"/>
+  <property name="compiler" value="${vendor}/google-closure-compiler/closure-compiler-v20170910.jar"/>
   <property name="depend" value="${rootpath}/closure-primitives/deps.js"/>
   <property name="depswriter" value="${rootpath}/closure-primitives/depswriter.py"/>
   <!-- コンパイラ設定 -->
   <property name="level" value="ADVANCED_OPTIMIZATIONS"/>
   <property name="language_in" value="ECMASCRIPT5"/>
-  <property name="language_out" value="ES5_STRICT"/>
+  <property name="language_out" value="ECMASCRIPT5_STRICT"/>
+  <property name="warning_level" value="QUIET"/>
 
   <!-- ライセンスとビルドされたファイルをプロパティとして読み込む -->
   <loadfile property="license" srcfile="../LICENSE.min"/>
@@ -55,7 +56,7 @@
     <!-- ビルド(出力先は一時ファイル) -->
     <java jar="${compiler}" fork="true" failonerror="true">
       <arg line="--compilation_level=${level}"/>
-      <arg line="--warning_level=VERBOSE"/>
+      <arg line="--warning_level=${warning_level}"/>
       <arg line="--define=goog.DEBUG=false"/>
       <arg line="--define=SF2_PARSER_EXPORT=true"/>
       <arg line="--summary_detail_level=3"/>
@@ -82,7 +83,7 @@
     <!-- ビルド(出力先は一時ファイル) -->
     <java jar="${compiler}" fork="true" failonerror="true">
       <arg line="--compilation_level=${level}"/>
-      <arg line="--warning_level=VERBOSE"/>
+      <arg line="--warning_level=${warning_level}"/>
       <arg line="--jscomp_error=checkTypes"/>
       <arg line="--define=goog.DEBUG=false"/>
       <arg line="--define=SF2_SYNTH_EXPORT=true"/>
@@ -100,6 +101,33 @@
       <arg line="${srcfiles}"/>
     </java>
   </target>
+  
+  <target name="reverb" depends="deps,prebuild">
+    <!-- 出力ファイル名 -->
+    <local name="basename"/>
+    <property name="basename" value="reverb.min.js"/>
+    <local name="outfile"/>
+    <property name="outfile" value="${bin}/${basename}"/>
+    <!-- ビルド(出力先は一時ファイル) -->
+    <java jar="${compiler}" fork="true" failonerror="true">
+      <arg line="--compilation_level=${level}"/>
+      <arg line="--warning_level=${warning_level}"/>
+      <arg line="--jscomp_error=checkTypes"/>
+      <arg line="--define=goog.DEBUG=false"/>
+      <arg line="--define=SF2_REVERB_EXPORT=true"/>
+      <arg line="--summary_detail_level=3"/>
+      <arg line="--language_in=${language_in}"/>
+      <arg line="--language_out=${language_out}"/>
+      <arg line="--source_map_format=V3"/>
+      <arg line="--output_wrapper='/** @license reverb.js 2017 - Logue [ https://github.com/logue/sf2synth.js ] The MIT License  */(function() {%output%}).call(this); //# sourceMappingURL=${basename}.map'"/>
+      <arg line="--js_output_file=${outfile}"/>
+      <arg line="--create_source_map=${outfile}.map"/>
+      <arg line="--manage_closure_dependencies"/>
+      <arg line="--js=${closure_primitives}"/>
+      <arg line="${export}/reverb.js"/>
+      <arg line="${srcfiles}"/>
+    </java>
+  </target>
 
   <!-- compiler help -->
   <target name="help">
@@ -109,7 +137,7 @@
   </target>
 
   <!-- 全て作成 -->
-  <target name="all" depends="parser,synth"/>
+  <target name="all" depends="parser,synth,reverb"/>
 
   <!--  削除 -->
   <target name="clean">

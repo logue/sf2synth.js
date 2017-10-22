@@ -2,8 +2,8 @@ goog.provide('SoundFont.Synthesizer');
 
 goog.require('SoundFont.SynthesizerNote');
 goog.require('SoundFont.Parser');
-goog.require('SoundFont.DefaultIR');
-
+goog.require('SoundFont.Reverb');
+goog.require('SoundFont.Instruments');
 
 /**
  * @constructor
@@ -17,15 +17,15 @@ SoundFont.Synthesizer = function(input) {
     /** @type {Uint8Array} */
     this.input = input;
     /** @type {SoundFont.Parser} */
-    this.parser;
+    this.parser = {};
     /** @type {number} */
     this.bank = 0;
     /** @type {Array.<Array.<Object>>} */
-    this.bankSet;
+    this.bankSet = {};
     /** @type {number} */
-    this.bufferSize = 1024;
+    this.bufferSize = 2048;
     /** @type {AudioContext} */
-    this.ctx = this.getAudioContext(44100);
+    this.ctx = this.getAudioContext();
     /** @type {GainNode} */
     this.gainMaster = this.ctx.createGain();
     /** @type {AudioBufferSourceNode} */
@@ -53,6 +53,8 @@ SoundFont.Synthesizer = function(input) {
     this.channelBankMsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0];
     /** @type {Array.<number>} */
     this.channelBankLsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /** @type {Array.<number>} */
+    this.reverbDepth = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
     /** @type {Array.<number>} */
     this.harmonicContent = [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64];
     /** @type {Array.<number>} */
@@ -98,345 +100,42 @@ SoundFont.Synthesizer = function(input) {
         false, false, false, false, false, false, false, false
     ];
 
+    /** @type {Array.<number>} */
     this.percussionVolume = new Array(128);
     for (i = 0, il = this.percussionVolume.length; i < il; ++i) {
         this.percussionVolume[i] = 127;
     }
 
-    /** @type {HTMLTableElement} */
-    this.table;
-
     /** @type {boolean} */
-    this.reverb = true;
-    /** @type {ConvolverNode} */
-    this.reverbNode = this.ctx.createConvolver();
-    /** @type {GainNode} */
-    this.reverbLevel = this.ctx.createGain();
+    this.useReverb = true;
 
-    this.loadIR(this.IR());
+    /** @type {SoundFont.Reverb} */
+    this.reverb = new SoundFont.Reverb(this.ctx);
 };
 
 /**
- * @param {number|null} desiredSampleRate
  * @returns {AudioContext}
  */
-SoundFont.Synthesizer.prototype.getAudioContext = function(desiredSampleRate) {
-    /** @type {function()} */
-    var AudioCtor;
+SoundFont.Synthesizer.prototype.getAudioContext = function() {
+    /** @type {AudioContext} */
+    var ctx;
 
     if (goog.global['AudioContext'] !== void 0) {
-        AudioCtor = goog.global['AudioContext'];
+        ctx = new goog.global['AudioContext']();
     } else if (goog.global['webkitAudioContext'] !== void 0) {
-        AudioCtor = goog.global['webkitAudioContext'];
+        ctx = new goog.global['webkitAudioContext']();
     } else if (goog.global['mozAudioContext'] !== void 0) {
-        AudioCtor = goog.global['mozAudioContext'];
+        ctx = new goog.global['mozAudioContext']();
     } else {
-        throw Error('Web Audio not supported');
+        throw new Error('Web Audio not supported');
     }
 
-    desiredSampleRate = typeof desiredSampleRate === 'number' ?
-        desiredSampleRate :
-        44100;
-
-    /** @type {AudioContext} */
-    var context = new AudioCtor();
-
-    // Check if hack is necessary. Only occurs in iOS6+ devices
-    // and only when you first boot the iPhone, or play a audio/video
-    // with a different sample rate
-    if (/(iPhone|iPad)/i.test(navigator.userAgent) &&
-        context.sampleRate !== desiredSampleRate) {
-
-        var buffer = context.createBuffer(1, 1, desiredSampleRate);
-        var dummy = context.createBufferSource();
-        dummy.buffer = buffer;
-        dummy.connect(context.destination);
-        dummy.start(0);
-        dummy.disconnect();
-
-        context.close(); // dispose old context
-        context = new AudioCtor();
+    if (ctx.createGainNode === void 0) {
+        ctx.createGainNode = ctx.createGain;
     }
 
-    if (context.createGainNode === void 0) {
-        context.createGainNode = context.createGain;
-    }
-
-    return context;
+    return ctx;
 };
-
-/**
- * GM Synth set
- * http://amei.or.jp/specifications/GM2_japanese.pdf
- * @type {Array.<string>}
- * @const
- */
-SoundFont.Synthesizer.ProgramNames = [
-    "Acoustic Piano",
-    "Bright Acoustic Piano",
-    "Electric Grand Piano",
-    "Honky-tonk Piano",
-    "Electric Piano",
-    "Electric Piano 2",
-    "Harpsichord",
-    "Clavi",
-    "Celesta",
-    "Glockenspiel",
-    "Musical box",
-    "Vibraphone",
-    "Marimba",
-    "Xylophone",
-    "Tubular Bell",
-    "Dulcimer",
-    "Drawbar Organ",
-    "Percussive Organ",
-    "Rock Organ",
-    "Church organ",
-    "Reed organ",
-    "Accordion",
-    "Harmonica",
-    "Tango Accordion",
-    "Acoustic Guitar (nylon)",
-    "Acoustic Guitar (steel)",
-    "Electric Guitar (jazz)",
-    "Electric Guitar (clean)",
-    "Electric Guitar (muted)",
-    "Overdriven Guitar",
-    "Distortion Guitar",
-    "Guitar Harmonics",
-    "Acoustic Bass",
-    "Electric Bass (finger)",
-    "Electric Bass (pick)",
-    "Fretless Bass",
-    "Slap Bass 1",
-    "Slap Bass 2",
-    "Synth Bass 1",
-    "Synth Bass 2",
-    "Violin",
-    "Viola",
-    "Cello",
-    "Double bass",
-    "Tremolo Strings",
-    "Pizzicato Strings",
-    "Orchestral Harp",
-    "Timpani",
-    "String Ensemble 1",
-    "String Ensemble 2",
-    "Synth Strings 1",
-    "Synth Strings 2",
-    "Voice Aahs",
-    "Voice Oohs",
-    "Synth Voice",
-    "Orchestra Hit",
-    "Trumpet",
-    "Trombone",
-    "Tuba",
-    "Muted Trumpet",
-    "French horn",
-    "Brass Section",
-    "Synth Brass 1",
-    "Synth Brass 2",
-    "Soprano Sax",
-    "Alto Sax",
-    "Tenor Sax",
-    "Baritone Sax",
-    "Oboe",
-    "English Horn",
-    "Bassoon",
-    "Clarinet",
-    "Piccolo",
-    "Flute",
-    "Recorder",
-    "Pan Flute",
-    "Blown Bottle",
-    "Shakuhachi",
-    "Whistle",
-    "Ocarina",
-    "Lead 1 (square)",
-    "Lead 2 (sawtooth)",
-    "Lead 3 (calliope)",
-    "Lead 4 (chiff)",
-    "Lead 5 (charang)",
-    "Lead 6 (voice)",
-    "Lead 7 (fifths)",
-    "Lead 8 (bass + lead)",
-    "Pad 1 (new age)",
-    "Pad 2 (warm)",
-    "Pad 3 (polysynth)",
-    "Pad 4 (choir)",
-    "Pad 5 (bowed)",
-    "Pad 6 (metallic)",
-    "Pad 7 (halo)",
-    "Pad 8 (sweep)",
-    "FX 1 (rain)",
-    "FX 2 (soundtrack)",
-    "FX 3 (crystal)",
-    "FX 4 (atmosphere)",
-    "FX 5 (brightness)",
-    "FX 6 (goblins)",
-    "FX 7 (echoes)",
-    "FX 8 (sci-fi)",
-    "Sitar",
-    "Banjo",
-    "Shamisen",
-    "Koto",
-    "Kalimba",
-    "Bagpipe",
-    "Fiddle",
-    "Shanai",
-    "Tinkle Bell",
-    "Agogo",
-    "Steel Drums",
-    "Woodblock",
-    "Taiko Drum",
-    "Melodic Tom",
-    "Synth Drum",
-    "Reverse Cymbal",
-    "Guitar Fret Noise",
-    "Breath Noise",
-    "Seashore",
-    "Bird Tweet",
-    "Telephone Ring",
-    "Helicopter",
-    "Applause",
-    "Gunshot"
-];
-
-/**
- * GM2 Drum Set List
- * @type {Array.<string>}
- * @const
- */
-SoundFont.Synthesizer.PercussionProgramNames = [
-    "Standard Set",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "Room Set",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "Power Set",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "Electronic Set",
-    "Analog Set",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "Jazz Set",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "Brush Set",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "Orchestra Set",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "SFX Set",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "" //CM-64/CM-32L
-];
 
 SoundFont.Synthesizer.prototype.init = function() {
     /** @type {number} */
@@ -444,12 +143,6 @@ SoundFont.Synthesizer.prototype.init = function() {
 
     this.parser = new SoundFont.Parser(this.input, { sampleRate: this.ctx.sampleRate });
     this.bankSet = this.createAllInstruments();
-
-    // reverbNode
-    if (this.ir !== void 0) {
-        this.reverbNode.buffer = this.ir;
-    }
-    this.reverbLevel.gain.value = 1;
 
     this.isXG = false;
     this.isGS = false;
@@ -465,11 +158,16 @@ SoundFont.Synthesizer.prototype.init = function() {
         this.bankSelectMsb(i, i === 9 ? 128 : 0x00);
         this.bankSelectLsb(i, 0x00);
         this.setPercussionPart(i, false);
+        this.setReverbDepth(i, 40);
     }
 
     for (i = 0; i < 128; ++i) {
         this.percussionVolume[i] = 127;
     }
+};
+
+SoundFont.Synthesizer.prototype.close = function() {
+    this.ctx.close();
 };
 
 /**
@@ -481,6 +179,7 @@ SoundFont.Synthesizer.prototype.refreshInstruments = function(input) {
     this.bankSet = this.createAllInstruments();
 };
 
+/** @return {Array.<Array.<Object>>} */
 SoundFont.Synthesizer.prototype.createAllInstruments = function() {
     /** @type {SoundFont.Parser} */
     var parser = this.parser;
@@ -489,10 +188,12 @@ SoundFont.Synthesizer.prototype.createAllInstruments = function() {
     var presets = parser.createPreset();
     /** @type {Array} TODO */
     var instruments = parser.createInstrument();
-    /** @type {Object} */
+    /** @type {Array} */
     var banks = [];
     /** @type {Array.<Array.<Object>>} */
     var bank;
+    /** @type {number} */
+    var bankNumber;
     /** @type {Object} TODO */
     var preset;
     /** @type {Object} */
@@ -511,8 +212,9 @@ SoundFont.Synthesizer.prototype.createAllInstruments = function() {
     for (i = 0, il = presets.length; i < il; ++i) {
         preset = presets[i];
         presetNumber = preset.header.preset;
+        bankNumber = preset.header.bank;
 
-        if (typeof preset.instrument !== 'number') {
+        if (!goog.isNumber(preset.instrument)) {
             continue;
         }
 
@@ -522,10 +224,10 @@ SoundFont.Synthesizer.prototype.createAllInstruments = function() {
         }
 
         // select bank
-        if (banks[preset.header.bank] === void 0) {
-            banks[preset.header.bank] = [];
+        if (banks[bankNumber] === void 0) {
+            banks[bankNumber] = [];
         }
-        bank = banks[preset.header.bank];
+        bank = banks[bankNumber];
         bank[presetNumber] = {};
         bank[presetNumber].name = preset.name;
 
@@ -579,6 +281,11 @@ SoundFont.Synthesizer.prototype.createNoteInfo = function(parser, info, preset) 
     var il;
     /** @type {number} */
     var pan;
+    /** 
+     * @type {number} 
+     * @const
+     */
+    var ROOT12 = Math.pow(2, 1 / 12);
 
     if (generator['keyRange'] === void 0 || generator['sampleID'] === void 0) {
         return;
@@ -612,14 +319,13 @@ SoundFont.Synthesizer.prototype.createNoteInfo = function(parser, info, preset) 
 
         sampleId = this.getModGenAmount(generator, 'sampleID');
 
-
         sampleHeader = parser.sampleHeader[sampleId];
         preset[i] = {
             'sample': parser.sample[sampleId],
             'sampleRate': sampleHeader.sampleRate,
             'sampleModes': this.getModGenAmount(generator, 'sampleModes'),
             'basePlaybackRate': Math.pow(
-                Math.pow(2, 1 / 12),
+                ROOT12,
                 (
                     i -
                     this.getModGenAmount(generator, 'overridingRootKey', sampleHeader.originalPitch) +
@@ -685,49 +391,10 @@ SoundFont.Synthesizer.prototype.getModGenAmount = function(generator, enumerator
     return generator[enumeratorType] ? generator[enumeratorType].amount : opt_default;
 };
 
-/**
- * @param {string} string
- * @returns {ArrayBuffer|null}
- */
-SoundFont.Synthesizer.base64ToArrayBuffer = function(string) {
-    /** @type {string} */
-    var binary_string = goog.global.window.atob(string);
-    /** @type {number} */
-    var len = binary_string.length;
-    /** @type {Uint8Array} */
-    var bytes = new Uint8Array(len);
-    for (var i = 0; i < len; i++) {
-        bytes[i] = binary_string.charCodeAt(i);
-    }
-    return bytes.buffer;
-};
-
-/**
- * @returns {ArrayBuffer}
- */
-SoundFont.Synthesizer.prototype.IR = function() {
-    return this.ctx.createBuffer(1, this.ctx.sampleRate, this.ctx.sampleRate).buffer =
-        SoundFont.Synthesizer.base64ToArrayBuffer(SoundFont.DefaultIR);
-}
-SoundFont.Synthesizer.prototype.connect = function() {
-    this.bufSrc.connect(this.gainMaster);
-    this.gainMaster.connect(this.ctx.destination);
-
-    if (this.reverb) {
-        this.connectReverb();
-    }
-};
-
-SoundFont.Synthesizer.prototype.connectReverb = function() {
-    this.gainMaster.connect(this.reverbNode);
-    this.reverbNode.connect(this.reverbLevel);
-    this.reverbLevel.connect(this.ctx.destination);
-};
-
 SoundFont.Synthesizer.prototype.start = function() {
     this.connect();
-    this.bufSrc.start(0);
     this.setMasterVolume(16383);
+    this.bufSrc.start(0);
 };
 
 SoundFont.Synthesizer.prototype.setMasterVolume = function(volume) {
@@ -735,41 +402,38 @@ SoundFont.Synthesizer.prototype.setMasterVolume = function(volume) {
     this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
 };
 
-/**
- * @param {AudioBuffer|ArrayBuffer} ir
+SoundFont.Synthesizer.prototype.connect = function() {
+    this.bufSrc.connect(this.gainMaster);
+    this.gainMaster.connect(this.ctx.destination);
+    if (this.useReverb === true) {
+        this.gainMaster.connect(this.reverb);
+        this.reverb.connect(this.ctx.destination);
+    }
+};
+
+SoundFont.Synthesizer.prototype.disconnect = function() {
+    this.bufSrc.disconnect(0);
+    this.gainMaster.disconnect(0);
+    this.reverb.disconnect(0);
+};
+
+/** @param {boolean} value */
+SoundFont.Synthesizer.prototype.setReverb = function(value) {
+    if (this.useReverb === false) {
+        this.reverb.disconnect(0);
+    } else {
+        this.gainMaster.connect(this.reverb);
+        this.reverb.connect(this.ctx.destination);
+    }
+    this.useReverb = value;
+};
+
+/** 
+ * @param {number} channel
+ * @param {number} depth 
  */
-SoundFont.Synthesizer.prototype.loadIR = function(ir) {
-    var t = this;
-    if (ir instanceof ArrayBuffer) {
-        this.ctx.decodeAudioData(ir, function(buffer) {
-            t.ir = buffer;
-            t.reverbNode.buffer = buffer;
-        });
-    }
-};
-
-SoundFont.Synthesizer.prototype.stop =
-    SoundFont.Synthesizer.prototype.disconnect = function() {
-        this.bufSrc.disconnect(0);
-        this.gainMaster.disconnect(0);
-        this.disconnectReverb();
-    };
-
-SoundFont.Synthesizer.prototype.disconnectReverb = function() {
-    this.reverbNode.disconnect(0);
-    this.reverbLevel.disconnect(0);
-};
-
-SoundFont.Synthesizer.prototype.setReverb = function(reverb) {
-    if (this.reverb === reverb) {
-        return;
-    }
-
-    this.disconnectReverb();
-    this.reverb = reverb;
-    if (reverb) {
-        this.connectReverb();
-    }
+SoundFont.Synthesizer.prototype.setReverbDepth = function(channel, depth) {
+    this.reverbDepth[channel] = depth;
 };
 
 /**
@@ -806,6 +470,10 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
     var select;
     /** @type {Element} */
     var option;
+    /** @type {Element} */
+    var panpot;
+    /** @type {Element} */
+    var pitch;
     /** @type {number} */
     var i;
     /** @type {number} */
@@ -826,13 +494,14 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
         checkbox.addEventListener('change', (function(synth, channel) {
             return function(event) {
                 synth.mute(channel, this.checked);
-            }
+            };
         })(this, i), false);
         firstColumn.appendChild(checkbox);
 
+        // Program change
         select = doc.createElement('select');
         for (j = 0; j < 128; ++j) {
-            programName = (i !== 9) ? SoundFont.Synthesizer.ProgramNames[j] : SoundFont.Synthesizer.PercussionProgramNames[j];
+            programName = (i !== 9) ? SoundFont.Instruments.ProgramName[j] : SoundFont.Instruments.PercussionProgramName[j];
             option = doc.createElement('option');
             if (programName === "") continue;
             option.textContent = programName;
@@ -840,12 +509,30 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
             select.appendChild(option);
         }
         firstColumn.appendChild(select);
+
         select.addEventListener('change', (function(synth, channel) {
             return function(event) {
                 synth.programChange(channel, event.target.value);
-            }
+            };
         })(this, i), false);
+
         select.selectedIndex = this.channelInstrument[i];
+
+        // panpot
+        panpot = doc.createElement('meter');
+        panpot.min = 0;
+        panpot.max = 127;
+        panpot.value = 64;
+        panpot.textContent = 64;
+        tableLine.querySelector('td:nth-child(3)').appendChild(panpot);
+
+        // PitchBend
+        pitch = doc.createElement('meter');
+        pitch.min = -8192;
+        pitch.max = 8192;
+        pitch.value = 0;
+        pitch.textContent = 0;
+        tableLine.querySelector('td:nth-child(4)').appendChild(pitch);
 
         notes = tableLine.querySelectorAll('td:nth-last-child(-n+128)');
         for (j = 0; j < 128; ++j) {
@@ -854,7 +541,7 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
                     event.preventDefault();
                     synth.drag = true;
                     synth.noteOn(channel, key, 127);
-                }
+                };
             })(this, i, j));
             notes[j].addEventListener('mouseover', (function(synth, channel, key) {
                 return function(event) {
@@ -862,26 +549,27 @@ SoundFont.Synthesizer.prototype.drawSynth = function() {
                     if (synth.drag) {
                         synth.noteOn(channel, key, 127);
                     }
-                }
+                };
             })(this, i, j));
             notes[j].addEventListener('mouseout', (function(synth, channel, key) {
                 return function(event) {
                     event.preventDefault();
                     synth.noteOff(channel, key, 0);
-                }
+                };
             })(this, i, j));
             notes[j].addEventListener('mouseup', (function(synth, channel, key) {
                 return function(event) {
                     event.preventDefault();
                     synth.drag = false;
                     synth.noteOff(channel, key, 0);
-                }
+                };
             })(this, i, j));
         }
     }
 
     table.appendChild(head);
     table.appendChild(body);
+    this.synthRootTags = document.getElementsByTagName('tbody');
 
     return table;
 };
@@ -893,6 +581,7 @@ SoundFont.Synthesizer.prototype.removeSynth = function() {
         table.parentNode.removeChild(table);
         this.table = null;
     }
+    this.ctx.close();
 };
 
 /**
@@ -943,22 +632,19 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
     var instrumentKey;
     /** @type {SoundFont.SynthesizerNote} */
     var note;
+    /** @type {string} */
+    var modeElem;
 
     if (this.table) {
+        //this.table.querySelector('thead tr:first-child > th:nth-child(6)').innerText 
+        modeElem = this.table.firstChild.lastChild.innerText;
         if (this.isXG) {
-            this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'XG Mode';
+            modeElem = 'XG Mode';
         } else if (this.isGS) {
-            this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GS Mode';
+            modeElem = 'GS Mode';
         } else {
-            this.table.querySelector('thead > tr:first-child > th:nth-child(6)').innerText = 'GM Mode';
+            modeElem = 'GM Mode';
         }
-        var query = this.table.querySelector(
-            'tbody > ' +
-            'tr:nth-child(' + (channel + 1) + ') > ' +
-            'td:nth-child(' + (SoundFont.Synthesizer.TableHeader.length + key) + ')'
-        )
-        query.classList.add('note-on');
-        query.style.opacity = velocity / 127;
     }
 
     if (instrument === void 0) {
@@ -1005,26 +691,26 @@ SoundFont.Synthesizer.prototype.noteOn = function(channel, key, velocity) {
 
     // percussion
     if (this.percussionPart[channel]) {
-        /*
-            if (key === 42 || key === 44){
-              // 42: Closed Hi-Hat
-              // 44: Pedal Hi-Hat
-              // 46: Open Hi-Hat
-              this.noteOff(channel, 46, 0);
-            }
-            if (key === 80) {
-              // 80: Mute Triangle
-              // 81: Open Triangle
-              this.noteOff(channel, 81, 0);
-            }
-        */
+        if (key === 42 || key === 44) {
+            // 42: Closed Hi-Hat
+            // 44: Pedal Hi-Hat
+            // 46: Open Hi-Hat
+            this.noteOff(channel, 46, 0);
+        }
+        if (key === 80) {
+            // 80: Mute Triangle
+            // 81: Open Triangle
+            this.noteOff(channel, 81, 0);
+        }
         instrument['volume'] *= this.percussionVolume[key] / 127;
     }
 
     // note on
     note = new SoundFont.SynthesizerNote(this.ctx, this.gainMaster, instrumentKey);
     note.noteOn();
+
     this.currentNoteOn[channel].push(note);
+    this.updateSynthTable(channel, key, velocity);
 };
 
 /**
@@ -1048,25 +734,11 @@ SoundFont.Synthesizer.prototype.noteOff = function(channel, key, velocity) {
     /** @type {boolean} */
     var hold = this.channelHold[channel];
 
-    if (this.table) {
-        var query = this.table.querySelector(
-            'tbody > ' +
-            'tr:nth-child(' + (channel + 1) + ') > ' +
-            'td:nth-child(' + (key + SoundFont.Synthesizer.TableHeader.length) + ')'
-        );
-        query.classList.remove('note-on');
-        query.style.opacity = 1;
-    }
-
-    //  if (!instrument) {
-    //    return;
-    //  }
-
     for (i = 0, il = currentNoteOn.length; i < il; ++i) {
         note = currentNoteOn[i];
         if (note.key === key) {
             note.noteOff();
-
+            this.updateSynthTable(channel, key, 0);
             // hold している時は NoteOff にはするがリリースはしない
             if (!hold) {
                 note.release();
@@ -1078,11 +750,37 @@ SoundFont.Synthesizer.prototype.noteOff = function(channel, key, velocity) {
     }
 };
 
+/**
+ * @param {number} channel
+ * @param {number} key
+ * @param {number} velocity
+ */
+SoundFont.Synthesizer.prototype.updateSynthTable = function(channel, key, velocity) {
+    if (!this.table) return;
+    var cell = this.table.querySelector(
+        'tbody > ' +
+        'tr:nth-child(' + (channel + 1) + ') > ' +
+        'td:nth-child(' + (key + SoundFont.Synthesizer.TableHeader.length + 1) + ')'
+    );
+    if (velocity === 0) {
+        // 本来は正しくない
+        cell.classList.remove('note-on');
+        cell.style.opacity = 1;
+    } else {
+        cell.classList.add('note-on');
+        cell.style.opacity = velocity / 127;
+    }
+}
+
+/**
+ * @param {number} channel ホールドするチャンネル
+ * @param {number} value 値
+ */
 SoundFont.Synthesizer.prototype.hold = function(channel, value) {
     /** @type {Array.<SoundFont.SynthesizerNote>} */
     var currentNoteOn = this.currentNoteOn[channel];
     /** @type {boolean} */
-    var hold = this.channelHold[channel] = !(value < 64);
+    var hold = this.channelHold[channel] = (value < 64);
     /** @type {SoundFont.SynthesizerNote} */
     var note;
     /** @type {number} */
@@ -1142,6 +840,10 @@ SoundFont.Synthesizer.prototype.volumeChange = function(channel, volume) {
     this.channelVolume[channel] = volume;
 };
 
+/**
+ * @param {number} channel 音量を変更するチャンネル.
+ * @param {number} expression 音量(0-127).
+ */
 SoundFont.Synthesizer.prototype.expression = function(channel, expression) {
     /** @type {number} */
     var i;
@@ -1163,7 +865,8 @@ SoundFont.Synthesizer.prototype.expression = function(channel, expression) {
  */
 SoundFont.Synthesizer.prototype.panpotChange = function(channel, panpot) {
     if (this.table) {
-        this.table.querySelector('tbody > tr:nth-child(' + (channel + 1) + ') > td:nth-child(3)').textContent = panpot;
+        this.table.querySelector('tbody > tr:nth-child(' + (channel + 1) + ') > td:nth-child(3) > meter').value = panpot;
+        this.table.querySelector('tbody > tr:nth-child(' + (channel + 1) + ') > td:nth-child(3) > meter').textContent = panpot;
     }
 
     this.channelPanpot[channel] = panpot;
@@ -1187,7 +890,9 @@ SoundFont.Synthesizer.prototype.pitchBend = function(channel, lowerByte, higherB
     var calculated = bend - 8192;
 
     if (this.table) {
-        this.table.querySelector('tbody > tr:nth-child(' + (channel + 1) + ') > td:nth-child(4)').textContent = calculated;
+        //this.table.querySelector('tbody > tr:nth-child(' + (channel + 1) + ') > td:nth-child(4)').textContent = calculated;
+        this.table.querySelector('tbody > tr:nth-child(' + (channel + 1) + ') > td:nth-child(4) > meter').value = calculated;
+        this.table.querySelector('tbody > tr:nth-child(' + (channel + 1) + ') > td:nth-child(4) > meter').textContent = calculated;
     }
 
     for (i = 0, il = currentNoteOn.length; i < il; ++i) {
@@ -1209,6 +914,10 @@ SoundFont.Synthesizer.prototype.pitchBendSensitivity = function(channel, sensiti
     this.channelPitchBendSensitivity[channel] = sensitivity;
 };
 
+/**
+ * @param {number} channel
+ * @param {number} releaseTime
+ */
 SoundFont.Synthesizer.prototype.releaseTime = function(channel, releaseTime) {
     this.channelRelease[channel] = releaseTime;
 };
@@ -1220,6 +929,10 @@ SoundFont.Synthesizer.prototype.getPitchBendSensitivity = function(channel) {
     return this.channelPitchBendSensitivity[channel];
 };
 
+/**
+ * @param {number} key
+ * @param {number} volume
+ */
 SoundFont.Synthesizer.prototype.drumInstrumentLevel = function(key, volume) {
     this.percussionVolume[key] = volume;
 };
@@ -1310,7 +1023,8 @@ SoundFont.Synthesizer.prototype.getBank = function(channel) {
             bankIndex = this.channelBankMsb[channel];
         } else {
             // Bank Select MSB #0 (Voice Type: Normal)
-            //bankIndex = this.channelBankLsb[channel];  // 本来こちらが正しいが、バンクの存在しない楽器の処理ができていないためコメントアウト
+            // TODO:本来こちらが正しいが、バンクに存在しない楽器の処理ができていないためコメントアウト
+            //bankIndex = this.channelBankLsb[channel];  
             bankIndex = 0;
         }
     } else if (this.isGS) {
@@ -1321,20 +1035,19 @@ SoundFont.Synthesizer.prototype.getBank = function(channel) {
             // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
             bankIndex = 128;
         } else {
+            // TODO: 本来こちらが正しいが、バンクに存在しない楽器の処理ができていないためコメントアウト
             //bankIndex = this.channelBankMsb[channel];
         }
     } else {
         // GM音源の場合バンクセレクト無効化
         bankIndex = 0;
     }
-    /*
-      if (this.percussionPart[channel] && SoundFont.Synthesizer.PercussionProgramNames[this.channelInstrument[channel]] === ''){
-        // パーカッションチャンネルで、GM 2に存在しないドラムセットが呼び出された時は、Standard Setを呼び出す。
+    if (this.percussionPart[channel] && SoundFont.Instruments.PercussionProgramName[this.channelInstrument[channel]] === void 0) {
+        // パーカッションチャンネルで、GM に存在しないドラムセットが呼び出された時は、Standard Setを呼び出す。
         this.channelInstrument[channel] = 0;
-      }
-    */
+    }
     return bankIndex;
-}
+};
 
 /**
  * @param {number} channel TODO:ドラムパートとしてセットするチャンネル
@@ -1342,4 +1055,4 @@ SoundFont.Synthesizer.prototype.getBank = function(channel) {
  */
 SoundFont.Synthesizer.prototype.setPercussionPart = function(channel, sw) {
     this.percussionPart[channel] = sw;
-}
+};
