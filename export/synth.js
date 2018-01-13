@@ -20,5 +20,9 @@ if (SF2_SYNTH_EXPORT) {
     goog.exportSymbol(
         "SoundFont.WebMidiLink.prototype.setLoadCallback",
         SoundFont.WebMidiLink.prototype.setLoadCallback
+    );
+    goog.exportSymbol(
+        "SoundFont.WebMidiLink.prototype.setReverb",
+        SoundFont.WebMidiLink.prototype.setReverb
     )
 }

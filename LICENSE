@@ -2,12 +2,12 @@
  * @license
  * sf2synth.js
  * SoundFont Synthesizer for WebMidiLink
- * https://github.com/gree/sf2synth.js
+ * https://github.com/logue/sf2synth.js
  *
  * The MIT License
  *
  * Copyright (c) 2013      imaya / GREE Inc.
- *               2013-2017 Logue
+ *               2013-2018 Logue
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

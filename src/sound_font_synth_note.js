@@ -191,7 +191,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
     // panpot
     panner = this.panner = ctx.createPanner();
     panner.panningModel = 'equalpower';
-    panner.distanceModel = 'inverse';
+    //panner.distanceModel = 'inverse';
     panner.setPosition(
         Math.sin(pan * Math.PI / 2),
         0,
@@ -301,8 +301,8 @@ SoundFont.SynthesizerNote.prototype.release = function () {
     /** @type {number} */
     var volEndTimeTmp = instrument['volRelease'] * output.gain.value;
     /** @type {number} */
-    //var volEndTime = now + (volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63)));
-    var volEndTime = now + instrument['volRelease'] * (1 - instrument['volSustain']);
+    var volEndTime = now + (volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63)));
+    //var volEndTime = now + instrument['volRelease'] * (1 - instrument['volSustain']);
 
     //---------------------------------------------------------------------------
     // modulation release time
@@ -393,7 +393,7 @@ SoundFont.SynthesizerNote.prototype.schedulePlaybackRate = function () {
 
 SoundFont.SynthesizerNote.prototype.updateExpression = function (expression) {
     //this.expressionGain.gain.value = (this.expression = expression) / 127;
-    this.expressionGain.setTargetAtTime((this.expression = expression) / 127, this.ctx.currentTime, 0.015);
+    this.expressionGain.gain.setTargetAtTime((this.expression = expression) / 127, this.ctx.currentTime, 0.015);
 };
 
 /**

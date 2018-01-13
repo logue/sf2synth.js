@@ -19,6 +19,8 @@ wml.setup(url);
 var wml = new SoundFont.WebMidiLink({disableDrawSynth:true});
 ```
 
+WebMidiLinkに準拠していない命令としてprogressがあります。ここには読み込んだバイト数とトータルのバイト数が入ります。重たい音源を開くときなどに活用してください。
+
 ## 対応ブラウザ
 
 最新の Web Audio API 実装を必要とします。
