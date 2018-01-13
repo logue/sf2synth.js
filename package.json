@@ -2,7 +2,6 @@
     "name": "sf2synth",
     "version": "1.0.0",
     "description": "SoundFont2 Synthesizer",
-    "main": "index.js",
     "bin": {
         "synth": "sf2.synth.min.js",
         "parser": "sf2.parser.min.js",
@@ -15,8 +14,8 @@
         "type": "git",
         "url": "git+https://github.com/logue/sf2synth.js.git"
     },
-    "author": "",
-    "license": "ISC",
+    "author": "Logue",
+    "license": "MIT",
     "bugs": {
         "url": "https://github.com/logue/sf2synth.js/issues"
     },

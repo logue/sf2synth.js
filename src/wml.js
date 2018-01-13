@@ -2,12 +2,12 @@ goog.provide('SoundFont.WebMidiLink');
 
 goog.require('SoundFont.Synthesizer');
 
-goog.scope(function() {
+goog.scope(function () {
 
     /**
      * @constructor
      */
-    SoundFont.WebMidiLink = function(option) {
+    SoundFont.WebMidiLink = function (option) {
         /** @type {Array.<number>} */
         this.NrpnMsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         /** @type {Array.<number>} */
@@ -21,7 +21,7 @@ goog.scope(function() {
         /** @type {SoundFont.Synthesizer} */
         this.synth;
         /** @type {function(ArrayBuffer)} */
-        this.loadCallback = function(x) {};
+        this.loadCallback = function (x) {};
         /** @type {Function} */
         this.messageHandler = this.onmessage.bind(this);
         /** @type {XMLHttpRequest} */
@@ -37,12 +37,12 @@ goog.scope(function() {
         /** @type {Window} */
         this.opener;
 
-        goog.global.window.addEventListener('DOMContentLoaded', function() {
+        goog.global.window.addEventListener('DOMContentLoaded', function () {
             this.ready = true;
         }.bind(this), false);
     };
 
-    SoundFont.WebMidiLink.prototype.setup = function(url) {
+    SoundFont.WebMidiLink.prototype.setup = function (url) {
         /** @type {Window} */
         var w = goog.global.window;
 
@@ -63,7 +63,7 @@ goog.scope(function() {
 
     };
 
-    SoundFont.WebMidiLink.prototype.load = function(url) {
+    SoundFont.WebMidiLink.prototype.load = function (url) {
         /** @type {XMLHttpRequest} */
         var xhr;
         /** @type {Window} */
@@ -77,7 +77,7 @@ goog.scope(function() {
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
 
-        xhr.addEventListener('load', function(ev) {
+        xhr.addEventListener('load', function (ev) {
             this.onload(ev.target.response);
             if (goog.isFunction(this.loadCallback)) {
                 this.loadCallback(ev.target.response);
@@ -85,27 +85,27 @@ goog.scope(function() {
             this.xhr = null;
         }.bind(this), false);
 
-        xhr.addEventListener('abort', function(e) {
+        xhr.addEventListener('abort', function (e) {
             this.cancelLoading();
         }.bind(this), false);
 
-        xhr.addEventListener('progress', function(ev) {
+        xhr.addEventListener('progress', function (ev) {
             if (ev.lengthComputable && opener) {
                 opener.postMessage('link,progress,' + ev.loaded + ',' + ev.total, '*');
             }
         }.bind(this), false);
 
-        xhr.addEventListener('fetch', function(event) {
+        xhr.addEventListener('fetch', function (event) {
 
         });
         xhr.send();
     };
 
-    SoundFont.WebMidiLink.prototype.setReverb = function(reverb) {
+    SoundFont.WebMidiLink.prototype.setReverb = function (reverb) {
         this.synth.setReverb(reverb);
     };
 
-    SoundFont.WebMidiLink.prototype.cancelLoading = function() {
+    SoundFont.WebMidiLink.prototype.cancelLoading = function () {
         if (this.xhr) {
             this.xhr.abort();
             this.xhr = null;
@@ -115,7 +115,7 @@ goog.scope(function() {
     /**
      * @param {ArrayBuffer} response
      */
-    SoundFont.WebMidiLink.prototype.onload = function(response) {
+    SoundFont.WebMidiLink.prototype.onload = function (response) {
         /** @type {Uint8Array} */
         var input = new Uint8Array(response);
 
@@ -125,7 +125,7 @@ goog.scope(function() {
     /**
      * @param {Uint8Array} input
      */
-    SoundFont.WebMidiLink.prototype.loadSoundFont = function(input) {
+    SoundFont.WebMidiLink.prototype.loadSoundFont = function (input) {
         /** @type {SoundFont.Synthesizer} */
         var synth;
         /** @type {Window} */
@@ -153,7 +153,7 @@ goog.scope(function() {
     /**
      * @param {Event} ev
      */
-    SoundFont.WebMidiLink.prototype.onmessage = function(ev) {
+    SoundFont.WebMidiLink.prototype.onmessage = function (ev) {
         /** @type {Array} */
         var msg = goog.isFunction(ev.data.split) ? ev.data.split(',') : [];
         /** @type {string} */
@@ -166,7 +166,7 @@ goog.scope(function() {
         switch (type) {
             case 'midi':
                 this.processMidiMessage(
-                    msg.map(function(hex) {
+                    msg.map(function (hex) {
                         return parseInt(hex, 16);
                     })
                 );
@@ -202,14 +202,14 @@ goog.scope(function() {
     /**
      * @param {function(ArrayBuffer)} callback
      */
-    SoundFont.WebMidiLink.prototype.setLoadCallback = function(callback) {
+    SoundFont.WebMidiLink.prototype.setLoadCallback = function (callback) {
         this.loadCallback = callback;
     };
 
     /**
      * @param {Array.<number>} message
      */
-    SoundFont.WebMidiLink.prototype.processMidiMessage = function(message) {
+    SoundFont.WebMidiLink.prototype.processMidiMessage = function (message) {
         /** @type {number} */
         var channel = message[0] & 0x0f;
         /** @type {SoundFont.Synthesizer} */
@@ -333,7 +333,7 @@ goog.scope(function() {
                         this.RpnMsb[channel] = value;
                         break;
                     case 0x40: // Hold
-                        synth.hold(channel, value);
+                        //synth.hold(channel, value);
                         break;
                     case 0x0b: // Expression
                         synth.expression(channel, value);

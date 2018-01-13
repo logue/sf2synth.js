@@ -11,7 +11,7 @@
   <property name="vendor" value="${rootpath}/vendor"/>
   <!-- バイナリ指定 -->
   <property name="closure_primitives" value="${rootpath}/closure-primitives/base.js"/>
-  <property name="compiler" value="${vendor}/google-closure-compiler/closure-compiler-v20170910.jar"/>
+  <property name="compiler" value="${vendorthis.table.querySelector('tbody > tr:nth-child(' + (channel + 1) + ')').classList.add('hold');}/google-closure-compiler/closure-compiler-v20180101.jar"/>
   <property name="depend" value="${rootpath}/closure-primitives/deps.js"/>
   <property name="depswriter" value="${rootpath}/closure-primitives/depswriter.py"/>
   <!-- コンパイラ設定 -->
@@ -19,15 +19,12 @@
   <property name="language_in" value="ECMASCRIPT5"/>
   <property name="language_out" value="ECMASCRIPT5_STRICT"/>
   <property name="warning_level" value="QUIET"/>
-
   <!-- ライセンスとビルドされたファイルをプロパティとして読み込む -->
   <loadfile property="license" srcfile="../LICENSE.min"/>
-
   <!-- ビルドの事前準備 -->
   <target name="prebuild">
     <mkdir dir="${bin}"/>
   </target>
-
   <!-- 依存関係を解決する -->
   <target name="deps">
     <exec executable="python" failonerror="true">
@@ -35,18 +32,15 @@
       <arg line="--root_with_prefix=&quot;.. ..&quot;"/>
       <arg line="--output_file=${depend}"/>
     </exec>
-
     <pathconvert property="srcfiles" pathsep=" ">
       <map from="${rootdir}" to="--js .."/>
       <fileset dir="${src}" includes="*.js"/>
     </pathconvert>
-
     <pathconvert property="exportfiles" pathsep=" ">
       <map from="${rootdir}" to="--js .."/>
       <fileset dir="${export}" includes="*.js"/>
     </pathconvert>
   </target>
-
   <target name="parser" depends="deps,prebuild">
     <!-- 出力ファイル名 -->
     <local name="basename"/>
@@ -73,7 +67,6 @@
       <arg line="${exportfiles}"/>
     </java>
   </target>
-
   <target name="synth" depends="deps,prebuild">
     <!-- 出力ファイル名 -->
     <local name="basename"/>
@@ -101,7 +94,6 @@
       <arg line="${srcfiles}"/>
     </java>
   </target>
-  
   <target name="reverb" depends="deps,prebuild">
     <!-- 出力ファイル名 -->
     <local name="basename"/>
@@ -128,23 +120,19 @@
       <arg line="${srcfiles}"/>
     </java>
   </target>
-
   <!-- compiler help -->
   <target name="help">
     <java jar="${compiler}" fork="true" failonerror="true">
       <arg line="--help"/>
     </java>
   </target>
-
   <!-- 全て作成 -->
   <target name="all" depends="parser,synth,reverb"/>
-
   <!--  削除 -->
   <target name="clean">
     <delete file="${depend}"/>
     <delete dir="${bin}"/>
   </target>
-
   <!-- リビルド -->
   <target name="rebuild" depends="clean,all"/>
 </project>
