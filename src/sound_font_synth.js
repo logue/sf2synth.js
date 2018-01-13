@@ -1018,6 +1018,18 @@ SoundFont.Synthesizer.prototype.getBank = function (channel) {
         return this.isXG ? 127 : 128;
     }
 
+    if (this.table) {
+        var modeElem = this.table.querySelector('thead tr:first-child > th:nth-child(6)').innerText
+        //var modeElem = this.table.firstChild.lastChild.innerText;
+        if (this.isXG) {
+            modeElem = 'XG Mode';
+        } else if (this.isGS) {
+            modeElem = 'GS Mode';
+        } else {
+            modeElem = 'GM Mode';
+        }
+    }
+
     if (this.isXG) {
         mode = 'XG Mode';
         // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
