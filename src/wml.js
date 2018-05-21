@@ -21,7 +21,7 @@ goog.scope(function () {
         /** @type {SoundFont.Synthesizer} */
         this.synth;
         /** @type {function(ArrayBuffer)} */
-        this.loadCallback = function (x) {};
+        this.loadCallback = function (x) { };
         /** @type {Function} */
         this.messageHandler = this.onmessage.bind(this);
         /** @type {XMLHttpRequest} */
@@ -36,7 +36,7 @@ goog.scope(function () {
         this.cache = option.cache !== void 0;
         /** @type {Window} */
         this.opener;
-        
+
         this.placeholder = option.placeholder !== void 0 ? goog.global.document.getElementById(option.placeholder) : goog.global.window.document.body
 
         goog.global.window.addEventListener('DOMContentLoaded', function () {
@@ -66,41 +66,51 @@ goog.scope(function () {
     };
 
     SoundFont.WebMidiLink.prototype.load = function (url) {
-        /** @type {XMLHttpRequest} */
-        var xhr;
+        //** @type {XMLHttpRequest} */
+        //var xhr;
         /** @type {Window} */
         var opener = goog.global.window.opener ? goog.global.window.opener : goog.global.window.parent;
 
-        this.cancelLoading();
+        var self = this;
+        //this.cancelLoading();
 
         //  serviceWorker.register('./sw.js', {scope: './'});
-
-        xhr = this.xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'arraybuffer';
-
-        xhr.addEventListener('load', function (ev) {
-            this.onload(ev.target.response);
-            if (goog.isFunction(this.loadCallback)) {
-                this.loadCallback(ev.target.response);
+        /*
+                xhr = this.xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'arraybuffer';
+        
+                xhr.addEventListener('load', function (ev) {
+                    this.onload(ev.target.response);
+                    if (goog.isFunction(this.loadCallback)) {
+                        this.loadCallback(ev.target.response);
+                    }
+                    this.xhr = null;
+                }.bind(this), false);
+        
+                xhr.addEventListener('abort', function (e) {
+                    this.cancelLoading();
+                }.bind(this), false);
+        
+                xhr.addEventListener('progress', function (ev) {
+                    if (ev.lengthComputable && opener) {
+                        opener.postMessage('link,progress,' + ev.loaded + ',' + ev.total, '*');
+                    }
+                }.bind(this), false);
+        
+                xhr.addEventListener('fetch', function (event) {
+        
+                });
+                xhr.send();
+        */
+        fetch(url).then((res) => {
+            return res.arrayBuffer();
+        }).then((buffer) => {
+            self.onload(buffer);
+            if (goog.isFunction(self.loadCallback)) {
+                self.loadCallback(buffer);
             }
-            this.xhr = null;
-        }.bind(this), false);
-
-        xhr.addEventListener('abort', function (e) {
-            this.cancelLoading();
-        }.bind(this), false);
-
-        xhr.addEventListener('progress', function (ev) {
-            if (ev.lengthComputable && opener) {
-                opener.postMessage('link,progress,' + ev.loaded + ',' + ev.total, '*');
-            }
-        }.bind(this), false);
-
-        xhr.addEventListener('fetch', function (event) {
-
         });
-        xhr.send();
     };
 
     SoundFont.WebMidiLink.prototype.setReverb = function (reverb) {
@@ -108,10 +118,10 @@ goog.scope(function () {
     };
 
     SoundFont.WebMidiLink.prototype.cancelLoading = function () {
-        if (this.xhr) {
-            this.xhr.abort();
-            this.xhr = null;
-        }
+        //if (this.xhr) {
+        //    this.xhr.abort();
+        //    this.xhr = null;
+        //}
     };
 
     /**
@@ -196,7 +206,7 @@ goog.scope(function () {
                 }
                 break;
             default:
-                //      goog.global.console.error('unknown message type');
+            //      goog.global.console.error('unknown message type');
         }
     };
 
