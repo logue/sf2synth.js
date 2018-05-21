@@ -36,6 +36,8 @@ goog.scope(function () {
         this.cache = option.cache !== void 0;
         /** @type {Window} */
         this.opener;
+        
+        this.placeholder = option.placeholder !== void 0 ? goog.global.document.getElementById(option.placeholder) : goog.global.window.document.body
 
         goog.global.window.addEventListener('DOMContentLoaded', function () {
             this.ready = true;
@@ -128,7 +130,6 @@ goog.scope(function () {
     SoundFont.WebMidiLink.prototype.loadSoundFont = function (input) {
         /** @type {SoundFont.Synthesizer} */
         var synth;
-        /** @type {Window} */
         var w = goog.global.window;
 
         this.cancelLoading();
@@ -136,7 +137,7 @@ goog.scope(function () {
         if (!this.synth) {
             synth = this.synth = new SoundFont.Synthesizer(input);
             if (!this.disableDrawSynth) {
-                w.document.body.appendChild(synth.drawSynth());
+                this.placeholder.appendChild(synth.drawSynth());
             }
             synth.init();
             synth.start();
@@ -333,7 +334,7 @@ goog.scope(function () {
                         this.RpnMsb[channel] = value;
                         break;
                     case 0x40: // Hold
-                        //synth.hold(channel, value);
+                        synth.hold(channel, value);
                         break;
                     case 0x0b: // Expression
                         synth.expression(channel, value);

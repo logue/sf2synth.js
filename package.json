@@ -1,23 +1,28 @@
 {
-    "name": "sf2synth",
-    "version": "1.0.0",
-    "description": "SoundFont2 Synthesizer",
-    "bin": {
-        "synth": "sf2.synth.min.js",
-        "parser": "sf2.parser.min.js",
-        "reverb": "reverb.min.js"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/logue/sf2synth.js.git"
-    },
-    "author": "Logue",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/logue/sf2synth.js/issues"
-    },
-    "homepage": "https://github.com/logue/sf2synth.js#readme"
+  "name": "sf2synth",
+  "version": "1.0.0",
+  "description": "SoundFont2 Synthesizer",
+  "bin": {
+    "synth": "sf2.synth.min.js",
+    "parser": "sf2.parser.min.js",
+    "reverb": "reverb.min.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/logue/sf2synth.js.git"
+  },
+  "author": "Logue",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/logue/sf2synth.js/issues"
+  },
+  "homepage": "https://github.com/logue/sf2synth.js#readme",
+  "devDependencies": {
+    "webpack": "^3.10.0"
+  },
+  "main": "webpack.config.js",
+  "dependencies": {}
 }

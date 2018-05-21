@@ -23,8 +23,6 @@ var Reverb = function (ctx, options) {
     /** @type {GainNode} */
     this.node = this.ctx.createGain();
     /** @type {GainNode} */
-    this.outputNode = this.node.output = this.ctx.createGain();
-    /** @type {GainNode} */
     this.wetGainNode = this.ctx.createGain();
     /** @type {GainNode} */
     this.dryGainNode = this.ctx.createGain();
@@ -44,27 +42,28 @@ var Reverb = function (ctx, options) {
     /** @type {BiquadFilterType} */
     this._filterType = 'lowpass';
     /** @type {number} */
-    this._mix = .5;
+    this._mix = 1;
     /** @type {boolean} */
     this._reverse = false;
     /** @type {number} */
     this._time = 3;
 
     // エフェクトのかかり方の接続
-    this.outputNode.connect(this.dryGainNode);
-    this.outputNode.connect(this.wetGainNode);
+    this.convolverNode.connect(this.dryGainNode);
+    this.convolverNode.connect(this.wetGainNode);
     // エフェクトを接続
     this.convolverNode.connect(this.filterNode);
-    this.dryGainNode.connect(this.outputNode);
+    this.dryGainNode.connect(this.convolverNode);
     this.wetGainNode.connect(this.convolverNode);
     // フィルタを接続
-    this.filterNode.connect(this.outputNode);
+    this.filterNode.connect(this.convolverNode);
     // 入力値と初期値をマージする
     for (var key in options) {
         if (options[key] !== undefined) {
             this['_' + key] = options[key];
         }
     }
+    
     // エフェクタに反映
     this.mix(this._mix);
     this.filterType(this._filterType);
@@ -74,7 +73,8 @@ var Reverb = function (ctx, options) {
 };
 
 Reverb.prototype.node = function () {
-    return this.outputNode;
+    this.node.gain.setTargetAtTime(100, this.ctx.currentTime, 0.015);
+    return this.convolverNode;
 }
 
 /**
@@ -126,13 +126,13 @@ Reverb.prototype.BuildImpulse = function () {
 /** @param {AudioNode} dest */
 Reverb.prototype.connect = function (destinationNode) {
     goog.global.console.info('Connect Reverb.');
-    this.outputNode.connect(destinationNode);
+    this.convolverNode.connect(destinationNode.input ? destinationNode.input : destinationNode);
 };
 
 /** @param {number} no */
 Reverb.prototype.disconnect = function (no) {
     goog.global.console.info('Disconnect Reverb.');
-    this.outputNode.disconnect(no);
+    this.convolverNode.disconnect(no);
 };
 
 /** @param {number} mix */

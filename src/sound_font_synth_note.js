@@ -308,8 +308,6 @@ SoundFont.SynthesizerNote.prototype.release = function () {
     // modulation release time
     //---------------------------------------------------------------------------
     /** @type {BiquadFilterNode} */
-    var filter = this.filter;
-    /** @type {BiquadFilterNode} */
     var modulator = this.modulator;
     /** @type {number} */
     var baseFreq = this.amountToFreq(instrument['initialFilterFc']);
