@@ -70,8 +70,12 @@ goog.scope(function () {
         //var xhr;
         /** @type {Window} */
         var opener = goog.global.window.opener ? goog.global.window.opener : goog.global.window.parent;
-
+        /** @type {SoundFOnt.WebMidiLink} */
         var self = this;
+        /** @type {HTMLProgressElement} */
+        var progress = this.placeholder.appendChild(document.createElement('progress'));
+        /** @type {HTMLOutputElement} */
+        var percentage = progress.parentNode.insertBefore(document.createElement('outpout'), progress.nextElementSibling);
         //this.cancelLoading();
 
         //  serviceWorker.register('./sw.js', {scope: './'});
@@ -104,13 +108,56 @@ goog.scope(function () {
                 xhr.send();
         */
         fetch(url).then((res) => {
-            return res.arrayBuffer();
-        }).then((buffer) => {
-            self.onload(buffer);
-            if (goog.isFunction(self.loadCallback)) {
-                self.loadCallback(buffer);
+            // foo.txt の全体サイズ
+            const total = res.headers.get('content-length');
+            progress.max = total;
+
+            // body の reader を取得する
+            let reader = res.body.getReader();
+            let chunk = 0;
+            let buffer = [];
+
+            function concatenation(segments) {
+                var sumLength = 0;
+                for (var i = 0; i < segments.length; ++i) {
+                    sumLength += segments[i].byteLength;
+                }
+                var whole = new Uint8Array(sumLength);
+                var pos = 0;
+                for (var i = 0; i < segments.length; ++i) {
+                    whole.set(new Uint8Array(segments[i]), pos);
+                    pos += segments[i].byteLength;
+                }
+                return whole.buffer;
             }
+
+            reader.read().then(function processResult(result) {
+                // done が true なら最後の chunk
+                if (result.done) {
+                    const stream = concatenation(buffer);
+                    // 進捗を削除
+                    self.placeholder.removeChild(progress);
+                    self.placeholder.removeChild(percentage);
+                    self.onload(stream);
+                    if (goog.isFunction(self.loadCallback)) {
+                        self.loadCallback(stream);
+                    }
+                    return;
+                }
+
+                // chunk の長さの蓄積を total で割れば進捗が分かる
+                chunk += result.value.length;
+                buffer.push(result.value);
+                // 進捗を更新
+                progress.value = chunk;
+                percentage.innerText = Math.round((chunk / total) * 100) + ' %';
+                opener.postMessage('link,progress,' + chunk + ',' + total, '*');
+
+                // 再帰する
+                return reader.read().then(processResult);
+            });
         });
+
     };
 
     SoundFont.WebMidiLink.prototype.setReverb = function (reverb) {
