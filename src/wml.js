@@ -400,7 +400,7 @@ goog.scope(function () {
                         synth.cutOffFrequency[channel] = value;
                         break;
                     case 0x48: // DecayTyme
-                        //          synth.decayTime[channel] = value;
+                        synth.decayTime[channel] = value;
                         break;
                     case 0x49: // ReleaseTime
                         synth.releaseTime(channel, value);

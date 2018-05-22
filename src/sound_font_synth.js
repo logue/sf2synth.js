@@ -440,147 +440,9 @@ SoundFont.Synthesizer.prototype.setReverbDepth = function (channel, depth) {
  * @type {!Array.<string>}
  * @const
  */
-SoundFont.Synthesizer.TableHeader = ['Instrument', 'Vol', 'Pan', 'Bend', 'Range', 'Mode'];
-
-SoundFont.Synthesizer.prototype.drawSynth2 = function () {
-    /** @type {Document} */
-    var doc = goog.global.window.document;
-
-    /** @type {HTMLTableElement} */
-    var table = this.table =
-        /** @type {HTMLTableElement} */
-        (doc.createElement('table'));
-    /** @type {HTMLTableSectionElement} */
-    var head =
-        /** @type {HTMLTableSectionElement} */
-        (doc.createElement('thead'));
-    /** @type {HTMLTableSectionElement} */
-    var body =
-        /** @type {HTMLTableSectionElement} */
-        (doc.createElement('tbody'));
-    /** @type {HTMLTableRowElement} */
-    var tableLine;
-    /** @type {NodeList} */
-    var notes;
-    /** @type {Element} */
-    var firstColumn;
-    /** @type {Element} */
-    var checkbox;
-    /** @type {Element} */
-    var select;
-    /** @type {Element} */
-    var option;
-    /** @type {Element} */
-    var panpot;
-    /** @type {Element} */
-    var pitch;
-    /** @type {number} */
-    var i;
-    /** @type {number} */
-    var j;
-    /** @type {string} */
-    var programName;
-
-    head.appendChild(this.createTableLine(SoundFont.Synthesizer.TableHeader, true));
-
-    for (i = 0; i < 16; ++i) {
-        tableLine = this.createTableLine(SoundFont.Synthesizer.TableHeader.length + 128, false);
-        body.appendChild(tableLine);
-
-        // mute checkbox
-        firstColumn = tableLine.querySelector('td:nth-child(1)');
-        checkbox = doc.createElement('input');
-        checkbox.setAttribute('type', 'checkbox');
-        checkbox.addEventListener('change', (function (synth, channel) {
-            return function (event) {
-                synth.mute(channel, this.checked);
-            };
-        })(this, i), false);
-        firstColumn.appendChild(checkbox);
-
-        // Program change
-        select = doc.createElement('select');
-        for (j = 0; j < 128; ++j) {
-            programName = (i !== 9) ? SoundFont.Instruments.ProgramName[j] : SoundFont.Instruments.PercussionProgramName[j];
-            option = doc.createElement('option');
-            if (!programName) continue;
-            option.textContent = programName;
-            option.value = j;
-            select.appendChild(option);
-        }
-        firstColumn.appendChild(select);
-
-        select.addEventListener('change', (function (synth, channel) {
-            return function (event) {
-                synth.programChange(channel, event.target.value);
-            };
-        })(this, i), false);
-
-        select.selectedIndex = this.channelInstrument[i];
-
-        // panpot
-        panpot = doc.createElement('meter');
-        panpot.min = 0;
-        panpot.max = 127;
-        panpot.value = 64;
-        panpot.textContent = 64;
-        tableLine.querySelector('td:nth-child(3)').appendChild(panpot);
-
-        // PitchBend
-        pitch = doc.createElement('meter');
-        pitch.min = -8192;
-        pitch.max = 8192;
-        pitch.value = 0;
-        pitch.textContent = 0;
-        tableLine.querySelector('td:nth-child(4)').appendChild(pitch);
-
-        notes = tableLine.querySelectorAll('td:nth-last-child(-n+128)');
-        for (j = 0; j < 128; ++j) {
-            notes[j].addEventListener('mousedown', (function (synth, channel, key) {
-                return function (event) {
-                    event.preventDefault();
-                    synth.drag = true;
-                    synth.noteOn(channel, key, 127);
-                };
-            })(this, i, j));
-            notes[j].addEventListener('mouseover', (function (synth, channel, key) {
-                return function (event) {
-                    event.preventDefault();
-                    if (synth.drag) {
-                        synth.noteOn(channel, key, 127);
-                    }
-                };
-            })(this, i, j));
-            notes[j].addEventListener('mouseout', (function (synth, channel, key) {
-                return function (event) {
-                    event.preventDefault();
-                    synth.noteOff(channel, key, 0);
-                };
-            })(this, i, j));
-            notes[j].addEventListener('mouseup', (function (synth, channel, key) {
-                return function (event) {
-                    event.preventDefault();
-                    synth.drag = false;
-                    synth.noteOff(channel, key, 0);
-                };
-            })(this, i, j));
-        }
-    }
-
-    table.appendChild(head);
-    table.appendChild(body);
-    this.synthRootTags = document.getElementsByTagName('tbody');
-
-    return table;
-};
+SoundFont.Synthesizer.Header = ['Mute', 'Instrument', 'Vol', 'Panpot', 'Pitch', '', 'Mode'];
 
 SoundFont.Synthesizer.prototype.removeSynth = function () {
-    var table = this.table;
-
-    if (table) {
-        table.parentNode.removeChild(table);
-        this.table = null;
-    }
     this.ctx.close();
 };
 
@@ -589,7 +451,9 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
     const doc = goog.global.window.document;
     /** @type {HTMLDivElement} */
     const wrapper = doc.createElement('div');
-    wrapper.className = 'instrument';
+    /** @type {HTMLDivElement} */
+    const instElem = doc.createElement('div');
+    instElem.className = 'instrument';
     /** @type {Array} */
     const items = ['mute', 'program', 'volume', 'panpot', 'pitchBend', 'pitchBendSensitivity', 'keys'];
     /** @type {HTMLDivElement} */
@@ -598,15 +462,26 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
     let item;
     /** @type {HTMLInputElement} */
     let checkbox;
-    
     /** @type {HTMLLabelElement} */
+    let label;
+
+
+    let header = doc.createElement('div');
+    header.className = 'instrument header';
+    for (let i in items) {
+        let headerItem = doc.createElement('div');
+        headerItem.className = items[i] !== 'keys' ? items[i] : 'mode';
+        headerItem.innerText = SoundFont.Synthesizer.Header[i];
+        header.appendChild(headerItem);
+    }
+    wrapper.appendChild(header);
 
     for (let ch = 0; ch < 16; ch++) {
         channel = doc.createElement('div');
         channel.className = 'channel';
         for (let i in items) {
             /** @type {HTMLDivElement} */
-            item = doc.createElement('div');
+            let item = doc.createElement('div');
             item.className = items[i];
 
             switch (items[i]) {
@@ -615,7 +490,7 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
                     let checkbox = doc.createElement('input');
                     checkbox.setAttribute('type', 'checkbox');
                     checkbox.className = 'custom-control-input';
-                    checkbox.id =  'mute'+ch+'ch';
+                    checkbox.id = 'mute' + ch + 'ch';
                     checkbox.addEventListener('change', (function (synth, channel) {
                         return function (event) {
                             synth.mute(channel, this.checked);
@@ -624,7 +499,7 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
                     item.appendChild(checkbox);
                     label = doc.createElement('label');
                     label.className = 'custom-control-label';
-                    label.setAttribute('for', 'mute'+ch+'ch');
+                    label.setAttribute('for', 'mute' + ch + 'ch');
                     item.appendChild(label);
                     break;
                 case 'program':
@@ -635,7 +510,7 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
                     for (let j in programNames) {
                         let option = doc.createElement('option');
                         if (!programNames[j]) continue;
-                        option.textContent = ('000' + (parseInt(j)+1)).slice(-3) + ' :' + programNames[j];
+                        option.textContent = ('000' + (parseInt(j) + 1)).slice(-3) + ' :' + programNames[j];
                         option.value = j;
                         select.appendChild(option);
                     }
@@ -708,8 +583,9 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
             }
             channel.appendChild(item);
         }
-        wrapper.appendChild(channel);
+        instElem.appendChild(channel);
     }
+    wrapper.appendChild(instElem);
     return wrapper;
 };
 
@@ -883,10 +759,10 @@ SoundFont.Synthesizer.prototype.updateSynthTable = function (channel, key, veloc
     if (velocity === 0) {
         // 本来は正しくない
         cell.classList.remove('note-on');
-        cell.style.opacity = 1;
+        //cell.style.opacity = 1;
     } else {
         cell.classList.add('note-on');
-        cell.style.opacity = (velocity / 127).toFixed(2);
+        //cell.style.opacity = (velocity / 127).toFixed(2);
     }
 
     if (this.channelHold[channel]) {
@@ -904,7 +780,7 @@ SoundFont.Synthesizer.prototype.hold = function (channel, value) {
     /** @type {Array.<SoundFont.SynthesizerNote>} */
     var currentNoteOn = this.currentNoteOn[channel];
     /** @type {boolean} */
-    var hold = this.channelHold[channel] = (value < 64);
+    var hold = this.channelHold[channel] = !(value < 64);
     /** @type {SoundFont.SynthesizerNote} */
     var note;
     /** @type {number} */
@@ -1187,6 +1063,7 @@ SoundFont.Synthesizer.prototype.getBank = function (channel) {
     }
 
     //this.table.querySelector('thead tr:first-child > th:nth-child(6)').innerText = mode;
+    document.querySelector('.header div:last-child').innerText = mode;
 
     return bankIndex;
 };

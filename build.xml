@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <project name="project" default="all" basedir="bin">
   <!-- ディレクトリ設定 -->
   <property name="bin" value="."/>
@@ -11,12 +11,12 @@
   <property name="vendor" value="${rootpath}/vendor"/>
   <!-- バイナリ指定 -->
   <property name="closure_primitives" value="${rootpath}/closure-primitives/base.js"/>
-  <property name="compiler" value="${vendor}/google-closure-compiler/closure-compiler-v20180101.jar"/>
+  <property name="compiler" value="${vendor}/google-closure-compiler/closure-compiler-v20180506.jar"/>
   <property name="depend" value="${rootpath}/closure-primitives/deps.js"/>
   <property name="depswriter" value="${rootpath}/closure-primitives/depswriter.py"/>
   <!-- コンパイラ設定 -->
   <property name="level" value="ADVANCED_OPTIMIZATIONS"/>
-  <property name="language_in" value="ECMASCRIPT5"/>
+  <property name="language_in" value="ECMASCRIPT6"/>
   <property name="language_out" value="ECMASCRIPT6_STRICT"/>
   <property name="warning_level" value="QUIET"/>
   <!-- ライセンスとビルドされたファイルをプロパティとして読み込む -->

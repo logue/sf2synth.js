@@ -174,7 +174,7 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
     // buffer source
     bufferSource = this.bufferSource = ctx.createBufferSource();
     bufferSource.buffer = buffer;
-    bufferSource.loop = (instrument['sampleModes'] & 1) === 1;
+    bufferSource.loop = instrument['sampleModes'];
     bufferSource.loopStart = loopStart;
     bufferSource.loopEnd = loopEnd;
     this.updatePitchBend(this.pitchBend);
@@ -208,11 +208,11 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
     }
 
     // volume envelope
-    outputGain.setValueAtTime(0, now);
-    outputGain.setValueAtTime(0, volDelay);
-    outputGain.setTargetAtTime(volume, volDelay, instrument['volAttack']);
-    outputGain.setValueAtTime(volume, volHold);
-    outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
+    outputGain.setValueAtTime(0, now)
+        .setValueAtTime(0, volDelay)
+        .setTargetAtTime(volume, volDelay, instrument['volAttack'])
+        .setValueAtTime(volume, volHold)
+        .linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
 
     // modulation envelope
     baseFreq = this.amountToFreq(instrument['initialFilterFc']);
@@ -224,11 +224,11 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
     //modulator.frequency.value = baseFreq;
     modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
     modulator.type = 'lowpass';
-    modulator.frequency.setValueAtTime(baseFreq, now);
-    modulator.frequency.setValueAtTime(baseFreq, modDelay);
-    modulator.frequency.setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)); // For FireFox fix
-    modulator.frequency.setValueAtTime(peekFreq, modHold);
-    modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
+    modulator.frequency.setValueAtTime(baseFreq, now)
+        .setValueAtTime(baseFreq, modDelay)
+        .setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)) // For FireFox fix
+        .setValueAtTime(peekFreq, modHold)
+        .linearRampToValueAtTime(sustainFreq, modDecay);
 
     // filter
     //filter = this.filter = ctx.createBiquadFilter();

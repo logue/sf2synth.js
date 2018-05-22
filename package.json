@@ -8,7 +8,7 @@
     "reverb": "reverb.min.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,13 @@
   },
   "homepage": "https://github.com/logue/sf2synth.js#readme",
   "devDependencies": {
-    "webpack": "^3.10.0"
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "closure-loader": "^0.9.0",
+    "webpack": "^3.10.0",
+    "webpack-closure-compiler": "^2.1.6"
   },
   "main": "webpack.config.js",
   "dependencies": {}
