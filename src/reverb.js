@@ -25,7 +25,7 @@ var Reverb = function (ctx, options) {
     /** @type {GainNode} */
     this.dryGainNode = this.ctx.createGain();
     /** @type {ConvolverNode} */
-    this.convolverNode = this.ctx.createConvolver();
+    this.node = this.ctx.createConvolver();
     /** @type {BiquadFilterNode} */
     this.filterNode = this.ctx.createBiquadFilter();
 
@@ -46,33 +46,30 @@ var Reverb = function (ctx, options) {
     /** @type {number} */
     this._time = 3;
 
-    // エフェクトのかかり方の接続
-    this.convolverNode.connect(this.dryGainNode);
-    this.convolverNode.connect(this.wetGainNode);
-    // エフェクトを接続
-    this.convolverNode.connect(this.filterNode);
-    this.dryGainNode.connect(this.convolverNode);
-    this.wetGainNode.connect(this.convolverNode);
-    // フィルタを接続
-    this.filterNode.connect(this.convolverNode);
     // 入力値と初期値をマージする
     for (var key in options) {
         if (options[key] !== undefined) {
             this['_' + key] = options[key];
         }
     }
-    
+
     // エフェクタに反映
     this.mix(this._mix);
     this.filterType(this._filterType);
     this.cutOff(this._cutOff);
     // インパルス応答を生成
     this.BuildImpulse();
-};
 
-Reverb.prototype.node = function () {
-    return this.convolverNode;
-}
+    // エフェクトのかかり方の接続
+    this.node.connect(this.dryGainNode);
+    this.node.connect(this.wetGainNode);
+    // エフェクトを接続
+    this.node.connect(this.filterNode);
+    this.dryGainNode.connect(this.node);
+    this.wetGainNode.connect(this.node);
+    // フィルタを接続
+    this.filterNode.connect(this.node);
+};
 
 /**
  * Utility function for building an impulse response
@@ -118,26 +115,12 @@ Reverb.prototype.BuildImpulse = function () {
 
     goog.global.console.info('Update impulse responce.');
     //goog.global.console.log(impulseL);
-    this.convolverNode.buffer = impulse;
-};
-
-/** @param {AudioNode} dest */
-Reverb.prototype.connect = function (destinationNode) {
-    goog.global.console.info('Connect Reverb.');
-    this.convolverNode.connect(destinationNode);
-};
-
-/** @param {number} no */
-Reverb.prototype.disconnect = function (no) {
-    goog.global.console.info('Disconnect Reverb.');
-    this.convolverNode.disconnect(no);
+    this.node.buffer = impulse;
 };
 
 /** @param {number} mix */
 Reverb.prototype.mix = function (mix) {
     this._mix = mix;
-    //this.dryGainNode.gain.value = Reverb.getDryLevel(mix);
-    //this.wetGainNode.gain.value = Reverb.getWetLevel(mix);
     this.dryGainNode.gain.setTargetAtTime(this.getDryLevel(mix) / 127, this.ctx.currentTime, 0.015);
     this.wetGainNode.gain.setTargetAtTime(this.getWetLevel(mix) / 127, this.ctx.currentTime, 0.015);
 };

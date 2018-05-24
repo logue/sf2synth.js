@@ -3,7 +3,6 @@
 goog.addDependency('../closure-primitives/base.js', ['goog'], [], {});
 goog.addDependency('../define/typedarray/hybrid.js', ['USE_TYPEDARRAY'], [], {});
 goog.addDependency('../define/typedarray/use.js', ['USE_TYPEDARRAY'], [], {});
-goog.addDependency('../src/default_ir.js', ['SoundFont.DefaultIR'], [], {});
 goog.addDependency('../src/instrument.js', ['SoundFont.Instruments'], [], {});
 goog.addDependency('../src/reverb.js', ['SoundFont.Reverb'], [], {});
 goog.addDependency('../src/riff.js', ['Riff.Parser'], ['Typedef'], {});

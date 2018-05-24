@@ -429,9 +429,7 @@ goog.scope(function () {
                         // TODO
                         // GM Reset: F0 7E 7F 09 01 F7
                         if (message[2] === 0x7f && message[3] === 0x09 && message[4] === 0x01) {
-                            synth.isXG = false;
-                            synth.isGS = false;
-                            synth.init();
+                            synth.init('GM');
                         }
                         break;
                     case 0x7f: // realtime
@@ -471,8 +469,7 @@ goog.scope(function () {
                                 break;
                             case 0x7E:
                                 // XG Reset: F0 43 [dev] 4C 00 00 7E 00 F7
-                                synth.init();
-                                synth.isXG = true;
+                                synth.init('XG');
                                 break;
                         }
                         break;
@@ -485,8 +482,7 @@ goog.scope(function () {
                                 break;
                             case 0x7F:
                                 // GS Reset: F0 41 [dev] 42 12 40 00 7F 00 41 F7
-                                synth.init();
-                                synth.isGS = true;
+                                synth.init('GS');
                                 break;
                             case 0x15:
                                 // GS Dram part: F0 41 [dev] 42 12 40 1[part no] [Map] [sum] F7

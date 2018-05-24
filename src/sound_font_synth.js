@@ -110,7 +110,9 @@ SoundFont.Synthesizer = function (input) {
     this.useReverb = true;
 
     /** @type {SoundFont.Reverb} */
-    this.reverb = new SoundFont.Reverb(this.ctx);
+    this.reverb = new SoundFont.Reverb(this.ctx, {
+        time: 2
+    });
 };
 
 /**
@@ -137,7 +139,7 @@ SoundFont.Synthesizer.prototype.getAudioContext = function () {
     return ctx;
 };
 
-SoundFont.Synthesizer.prototype.init = function () {
+SoundFont.Synthesizer.prototype.init = function (mode = 'GM') {
     /** @type {number} */
     var i;
 
@@ -148,6 +150,12 @@ SoundFont.Synthesizer.prototype.init = function () {
 
     this.isXG = false;
     this.isGS = false;
+
+    if (mode == 'XG') {
+        this.isXG = true;
+    } else if (mode == 'GS') {
+        this.isGS = true;
+    }
 
     for (i = 0; i < 16; ++i) {
         this.programChange(i, 0x00);
@@ -165,6 +173,17 @@ SoundFont.Synthesizer.prototype.init = function () {
 
     for (i = 0; i < 128; ++i) {
         this.percussionVolume[i] = 127;
+    }
+
+    if (this.useReverb) {
+        // エフェクターをリセット
+        this.reverb.node.disconnect(0);
+        this.gainMaster.connect(this.reverb.node);
+        this.reverb.node.connect(this.ctx.destination);
+    }
+
+    if (this.element) {
+        this.element.querySelector('.header div:last-child').innerText = mode + ' Mode';
     }
 };
 
@@ -420,12 +439,11 @@ SoundFont.Synthesizer.prototype.disconnect = function () {
 SoundFont.Synthesizer.prototype.setReverb = function (value) {
 
     this.useReverb = value;
-    //console.log(this.reverb.node)
     if (value) {
-        this.reverb.convolverNode.connect(this.ctx.destination);
-        this.gainMaster.connect(this.reverb.convolverNode);
+        this.gainMaster.connect(this.reverb.node);
+        this.reverb.node.connect(this.ctx.destination);
     } else {
-        this.reverb.convolverNode.disconnect(0);
+        this.reverb.node.disconnect(0);
     }
 };
 
@@ -451,7 +469,7 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
     /** @type {Document} */
     const doc = goog.global.window.document;
     /** @type {HTMLDivElement} */
-    const wrapper = doc.createElement('div');
+    const wrapper = this.element = doc.createElement('div');
     /** @type {HTMLDivElement} */
     const instElem = doc.createElement('div');
     instElem.className = 'instrument';
@@ -578,7 +596,6 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
                                 synth.noteOff(channel, key, 0);
                             };
                         })(this, ch, j));
-
                     }
                     break;
             }
@@ -588,37 +605,6 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
     }
     wrapper.appendChild(instElem);
     return wrapper;
-};
-
-/**
- * @param {!(Array.<string>|number)} array
- * @param {boolean} isTitleLine
- * @returns {HTMLTableRowElement}
- */
-SoundFont.Synthesizer.prototype.createTableLine = function (array, isTitleLine) {
-    /** @type {Document} */
-    var doc = goog.global.window.document;
-    /** @type {HTMLTableRowElement} */
-    var tr = /** @type {HTMLTableRowElement} */ (doc.createElement('tr'));
-    /** @type {HTMLTableCellElement} */
-    var cell;
-    /** @type {boolean} */
-    var isArray = array instanceof Array;
-    /** @type {number} */
-    var i;
-    /** @type {number} */
-    var il = isArray ? array.length : /** @type {number} */ (array);
-
-    for (i = 0; i < il; ++i) {
-        cell =
-            /** @type {HTMLTableCellElement} */
-            (doc.createElement(isTitleLine ? 'th' : 'td'));
-        cell.textContent = (isArray && array[i] !== void 0) ? array[i] : '';
-        if (isTitleLine && il === i + 1) cell.setAttribute('colspan', 129); // Mode
-        tr.appendChild(cell);
-    }
-
-    return tr;
 };
 
 
@@ -704,7 +690,7 @@ SoundFont.Synthesizer.prototype.noteOn = function (channel, key, velocity) {
     note.noteOn();
     this.currentNoteOn[channel].push(note);
 
-    this.updateSynthTable(channel, key, velocity);
+    this.updateSynthElement(channel, key, velocity);
 };
 
 /**
@@ -743,7 +729,7 @@ SoundFont.Synthesizer.prototype.noteOff = function (channel, key, velocity) {
             }
         }
     }
-    this.updateSynthTable(channel, key, 0);
+    this.updateSynthElement(channel, key, 0);
 };
 
 /**
@@ -751,8 +737,11 @@ SoundFont.Synthesizer.prototype.noteOff = function (channel, key, velocity) {
  * @param {number} key
  * @param {number} velocity
  */
-SoundFont.Synthesizer.prototype.updateSynthTable = function (channel, key, velocity) {
-    var cell = document.querySelector(
+SoundFont.Synthesizer.prototype.updateSynthElement = function (channel, key, velocity) {
+    if (!this.element){
+        return;
+    }
+    var cell = this.element.querySelector(
         '.instrument > ' +
         '.channel:nth-child(' + (channel + 1) + ') > .keys >' +
         '.key:nth-child(' + (key + 1) + ')'
@@ -767,9 +756,9 @@ SoundFont.Synthesizer.prototype.updateSynthTable = function (channel, key, veloc
     }
 
     if (this.channelHold[channel]) {
-        document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.add('hold');
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.add('hold');
     } else {
-        document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.remove('hold');
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.remove('hold');
     }
 }
 
@@ -789,9 +778,6 @@ SoundFont.Synthesizer.prototype.hold = function (channel, value) {
     /** @type {number} */
     var il;
 
-    // TODO: 意図的に無効化
-    //hold = false;
-
     if (!hold) {
         for (i = 0, il = currentNoteOn.length; i < il; ++i) {
             note = currentNoteOn[i];
@@ -801,6 +787,14 @@ SoundFont.Synthesizer.prototype.hold = function (channel, value) {
                 --i;
                 --il;
             }
+        }
+    }
+
+    if (this.element){
+        if (hold) {
+            this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.add('hold');
+        } else {
+            this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.remove('hold');
         }
     }
 };
@@ -826,8 +820,9 @@ SoundFont.Synthesizer.prototype.bankSelectLsb = function (channel, value) {
  * @param {number} instrument 音色番号.
  */
 SoundFont.Synthesizer.prototype.programChange = function (channel, instrument) {
-    document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .program > select').value = instrument;
-
+    if (this.element) {
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .program > select').value = instrument;
+    }
     this.channelInstrument[channel] = instrument;
 };
 
@@ -836,8 +831,9 @@ SoundFont.Synthesizer.prototype.programChange = function (channel, instrument) {
  * @param {number} volume 音量(0-127).
  */
 SoundFont.Synthesizer.prototype.volumeChange = function (channel, volume) {
-    document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume').innerText = volume;
-
+    if (this.element) {
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume').innerText = volume;
+    }
     this.channelVolume[channel] = volume;
 };
 
@@ -865,8 +861,9 @@ SoundFont.Synthesizer.prototype.expression = function (channel, expression) {
  * @param {number} panpot panpot(0-127).
  */
 SoundFont.Synthesizer.prototype.panpotChange = function (channel, panpot) {
-    document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .panpot > meter').value = panpot;
-
+    if (this.element) {
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .panpot > meter').value = panpot;
+    }
 
     this.channelPanpot[channel] = panpot;
 };
@@ -888,7 +885,9 @@ SoundFont.Synthesizer.prototype.pitchBend = function (channel, lowerByte, higher
     /** @type {number} */
     var calculated = bend - 8192;
 
-    document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBend > meter').value = calculated;
+    if (this.element) {
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBend > meter').value = calculated;
+    }
 
     for (i = 0, il = currentNoteOn.length; i < il; ++i) {
         currentNoteOn[i].updatePitchBend(calculated);
@@ -902,8 +901,9 @@ SoundFont.Synthesizer.prototype.pitchBend = function (channel, lowerByte, higher
  * @param {number} sensitivity
  */
 SoundFont.Synthesizer.prototype.pitchBendSensitivity = function (channel, sensitivity) {
-    document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBendSensitivity').innerText = sensitivity;
-
+    if (this.element) {
+        document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBendSensitivity').innerText = sensitivity;
+    }
     this.channelPitchBendSensitivity[channel] = sensitivity;
 };
 
@@ -1014,20 +1014,7 @@ SoundFont.Synthesizer.prototype.getBank = function (channel) {
         return this.isXG ? 127 : 128;
     }
 
-    if (this.table) {
-        var modeElem = this.table.querySelector('thead tr:first-child > th:nth-child(6)').innerText
-        //var modeElem = this.table.firstChild.lastChild.innerText;
-        if (this.isXG) {
-            modeElem = 'XG Mode';
-        } else if (this.isGS) {
-            modeElem = 'GS Mode';
-        } else {
-            modeElem = 'GM Mode';
-        }
-    }
-
     if (this.isXG) {
-        mode = 'XG Mode';
         // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
         if (this.channelBankMsb[channel] === 64) {
             // Bank Select MSB #64 (Voice Type: SFX)
@@ -1043,7 +1030,6 @@ SoundFont.Synthesizer.prototype.getBank = function (channel) {
             bankIndex = 0;
         }
     } else if (this.isGS) {
-        mode = 'GS Mode';
         // GS音源
         bankIndex = 0;
 
@@ -1062,9 +1048,6 @@ SoundFont.Synthesizer.prototype.getBank = function (channel) {
         // パーカッションチャンネルで、GM に存在しないドラムセットが呼び出された時は、Standard Setを呼び出す。
         this.channelInstrument[channel] = 0;
     }
-
-    //this.table.querySelector('thead tr:first-child > th:nth-child(6)').innerText = mode;
-    document.querySelector('.header div:last-child').innerText = mode;
 
     return bankIndex;
 };
