@@ -420,11 +420,12 @@ SoundFont.Synthesizer.prototype.disconnect = function () {
 SoundFont.Synthesizer.prototype.setReverb = function (value) {
 
     this.useReverb = value;
+    //console.log(this.reverb.node)
     if (value) {
-        this.gainMaster.connect(this.reverb.node);
-        this.reverb.connect(this.ctx.destination);
+        this.reverb.convolverNode.connect(this.ctx.destination);
+        this.gainMaster.connect(this.reverb.convolverNode);
     } else {
-        this.reverb.disconnect(0);
+        this.reverb.convolverNode.disconnect(0);
     }
 };
 

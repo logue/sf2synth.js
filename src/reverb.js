@@ -21,8 +21,6 @@ var Reverb = function (ctx, options) {
     /** @type {AudioContext} */
     this.ctx = ctx;
     /** @type {GainNode} */
-    this.node = this.ctx.createGain();
-    /** @type {GainNode} */
     this.wetGainNode = this.ctx.createGain();
     /** @type {GainNode} */
     this.dryGainNode = this.ctx.createGain();
@@ -73,7 +71,6 @@ var Reverb = function (ctx, options) {
 };
 
 Reverb.prototype.node = function () {
-    this.node.gain.setTargetAtTime(100, this.ctx.currentTime, 0.015);
     return this.convolverNode;
 }
 
@@ -119,14 +116,15 @@ Reverb.prototype.BuildImpulse = function () {
     impulse.getChannelData(0).set(impulseL);
     impulse.getChannelData(1).set(impulseR);
 
-    console.info('Update impulse responce.');
+    goog.global.console.info('Update impulse responce.');
+    //goog.global.console.log(impulseL);
     this.convolverNode.buffer = impulse;
 };
 
 /** @param {AudioNode} dest */
 Reverb.prototype.connect = function (destinationNode) {
     goog.global.console.info('Connect Reverb.');
-    this.convolverNode.connect(destinationNode.input ? destinationNode.input : destinationNode);
+    this.convolverNode.connect(destinationNode);
 };
 
 /** @param {number} no */
