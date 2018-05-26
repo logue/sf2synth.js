@@ -111,7 +111,8 @@ SoundFont.Synthesizer = function (input) {
 
     /** @type {SoundFont.Reverb} */
     this.reverb = new SoundFont.Reverb(this.ctx, {
-        time: 2
+        time: 2,
+        mix:0.5
     });
 };
 
@@ -521,6 +522,25 @@ SoundFont.Synthesizer.prototype.drawSynth = function () {
                     label.setAttribute('for', 'mute' + ch + 'ch');
                     item.appendChild(label);
                     break;
+                case 'bank':
+                    // Bank select
+                    let bank_select = doc.createElement('select');
+                    bank_select.className = 'custom-select custom-select-sm';
+                    for (let j = 0; j < 127; j++) {
+                        let option = doc.createElement('option');
+                        option.textContent = ('000' + (parseInt(j) + 1)).slice(-3);
+                        option.value = j;
+                        bank_select.appendChild(option);
+                    }
+                    item.appendChild(bank_select);
+
+                    bank_select.addEventListener('change', (function (synth, channel) {
+                        return function (event) {
+                            synth.bank(channel, event.target.value);
+                        };
+                    })(this, ch), false);
+
+                    bank_select.selectedIndex = this.channelInstrument[i];
                 case 'program':
                     // Program change
                     let select = doc.createElement('select');
@@ -741,24 +761,23 @@ SoundFont.Synthesizer.prototype.updateSynthElement = function (channel, key, vel
     if (!this.element){
         return;
     }
-    var cell = this.element.querySelector(
-        '.instrument > ' +
-        '.channel:nth-child(' + (channel + 1) + ') > .keys >' +
-        '.key:nth-child(' + (key + 1) + ')'
-    );
+    /** @type {HTMLDivElement} */
+    const channelElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
+    /** @type {HTMLDivElement} */
+    const keyElement = channelElement.querySelector('.key:nth-child(' + (key + 1) + ')');
+
     if (velocity === 0) {
-        // 本来は正しくない
-        cell.classList.remove('note-on');
-        //cell.style.opacity = 1;
+        keyElement.classList.remove('note-on');
+        //keyElem.style.opacity = 1;
     } else {
-        cell.classList.add('note-on');
-        //cell.style.opacity = (velocity / 127).toFixed(2);
+        keyElement.classList.add('note-on');
+        //keyElem.style.opacity = (velocity / 127).toFixed(2);
     }
 
     if (this.channelHold[channel]) {
-        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.add('hold');
+        channelElement.classList.add('hold');
     } else {
-        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.remove('hold');
+        channelElement.classList.remove('hold');
     }
 }
 
@@ -777,6 +796,8 @@ SoundFont.Synthesizer.prototype.hold = function (channel, value) {
     var i;
     /** @type {number} */
     var il;
+    /** @type {HTMLDivElement} */
+    var holdChannel;
 
     if (!hold) {
         for (i = 0, il = currentNoteOn.length; i < il; ++i) {
@@ -787,14 +808,6 @@ SoundFont.Synthesizer.prototype.hold = function (channel, value) {
                 --i;
                 --il;
             }
-        }
-    }
-
-    if (this.element){
-        if (hold) {
-            this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.add('hold');
-        } else {
-            this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')').classList.remove('hold');
         }
     }
 };
@@ -824,6 +837,17 @@ SoundFont.Synthesizer.prototype.programChange = function (channel, instrument) {
         this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .program > select').value = instrument;
     }
     this.channelInstrument[channel] = instrument;
+};
+
+/**
+ * @param {number} channel 音色を変更するチャンネル.
+ * @param {number} instrument 音色番号.
+ */
+SoundFont.Synthesizer.prototype.bankSelect = function (channel, instrument) {
+    //if (this.element) {
+     //   this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .program > select').value = instrument;
+    //}
+    this.bankSet[channel] = instrument;
 };
 
 /**
@@ -1006,9 +1030,6 @@ SoundFont.Synthesizer.prototype.mute = function (channel, mute) {
 SoundFont.Synthesizer.prototype.getBank = function (channel) {
     /** @type {number} */
     var bankIndex = 0;
-    /** @type {string} */
-    var mode = "GM Mode";
-
     if (channel === 9) {
         this.setPercussionPart(9, true);
         return this.isXG ? 127 : 128;
