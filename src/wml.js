@@ -66,8 +66,6 @@ goog.scope(function () {
     };
 
     SoundFont.WebMidiLink.prototype.load = function (url) {
-        //** @type {XMLHttpRequest} */
-        //var xhr;
         /** @type {Window} */
         var opener = goog.global.window.opener ? goog.global.window.opener : goog.global.window.parent;
         /** @type {SoundFOnt.WebMidiLink} */
@@ -78,88 +76,82 @@ goog.scope(function () {
         var percentage = progress.parentNode.insertBefore(document.createElement('outpout'), progress.nextElementSibling);
         //this.cancelLoading();
 
-        //  serviceWorker.register('./sw.js', {scope: './'});
-        /*
-                xhr = this.xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
-                xhr.responseType = 'arraybuffer';
-        
-                xhr.addEventListener('load', function (ev) {
-                    this.onload(ev.target.response);
-                    if (goog.isFunction(this.loadCallback)) {
-                        this.loadCallback(ev.target.response);
-                    }
-                    this.xhr = null;
-                }.bind(this), false);
-        
-                xhr.addEventListener('abort', function (e) {
-                    this.cancelLoading();
-                }.bind(this), false);
-        
-                xhr.addEventListener('progress', function (ev) {
-                    if (ev.lengthComputable && opener) {
-                        opener.postMessage('link,progress,' + ev.loaded + ',' + ev.total, '*');
-                    }
-                }.bind(this), false);
-        
-                xhr.addEventListener('fetch', function (event) {
-        
+        opener.postMessage("link,progress", '*');
+
+        fetch(url)
+            .then(response => {
+                if(!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                caches.open('wml').then(function(cache) {
+                    //response.headers.set('content-type','application/soundfont2');
+                    cache.put(url, response).then(
+                        console.info('Cached.')
+                    );
                 });
-                xhr.send();
-        */
-        fetch(url).then((res) => {
-            // foo.txt の全体サイズ
-            const total = res.headers.get('content-length');
-            progress.max = total;
-
-            // body の reader を取得する
-            let reader = res.body.getReader();
-            let chunk = 0;
-            let buffer = [];
-
-            function concatenation(segments) {
-                var sumLength = 0;
-                for (var i = 0; i < segments.length; ++i) {
-                    sumLength += segments[i].byteLength;
-                }
-                var whole = new Uint8Array(sumLength);
-                var pos = 0;
-                for (var i = 0; i < segments.length; ++i) {
-                    whole.set(new Uint8Array(segments[i]), pos);
-                    pos += segments[i].byteLength;
-                }
-                return whole.buffer;
-            }
-
-            reader.read().then(function processResult(result) {
-                // done が true なら最後の chunk
-                if (result.done) {
-                    const stream = concatenation(buffer);
-                    // 進捗を削除
+            }).catch(error => {
+                console.error('There has been a problem with your fetch operation: ', error.message);
+            });
+        
+        caches.open('wml').then(function(cache) {
+            cache.match(url).then(function(response) {
+                response.arrayBuffer().then(stream => {
                     self.placeholder.removeChild(progress);
                     self.placeholder.removeChild(percentage);
                     self.onload(stream);
                     if (goog.isFunction(self.loadCallback)) {
                         self.loadCallback(stream);
                     }
-                    return;
-                }
-
-                // chunk の長さの蓄積を total で割れば進捗が分かる
-                chunk += result.value.length;
-                buffer.push(result.value);
-                // 進捗を更新
-                progress.value = chunk;
-                percentage.innerText = Math.round((chunk / total) * 100) + ' %';
-                opener.postMessage('link,progress,' + chunk + ',' + total, '*');
-
-                // 再帰する
-                return reader.read().then(processResult);
+                });
             });
         });
 
+        /*
+                fetch(url).then((res) => {
+                    // foo.txt の全体サイズ
+                    const total = res.headers.get('content-length');
+                    progress.max = total;
+        
+                    // body の reader を取得する
+                    let reader = res.body.getReader();
+                    let chunk = 0;
+                    let buffer = [];
+        
+                    function concatenation(segments) {
+                        var sumLength = 0;
+                        for (var i = 0; i < segments.length; ++i) {
+                            sumLength += segments[i].byteLength;
+                        }
+                        var whole = new Uint8Array(sumLength);
+                        var pos = 0;
+                        for (var i = 0; i < segments.length; ++i) {
+                            whole.set(new Uint8Array(segments[i]), pos);
+                            pos += segments[i].byteLength;
+                        }
+                        return whole.buffer;
+                    }
+        
+                    reader.read().then(function processResult(result) {
+                        // done が true なら最後の chunk
+                        if (result.done) {
+                            callback(buffer);
+                            return;
+                        }
+        
+                        // chunk の長さの蓄積を total で割れば進捗が分かる
+                        chunk += result.value.length;
+                        buffer.push(result.value);
+                        // 進捗を更新
+                        progress.value = chunk;
+                        percentage.innerText = Math.round((chunk / total) * 100) + ' %';
+                        opener.postMessage('link,progress,' + chunk + ',' + total, '*');
+        
+                        // 再帰する
+                        return reader.read().then(processResult);
+                    });
+                });
+        */
     };
-
     SoundFont.WebMidiLink.prototype.setReverb = function (reverb) {
         this.synth.setReverb(reverb);
     };
