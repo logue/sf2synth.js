@@ -11,7 +11,7 @@
   <property name="vendor" value="${rootpath}/vendor"/>
   <!-- バイナリ指定 -->
   <property name="closure_primitives" value="${rootpath}/closure-primitives/base.js"/>
-  <property name="compiler" value="${vendor}/google-closure-compiler/closure-compiler-v20180506.jar"/>
+  <property name="compiler" value="${vendor}/google-closure-compiler/closure-compiler-v20190528.jar"/>
   <property name="depend" value="${rootpath}/closure-primitives/deps.js"/>
   <property name="depswriter" value="${rootpath}/closure-primitives/depswriter.py"/>
   <!-- コンパイラ設定 -->
