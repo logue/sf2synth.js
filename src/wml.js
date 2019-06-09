@@ -21,7 +21,7 @@ goog.scope(function () {
         /** @type {SoundFont.Synthesizer} */
         this.synth;
         /** @type {function(ArrayBuffer)} */
-        this.loadCallback = function (x) { };
+        this.loadCallback = function (x) {};
         /** @type {Function} */
         this.messageHandler = this.onmessage.bind(this);
         /** @type {XMLHttpRequest} */
@@ -78,23 +78,17 @@ goog.scope(function () {
 
         opener.postMessage("link,progress", '*');
 
-        fetch(url)
-            .then(response => {
-                if(!response.ok) {
+        goog.global.window.caches.open('wml').then(cache => {
+            fetch(url).then(response => {
+                if (!response.ok) {
                     throw new Error('Network response was not ok.');
                 }
-                caches.open('wml').then(function(cache) {
-                    //response.headers.set('content-type','application/soundfont2');
-                    cache.put(url, response).then(
-                        console.info('Cached.')
-                    );
-                });
+                cache.put(url, response);
+                goog.global.window.console.info('cached');
             }).catch(error => {
-                console.error('There has been a problem with your fetch operation: ', error.message);
+                goog.global.window.console.error('There has been a problem with your fetch operation: ', error.message);
             });
-        
-        caches.open('wml').then(function(cache) {
-            cache.match(url).then(function(response) {
+            cache.match(url).then(response => {
                 response.arrayBuffer().then(stream => {
                     self.placeholder.removeChild(progress);
                     self.placeholder.removeChild(percentage);
@@ -102,54 +96,57 @@ goog.scope(function () {
                     if (goog.isFunction(self.loadCallback)) {
                         self.loadCallback(stream);
                     }
+                    opener.postMessage("link,ready", '*');
+                }).catch(error => {
+                    goog.global.window.console.error('Cache API error: ', error.message);
                 });
             });
         });
-
+        
         /*
-                fetch(url).then((res) => {
-                    // foo.txt の全体サイズ
-                    const total = res.headers.get('content-length');
-                    progress.max = total;
-        
-                    // body の reader を取得する
-                    let reader = res.body.getReader();
-                    let chunk = 0;
-                    let buffer = [];
-        
-                    function concatenation(segments) {
-                        var sumLength = 0;
-                        for (var i = 0; i < segments.length; ++i) {
-                            sumLength += segments[i].byteLength;
-                        }
-                        var whole = new Uint8Array(sumLength);
-                        var pos = 0;
-                        for (var i = 0; i < segments.length; ++i) {
-                            whole.set(new Uint8Array(segments[i]), pos);
-                            pos += segments[i].byteLength;
-                        }
-                        return whole.buffer;
-                    }
-        
-                    reader.read().then(function processResult(result) {
-                        // done が true なら最後の chunk
-                        if (result.done) {
-                            callback(buffer);
-                            return;
-                        }
-        
-                        // chunk の長さの蓄積を total で割れば進捗が分かる
-                        chunk += result.value.length;
-                        buffer.push(result.value);
-                        // 進捗を更新
-                        progress.value = chunk;
-                        percentage.innerText = Math.round((chunk / total) * 100) + ' %';
-                        opener.postMessage('link,progress,' + chunk + ',' + total, '*');
-        
-                        // 再帰する
-                        return reader.read().then(processResult);
-                    });
-                });
+        fetch(url).then((res) => {
+            // 全体サイズ
+            const total = res.headers.get('content-length');
+            progress.max = total;
+
+            // body の reader を取得する
+            let reader = res.body.getReader();
+            let chunk = 0;
+            let buffer = [];
+
+            function concatenation(segments) {
+                var sumLength = 0;
+                for (var i = 0; i < segments.length; ++i) {
+                    sumLength += segments[i].byteLength;
+                }
+                var whole = new Uint8Array(sumLength);
+                var pos = 0;
+                for (var i = 0; i < segments.length; ++i) {
+                    whole.set(new Uint8Array(segments[i]), pos);
+                    pos += segments[i].byteLength;
+                }
+                return whole.buffer;
+            }
+
+            reader.read().then(function processResult(result) {
+                // done が true なら最後の chunk
+                if (result.done) {
+                    self.loadCallback(buffer);
+                    return;
+                }
+
+                // chunk の長さの蓄積を total で割れば進捗が分かる
+                chunk += result.value.length;
+                buffer.push(result.value);
+                // 進捗を更新
+                progress.value = chunk;
+                percentage.innerText = Math.round((chunk / total) * 100) + ' %';
+                opener.postMessage('link,progress,' + chunk + ',' + total, '*');
+
+                // 再帰する
+                return reader.read().then(processResult);
+            });
+        });
         */
     };
     SoundFont.WebMidiLink.prototype.setReverb = function (reverb) {
@@ -245,7 +242,7 @@ goog.scope(function () {
                 }
                 break;
             default:
-            //      goog.global.console.error('unknown message type');
+                //      goog.global.console.error('unknown message type');
         }
     };
 
