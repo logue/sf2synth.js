@@ -1,21 +1,20 @@
-goog.provide('SoundFont.SynthesizerNote');
-
-/**
- * @param {AudioContext} ctx
- * @param {AudioNode} destination
- * @param {{
- *   channel: number,
- *   key: number,
- *   sample: Uint8Array,
- *   basePlaybackRate: number,
- *   loopStart: number,
- *   loopEnd: number,
- *   volume: number,
- *   panpot: number
- * }} instrument
- * @constructor
- */
-SoundFont.SynthesizerNote = function (ctx, destination, instrument) {
+export class SynthesizerNote {
+  /**
+   * @param {AudioContext} ctx
+   * @param {AudioNode} destination
+   * @param {{
+   *   channel: number,
+   *   key: number,
+   *   sample: Uint8Array,
+   *   basePlaybackRate: number,
+   *   loopStart: number,
+   *   loopEnd: number,
+   *   volume: number,
+   *   panpot: number
+   * }} instrument
+   * @constructor
+   */
+  constructor(ctx, destination, instrument) {
     /** @type {AudioContext} */
     this.ctx = ctx;
     /** @type {AudioNode} */
@@ -91,9 +90,9 @@ SoundFont.SynthesizerNote = function (ctx, destination, instrument) {
     this.filter;
     /** @type {BiquadFilterNode} */
     this.modulator;
-};
+  };
 
-SoundFont.SynthesizerNote.prototype.noteOn = function () {
+  noteOn() {
     /** @type {AudioContext} */
     var ctx = this.ctx;
     /** @type {{
@@ -193,9 +192,9 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
     panner.panningModel = 'equalpower';
     //panner.distanceModel = 'inverse';
     panner.setPosition(
-        Math.sin(pan * Math.PI / 2),
-        0,
-        Math.cos(pan * Math.PI / 2)
+      Math.sin(pan * Math.PI / 2),
+      0,
+      Math.cos(pan * Math.PI / 2)
     );
 
     //---------------------------------------------------------------------------
@@ -204,15 +203,15 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
 
     volume = this.volume * (this.velocity / 127) * (1 - instrument['initialAttenuation'] / 1000);
     if (volume < 0) {
-        volume = 0;
+      volume = 0;
     }
 
     // volume envelope
     outputGain.setValueAtTime(0, now)
-        .setValueAtTime(0, volDelay)
-        .setTargetAtTime(volume, volDelay, instrument['volAttack'])
-        .setValueAtTime(volume, volHold)
-        .linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
+      .setValueAtTime(0, volDelay)
+      .setTargetAtTime(volume, volDelay, instrument['volAttack'])
+      .setValueAtTime(volume, volHold)
+      .linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
 
     // modulation envelope
     baseFreq = this.amountToFreq(instrument['initialFilterFc']);
@@ -225,10 +224,10 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
     modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
     modulator.type = 'lowpass';
     modulator.frequency.setValueAtTime(baseFreq, now)
-        .setValueAtTime(baseFreq, modDelay)
-        .setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)) // For FireFox fix
-        .setValueAtTime(peekFreq, modHold)
-        .linearRampToValueAtTime(sustainFreq, modDecay);
+      .setValueAtTime(baseFreq, modDelay)
+      .setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)) // For FireFox fix
+      .setValueAtTime(peekFreq, modHold)
+      .linearRampToValueAtTime(sustainFreq, modDecay);
 
     // filter
     //filter = this.filter = ctx.createBiquadFilter();
@@ -236,11 +235,11 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
     //filter.frequency.value = this.ctx.sampleRate / 2;
     //filter.gain.value = 0;
     //filter.Q.value = 0;
-    //  goog.global.console.log(this.sampleRate, 'Hz');
+    //  console.log(this.sampleRate, 'Hz');
     //  filter.frequency.value = (cutOffFrequency / this.sampleRate) * 100000;	// Brightness = 0 ~ 127  64 = 350 / LPF 100~20000
-    //  goog.global.console.log('Brightness:', cutOffFrequency, ' = ', filter.frequency.value, 'Hz');
+    //  console.log('Brightness:', cutOffFrequency, ' = ', filter.frequency.value, 'Hz');
     //  filter.Q.value = harmonicContent < 0 ? 0 : harmonicContent - 64 ;	// Resonance 0 ~ 127 / Q = 0~50
-    //  goog.global.console.log('Resonance:', harmonicContent, ' = ', filter.Q.value);
+    //  console.log('Resonance:', harmonicContent, ' = ', filter.Q.value);
 
     // connect
     bufferSource.connect(modulator);
@@ -252,30 +251,30 @@ SoundFont.SynthesizerNote.prototype.noteOn = function () {
     this.expressionGain.connect(output);
 
     if (!instrument['mute']) {
-        this.connect();
+      this.connect();
     }
 
     // fire
     bufferSource.start(0, startTime);
-};
+  };
 
-/**
- * @param {number} val
- * @returns {number}
- */
-SoundFont.SynthesizerNote.prototype.amountToFreq = function (val) {
+  /**
+   * @param {number} val
+   * @returns {number}
+   */
+  amountToFreq(val) {
     return Math.pow(2, (val - 6900) / 1200) * 440;
-};
+  };
 
-SoundFont.SynthesizerNote.prototype.noteOff = function () {
+  noteOff() {
     this.noteOffState = true;
-};
+  };
 
-SoundFont.SynthesizerNote.prototype.isNoteOff = function () {
+  isNoteOff() {
     return this.noteOffState;
-};
+  };
 
-SoundFont.SynthesizerNote.prototype.release = function () {
+  release() {
     /** @type {{
      *   channel: number,
      *   key: number,
@@ -315,15 +314,15 @@ SoundFont.SynthesizerNote.prototype.release = function () {
     var peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
     /** @type {number} */
     var modEndTime = now + instrument['modRelease'] *
-        (
-            baseFreq === peekFreq ?
-            1 :
-            (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq)
-        );
+      (
+        baseFreq === peekFreq ?
+          1 :
+          (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq)
+      );
     //var modEndTime = now + instrument['modRelease'] * (1 - instrument['modSustain']);
 
     if (!this.audioBuffer) {
-        return;
+      return;
     }
 
     //---------------------------------------------------------------------------
@@ -331,41 +330,41 @@ SoundFont.SynthesizerNote.prototype.release = function () {
     //---------------------------------------------------------------------------
 
     switch (instrument['sampleModes']) {
-        case 0:
-            break;
-        case 1:
-            output.gain.cancelScheduledValues(0);
-            output.gain.setValueAtTime(output.gain.value, now);
-            output.gain.linearRampToValueAtTime(0, volEndTime);
+      case 0:
+        break;
+      case 1:
+        output.gain.cancelScheduledValues(0);
+        output.gain.setValueAtTime(output.gain.value, now);
+        output.gain.linearRampToValueAtTime(0, volEndTime);
 
-            modulator.frequency.cancelScheduledValues(0);
-            modulator.frequency.setValueAtTime(modulator.frequency.value, now);
-            modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
+        modulator.frequency.cancelScheduledValues(0);
+        modulator.frequency.setValueAtTime(modulator.frequency.value, now);
+        modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
 
-            bufferSource.playbackRate.cancelScheduledValues(0);
-            bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
-            bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
+        bufferSource.playbackRate.cancelScheduledValues(0);
+        bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
+        bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
 
-            bufferSource.stop(volEndTime);
-            break;
-        case 2:
-            goog.global.console.log('detect unused sampleModes');
-            break;
-        case 3:
-            bufferSource.loop = false;
-            break;
+        bufferSource.stop(volEndTime);
+        break;
+      case 2:
+        console.log('detect unused sampleModes');
+        break;
+      case 3:
+        bufferSource.loop = false;
+        break;
     }
-};
+  };
 
-SoundFont.SynthesizerNote.prototype.connect = function () {
+  connect() {
     this.gainOutput.connect(this.destination);
-};
+  };
 
-SoundFont.SynthesizerNote.prototype.disconnect = function () {
+  disconnect() {
     this.gainOutput.disconnect(0);
-};
+  };
 
-SoundFont.SynthesizerNote.prototype.schedulePlaybackRate = function () {
+  schedulePlaybackRate() {
     var playbackRate = this.bufferSource.playbackRate;
     /** @type {number} */
     var computed = this.computedPlaybackRate;
@@ -379,30 +378,33 @@ SoundFont.SynthesizerNote.prototype.schedulePlaybackRate = function () {
     var modDecay = modAttack + instrument['modDecay'];
     /** @type {number} */
     var peekPitch = computed * Math.pow(
-        Math.pow(2, 1 / 12),
-        this.modEnvToPitch * this.instrument['scaleTuning']
+      Math.pow(2, 1 / 12),
+      this.modEnvToPitch * this.instrument['scaleTuning']
     );
 
     playbackRate.cancelScheduledValues(0);
     playbackRate.setValueAtTime(computed, start);
     playbackRate.linearRampToValueAtTime(peekPitch, modAttack);
     playbackRate.linearRampToValueAtTime(computed + (peekPitch - computed) * (1 - instrument['modSustain']), modDecay);
-};
+  };
 
-SoundFont.SynthesizerNote.prototype.updateExpression = function (expression) {
+  updateExpression(expression) {
     //this.expressionGain.gain.value = (this.expression = expression) / 127;
     this.expressionGain.gain.setTargetAtTime((this.expression = expression) / 127, this.ctx.currentTime, 0.015);
-};
+  };
 
-/**
- * @param {number} pitchBend
- */
-SoundFont.SynthesizerNote.prototype.updatePitchBend = function (pitchBend) {
+  /**
+   * @param {number} pitchBend
+   */
+  updatePitchBend(pitchBend) {
     this.computedPlaybackRate = this.playbackRate * Math.pow(
-        Math.pow(2, 1 / 12),
-        (pitchBend / (pitchBend < 0 ? 8192 : 8191)) *
-        this.pitchBendSensitivity *
-        this.instrument['scaleTuning']
+      Math.pow(2, 1 / 12),
+      (pitchBend / (pitchBend < 0 ? 8192 : 8191)) *
+      this.pitchBendSensitivity *
+      this.instrument['scaleTuning']
     );
     this.schedulePlaybackRate();
-};
+  }
+}
+
+export default SynthesizerNote

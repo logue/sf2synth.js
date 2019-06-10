@@ -1,13 +1,10 @@
-goog.provide('SoundFont.WebMidiLink');
+import Synthesizer from './sound_font_synth';
 
-goog.require('SoundFont.Synthesizer');
-
-goog.scope(function () {
-
+export class WebMidiLink {
   /**
    * @constructor
    */
-  SoundFont.WebMidiLink = function (option) {
+  constructor(option) {
     /** @type {Array.<number>} */
     this.NrpnMsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** @type {Array.<number>} */
@@ -37,16 +34,16 @@ goog.scope(function () {
     /** @type {Window} */
     this.opener;
 
-    this.placeholder = option.placeholder !== void 0 ? goog.global.document.getElementById(option.placeholder) : goog.global.window.document.body
+    this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body
 
-    goog.global.window.addEventListener('DOMContentLoaded', function () {
+    window.addEventListener('DOMContentLoaded', function () {
       this.ready = true;
     }.bind(this), false);
   };
 
-  SoundFont.WebMidiLink.prototype.setup = function (url) {
+  setup(url) {
     /** @type {Window} */
-    var w = goog.global.window;
+    var w = window;
 
     if (!this.ready) {
       w.addEventListener('DOMContentLoaded', function onload() {
@@ -65,9 +62,9 @@ goog.scope(function () {
 
   };
 
-  SoundFont.WebMidiLink.prototype.load = function (url) {
+  load(url) {
     /** @type {Window} */
-    var opener = goog.global.window.opener ? goog.global.window.opener : goog.global.window.parent;
+    var opener = window.opener ? window.opener : window.parent;
     /** @type {SoundFOnt.WebMidiLink} */
     var self = this;
     /** @type {HTMLProgressElement} */
@@ -78,27 +75,27 @@ goog.scope(function () {
 
     opener.postMessage("link,progress", '*');
 
-    goog.global.window.caches.open('wml').then(cache => {
+    window.caches.open('wml').then(cache => {
       fetch(url).then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok.');
         }
         cache.put(url, response);
-        goog.global.window.console.info('cached');
+        console.info('cached');
       }).catch(error => {
-        goog.global.window.console.error('There has been a problem with your fetch operation: ', error.message);
+        console.error('There has been a problem with your fetch operation: ', error.message);
       });
       cache.match(url).then(response => {
         response.arrayBuffer().then(stream => {
           self.placeholder.removeChild(progress);
           self.placeholder.removeChild(percentage);
           self.onload(stream);
-          if (goog.isFunction(self.loadCallback)) {
+          if (typeof self.loadCallback === 'function') {
             self.loadCallback(stream);
           }
           opener.postMessage("link,ready", '*');
         }).catch(error => {
-          goog.global.window.console.error('Cache API error: ', error.message);
+          console.error('Cache API error: ', error.message);
         });
       });
     });
@@ -149,11 +146,11 @@ goog.scope(function () {
     });
     */
   };
-  SoundFont.WebMidiLink.prototype.setReverb = function (reverb) {
+  setReverb(reverb) {
     this.synth.setReverb(reverb);
   };
 
-  SoundFont.WebMidiLink.prototype.cancelLoading = function () {
+  cancelLoading() {
     //if (this.xhr) {
     //    this.xhr.abort();
     //    this.xhr = null;
@@ -163,7 +160,7 @@ goog.scope(function () {
   /**
    * @param {ArrayBuffer} response
    */
-  SoundFont.WebMidiLink.prototype.onload = function (response) {
+  onload(response) {
     /** @type {Uint8Array} */
     var input = new Uint8Array(response);
 
@@ -173,15 +170,15 @@ goog.scope(function () {
   /**
    * @param {Uint8Array} input
    */
-  SoundFont.WebMidiLink.prototype.loadSoundFont = function (input) {
-    /** @type {SoundFont.Synthesizer} */
+  loadSoundFont(input) {
+    /** @type {Synthesizer} */
     var synth;
-    var w = goog.global.window;
+    var w = window;
 
     this.cancelLoading();
 
     if (!this.synth) {
-      synth = this.synth = new SoundFont.Synthesizer(input);
+      synth = this.synth = new Synthesizer(input);
       if (!this.disableDrawSynth) {
         this.placeholder.appendChild(synth.drawSynth());
       }
@@ -200,13 +197,13 @@ goog.scope(function () {
   /**
    * @param {Event} ev
    */
-  SoundFont.WebMidiLink.prototype.onmessage = function (ev) {
+  onmessage(ev) {
     /** @type {Array} */
-    var msg = goog.isFunction(ev.data.split) ? ev.data.split(',') : [];
+    var msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
     /** @type {string} */
     var type = msg !== [] ? msg.shift() : '';
     /** @type {Window} */
-    var opener = goog.global.window.opener ? goog.global.window.opener : goog.global.window.parent;
+    var opener = window.opener ? window.opener : window.parent;
     /** @type {string} */
     var command;
 
@@ -237,29 +234,29 @@ goog.scope(function () {
             opener.postMessage("link,progress", '*');
             break;
           default:
-            goog.global.console.error('unknown link message:', command);
+            console.error('unknown link message:', command);
             break;
         }
         break;
       default:
-      //      goog.global.console.error('unknown message type');
+      // console.error('unknown message type');
     }
   };
 
   /**
    * @param {function(ArrayBuffer)} callback
    */
-  SoundFont.WebMidiLink.prototype.setLoadCallback = function (callback) {
+  setLoadCallback(callback) {
     this.loadCallback = callback;
   };
 
   /**
    * @param {Array.<number>} message
    */
-  SoundFont.WebMidiLink.prototype.processMidiMessage = function (message) {
+  processMidiMessage(message) {
     /** @type {number} */
     var channel = message[0] & 0x0f;
-    /** @type {SoundFont.Synthesizer} */
+    /** @type {Synthesizer} */
     var synth = this.synth;
 
     switch (message[0] & 0xf0) {
@@ -454,7 +451,7 @@ goog.scope(function () {
               } else {
                 synth.setPercussionPart(message[6], false);
               }
-              goog.global.console.log(message);
+              //console.log(message);
             }
             switch (message[7]) {
               case 0x04:
@@ -465,6 +462,7 @@ goog.scope(function () {
               case 0x7E:
                 // XG Reset: F0 43 [dev] 4C 00 00 7E 00 F7
                 synth.init('XG');
+                console.log('XG Reset');
                 break;
             }
             break;
@@ -478,6 +476,7 @@ goog.scope(function () {
               case 0x7F:
                 // GS Reset: F0 41 [dev] 42 12 40 00 7F 00 41 F7
                 synth.init('GS');
+                console.log('GS Reset');
                 break;
               case 0x15:
                 // GS Dram part: F0 41 [dev] 42 12 40 1[part no] [Map] [sum] F7
@@ -519,4 +518,6 @@ goog.scope(function () {
         break;
     }
   };
-});
+}
+
+export default WebMidiLink
