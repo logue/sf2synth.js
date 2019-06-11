@@ -1,10 +1,13 @@
 import Synthesizer from './sound_font_synth';
 
+/**
+ * WebMidiLink Class
+ */
 export class WebMidiLink {
   /**
-   * @constructor
+   * @param {object} option
    */
-  constructor(option) {
+  constructor(option = {}) {
     /** @type {Array.<number>} */
     this.NrpnMsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** @type {Array.<number>} */
@@ -15,10 +18,10 @@ export class WebMidiLink {
     this.RpnLsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** @type {boolean} */
     this.ready = false;
-    /** @type {SoundFont.Synthesizer} */
+    /** @type {Synthesizer} */
     this.synth;
     /** @type {function(ArrayBuffer)} */
-    this.loadCallback = function (x) { };
+    this.loadCallback = () => { };
     /** @type {Function} */
     this.messageHandler = this.onmessage.bind(this);
     /** @type {XMLHttpRequest} */
@@ -33,17 +36,21 @@ export class WebMidiLink {
     this.cache = option.cache !== void 0;
     /** @type {Window} */
     this.opener;
+    /** @type {HTMLElement} */
+    this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body;
 
-    this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body
-
+    // eslint-disable-next-line space-before-function-paren
     window.addEventListener('DOMContentLoaded', function () {
       this.ready = true;
     }.bind(this), false);
   };
 
+  /**
+   * @param {string} url
+   */
   setup(url) {
     /** @type {Window} */
-    var w = window;
+    const w = window;
 
     if (!this.ready) {
       w.addEventListener('DOMContentLoaded', function onload() {
@@ -59,123 +66,123 @@ export class WebMidiLink {
     } else if (w.parent !== w) {
       this.opener = w.parent;
     }
+  }
 
-  };
-
+  /**
+   * @param {string} url
+   */
   load(url) {
     /** @type {Window} */
-    var opener = window.opener ? window.opener : window.parent;
-    /** @type {SoundFOnt.WebMidiLink} */
-    var self = this;
+    const opener = window.opener ? window.opener : window.parent;
+    /** @type {WebMidiLink} */
+    const self = this;
     /** @type {HTMLProgressElement} */
-    var progress = this.placeholder.appendChild(document.createElement('progress'));
+    const progress =
+      this.placeholder.appendChild(document.createElement('progress'));
     /** @type {HTMLOutputElement} */
-    var percentage = progress.parentNode.insertBefore(document.createElement('outpout'), progress.nextElementSibling);
-    //this.cancelLoading();
+    const percentage =
+      progress.parentNode.insertBefore(document.createElement('output'), progress.nextElementSibling);
 
-    opener.postMessage("link,progress", '*');
+    opener.postMessage('link,progress', '*');
 
-    window.caches.open('wml').then(cache => {
-      fetch(url).then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
+    const ready = (response) => {
+      response.arrayBuffer().then((stream) => {
+        self.placeholder.removeChild(progress);
+        self.placeholder.removeChild(percentage);
+        self.onload(stream);
+        if (typeof self.loadCallback === 'function') {
+          self.loadCallback(stream);
         }
-        cache.put(url, response);
-        console.info('cached');
-      }).catch(error => {
-        console.error('There has been a problem with your fetch operation: ', error.message);
+        opener.postMessage('link,ready', '*');
+      }).catch((e) => {
+        console.error(e);
       });
-      cache.match(url).then(response => {
-        response.arrayBuffer().then(stream => {
-          self.placeholder.removeChild(progress);
-          self.placeholder.removeChild(percentage);
-          self.onload(stream);
-          if (typeof self.loadCallback === 'function') {
-            self.loadCallback(stream);
-          }
-          opener.postMessage("link,ready", '*');
-        }).catch(error => {
-          console.error('Cache API error: ', error.message);
-        });
-      });
-    });
+    };
 
-    /*
-    fetch(url).then((res) => {
-        // 全体サイズ
-        const total = res.headers.get('content-length');
-        progress.max = total;
+    window.caches.open('wml').then((cache) => {
+      cache
+        .match(url)
+        .then((response) => {
+          console.info('Fetch Soundfont from cache.');
+          ready(response);
+        })
+        .catch(() => {
+          /*
+          fetch(url)
+            .then((res) => {
+              // 全体サイズ
+              const total = res.headers.get('content-length');
+              progress.max = total;
 
-        // body の reader を取得する
-        let reader = res.body.getReader();
-        let chunk = 0;
-        let buffer = [];
+              // body の reader を取得する
+              const reader = res.body.getReader();
+              let chunk = 0;
+              let buffer = new Array();
+              const processResult = (result) => {
+                // done が true なら最後の chunk
+                if (result.done) {
+                  cache.put(url, buffer);
+                  self.loadCallback(buffer);
+                  return;
+                }
 
-        function concatenation(segments) {
-            var sumLength = 0;
-            for (var i = 0; i < segments.length; ++i) {
-                sumLength += segments[i].byteLength;
-            }
-            var whole = new Uint8Array(sumLength);
-            var pos = 0;
-            for (var i = 0; i < segments.length; ++i) {
-                whole.set(new Uint8Array(segments[i]), pos);
-                pos += segments[i].byteLength;
-            }
-            return whole.buffer;
-        }
+                // chunk の長さの蓄積を total で割れば進捗が分かる
+                chunk += result.value.length;
+                buffer.push(result.value);
+                // 進捗を更新
+                progress.value = chunk;
+                percentage.innerText = Math.round((chunk / total) * 100) + ' %';
+                opener.postMessage('link,progress,' + chunk + ',' + total, '*');
 
-        reader.read().then(function processResult(result) {
-            // done が true なら最後の chunk
-            if (result.done) {
-                self.loadCallback(buffer);
-                return;
-            }
-
-            // chunk の長さの蓄積を total で割れば進捗が分かる
-            chunk += result.value.length;
-            buffer.push(result.value);
-            // 進捗を更新
-            progress.value = chunk;
-            percentage.innerText = Math.round((chunk / total) * 100) + ' %';
-            opener.postMessage('link,progress,' + chunk + ',' + total, '*');
-
-            // 再帰する
-            return reader.read().then(processResult);
+                // 再帰する
+                return reader.read().then(processResult);
+              };
+              reader.read().then(processResult);
+            });
+          */
+          fetch(url)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok.');
+              }
+              const r = response.clone();
+              cache.put(url, response);
+              console.info('Save Soundfont to cache.');
+              ready(r);
+            })
+            .catch((error) => {
+              console.error('There has been a problem with your fetch operation: ', error.message);
+            });
         });
     });
-    */
-  };
-  setReverb(reverb) {
-    this.synth.setReverb(reverb);
-  };
-
-  cancelLoading() {
-    //if (this.xhr) {
-    //    this.xhr.abort();
-    //    this.xhr = null;
-    //}
-  };
+  }
 
   /**
-   * @param {ArrayBuffer} response
-   */
+ * @param {boolean} sw
+ */
+  setReverb(sw) {
+    this.synth.setReverb(sw);
+  }
+
+  /**
+ * @param {ArrayBuffer} response
+ */
   onload(response) {
     /** @type {Uint8Array} */
-    var input = new Uint8Array(response);
+    const input = new Uint8Array(response);
 
     this.loadSoundFont(input);
-  };
+  }
 
   /**
-   * @param {Uint8Array} input
-   */
+ * @param {Uint8Array} input
+ * @export
+ */
   loadSoundFont(input) {
     /** @type {Synthesizer} */
-    var synth;
-    var w = window;
-
-    this.cancelLoading();
+    let synth;
+    /** @type {Window} */
+    const w = window;
 
     if (!this.synth) {
       synth = this.synth = new Synthesizer(input);
@@ -191,29 +198,27 @@ export class WebMidiLink {
     }
 
     // link ready
-    w.postMessage("link,ready", '*');
+    w.postMessage('link,ready', '*');
   };
 
   /**
-   * @param {Event} ev
-   */
+ * @param {Event} ev
+ */
   onmessage(ev) {
     /** @type {Array} */
-    var msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
+    const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
     /** @type {string} */
-    var type = msg !== [] ? msg.shift() : '';
+    const type = msg !== [] ? msg.shift() : '';
     /** @type {Window} */
-    var opener = window.opener ? window.opener : window.parent;
+    const opener = window.opener ? window.opener : window.parent;
     /** @type {string} */
-    var command;
+    let command;
 
     switch (type) {
       case 'midi':
-        this.processMidiMessage(
-          msg.map(function (hex) {
-            return parseInt(hex, 16);
-          })
-        );
+        this.processMidiMessage(msg.map((hex) => {
+          return parseInt(hex, 16);
+        }));
         break;
       case 'link':
         if (opener === void 0) {
@@ -223,15 +228,15 @@ export class WebMidiLink {
         switch (command) {
           case 'reqpatch':
             // TODO: dummy data
-            opener.postMessage("link,patch", '*');
+            opener.postMessage('link,patch', '*');
             break;
           case 'setpatch':
           case 'ready':
-            opener.postMessage("link,ready", '*');
+            opener.postMessage('link,ready', '*');
             // TODO: NOP
             break;
           case 'progress':
-            opener.postMessage("link,progress", '*');
+            opener.postMessage('link,progress', '*');
             break;
           default:
             console.error('unknown link message:', command);
@@ -244,20 +249,20 @@ export class WebMidiLink {
   };
 
   /**
-   * @param {function(ArrayBuffer)} callback
-   */
+ * @param {function(ArrayBuffer)} callback
+ */
   setLoadCallback(callback) {
     this.loadCallback = callback;
   };
 
   /**
-   * @param {Array.<number>} message
-   */
+ * @param {Array.<number>} message
+ */
   processMidiMessage(message) {
     /** @type {number} */
-    var channel = message[0] & 0x0f;
+    const channel = message[0] & 0x0f;
     /** @type {Synthesizer} */
-    var synth = this.synth;
+    const synth = this.synth;
 
     switch (message[0] & 0xf0) {
       case 0x80: // NoteOff: 8n kk vv
@@ -272,7 +277,7 @@ export class WebMidiLink {
         break;
       case 0xB0: // Control Change: Bn cc dd
         /** @type {number} */
-        var value = message[2];
+        const value = message[2];
         switch (message[1]) {
           case 0x00: // Bank Select MSB: Bn 00 dd
             synth.bankSelectMsb(channel, value);
@@ -289,18 +294,18 @@ export class WebMidiLink {
                       synth.pitchBendSensitivity(channel, value);
                       break;
                     case 1:
-                      //console.log("fine");
+                      // console.log("fine");
                       break;
                     case 2:
-                      //console.log("coarse");
+                      // console.log("coarse");
                       break;
                     default:
-                      //console.log("default");
+                      // console.log("default");
                       break;
                   }
                   break;
                 default:
-                  //console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
+                  // console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
                   break;
               }
             } else {
@@ -310,7 +315,7 @@ export class WebMidiLink {
                   synth.drumInstrumentLevel(this.NrpnLsb[channel], value);
                   break;
                 default:
-                  //console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
+                  // console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
                   break;
               }
             }
@@ -328,10 +333,10 @@ export class WebMidiLink {
                       );
                       break;
                     case 1:
-                      //console.log("fine");
+                      // console.log("fine");
                       break;
                     case 2:
-                      //console.log("coarse");
+                      // console.log("coarse");
                       break;
                   }
                   break;
@@ -358,10 +363,10 @@ export class WebMidiLink {
             synth.harmonicContent(channel, value);
             break;
           case 0x60: //
-            //console.log(60);
+            // console.log(60);
             break;
           case 0x61: //
-            //console.log(61);
+            // console.log(61);
             break;
           case 0x62: // NRPN LSB
             this.rpnMode = false;
@@ -385,16 +390,13 @@ export class WebMidiLink {
           case 0x0b: // Expression
             synth.expression(channel, value);
             break;
-          case 0x47: // Cutoff Fequency (Brightness)
-            synth.cutOffFrequency[channel] = value;
-            break;
           case 0x48: // DecayTyme
             synth.decayTime(channel, value);
             break;
           case 0x49: // ReleaseTime
             synth.releaseTime(channel, value);
             break;
-          case 0x4A: // Attack time 
+          case 0x4A: // Attack time
             synth.attackTime(channel, value);
             break;
           case 0x4B: // Brightness
@@ -425,7 +427,6 @@ export class WebMidiLink {
             }
             break;
           case 0x7f: // realtime
-            var device = message[2];
             // sub ID 1
             switch (message[3]) {
               case 0x04: // device control
@@ -451,13 +452,13 @@ export class WebMidiLink {
               } else {
                 synth.setPercussionPart(message[6], false);
               }
-              //console.log(message);
+              // console.log(message);
             }
             switch (message[7]) {
               case 0x04:
                 // XG Master Volume: F0 43 [dev] 4C 00 00 04 [value] F7
                 synth.setMasterVolume((message[8] << 7) * 2);
-                //console.log(message[8] << 7);
+                // console.log(message[8] << 7);
                 break;
               case 0x7E:
                 // XG Reset: F0 43 [dev] 4C 00 00 7E 00 F7
@@ -484,8 +485,8 @@ export class WebMidiLink {
                 // http://www.ssw.co.jp/dtm/drums/drsetup.htm
                 // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
 
-                var part = message[7] - 0x0F;
-                var map = message[8];
+                const part = message[7] - 0x0F;
+                const map = message[8];
                 if (part === 0) {
                   // 10 Ch.
                   if (map !== 0x00) {
@@ -520,4 +521,4 @@ export class WebMidiLink {
   };
 }
 
-export default WebMidiLink
+export default WebMidiLink;

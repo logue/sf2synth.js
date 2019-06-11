@@ -101,20 +101,20 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!***********************!*\
   !*** ./src/reverb.js ***!
   \***********************/
-/*! exports provided: Reverb, default */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Reverb", function() { return Reverb; });
 /**
+ * @author Logue
  * Adapted from https://github.com/web-audio-components/simple-reverb
  */
 class Reverb {
   /** Add reverb effect.
    * @param {AudioContext} ctx
    * @param {{
-   *   cutOff: (number|undefined),
+   *   freq: (number|undefined),
    *   decay: (number|undefined),
    *   delay: (number|undefined),
    *   filterType: (string|undefined),
@@ -122,10 +122,8 @@ class Reverb {
    *   reverse: (boolean|undefined),
    *   time: (number|undefined)
    * }} options
-   * @constructor
-   * @return {GainNode}
    */
-  constructor(ctx, options) {
+  constructor(ctx, options = {}) {
     /** @type {AudioContext} */
     this.ctx = ctx;
     /** @type {GainNode} */
@@ -138,35 +136,27 @@ class Reverb {
     this.filterNode = this.ctx.createBiquadFilter();
 
     // デフォルト値
-
     /** @type {number} */
-    this._cutOff = 440;
+    this._freq = options.freq || 440;
     /** @type {number} */
-    this._decay = 1;
+    this._decay = options.decay || 1;
     /** @type {number} */
-    this._delay = 0.5;
-    /** @type {BiquadFilterType} */
-    this._filterType = 'bandpass';
+    this._delay = options.delay || 0.5;
+    /** @type {BiquadFilterNode|null} */
+    this._filterType = options.filterType || 'bandpass';
     /** @type {number} */
-    this._mix = 0.5;
+    this._mix = options.mix || 0.5;
     /** @type {boolean} */
-    this._reverse = false;
+    this._reverse = options.reverse || false;
     /** @type {number} */
-    this._time = 1;
-
-    // 入力値と初期値をマージする
-    for (var key in options) {
-      if (options[key] !== undefined) {
-        this['_' + key] = options[key];
-      }
-    }
+    this._time = options.time || 1;
 
     // エフェクタに反映
     this.mix(this._mix);
     this.filterType(this._filterType);
-    this.cutOff(this._cutOff);
+    this.freq(this._freq);
     // インパルス応答を生成
-    this.BuildImpulse();
+    this.buildImpulse();
 
     // エフェクトのかかり方の接続
     this.node.connect(this.dryGainNode);
@@ -182,9 +172,8 @@ class Reverb {
   /**
    * Utility function for building an impulse response
    * from the module parameters.
-   * @return {AudioBuffer}
    */
-  BuildImpulse() {
+  buildImpulse() {
     /** @type {number} */
     const rate = this.ctx.sampleRate;
     /** @type {number} */
@@ -192,15 +181,15 @@ class Reverb {
     /** @type {number} */
     const delayDuration = rate * this._delay;
     /** @type {AudioBuffer} */
-    let impulse = this.ctx.createBuffer(2, length, rate);
-    /** @type {ArrayBufferView} */
-    let impulseL = new Float32Array(length);
-    /** @type {ArrayBufferView} */
-    let impulseR = new Float32Array(length);
+    const impulse = this.ctx.createBuffer(2, length, rate);
+    /** @type {Array<number>|ArrayBufferView} */
+    const impulseL = new Float32Array(length);
+    /** @type {Array<number>|ArrayBufferView} */
+    const impulseR = new Float32Array(length);
 
-    for (var i = 0; i < length; i++) {
-      let n = void 0,
-        pow = void 0;
+    for (let i = 0; i < length; i++) {
+      let n = void 0;
+      let pow = void 0;
       if (i < delayDuration) {
         // Delay Effect
         impulseL[i] = 0;
@@ -234,25 +223,25 @@ class Reverb {
   /** @param {number} time */
   time(time) {
     this._time = time;
-    this.BuildImpulse();
+    this.buildImpulse();
   }
 
-  /** 
+  /**
    * Impulse response decay rate.
    * @param {number} decay
    */
   decay(decay) {
     this._decay = decay;
-    this.BuildImpulse();
+    this.buildImpulse();
   }
 
-  /** 
+  /**
    * Impulse response decay rate.
    * @param {number} delay
    */
   delay(delay) {
     this._delay = delay;
-    this.BuildImpulse();
+    this.buildImpulse();
   }
 
   /**
@@ -261,21 +250,21 @@ class Reverb {
    */
   reverse(reverse) {
     this._reverse = reverse;
-    this.BuildImpulse();
+    this.buildImpulse();
   }
 
   /**
    * Cut off frequency.
    * @param {number} freq
    */
-  cutOff(freq) {
-    this._cutOff = freq;
-    this.filterNode.frequency.setTargetAtTime(this._cutOff, this.ctx.currentTime, 0.015);
+  freq(freq) {
+    this._freq = freq;
+    this.filterNode.frequency.setTargetAtTime(this._freq, this.ctx.currentTime, 0.015);
   }
 
   /**
    * Filter Type.
-   * @param {BiquadFilterType} type
+   * @param {BiquadFilterNode|null} type
    */
   filterType(type) {
     this.filterNode.type = this._filterType = type;
@@ -290,8 +279,9 @@ class Reverb {
       return 0;
     }
 
-    if (value <= 0.5)
+    if (value <= 0.5) {
       return 1;
+    }
 
     return 1 - ((value - 0.5) * 2);
   }
@@ -305,15 +295,16 @@ class Reverb {
       return 0;
     }
 
-    if (value >= 0.5)
+    if (value >= 0.5) {
       return 1;
+    }
 
     return 1 - ((value - 0.5) * 2);
   }
-
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Reverb);
+
 
 /***/ })
 

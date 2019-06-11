@@ -1,3 +1,7 @@
+/**
+ * SynthesizerNote Class
+ * @interface
+ */
 export class SynthesizerNote {
   /**
    * @param {AudioContext} ctx
@@ -12,7 +16,6 @@ export class SynthesizerNote {
    *   volume: number,
    *   panpot: number
    * }} instrument
-   * @constructor
    */
   constructor(ctx, destination, instrument) {
     /** @type {AudioContext} */
@@ -72,9 +75,9 @@ export class SynthesizerNote {
     /** @type {boolean} */
     this.noteOffState = false;
 
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
     // audio node
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     /** @type {AudioBuffer} */
     this.audioBuffer;
@@ -92,9 +95,11 @@ export class SynthesizerNote {
     this.modulator;
   };
 
+  /**
+   */
   noteOn() {
     /** @type {AudioContext} */
-    var ctx = this.ctx;
+    const ctx = this.ctx;
     /** @type {{
      *   channel: number,
      *   key: number,
@@ -105,73 +110,52 @@ export class SynthesizerNote {
      *   volume: number,
      *   panpot: number
      * }} */
-    var instrument = this.instrument;
+    const instrument = this.instrument;
     /** @type {Int16Array} */
-    var sample = this.buffer;
-    /** @type {AudioBuffer} */
-    var buffer;
-    /** @type {Float32Array} */
-    var channelData;
-    /** @type {AudioBufferSourceNode} */
-    var bufferSource;
-    /** @type {BiquadFilterNode} */
-    var filter;
-    /** @type {BiquadFilterNode} */
-    var modulator;
-    /** @type {StereoPannerNode} */
-    var panner;
-    /** @type {GainNode} */
-    var output;
-    /** @type {AudioGain} */
-    var outputGain;
+    let sample = this.buffer;
     /** @type {number} */
-    var now = this.ctx.currentTime;
+    const now = this.ctx.currentTime;
     /** @type {number} */
-    var volDelay = now + instrument['volDelay'];
+    const volDelay = now + instrument['volDelay'];
     /** @type {number} */
-    var modDelay = now + instrument['modDelay'];
+    const modDelay = now + instrument['modDelay'];
     /** @type {number} */
-    var volAttack = volDelay + instrument['volAttack'];
+    const volAttack = volDelay + instrument['volAttack'];
     /** @type {number} */
-    var modAttack = volDelay + instrument['modAttack'];
+    const modAttack = volDelay + instrument['modAttack'];
     /** @type {number} */
-    var volHold = volAttack + instrument['volHold'];
+    const volHold = volAttack + instrument['volHold'];
     /** @type {number} */
-    var modHold = modAttack + instrument['modHold'];
+    const modHold = modAttack + instrument['modHold'];
     /** @type {number} */
-    var volDecay = volHold + instrument['volDecay'];
+    const volDecay = volHold + instrument['volDecay'];
     /** @type {number} */
-    var modDecay = modHold + instrument['modDecay'];
+    const modDecay = modHold + instrument['modDecay'];
     /** @type {number} */
-    var loopStart = instrument['loopStart'] / this.sampleRate;
+    const loopStart = instrument['loopStart'] / this.sampleRate;
     /** @type {number} */
-    var loopEnd = instrument['loopEnd'] / this.sampleRate;
+    const loopEnd = instrument['loopEnd'] / this.sampleRate;
     /** @type {number} */
-    var startTime = instrument['start'] / this.sampleRate;
-    /** @type {number} */
-    var baseFreq;
-    /** @type {number} */
-    var peekFreq;
-    /** @type {number} */
-    var sustainFreq;
-    /** @type {number} */
-    var volume;
+    const startTime = instrument['start'] / this.sampleRate;
     // TODO: ドラムパートのPanが変化した場合、その計算をしなければならない
     // http://cpansearch.perl.org/src/PJB/MIDI-SoundFont-1.08/doc/sfspec21.html#8.4.6
     /** @type {number} */
-    var pan = instrument['pan'] !== void 0 ? instrument['pan'] : this.panpot;
+    const pan = instrument['pan'] !== void 0 ? instrument['pan'] : this.panpot;
     /** @type {number} */
-    var cutOffFrequency = instrument['cutOffFrequency']; // (Brightness)
+    // const cutOffFrequency = instrument['cutOffFrequency']; // (Brightness)
     /** @type {number} */
-    var harmonicContent = instrument['harmonicContent']; // (Resonance)
+    // const harmonicContent = instrument['harmonicContent']; // (Resonance)
 
     sample = sample.subarray(0, sample.length + instrument['end']);
-    buffer = this.audioBuffer = ctx.createBuffer(1, sample.length, this.sampleRate);
-    channelData = buffer.getChannelData(0);
+    /** @type {AudioBuffer} */
+    const buffer = this.audioBuffer = ctx.createBuffer(1, sample.length, this.sampleRate);
+    /** @type {Float32Array} */
+    const channelData = buffer.getChannelData(0);
     channelData.set(sample);
 
     // buffer source
-    bufferSource = this.bufferSource = ctx.createBufferSource();
+    /** @type {AudioBufferSourceNode} */
+    const bufferSource = this.bufferSource = ctx.createBufferSource();
     bufferSource.buffer = buffer;
     bufferSource.loop = instrument['sampleModes'];
     bufferSource.loopStart = loopStart;
@@ -179,29 +163,33 @@ export class SynthesizerNote {
     this.updatePitchBend(this.pitchBend);
 
     // audio node
-    output = this.gainOutput = ctx.createGain();
-    outputGain = output.gain;
+    /** @type {GainNode} */
+    const output = this.gainOutput = ctx.createGain();
+    /** @type {AudioGain} */
+    const outputGain = output.gain;
 
     // expression
     this.expressionGain = ctx.createGain();
-    //this.expressionGain.gain.value = this.expression / 127;
+    // this.expressionGain.gain.value = this.expression / 127;
     this.expressionGain.gain.setTargetAtTime(this.expression / 127, this.ctx.currentTime, 0.015);
 
     // panpot
-    panner = this.panner = ctx.createPanner();
+    /** @type {StereoPannerNode} */
+    const panner = this.panner = ctx.createPanner();
     panner.panningModel = 'equalpower';
-    //panner.distanceModel = 'inverse';
+    // panner.distanceModel = 'inverse';
     panner.setPosition(
       Math.sin(pan * Math.PI / 2),
       0,
       Math.cos(pan * Math.PI / 2)
     );
 
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
     // Delay, Attack, Hold, Decay, Sustain
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
-    volume = this.volume * (this.velocity / 127) * (1 - instrument['initialAttenuation'] / 1000);
+    /** @type {number} */
+    let volume = this.volume * (this.velocity / 127) * (1 - instrument['initialAttenuation'] / 1000);
     if (volume < 0) {
       volume = 0;
     }
@@ -214,13 +202,17 @@ export class SynthesizerNote {
       .linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
 
     // modulation envelope
-    baseFreq = this.amountToFreq(instrument['initialFilterFc']);
-    peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
-    sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
+    /** @type {number} */
+    const baseFreq = this.amountToFreq(instrument['initialFilterFc']);
+    /** @type {number} */
+    const peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
+    /** @type {number} */
+    const sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
 
-    modulator = this.modulator = ctx.createBiquadFilter();
+    /** @type {BiquadFilterNode} */
+    const modulator = this.modulator = ctx.createBiquadFilter();
     modulator.Q.setValueAtTime(Math.pow(10, instrument['initialFilterQ'] / 200), now);
-    //modulator.frequency.value = baseFreq;
+    // modulator.frequency.value = baseFreq;
     modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
     modulator.type = 'lowpass';
     modulator.frequency.setValueAtTime(baseFreq, now)
@@ -230,24 +222,28 @@ export class SynthesizerNote {
       .linearRampToValueAtTime(sustainFreq, modDecay);
 
     // filter
-    //filter = this.filter = ctx.createBiquadFilter();
-    //filter.type = 'lowpass';
-    //filter.frequency.value = this.ctx.sampleRate / 2;
-    //filter.gain.value = 0;
-    //filter.Q.value = 0;
-    //  console.log(this.sampleRate, 'Hz');
-    //  filter.frequency.value = (cutOffFrequency / this.sampleRate) * 100000;	// Brightness = 0 ~ 127  64 = 350 / LPF 100~20000
-    //  console.log('Brightness:', cutOffFrequency, ' = ', filter.frequency.value, 'Hz');
-    //  filter.Q.value = harmonicContent < 0 ? 0 : harmonicContent - 64 ;	// Resonance 0 ~ 127 / Q = 0~50
-    //  console.log('Resonance:', harmonicContent, ' = ', filter.Q.value);
+    /*
+    const filter = this.filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = this.ctx.sampleRate / 2;
+    filter.gain.value = 0;
+    filter.Q.value = 0;
+    // console.log(this.sampleRate, 'Hz');
+    filter.frequency.value = (cutOffFrequency / this.sampleRate) * 100000; // Brightness = 0 ~ 127  64 = 350 / LPF 100~20000
+    // console.log('Brightness:', cutOffFrequency, ' = ', filter.frequency.value, 'Hz');
+    filter.Q.value = harmonicContent < 0 ? 0 : harmonicContent - 64; // Resonance 0 ~ 127 / Q = 0~50
+    // console.log('Resonance:', harmonicContent, ' = ', filter.Q.value);
+    */
 
     // connect
     bufferSource.connect(modulator);
     modulator.connect(panner);
     panner.connect(this.expressionGain);
 
-    //  this.expressionGain.connect(filter);
-    //  filter.connect(output);
+    /*
+    this.expressionGain.connect(filter);
+    filter.connect(output);
+    */
     this.expressionGain.connect(output);
 
     if (!instrument['mute']) {
@@ -260,20 +256,28 @@ export class SynthesizerNote {
 
   /**
    * @param {number} val
-   * @returns {number}
+   * @return {number}
    */
   amountToFreq(val) {
     return Math.pow(2, (val - 6900) / 1200) * 440;
   };
 
+  /**
+   */
   noteOff() {
     this.noteOffState = true;
   };
 
+  /**
+   * @return {boolean}
+   */
   isNoteOff() {
     return this.noteOffState;
   };
 
+  /**
+   * @return {void}
+   */
   release() {
     /** @type {{
      *   channel: number,
@@ -285,49 +289,49 @@ export class SynthesizerNote {
      *   volume: number,
      *   panpot: number
      * }} */
-    var instrument = this.instrument;
+    const instrument = this.instrument;
     /** @type {AudioBufferSourceNode} */
-    var bufferSource = this.bufferSource;
+    const bufferSource = this.bufferSource;
     /** @type {GainNode} */
-    var output = this.gainOutput;
+    const output = this.gainOutput;
     /** @type {number} */
-    var now = this.ctx.currentTime;
-    var release = instrument['releaseTime'] - 64;
+    const now = this.ctx.currentTime;
+    const release = instrument['releaseTime'] - 64;
 
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
     // volume release time
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
     /** @type {number} */
-    var volEndTimeTmp = instrument['volRelease'] * output.gain.value;
+    const volEndTimeTmp = instrument['volRelease'] * output.gain.value;
     /** @type {number} */
-    var volEndTime = now + (volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63)));
-    //var volEndTime = now + instrument['volRelease'] * (1 - instrument['volSustain']);
+    const volEndTime = now + (volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63)));
+    // var volEndTime = now + instrument['volRelease'] * (1 - instrument['volSustain']);
 
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
     // modulation release time
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
     /** @type {BiquadFilterNode} */
-    var modulator = this.modulator;
+    const modulator = this.modulator;
     /** @type {number} */
-    var baseFreq = this.amountToFreq(instrument['initialFilterFc']);
+    const baseFreq = this.amountToFreq(instrument['initialFilterFc']);
     /** @type {number} */
-    var peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
+    const peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
     /** @type {number} */
-    var modEndTime = now + instrument['modRelease'] *
+    const modEndTime = now + instrument['modRelease'] *
       (
         baseFreq === peekFreq ?
           1 :
           (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq)
       );
-    //var modEndTime = now + instrument['modRelease'] * (1 - instrument['modSustain']);
+    // var modEndTime = now + instrument['modRelease'] * (1 - instrument['modSustain']);
 
     if (!this.audioBuffer) {
       return;
     }
 
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
     // Release
-    //---------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------
 
     switch (instrument['sampleModes']) {
       case 0:
@@ -356,28 +360,33 @@ export class SynthesizerNote {
     }
   };
 
+  /**
+   */
   connect() {
     this.gainOutput.connect(this.destination);
   };
 
+  /**
+   */
   disconnect() {
     this.gainOutput.disconnect(0);
   };
-
+  /**
+   */
   schedulePlaybackRate() {
-    var playbackRate = this.bufferSource.playbackRate;
+    const playbackRate = this.bufferSource.playbackRate;
     /** @type {number} */
-    var computed = this.computedPlaybackRate;
+    const computed = this.computedPlaybackRate;
     /** @type {number} */
-    var start = this.startTime;
+    const start = this.startTime;
     /** @type {Object} */
-    var instrument = this.instrument;
+    const instrument = this.instrument;
     /** @type {number} */
-    var modAttack = start + instrument['modAttack'];
+    const modAttack = start + instrument['modAttack'];
     /** @type {number} */
-    var modDecay = modAttack + instrument['modDecay'];
+    const modDecay = modAttack + instrument['modDecay'];
     /** @type {number} */
-    var peekPitch = computed * Math.pow(
+    const peekPitch = computed * Math.pow(
       Math.pow(2, 1 / 12),
       this.modEnvToPitch * this.instrument['scaleTuning']
     );
@@ -388,8 +397,11 @@ export class SynthesizerNote {
     playbackRate.linearRampToValueAtTime(computed + (peekPitch - computed) * (1 - instrument['modSustain']), modDecay);
   };
 
+  /**
+   * @param {number} expression
+   */
   updateExpression(expression) {
-    //this.expressionGain.gain.value = (this.expression = expression) / 127;
+    // this.expressionGain.gain.value = (this.expression = expression) / 127;
     this.expressionGain.gain.setTargetAtTime((this.expression = expression) / 127, this.ctx.currentTime, 0.015);
   };
 
@@ -407,4 +419,4 @@ export class SynthesizerNote {
   }
 }
 
-export default SynthesizerNote
+export default SynthesizerNote;

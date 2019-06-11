@@ -29,6 +29,11 @@
   },
   "homepage": "https://github.com/logue/sf2synth.js#readme",
   "devDependencies": {
+    "closure-webpack-plugin": "^2.0.1",
+    "eslint": "^5.16.0",
+    "eslint-config-google": "^0.13.0",
+    "eslint-plugin-vue": "^5.2.2",
+    "google-closure-compiler": ">=20180716.0.1",
     "webpack": "^4.33.0",
     "webpack-cli": "^3.3.3",
     "webpack-dev-server": "^3.7.1"
