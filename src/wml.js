@@ -85,88 +85,115 @@ export class WebMidiLink {
 
     opener.postMessage('link,progress', '*');
 
-    const ready = (response) => {
-      response.arrayBuffer().then((stream) => {
-        self.placeholder.removeChild(progress);
-        self.placeholder.removeChild(percentage);
-        self.onload(stream);
-        if (typeof self.loadCallback === 'function') {
-          self.loadCallback(stream);
-        }
-        opener.postMessage('link,ready', '*');
-      }).catch((e) => {
-        console.error(e);
-      });
+    const ready = (stream) => {
+      console.info('ready');
+      self.placeholder.removeChild(progress);
+      self.placeholder.removeChild(percentage);
+      self.onload(stream);
+      if (typeof self.loadCallback === 'function') {
+        self.loadCallback(stream);
+      }
+      opener.postMessage('link,ready', '*');
     };
 
-    window.caches.open('wml').then((cache) => {
-      cache
-        .match(url)
-        .then((response) => {
-          console.info('Fetch Soundfont from cache.');
-          ready(response);
-        })
-        .catch(() => {
-          /*
-          fetch(url)
-            .then((res) => {
-              // 全体サイズ
-              const total = res.headers.get('content-length');
-              progress.max = total;
-
-              // body の reader を取得する
-              const reader = res.body.getReader();
-              let chunk = 0;
-              let buffer = new Array();
-              const processResult = (result) => {
-                // done が true なら最後の chunk
-                if (result.done) {
-                  cache.put(url, buffer);
-                  self.loadCallback(buffer);
-                  return;
+    if (window.caches) {
+      // キャッシュが利用可能な場合
+      window.caches.open('wml').then((cache) => {
+        cache
+          .match(url)
+          .then((response) => {
+            console.info('Fetch Soundfont from cache.');
+            response.arrayBuffer().then((stream) => {
+              ready(stream);
+            }).catch((e) => {
+              console.error(e);
+            });
+          })
+          .catch(() => {
+            fetch(url)
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok.');
                 }
+                cache.put(url, response);
+                console.info('Save Soundfont to cache.');
+                response.arrayBuffer().then((stream) => {
+                  ready(stream);
+                }).catch((e) => {
+                  console.error(e);
+                });
+              })
+              .catch((error) => {
+                console.error('There has been a problem with your fetch operation: ', error.message);
+              });
+          });
+      });
+    } else {
+      // キャッシュが使えない場合
+      console.info('This server/client does not cache function.');
 
-                // chunk の長さの蓄積を total で割れば進捗が分かる
-                chunk += result.value.length;
-                buffer.push(result.value);
-                // 進捗を更新
-                progress.value = chunk;
-                percentage.innerText = Math.round((chunk / total) * 100) + ' %';
-                opener.postMessage('link,progress,' + chunk + ',' + total, '*');
+      // 結合処理
+      const concatenation = (segments) => {
+        let sumLength = 0;
+        for (let i = 0; i < segments.length; ++i) {
+          sumLength += segments[i].byteLength;
+        }
+        const whole = new Uint8Array(sumLength);
+        let pos = 0;
+        for (let i = 0; i < segments.length; ++i) {
+          whole.set(new Uint8Array(segments[i]), pos);
+          pos += segments[i].byteLength;
+        }
+        return whole.buffer;
+      };
 
-                // 再帰する
-                return reader.read().then(processResult);
-              };
-              reader.read().then(processResult);
-            });
-          */
-          fetch(url)
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error('Network response was not ok.');
-              }
-              const r = response.clone();
-              cache.put(url, response);
-              console.info('Save Soundfont to cache.');
-              ready(r);
-            })
-            .catch((error) => {
-              console.error('There has been a problem with your fetch operation: ', error.message);
-            });
+      fetch(url)
+        .then((res) => {
+          // 全体サイズ
+          const total = res.headers.get('content-length');
+          progress.max = total;
+
+          // body の reader を取得する
+          const reader = res.body.getReader();
+          let chunk = 0;
+          const buffer = [];
+          const processResult = (result) => {
+            // done が true なら最後の chunk
+            if (result.done) {
+              const stream = concatenation(buffer);
+              ready(stream);
+              return;
+            }
+
+            // chunk の長さの蓄積を total で割れば進捗が分かる
+            chunk += result.value.length;
+            buffer.push(result.value);
+            // 進捗を更新
+            progress.value = chunk;
+            percentage.innerText = Math.round((chunk / total) * 100) + ' %';
+            opener.postMessage('link,progress,' + chunk + ',' + total, '*');
+
+            // 再帰する
+            return reader.read().then(processResult);
+          };
+          reader.read().then(processResult);
+        })
+        .catch((error) => {
+          console.error('There has been a problem with your fetch operation: ', error.message);
         });
-    });
+    }
   }
 
   /**
- * @param {boolean} sw
- */
+   * @param {boolean} sw
+   */
   setReverb(sw) {
     this.synth.setReverb(sw);
   }
 
   /**
- * @param {ArrayBuffer} response
- */
+   * @param {ArrayBuffer} response
+   */
   onload(response) {
     /** @type {Uint8Array} */
     const input = new Uint8Array(response);
@@ -175,9 +202,8 @@ export class WebMidiLink {
   }
 
   /**
- * @param {Uint8Array} input
- * @export
- */
+   * @param {Uint8Array} input
+   */
   loadSoundFont(input) {
     /** @type {Synthesizer} */
     let synth;
@@ -202,8 +228,8 @@ export class WebMidiLink {
   };
 
   /**
- * @param {Event} ev
- */
+   * @param {Event} ev
+   */
   onmessage(ev) {
     /** @type {Array} */
     const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
@@ -249,15 +275,15 @@ export class WebMidiLink {
   };
 
   /**
- * @param {function(ArrayBuffer)} callback
- */
+   * @param {function(ArrayBuffer)} callback
+   */
   setLoadCallback(callback) {
     this.loadCallback = callback;
   };
 
   /**
- * @param {Array.<number>} message
- */
+   * @param {Array.<number>} message
+   */
   processMidiMessage(message) {
     /** @type {number} */
     const channel = message[0] & 0x0f;
