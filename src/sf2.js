@@ -1,19 +1,19 @@
-import Riff from './riff';
+import Riff from './riff.js';
 /**
  * SoundFont Parser Class
  */
 export class Parser {
   /**
    * @param {ByteArray} input
-   * @param {Object=} opt_params
+   * @param {Object=} optParams
    */
-  constructor(input, opt_params = {}) {
+  constructor(input, optParams = {}) {
     /** @type {ByteArray} */
     this.input = input;
     /** @type {(Object|undefined)} */
-    this.parserOption = opt_params['parserOption'];
+    this.parserOption = optParams['parserOption'];
     /** @type {(Number|undefined)} */
-    this.sampleRate = opt_params['sampleRate'] || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
+    this.sampleRate = optParams['sampleRate'] || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
     /** @type {Array.<Object>} */
     this.presetHeader;

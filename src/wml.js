@@ -106,7 +106,7 @@ export class WebMidiLink {
             response.arrayBuffer().then((stream) => {
               ready(stream);
             }).catch((e) => {
-              console.error(e);
+              console.err(e);
             });
           })
           .catch(() => {
@@ -119,13 +119,9 @@ export class WebMidiLink {
                 console.info('Save Soundfont to cache.');
                 response.arrayBuffer().then((stream) => {
                   ready(stream);
-                }).catch((e) => {
-                  console.error(e);
-                });
+                }).catch((e) => console.err(e));
               })
-              .catch((error) => {
-                console.error('There has been a problem with your fetch operation: ', error.message);
-              });
+              .catch((e) => alert('There has been a problem with your fetch operation: '+ e.message));
           });
       });
     } else {
@@ -178,9 +174,7 @@ export class WebMidiLink {
           };
           reader.read().then(processResult);
         })
-        .catch((error) => {
-          console.error('There has been a problem with your fetch operation: ', error.message);
-        });
+        .catch((e) => alert('There has been a problem with your fetch operation: '+ e.message));
     }
   }
 

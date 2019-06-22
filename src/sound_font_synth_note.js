@@ -93,7 +93,7 @@ export class SynthesizerNote {
     this.filter;
     /** @type {BiquadFilterNode} */
     this.modulator;
-  };
+  }
 
   /**
    */
@@ -252,7 +252,7 @@ export class SynthesizerNote {
 
     // fire
     bufferSource.start(0, startTime);
-  };
+  }
 
   /**
    * @param {number} val
@@ -260,20 +260,20 @@ export class SynthesizerNote {
    */
   amountToFreq(val) {
     return Math.pow(2, (val - 6900) / 1200) * 440;
-  };
+  }
 
   /**
    */
   noteOff() {
     this.noteOffState = true;
-  };
+  }
 
   /**
    * @return {boolean}
    */
   isNoteOff() {
     return this.noteOffState;
-  };
+  }
 
   /**
    * @return {void}
@@ -356,21 +356,23 @@ export class SynthesizerNote {
         break;
       case 3:
         bufferSource.loop = false;
+        bufferSource.disconnect();
+        bufferSource.buffer = null;
         break;
     }
-  };
+  }
 
   /**
    */
   connect() {
     this.gainOutput.connect(this.destination);
-  };
+  }
 
   /**
    */
   disconnect() {
     this.gainOutput.disconnect(0);
-  };
+  }
   /**
    */
   schedulePlaybackRate() {
@@ -395,7 +397,7 @@ export class SynthesizerNote {
     playbackRate.setValueAtTime(computed, start);
     playbackRate.linearRampToValueAtTime(peekPitch, modAttack);
     playbackRate.linearRampToValueAtTime(computed + (peekPitch - computed) * (1 - instrument['modSustain']), modDecay);
-  };
+  }
 
   /**
    * @param {number} expression
@@ -403,7 +405,7 @@ export class SynthesizerNote {
   updateExpression(expression) {
     // this.expressionGain.gain.value = (this.expression = expression) / 127;
     this.expressionGain.gain.setTargetAtTime((this.expression = expression) / 127, this.ctx.currentTime, 0.015);
-  };
+  }
 
   /**
    * @param {number} pitchBend

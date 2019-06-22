@@ -1,4 +1,4 @@
-/*! sf2synth.js | imaya / GREE Inc. / Logue | license: MIT */
+/*! sf2synth.js v0.3.1 | imaya / GREE Inc. / Logue | license: MIT */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -234,7 +234,7 @@ class RiffChunk {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Parser", function() { return Parser; });
-/* harmony import */ var _riff__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./riff */ "./src/riff.js");
+/* harmony import */ var _riff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./riff.js */ "./src/riff.js");
 
 /**
  * SoundFont Parser Class
@@ -242,15 +242,15 @@ __webpack_require__.r(__webpack_exports__);
 class Parser {
   /**
    * @param {ByteArray} input
-   * @param {Object=} opt_params
+   * @param {Object=} optParams
    */
-  constructor(input, opt_params = {}) {
+  constructor(input, optParams = {}) {
     /** @type {ByteArray} */
     this.input = input;
     /** @type {(Object|undefined)} */
-    this.parserOption = opt_params['parserOption'];
+    this.parserOption = optParams['parserOption'];
     /** @type {(Number|undefined)} */
-    this.sampleRate = opt_params['sampleRate'] || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
+    this.sampleRate = optParams['sampleRate'] || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
     /** @type {Array.<Object>} */
     this.presetHeader;
@@ -336,7 +336,7 @@ class Parser {
    */
   parse() {
     /** @type {Riff} */
-    const parser = new _riff__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption);
+    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption);
 
     // parse RIFF chunk
     parser.parse();
@@ -378,7 +378,7 @@ class Parser {
 
     // read structure
     /** @type {Riff} */
-    const parser = new _riff__WEBPACK_IMPORTED_MODULE_0__["default"](data, { 'index': ip, 'length': chunk.size - 4 });
+    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, { 'index': ip, 'length': chunk.size - 4 });
     parser.parse();
     if (parser.getNumberOfChunks() !== 3) {
       throw new Error('invalid sfbk structure');
@@ -417,7 +417,7 @@ class Parser {
 
     // read structure
     /** @type {Riff} */
-    const parser = new _riff__WEBPACK_IMPORTED_MODULE_0__["default"](data, { 'index': ip, 'length': chunk.size - 4 });
+    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, { 'index': ip, 'length': chunk.size - 4 });
     parser.parse();
   };
 
@@ -444,7 +444,7 @@ class Parser {
 
     // read structure
     /** @type {Riff} */
-    const parser = new _riff__WEBPACK_IMPORTED_MODULE_0__["default"](data, { 'index': ip, 'length': chunk.size - 4 });
+    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, { 'index': ip, 'length': chunk.size - 4 });
     parser.parse();
     if (parser.chunkList.length !== 1) {
       throw new Error('TODO');
@@ -477,7 +477,7 @@ class Parser {
 
     // read structure
     /** @type {Riff} */
-    const parser = new _riff__WEBPACK_IMPORTED_MODULE_0__["default"](data, { 'index': ip, 'length': chunk.size - 4 });
+    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, { 'index': ip, 'length': chunk.size - 4 });
     parser.parse();
 
     // check number of chunks

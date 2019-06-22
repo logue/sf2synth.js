@@ -121,28 +121,46 @@ export class Synthesizer {
 
     /** @type {Reverb} */
     this.reverb = new Reverb(this.ctx);
-  };
+  }
 
   /**
    * @return {AudioContext}
    */
   getAudioContext() {
-    /** @type string **/
-    const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
     /** @type {AudioContext} */
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    /** @type {AudioContext} */
-    const ctx = new AudioContext();
+    const ctx = new (window.AudioContext || window.webkitAudioContext);
 
-    document.addEventListener(eventName, () => {
-      ctx.resume();
-    });
+    // for legacy browsers
+    ctx.createGain = ctx.createGain || ctx.createGainNode;
 
-    if (ctx.createGainNode === void 0) {
-      ctx.createGainNode = ctx.createGain;
+    // Unlock AudioContext
+    if (ctx.state === 'suspended') {
+      const events = ['touchstart', 'touchend', 'mousedown', 'keydown'];
+      const unlock = () => {
+        events.forEach((event) => {
+          document.body.removeEventListener(event, unlock);
+        });
+        this.playSilent();
+        ctx.resume();
+      };
+
+      events.forEach((event) => {
+        document.body.addEventListener(event, unlock, false);
+      });
     }
 
     return ctx;
+  }
+
+  /**
+   * Play dummy sound
+   */
+  playSilent() {
+    const buf = this.ctx.createBuffer(1, 1, 22050);
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(this.ctx.destination);
+    src.start(0);
   }
 
   /**
@@ -205,13 +223,13 @@ export class Synthesizer {
       this.element.querySelector('.header div:before').innerText = mode + ' Mode';
     }
     */
-  };
+  }
 
   /**
    */
   close() {
     this.ctx.close();
-  };
+  }
 
   /**
    * @param {Uint8Array} input
@@ -220,7 +238,7 @@ export class Synthesizer {
     this.input = input;
     this.parser = new Parser(input);
     this.bankSet = this.createAllInstruments();
-  };
+  }
 
   /** @return {Array.<Array.<Object>>} */
   createAllInstruments() {
@@ -291,7 +309,7 @@ export class Synthesizer {
     this.programSet = programSet;
 
     return banks;
-  };
+  }
 
   /**
    * @param {Parser} parser
@@ -335,12 +353,8 @@ export class Synthesizer {
     const freqVibLFO = this.getModGenAmount(generator, 'freqVibLFO');
     /** @type {number} */
     const pan = this.getModGenAmount(generator, 'pan');
-
     /** @type {number} */
-    const tune = (
-      this.getModGenAmount(generator, 'coarseTune') +
-      this.getModGenAmount(generator, 'fineTune') / 100
-    );
+    const tune = this.getModGenAmount(generator, 'coarseTune') + this.getModGenAmount(generator, 'fineTune') / 100;
 
 
     for (let i = generator['keyRange'].lo, il = generator['keyRange'].hi; i <= il; ++i) {
@@ -426,8 +440,8 @@ export class Synthesizer {
    */
   start() {
     this.connect();
-    this.setMasterVolume(16383);
     this.bufSrc.start(0);
+    this.setMasterVolume(16383);
   }
 
   /**
@@ -442,42 +456,34 @@ export class Synthesizer {
   /**
    */
   connect() {
-    this.setReverb(true);
     this.bufSrc.connect(this.gainMaster);
     this.gainMaster.connect(this.ctx.destination);
+    if (this.useReverb) {
+      this.gainMaster.connect(this.reverb.node);
+      this.reverb.node.connect(this.ctx.destination);
+    }
   }
 
   /**
    */
   disconnect() {
-    this.setReverb(false);
     this.bufSrc.disconnect(0);
     this.gainMaster.disconnect(0);
+    if (this.useReverb) {
+      this.reverb.node.disconnect(0);
+    }
+    this.bufSrc.buffer = null;
   }
 
-  /** @param {boolean} value */
-  setReverb(value) {
-    this.useReverb = value;
-    if (value) {
+  /** @param {boolean} use */
+  setReverb(use) {
+    this.useReverb = use;
+    if (use) {
       this.gainMaster.connect(this.reverb.node);
       this.reverb.node.connect(this.ctx.destination);
     } else {
       this.reverb.node.disconnect(0);
     }
-  };
-
-  /**
-   * @param {number} channel
-   * @param {number} depth
-   */
-  reverbDepth(channel, depth) {
-    this.reverbDepth[channel] = depth;
-  }
-
-  /**
-   */
-  removeSynth() {
-    this.ctx.close();
   }
 
   /**
@@ -493,21 +499,22 @@ export class Synthesizer {
     instElem.className = 'instrument';
     /** @type {Array} */
     const items = ['mute', 'bank', 'program', 'volume', 'panpot', 'pitchBend', 'pitchBendSensitivity', 'keys'];
-    /** @type {HTMLDivElement} */
-    let channel;
-    /** @type {HTMLLabelElement} */
-    let label;
+    /** @type {string} */
+    const eventStart = 'ontouchstart' in window ? 'touchstart' : 'mousedown';
+    /** @type {string} */
+    const eventEnd = 'ontouchend' in window ? 'touchend' : 'mouseup';
 
-    for (let ch = 0; ch < 16; ch++) {
-      channel = doc.createElement('div');
-      channel.className = 'channel';
-      for (const i in items) {
-        if ({}.hasOwnProperty.call(items, i)) {
+    for (let channel = 0; channel < 16; channel++) {
+      /** @type {HTMLDivElement} */
+      const channelElem = doc.createElement('div');
+      channelElem.className = 'channel';
+      for (const item in items) {
+        if ({}.hasOwnProperty.call(items, item)) {
           /** @type {HTMLDivElement} */
-          const item = doc.createElement('div');
-          item.className = items[i];
+          const itemElem = doc.createElement('div');
+          itemElem.className = items[item];
 
-          switch (items[i]) {
+          switch (items[item]) {
             case 'mute':
               /** @type {HTMLDivElement|null} */
               const checkboxElement = doc.createElement('div');
@@ -516,37 +523,39 @@ export class Synthesizer {
               const checkbox = doc.createElement('input');
               checkbox.setAttribute('type', 'checkbox');
               checkbox.className = 'custom-control-input';
-              checkbox.id = 'mute' + ch + 'ch';
-              checkbox.addEventListener('change', ((synth, channel) => {
+              checkbox.id = 'mute' + channel + 'ch';
+              checkbox.addEventListener('change', ((synth, channelElem) => {
                 return () => {
-                  synth.mute(channel, this.checked);
+                  synth.mute(channelElem, this.checked);
                 };
-              })(this, ch), false);
+              })(this, channel), false);
               checkboxElement.appendChild(checkbox);
-              label = doc.createElement('label');
-              label.className = 'custom-control-label';
-              label.textContent = ch + 1;
-              label.setAttribute('for', 'mute' + ch + 'ch');
-              checkboxElement.appendChild(label);
-              item.appendChild(checkboxElement);
+              /** @type {HTMLLabelElement} */
+              const labelElem = doc.createElement('label');
+              labelElem.className = 'custom-control-label';
+              labelElem.textContent = channel + 1;
+              labelElem.setAttribute('for', 'mute' + channel + 'ch');
+              checkboxElement.appendChild(labelElem);
+              itemElem.appendChild(checkboxElement);
               break;
             case 'bank':
               // Bank select
               /** @type {HTMLSelectElement} */
               const bankSelect = doc.createElement('select');
               bankSelect.className = 'form-control form-control-sm';
-              item.appendChild(bankSelect);
+              itemElem.appendChild(bankSelect);
+              /** @type {HTMLOptionElement} */
               const option = doc.createElement('option');
               bankSelect.appendChild(option);
 
-              bankSelect.addEventListener('change', ((synth, channel) => {
+              bankSelect.addEventListener('change', ((synth, channelElem) => {
                 return (event) => {
-                  synth.bankChange(channel, event.target.value);
-                  synth.programChange(channel, synth.channelInstrument[channel]);
+                  synth.bankChange(channelElem, event.target.value);
+                  synth.programChange(channelElem, synth.channelElemInstrument[channelElem]);
                 };
-              })(this, ch), false);
+              })(this, channel), false);
 
-              bankSelect.selectedIndex = this.channelInstrument[i];
+              bankSelect.selectedIndex = this.channelBank[item];
               break;
             case 'program':
               // Program change
@@ -554,20 +563,20 @@ export class Synthesizer {
               const select = doc.createElement('select');
               select.className = 'form-control form-control-sm';
 
-              item.appendChild(select);
+              itemElem.appendChild(select);
 
-              select.addEventListener('change', ((synth, channel) => {
+              select.addEventListener('change', ((synth, channelElem) => {
                 return (event) => {
-                  synth.programChange(channel, event.target.value);
+                  synth.programChange(channelElem, event.target.value);
                 };
-              })(this, ch), false);
+              })(this, channel), false);
 
-              select.selectedIndex = this.channelInstrument[i];
+              select.selectedIndex = this.channelInstrument[item];
               break;
             case 'volume':
-              item.innerText = 100;
+              itemElem.innerText = 100;
             case 'pitchBendSensitivity':
-              item.innerText = 2;
+              itemElem.innerText = 2;
               break;
             case 'panpot':
               /** @type {HTMLMeterElement|null} */
@@ -575,7 +584,7 @@ export class Synthesizer {
               panpot.min = 0;
               panpot.max = 127;
               panpot.value = 64;
-              item.appendChild(panpot);
+              itemElem.appendChild(panpot);
               break;
             case 'pitchBend':
               /** @type {HTMLMeterElement|null} */
@@ -583,53 +592,131 @@ export class Synthesizer {
               pitch.min = -8192;
               pitch.max = 8192;
               pitch.value = 0;
-              item.appendChild(pitch);
+              itemElem.appendChild(pitch);
               break;
             case 'keys':
-              for (let j = 0; j < 127; j++) {
+              for (let key = 0; key < 127; key++) {
                 /** @type {HTMLDivElement|null} */
                 const keyElem = doc.createElement('div');
-                const n = j % 12;
+                /** @type {number} */
+                const n = key % 12;
+                // 白鍵と黒鍵の色分け
                 keyElem.className = 'key ' + ([1, 3, 6, 8, 10].includes(n) ? 'semitone' : 'tone');
-                item.appendChild(keyElem);
-                keyElem.addEventListener('mousedown', ((synth, channel, key) => {
+                itemElem.appendChild(keyElem);
+
+                // イベント割当
+                keyElem.addEventListener(eventStart, ((synth, channelElem, k) => {
                   return (event) => {
                     event.preventDefault();
                     synth.drag = true;
-                    synth.noteOn(channel, key, 127);
+                    synth.noteOn(channelElem, k, 127);
                   };
-                })(this, ch, j));
-                keyElem.addEventListener('mouseover', ((synth, channel, key) => {
+                })(this, channel, key));
+                keyElem.addEventListener('mouseover', ((synth, channelElem, k) => {
                   return (event) => {
                     event.preventDefault();
                     if (synth.drag) {
-                      synth.noteOn(channel, key, 127);
+                      synth.noteOn(channelElem, k, 127);
                     }
                   };
-                })(this, ch, j));
-                keyElem.addEventListener('mouseout', ((synth, channel, key) => {
+                })(this, channel, key));
+                keyElem.addEventListener('mouseout', ((synth, channelElem, k) => {
                   return (event) => {
                     event.preventDefault();
-                    synth.noteOff(channel, key, 0);
+                    synth.noteOff(channelElem, k, 0);
                   };
-                })(this, ch, j));
-                keyElem.addEventListener('mouseup', ((synth, channel, key) => {
+                })(this, channel, key));
+                keyElem.addEventListener(eventEnd, ((synth, channelElem, k) => {
                   return (event) => {
                     event.preventDefault();
                     synth.drag = false;
-                    synth.noteOff(channel, key, 0);
+                    synth.noteOff(channelElem, k, 0);
                   };
-                })(this, ch, j));
+                })(this, channel, key));
               }
               break;
           }
-          channel.appendChild(item);
+          channelElem.appendChild(itemElem);
         }
       }
-      instElem.appendChild(channel);
+      instElem.appendChild(channelElem);
     }
     wrapper.appendChild(instElem);
     return wrapper;
+  }
+
+  /**
+   * @param {number} channel
+   * @param {number} key
+   * @param {number} velocity
+   */
+  updateSynthElement(channel, key, velocity) {
+    if (!this.element) {
+      return;
+    }
+    /** @type {HTMLDivElement} */
+    const keyElem = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .key:nth-child(' + (key + 1) + ')');
+
+    if (velocity === 0) {
+      keyElem.classList.remove('note-on');
+      keyElem.style.opacity = 1;
+    } else {
+      keyElem.classList.add('note-on');
+      keyElem.style.opacity = (velocity / 127).toFixed(2);
+    }
+  }
+
+  /**
+   * @param {number} channel
+   */
+  updateBankSelect(channel) {
+    if (!this.element) {
+      return;
+    }
+    /** @type {HTMLElement} */
+    const bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
+
+    while (bankElement.firstChild) bankElement.removeChild(bankElement.firstChild);
+
+    for (const bankNo in this.programSet) {
+      if ({}.hasOwnProperty.call(this.programSet, bankNo)) {
+        const option = document.createElement('option');
+        option.value = bankNo;
+        option.textContent = ('000' + (parseInt(bankNo))).slice(-3);
+        bankElement.appendChild(option);
+      }
+    }
+  }
+
+  /**
+   * @param {number} channel
+   */
+  updateProgramSelect(channel) {
+    if (!this.element) {
+      return;
+    }
+    /** @type {number} */
+    const bankIndex = this.channelBank[channel];
+    /** @type {HTMLElement} */
+    const bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
+    /** @type {HTMLElement} */
+    const programElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .program > select');
+
+    bankElement.value = this.channelBank[channel];
+    while (programElement.firstChild) programElement.removeChild(programElement.firstChild);
+
+    for (const programNo in this.programSet[bankIndex]) {
+      if ({}.hasOwnProperty.call(this.programSet[bankIndex], programNo)) {
+        // TODO: 存在しないプログラムの場合、現状では空白になってしまう
+        const option = document.createElement('option');
+        option.value = programNo;
+        option.textContent = ('000' + (parseInt(programNo) + 1)).slice(-3) + ':' + this.programSet[bankIndex][programNo];
+        if (programNo === this.channelInstrument[channel]) {
+          option.selected = 'selected';
+        }
+        programElement.appendChild(option);
+      }
+    }
   }
 
   /**
@@ -710,7 +797,7 @@ export class Synthesizer {
     this.currentNoteOn[channel].push(note);
 
     this.updateSynthElement(channel, key, velocity);
-  };
+  }
 
   /**
    * @param {number} channel NoteOff するチャンネル.
@@ -743,35 +830,6 @@ export class Synthesizer {
       }
     }
     this.updateSynthElement(channel, key, 0);
-  };
-
-  /**
-   * @param {number} channel
-   * @param {number} key
-   * @param {number} velocity
-   */
-  updateSynthElement(channel, key, velocity) {
-    if (!this.element) {
-      return;
-    }
-    /** @type {HTMLDivElement} */
-    const channelElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
-    /** @type {HTMLDivElement} */
-    const keyElement = channelElement.querySelector('.key:nth-child(' + (key + 1) + ')');
-
-    if (velocity === 0) {
-      keyElement.classList.remove('note-on');
-      // keyElem.style.opacity = 1;
-    } else {
-      keyElement.classList.add('note-on');
-      // keyElem.style.opacity = (velocity / 127).toFixed(2);
-    }
-
-    if (this.channelHold[channel]) {
-      channelElement.classList.add('hold');
-    } else {
-      channelElement.classList.remove('hold');
-    }
   }
 
   /**
@@ -799,6 +857,16 @@ export class Synthesizer {
           --i;
           --il;
         }
+      }
+    }
+
+    if (this.element) {
+      /** @type {HTMLDivElement} */
+      const channelElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
+      if (this.channelHold[channel]) {
+        channelElement.classList.add('hold');
+      } else {
+        channelElement.classList.remove('hold');
       }
     }
   }
@@ -849,58 +917,6 @@ export class Synthesizer {
 
     this.channelBank[channel] = value;
     this.updateBankSelect(channel);
-  };
-
-  /**
-   * @param {number} channel
-   */
-  updateBankSelect(channel) {
-    if (!this.element) {
-      return;
-    }
-    /** @type {HTMLElement} */
-    const bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
-
-    while (bankElement.firstChild) bankElement.removeChild(bankElement.firstChild);
-
-    for (const bankNo in this.programSet) {
-      if ({}.hasOwnProperty.call(this.programSet, bankNo)) {
-        const option = document.createElement('option');
-        option.value = bankNo;
-        option.textContent = ('000' + (parseInt(bankNo))).slice(-3);
-        bankElement.appendChild(option);
-      }
-    }
-  }
-
-  /**
-   * @param {number} channel
-   */
-  updateProgramSelect(channel) {
-    if (!this.element) {
-      return;
-    }
-    /** @type {number} */
-    const bankIndex = this.channelBank[channel];
-    /** @type {HTMLElement} */
-    const bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
-    /** @type {HTMLElement} */
-    const programElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .program > select');
-
-    bankElement.value = this.channelBank[channel];
-    while (programElement.firstChild) programElement.removeChild(programElement.firstChild);
-
-    for (const programNo in this.programSet[bankIndex]) {
-      if ({}.hasOwnProperty.call(this.programSet[bankIndex], programNo)) {
-        const option = document.createElement('option');
-        option.value = programNo;
-        option.textContent = ('000' + (parseInt(programNo) + 1)).slice(-3) + ':' + this.programSet[bankIndex][programNo];
-        if (programNo === this.channelInstrument[channel]) {
-          option.selected = 'selected';
-        }
-        programElement.appendChild(option);
-      }
-    }
   }
 
   /**
@@ -1070,6 +1086,14 @@ export class Synthesizer {
    */
   cutOffFrequency(channel, value) {
     this.channelCutOffFrequency[channel] = value;
+  }
+
+  /**
+   * @param {number} channel
+   * @param {number} depth
+   */
+  reverbDepth(channel, depth) {
+    this.reverbDepth[channel] = depth;
   }
 
   /**

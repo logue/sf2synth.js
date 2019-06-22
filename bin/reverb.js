@@ -1,4 +1,4 @@
-/*! sf2synth.js | imaya / GREE Inc. / Logue | license: MIT */
+/*! sf2synth.js v0.3.1 | imaya / GREE Inc. / Logue | license: MIT */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
