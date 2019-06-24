@@ -1,5 +1,5 @@
 {
-  "name": "sf2synth.js",
+  "name": "@logue/sf2synth",
   "version": "0.3.1",
   "description": "SoundFont2 Synthesizer",
   "scripts": {
@@ -28,7 +28,11 @@
   ],
   "author": "imaya / GREE Inc.",
   "contributors": [
-    "Logue"
+    {
+      "name": "Logue",
+      "email": "logue@hotmail.co.jp",
+      "url": "https://logue.be/"
+    }
   ],
   "license": "MIT",
   "bugs": {
@@ -41,7 +45,8 @@
     "eslint-config-google": "^0.13.0",
     "google-closure-compiler": "^20190528.1.0",
     "webpack": "^4.35.0",
-    "webpack-cli": "^3.3.4",
+    "webpack-cli": "^3.3.5",
     "webpack-dev-server": "^3.7.2"
-  }
+  },
+  "dependencies": {}
 }
