@@ -1,6 +1,6 @@
 {
   "name": "@logue/sf2synth",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "SoundFont2 Synthesizer",
   "scripts": {
     "watch": "webpack --mode development --watch --color --progress",

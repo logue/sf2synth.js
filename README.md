@@ -1,43 +1,67 @@
 # sf2synth.js
 
-sf2synth.js は [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) 対応の SoundFont シンセサイザです。
+sf2synth.js is [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) based SoundFont Synthesizer.
 
-## 使い方
+## Install
+
+```
+npm install @logue/sf2synth
+```
+
+or
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/logue/sf2synth.js@master/bin/sf2synth.min.js"></script>
+```
+
+## Usage
+
+```html
+<div id="placeholder"></div>
+```
 
 ```js
-var url = '//cdn.rawgit.com/logue/smfplayer.js/gh-pages/Yamaha%20XG%20Sound%20Set.sf2';
-var wml = new SoundFont.WebMidiLink();
-wml.setLoadCallback(function(arraybuffer) {
-    // ロード完了時の処理
+// Url to SoundFont file.
+const soundfont = 'Yamaha XG Sound Set.sf2';
+// Option
+const option = {
+  // attach dom id
+  placeholder : 'placeholder',
+  // If you not nessesaly to draw keyboad, set true.
+  disableSynth : false.
+};
+
+const wml = new SoundFont.WebMidiLink();
+wml.setLoadCallback(() => {
+    // Finishd to 
 });
 wml.setup(url);
 ```
 
-キーボード表示を無効化したい場合は、wmlの定義を以下のようにしてください。
+## Sample
 
-```js
-var wml = new SoundFont.WebMidiLink({disableDrawSynth:true});
-```
+<https://logue.github.io/smfplayer.js/wml.html>
 
-WebMidiLinkに準拠していない命令としてprogressがあります。ここには読み込んだバイト数とトータルのバイト数が入ります。重たい音源を開くときなどに活用してください。
+## Compatibility
 
-## 対応ブラウザ
-
-最新の Web Audio API 実装を必要とします。
+equires a browser that supports the Web Audio API.
 
 - Google Chrome 25+
 - Google Chrome for Android 28+
 - FireFox 25+
 - Edge
 
+iOS is not supported.
+
 ## WebMidiLink 対応
 
-sf2synth.js は WebMidiLink の Link Level 1 に対応しています。
-GM Level 2およびXG Lite相当です。
+* sf2synth.js is WebMidiLink の Link Level 1 に対応しています。
+* GM Level 2およびXG Lite相当です。
+* A specification called `progress` has been added as an instruction that is not compliant with WebMidiLink.
 
-## ライセンス
+## License
 
-Copyright &copy; 2013 imaya / GREE Inc.
 Licensed under the MIT License.
 
-Modified by Logue.
+* 2013      by imaya / GREE Inc.
+* 2013-2019 by Logue.
