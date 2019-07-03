@@ -17,7 +17,6 @@ module.exports = (env) => {
     entry: {
       'sf2.synth': './src/wml.js',
       'sf2.parser': './src/sf2.js',
-      'reverb': './src/reverb.js',
     },
     output: {
       path: path.resolve(__dirname, 'bin'),

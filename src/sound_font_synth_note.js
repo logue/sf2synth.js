@@ -111,8 +111,6 @@ export class SynthesizerNote {
      *   panpot: number
      * }} */
     const instrument = this.instrument;
-    /** @type {Int16Array} */
-    let sample = this.buffer;
     /** @type {number} */
     const now = this.ctx.currentTime;
     /** @type {number} */
@@ -146,7 +144,7 @@ export class SynthesizerNote {
     /** @type {number} */
     // const harmonicContent = instrument['harmonicContent']; // (Resonance)
 
-    sample = sample.subarray(0, sample.length + instrument['end']);
+    const sample = this.buffer.subarray(0, this.buffer.length + instrument['end']);
     /** @type {AudioBuffer} */
     const buffer = this.audioBuffer = ctx.createBuffer(1, sample.length, this.sampleRate);
     /** @type {Float32Array} */

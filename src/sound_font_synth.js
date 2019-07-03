@@ -1,6 +1,6 @@
 import SynthesizerNote from './sound_font_synth_note';
 import Parser from './sf2';
-import Reverb from './reverb';
+import Reverb from '@logue/reverb/src/reverb';
 /**
  * Synthesizer Class
  */
@@ -128,43 +128,27 @@ export class Synthesizer {
    */
   getAudioContext() {
     /** @type {AudioContext} */
-    const ctx = new (window.AudioContext || window.webkitAudioContext);
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
     // for legacy browsers
     ctx.createGain = ctx.createGain || ctx.createGainNode;
 
-    // Unlock AudioContext
-    if (ctx.state === 'suspended') {
-      const events = ['touchstart', 'touchend', 'mousedown', 'keydown'];
-      const unlock = () => {
-        events.forEach((event) => {
-          document.body.removeEventListener(event, unlock);
-        });
-        this.playSilent();
-        ctx.resume();
-      };
+    // Defreeze AudioContext for iOS.
+    const initAudioContext = () => {
+      document.removeEventListener('touchstart', initAudioContext);
+      // wake up AudioContext
+      const emptySource = ctx.createBufferSource();
+      emptySource.start();
+      emptySource.stop();
+    };
 
-      events.forEach((event) => {
-        document.body.addEventListener(event, unlock, false);
-      });
-    }
+    document.addEventListener('touchstart', initAudioContext);
 
     return ctx;
   }
 
   /**
-   * Play dummy sound
-   */
-  playSilent() {
-    const buf = this.ctx.createBuffer(1, 1, 22050);
-    const src = this.ctx.createBufferSource();
-    src.buffer = buf;
-    src.connect(this.ctx.destination);
-    src.start(0);
-  }
-
-  /**
-   *
+   * System Reset
    * @param {string} mode
    */
   init(mode = 'GM') {

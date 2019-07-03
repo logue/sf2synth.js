@@ -11,8 +11,7 @@
   },
   "bin": {
     "sf2.synth.min.js": "bin/sf2.synth.min.js",
-    "sf2.parser.min.js": "bin/sf2.parser.min.js",
-    "reverb.min.js": "bin/reverb.min.js"
+    "sf2.parser.min.js": "bin/sf2.parser.min.js"
   },
   "repository": {
     "type": "git",
@@ -44,9 +43,11 @@
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.13.0",
     "google-closure-compiler": "^20190528.1.0",
-    "webpack": "^4.35.0",
+    "webpack": "^4.35.2",
     "webpack-cli": "^3.3.5",
     "webpack-dev-server": "^3.7.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@logue/reverb": "^0.1.0"
+  }
 }

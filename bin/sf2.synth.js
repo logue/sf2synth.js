@@ -97,21 +97,28 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/reverb.js":
-/*!***********************!*\
-  !*** ./src/reverb.js ***!
-  \***********************/
+/***/ "./node_modules/@logue/reverb/src/reverb.js":
+/*!**************************************************!*\
+  !*** ./node_modules/@logue/reverb/src/reverb.js ***!
+  \**************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Reverb; });
 /**
- * @author Logue
- * Adapted from https://github.com/web-audio-components/simple-reverb
+ * JS reverb effect class
+ *
+ * @author    Logue
+ * @copyright 2019 Logue <logue@hotmail.co.jp>
+ * @license   MIT
+ * @see       {@link https://github.com/logue/Reverb.js}
+ *            {@link https://github.com/web-audio-components/simple-reverb}
  */
 class Reverb {
-  /** Add reverb effect.
+  /**
+   * constructor
    * @param {AudioContext} ctx
    * @param {{
    *   freq: (number|undefined),
@@ -169,50 +176,6 @@ class Reverb {
     this.filterNode.connect(this.node);
   };
 
-  /**
-   * Utility function for building an impulse response
-   * from the module parameters.
-   */
-  buildImpulse() {
-    /** @type {number} */
-    const rate = this.ctx.sampleRate;
-    /** @type {number} */
-    const length = Math.max(rate * this._time, 1);
-    /** @type {number} */
-    const delayDuration = rate * this._delay;
-    /** @type {AudioBuffer} */
-    const impulse = this.ctx.createBuffer(2, length, rate);
-    /** @type {Array<number>|ArrayBufferView} */
-    const impulseL = new Float32Array(length);
-    /** @type {Array<number>|ArrayBufferView} */
-    const impulseR = new Float32Array(length);
-
-    for (let i = 0; i < length; i++) {
-      let n = void 0;
-      let pow = void 0;
-      if (i < delayDuration) {
-        // Delay Effect
-        impulseL[i] = 0;
-        impulseR[i] = 0;
-      } else {
-        n = this._reverse ? length - (i - delayDuration) : i - delayDuration;
-        n = this._reverse ? length - i : i;
-        pow = Math.pow(1 - n / length, this._decay);
-        impulseL[i] = (Math.random() * 2 - 1) * pow;
-        impulseR[i] = (Math.random() * 2 - 1) * pow;
-      }
-      n = this._reverse ? length - (i - delayDuration) : i - delayDuration;
-      pow = Math.pow(1 - n / length, this._decay);
-      impulseL[i] = (Math.random() * 2 - 1) * pow;
-      impulseR[i] = (Math.random() * 2 - 1) * pow;
-    }
-
-    impulse.getChannelData(0).set(impulseL);
-    impulse.getChannelData(1).set(impulseR);
-
-    this.node.buffer = impulse;
-  }
-
   /** @param {number} mix */
   mix(mix) {
     this._mix = mix;
@@ -236,7 +199,7 @@ class Reverb {
   }
 
   /**
-   * Impulse response decay rate.
+   * Impulse response delay rate.
    * @param {number} delay
    */
   delay(delay) {
@@ -254,7 +217,7 @@ class Reverb {
   }
 
   /**
-   * Cut off frequency.
+   * Frequency.
    * @param {number} freq
    */
   freq(freq) {
@@ -271,8 +234,54 @@ class Reverb {
   }
 
   /**
+   * Utility function for building an impulse response
+   * from the module parameters.
+   * @private
+   */
+  buildImpulse() {
+    /** @type {number} */
+    const rate = this.ctx.sampleRate;
+    /** @type {number} */
+    const length = Math.max(rate * this._time, 1);
+    /** @type {number} */
+    const delayDuration = rate * this._delay;
+    /** @type {AudioBuffer} */
+    const impulse = this.ctx.createBuffer(2, length, rate);
+    /** @type {Array<number>|ArrayBufferView} */
+    const impulseL = new Float32Array(length);
+    /** @type {Array<number>|ArrayBufferView} */
+    const impulseR = new Float32Array(length);
+
+    for (let i = 0; i < length; i++) {
+      /** @var {number} */
+      let n = 0;
+      /** @var {number} */
+      let pow = 0;
+      if (i < delayDuration) {
+        // Delay Effect
+        impulseL[i] = 0;
+        impulseR[i] = 0;
+        n = this._reverse ? length - (i - delayDuration) : i - delayDuration;
+      } else {
+        n = this._reverse ? length - i : i;
+      }
+      pow = Math.pow(1 - n / length, this._decay);
+      impulseL[i] = (Math.random() * 2 - 1) * pow;
+      impulseR[i] = (Math.random() * 2 - 1) * pow;
+    }
+
+    // Generate stereo inpulse response data.
+    impulse.getChannelData(0).set(impulseL);
+    impulse.getChannelData(1).set(impulseR);
+
+    this.node.buffer = impulse;
+  }
+
+  /**
+   * Set Dry level.
    * @param {number} value
    * @return {number}
+   * @private
    */
   getDryLevel(value) {
     if (value > 1 || value < 0) {
@@ -287,8 +296,10 @@ class Reverb {
   }
 
   /**
+   * Set Wet level.
    * @param {number} value
    * @return {number}
+   * @private
    */
   getWetLevel(value) {
     if (value > 1 || value < 0) {
@@ -301,9 +312,7 @@ class Reverb {
 
     return 1 - ((value - 0.5) * 2);
   }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Reverb);
+};
 
 
 /***/ }),
@@ -1404,7 +1413,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Synthesizer", function() { return Synthesizer; });
 /* harmony import */ var _sound_font_synth_note__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sound_font_synth_note */ "./src/sound_font_synth_note.js");
 /* harmony import */ var _sf2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sf2 */ "./src/sf2.js");
-/* harmony import */ var _reverb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./reverb */ "./src/reverb.js");
+/* harmony import */ var _logue_reverb_src_reverb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @logue/reverb/src/reverb */ "./node_modules/@logue/reverb/src/reverb.js");
 
 
 
@@ -1527,7 +1536,7 @@ class Synthesizer {
     this.useReverb = true;
 
     /** @type {Reverb} */
-    this.reverb = new _reverb__WEBPACK_IMPORTED_MODULE_2__["default"](this.ctx);
+    this.reverb = new _logue_reverb_src_reverb__WEBPACK_IMPORTED_MODULE_2__["default"](this.ctx);
   }
 
   /**
@@ -1535,43 +1544,27 @@ class Synthesizer {
    */
   getAudioContext() {
     /** @type {AudioContext} */
-    const ctx = new (window.AudioContext || window.webkitAudioContext);
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
     // for legacy browsers
     ctx.createGain = ctx.createGain || ctx.createGainNode;
 
-    // Unlock AudioContext
-    if (ctx.state === 'suspended') {
-      const events = ['touchstart', 'touchend', 'mousedown', 'keydown'];
-      const unlock = () => {
-        events.forEach((event) => {
-          document.body.removeEventListener(event, unlock);
-        });
-        this.playSilent();
-        ctx.resume();
-      };
+    // Defreeze AudioContext for iOS.
+    const initAudioContext = () => {
+      document.removeEventListener('touchstart', initAudioContext);
+      // wake up AudioContext
+      const emptySource = ctx.createBufferSource();
+      emptySource.start();
+      emptySource.stop();
+    };
 
-      events.forEach((event) => {
-        document.body.addEventListener(event, unlock, false);
-      });
-    }
+    document.addEventListener('touchstart', initAudioContext);
 
     return ctx;
   }
 
   /**
-   * Play dummy sound
-   */
-  playSilent() {
-    const buf = this.ctx.createBuffer(1, 1, 22050);
-    const src = this.ctx.createBufferSource();
-    src.buffer = buf;
-    src.connect(this.ctx.destination);
-    src.start(0);
-  }
-
-  /**
-   *
+   * System Reset
    * @param {string} mode
    */
   init(mode = 'GM') {
@@ -2731,8 +2724,6 @@ class SynthesizerNote {
      *   panpot: number
      * }} */
     const instrument = this.instrument;
-    /** @type {Int16Array} */
-    let sample = this.buffer;
     /** @type {number} */
     const now = this.ctx.currentTime;
     /** @type {number} */
@@ -2766,7 +2757,7 @@ class SynthesizerNote {
     /** @type {number} */
     // const harmonicContent = instrument['harmonicContent']; // (Resonance)
 
-    sample = sample.subarray(0, sample.length + instrument['end']);
+    const sample = this.buffer.subarray(0, this.buffer.length + instrument['end']);
     /** @type {AudioBuffer} */
     const buffer = this.audioBuffer = ctx.createBuffer(1, sample.length, this.sampleRate);
     /** @type {Float32Array} */
