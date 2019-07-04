@@ -27,8 +27,8 @@ const soundfont = 'Yamaha XG Sound Set.sf2';
 const option = {
   // attach dom id
   placeholder : 'placeholder',
-  // If you not nessesaly to draw keyboad, set true.
-  disableSynth : false,
+  // If you not nessesaly to draw keyboad, set false.
+  drawSynth : true,
   // Cache Soundfont
   cache : true
 };
@@ -48,17 +48,17 @@ wml.setup(url);
 
 equires a browser that supports the Web Audio API.
 
-- Google Chrome 25+
-- Google Chrome for Android 28+
-- FireFox 25+
-- Edge
+* Google Chrome 25+
+* Google Chrome for Android 28+
+* FireFox 25+
+* Edge
 
-iOS is not supported.
+## MIDI Compatibility
 
-## WebMidiLink 対応
-
-* sf2synth.js is WebMidiLink の Link Level 1 に対応しています。
-* GM Level 2およびXG Lite相当です。
+* sf2synth.js is compliant with [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) Level 1.
+* Supported MIDI standards are [GM Level 2](https://en.wikipedia.org/wiki/General_MIDI_Level_2) and [YAMAHA XG Lite](https://en.wikipedia.org/wiki/Yamaha_XG) (equivalent to YAMAHA MU50).
+* MIDI files created in the [Roland GS](https://en.wikipedia.org/wiki/Roland_GS) standard may not play properly.
+* Portamento and chorus effect is not supported.
 * A specification called `progress` has been added as an instruction that is not compliant with WebMidiLink.
 
 ## License

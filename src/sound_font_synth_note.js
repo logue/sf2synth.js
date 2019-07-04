@@ -82,17 +82,17 @@ export class SynthesizerNote {
     /** @type {AudioBuffer} */
     this.audioBuffer;
     /** @type {AudioBufferSourceNode} */
-    this.bufferSource;
+    this.bufferSource = ctx.createBufferSource();
     /** @type {StereoPannerNode} */
-    this.panner;
+    this.panner = ctx.createPanner();
     /** @type {GainNode} */
-    this.gainOutput;
+    this.outputGainNode = ctx.createGain ? ctx.createGain() : ctx.createGainNode();
     /** @type {GainNode} */
-    this.expressionGain;
+    this.expressionGainNode = ctx.createGain ? ctx.createGain() : ctx.createGainNode();
     /** @type {BiquadFilterNode} */
-    this.filter;
+    this.filter = ctx.createBiquadFilter();
     /** @type {BiquadFilterNode} */
-    this.modulator;
+    this.modulator = ctx.createBiquadFilter();
   }
 
   /**
@@ -112,7 +112,7 @@ export class SynthesizerNote {
      * }} */
     const instrument = this.instrument;
     /** @type {number} */
-    const now = this.ctx.currentTime;
+    const now = this.ctx.currentTime || 0;
     /** @type {number} */
     const volDelay = now + instrument['volDelay'];
     /** @type {number} */
@@ -153,27 +153,24 @@ export class SynthesizerNote {
 
     // buffer source
     /** @type {AudioBufferSourceNode} */
-    const bufferSource = this.bufferSource = ctx.createBufferSource();
+    const bufferSource = this.bufferSource;
     bufferSource.buffer = buffer;
     bufferSource.loop = instrument['sampleModes'];
     bufferSource.loopStart = loopStart;
     bufferSource.loopEnd = loopEnd;
     this.updatePitchBend(this.pitchBend);
 
-    // audio node
+    // Output
     /** @type {GainNode} */
-    const output = this.gainOutput = ctx.createGain();
-    /** @type {AudioGain} */
-    const outputGain = output.gain;
+    const output = this.outputGainNode;
 
     // expression
-    this.expressionGain = ctx.createGain();
-    // this.expressionGain.gain.value = this.expression / 127;
-    this.expressionGain.gain.setTargetAtTime(this.expression / 127, this.ctx.currentTime, 0.015);
+    // this.expressionGainNode.gain.value = this.expression / 127;
+    this.expressionGainNode.gain.setTargetAtTime(this.expression / 127, this.startTime, 0.015);
 
     // panpot
     /** @type {StereoPannerNode} */
-    const panner = this.panner = ctx.createPanner();
+    const panner = this.panner;
     panner.panningModel = 'equalpower';
     // panner.distanceModel = 'inverse';
     panner.setPosition(
@@ -193,11 +190,13 @@ export class SynthesizerNote {
     }
 
     // volume envelope
-    outputGain.setValueAtTime(0, now)
-      .setValueAtTime(0, volDelay)
-      .setTargetAtTime(volume, volDelay, instrument['volAttack'])
-      .setValueAtTime(volume, volHold)
-      .linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
+    /** @type {AudioNode} */
+    const outputGain = output.gain;
+    outputGain.setValueAtTime(0, now);
+    outputGain.setValueAtTime(0, volDelay);
+    outputGain.setTargetAtTime(volume, volDelay, instrument['volAttack']);
+    outputGain.setValueAtTime(volume, volHold);
+    outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
 
     // modulation envelope
     /** @type {number} */
@@ -208,16 +207,16 @@ export class SynthesizerNote {
     const sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
 
     /** @type {BiquadFilterNode} */
-    const modulator = this.modulator = ctx.createBiquadFilter();
+    const modulator = this.modulator;
     modulator.Q.setValueAtTime(Math.pow(10, instrument['initialFilterQ'] / 200), now);
     // modulator.frequency.value = baseFreq;
-    modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
     modulator.type = 'lowpass';
-    modulator.frequency.setValueAtTime(baseFreq, now)
-      .setValueAtTime(baseFreq, modDelay)
-      .setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)) // For FireFox fix
-      .setValueAtTime(peekFreq, modHold)
-      .linearRampToValueAtTime(sustainFreq, modDecay);
+    modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
+    modulator.frequency.setValueAtTime(baseFreq, now);
+    modulator.frequency.setValueAtTime(baseFreq, modDelay);
+    modulator.frequency.setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)); // For FireFox fix
+    modulator.frequency.setValueAtTime(peekFreq, modHold);
+    modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
 
     // filter
     /*
@@ -236,13 +235,13 @@ export class SynthesizerNote {
     // connect
     bufferSource.connect(modulator);
     modulator.connect(panner);
-    panner.connect(this.expressionGain);
+    panner.connect(this.expressionGainNode);
 
     /*
-    this.expressionGain.connect(filter);
+    this.expressionGainNode.connect(filter);
     filter.connect(output);
     */
-    this.expressionGain.connect(output);
+    this.expressionGainNode.connect(output);
 
     if (!instrument['mute']) {
       this.connect();
@@ -291,7 +290,7 @@ export class SynthesizerNote {
     /** @type {AudioBufferSourceNode} */
     const bufferSource = this.bufferSource;
     /** @type {GainNode} */
-    const output = this.gainOutput;
+    const output = this.outputGainNode;
     /** @type {number} */
     const now = this.ctx.currentTime;
     const release = instrument['releaseTime'] - 64;
@@ -363,13 +362,13 @@ export class SynthesizerNote {
   /**
    */
   connect() {
-    this.gainOutput.connect(this.destination);
+    this.outputGainNode.connect(this.destination);
   }
 
   /**
    */
   disconnect() {
-    this.gainOutput.disconnect(0);
+    this.outputGainNode.disconnect(0);
   }
   /**
    */
@@ -402,7 +401,7 @@ export class SynthesizerNote {
    */
   updateExpression(expression) {
     // this.expressionGain.gain.value = (this.expression = expression) / 127;
-    this.expressionGain.gain.setTargetAtTime((this.expression = expression) / 127, this.ctx.currentTime, 0.015);
+    this.expressionGainNode.gain.setTargetAtTime((this.expression = expression) / 127, this.ctx.currentTime, 0.015);
   }
 
   /**

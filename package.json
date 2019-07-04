@@ -1,6 +1,6 @@
 {
   "name": "@logue/sf2synth",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "SoundFont2 Synthesizer",
   "scripts": {
     "watch": "webpack --mode development --watch --color --progress",
@@ -9,9 +9,10 @@
     "start": "webpack-dev-server --color --mode development",
     "fix": "eslint --fix ./src"
   },
+  "main": "bin/sf2.synth.min.js",
   "bin": {
-    "sf2.synth.min.js": "bin/sf2.synth.min.js",
-    "sf2.parser.min.js": "bin/sf2.parser.min.js"
+    "sf2synth": "bin/sf2.synth.min.js",
+    "sf2parser": "bin/sf2.parser.min.js"
   },
   "repository": {
     "type": "git",

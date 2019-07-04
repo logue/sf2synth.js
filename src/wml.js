@@ -31,14 +31,13 @@ export class WebMidiLink {
     /** @type {object} */
     this.option = option;
     /** @type {boolean} */
-    this.option.disableDrawSynth = option.disableDrawSynth || false;
+    this.option.drawSynth = option.drawSynth !== void 0 ? option.drawSynth : true;
     /** @type {boolean} */
-    this.option.cache = option.cache || true;
+    this.option.cache = option.cache !== void 0 ? option.cache : true;
     /** @type {HTMLElement} */
     this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body;
     /** @type {Window} */
     this.opener;
-
 
     // eslint-disable-next-line space-before-function-paren
     window.addEventListener('DOMContentLoaded', function () {
@@ -46,9 +45,9 @@ export class WebMidiLink {
     }.bind(this), false);
   };
 
-  /** @export */
   /**
    * @param {string} url
+   * @export
    */
   setup(url) {
     /** @type {Window} */
@@ -184,9 +183,9 @@ export class WebMidiLink {
             chunk += result.value.length;
             buffer.push(result.value);
             // 進捗を更新
-            const percentage = Math.round((chunk / total) * 100) + ' %';
-            progressBar.style.width = percentage;
-            progressBar.innerText = percentage;
+            const percentage = Math.round((chunk / total) * 100);
+            progressBar.style.width = percentage + '%';
+            progressBar.innerText = percentage + ' %';
             opener.postMessage('link,progress,' + chunk + ',' + total, '*');
 
             // 再帰する
@@ -227,7 +226,7 @@ export class WebMidiLink {
 
     if (!this.synth) {
       synth = this.synth = new Synthesizer(input);
-      if (!this.disableDrawSynth) {
+      if (this.option.drawSynth) {
         this.placeholder.appendChild(synth.drawSynth());
       }
       synth.init();
