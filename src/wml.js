@@ -28,16 +28,17 @@ export class WebMidiLink {
     this.xhr;
     /** @type {boolean} */
     this.rpnMode = true;
-    /** @type {Object} */
-    this.option = option || {};
+    /** @type {object} */
+    this.option = option;
     /** @type {boolean} */
-    this.disableDrawSynth = option.disableDrawSynth !== void 0;
+    this.option.disableDrawSynth = option.disableDrawSynth || false;
     /** @type {boolean} */
-    this.cache = option.cache !== void 0;
-    /** @type {Window} */
-    this.opener;
+    this.option.cache = option.cache || true;
     /** @type {HTMLElement} */
     this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body;
+    /** @type {Window} */
+    this.opener;
+
 
     // eslint-disable-next-line space-before-function-paren
     window.addEventListener('DOMContentLoaded', function () {
@@ -45,6 +46,7 @@ export class WebMidiLink {
     }.bind(this), false);
   };
 
+  /** @export */
   /**
    * @param {string} url
    */
@@ -70,25 +72,21 @@ export class WebMidiLink {
 
   /**
    * @param {string} url
+   * @export
    */
   load(url) {
     /** @type {Window} */
     const opener = window.opener ? window.opener : window.parent;
     /** @type {WebMidiLink} */
     const self = this;
-    /** @type {HTMLProgressElement} */
-    const progress =
-      this.placeholder.appendChild(document.createElement('progress'));
-    /** @type {HTMLOutputElement} */
-    const percentage =
-      progress.parentNode.insertBefore(document.createElement('output'), progress.nextElementSibling);
+    /** @type {HtmlDIVElement} */
+    const loading = this.placeholder.appendChild(document.createElement('div'));
 
     opener.postMessage('link,progress', '*');
 
     const ready = (stream) => {
       console.info('ready');
-      self.placeholder.removeChild(progress);
-      self.placeholder.removeChild(percentage);
+      self.placeholder.removeChild(loading);
       self.onload(stream);
       if (typeof self.loadCallback === 'function') {
         self.loadCallback(stream);
@@ -96,37 +94,58 @@ export class WebMidiLink {
       opener.postMessage('link,ready', '*');
     };
 
-    if (window.caches) {
+    if (this.option.cache && window.caches) {
       // キャッシュが利用可能な場合
+
+      loading.className = 'd-flex';
+
+      /** @type {HTMLDivElement} */
+      const spiner = loading.appendChild(document.createElement('div'));
+      spiner.className = 'spinner-border text-primary';
+      spiner.role = 'status';
+      spiner.ariaHidden = true;
+
+      /** @type {HTMLStrongElement} */
+      const loadingText = loading.appendChild(document.createElement('strong'));
+      loadingText.className = 'ml-1';
+      loadingText.innerText = 'Now Loading...';
+
       window.caches.open('wml').then((cache) => {
         cache
           .match(url)
-          .then((response) => {
-            console.info('Fetch Soundfont from cache.');
-            response.arrayBuffer().then((stream) => {
-              ready(stream);
-            }).catch((e) => {
-              console.err(e);
-            });
-          })
+          .then((response) => response.arrayBuffer())
+          .then((stream) => ready(stream))
           .catch(() => {
+            console.info('Fetch from server.');
             fetch(url)
               .then((response) => {
                 if (!response.ok) {
                   throw new Error('Network response was not ok.');
                 }
+                const copy = response.clone();
                 cache.put(url, response);
-                console.info('Save Soundfont to cache.');
-                response.arrayBuffer().then((stream) => {
-                  ready(stream);
-                }).catch((e) => console.err(e));
+                return copy.arrayBuffer();
               })
-              .catch((e) => alert('There has been a problem with your fetch operation: '+ e.message));
+              .then((stream) => ready(stream))
+              .catch((e) => alert('There has been a problem with your fetch operation: ' + e.message));
           });
       });
     } else {
       // キャッシュが使えない場合
       console.info('This server/client does not cache function.');
+
+      // プログレスバーを表示
+
+      /** @type {HTMLDivElement} */
+      const progress =
+        loading.appendChild(document.createElement('div'));
+      progress.className = 'progress';
+      /** @type {HTMLDivElement} */
+      const progressBar =
+        progress.appendChild(document.createElement('div'));
+      progressBar.className = 'progress-bar';
+      progressBar.role = 'progressbar';
+      progressBar.innerText = '0%';
 
       // 結合処理
       const concatenation = (segments) => {
@@ -165,8 +184,9 @@ export class WebMidiLink {
             chunk += result.value.length;
             buffer.push(result.value);
             // 進捗を更新
-            progress.value = chunk;
-            percentage.innerText = Math.round((chunk / total) * 100) + ' %';
+            const percentage = Math.round((chunk / total) * 100) + ' %';
+            progressBar.style.width = percentage;
+            progressBar.innerText = percentage;
             opener.postMessage('link,progress,' + chunk + ',' + total, '*');
 
             // 再帰する
@@ -174,12 +194,13 @@ export class WebMidiLink {
           };
           reader.read().then(processResult);
         })
-        .catch((e) => alert('There has been a problem with your fetch operation: '+ e.message));
+        .catch((e) => alert('There has been a problem with your fetch operation: ' + e.message));
     }
   }
 
   /**
    * @param {boolean} sw
+   * @export
    */
   setReverb(sw) {
     this.synth.setReverb(sw);
@@ -270,6 +291,7 @@ export class WebMidiLink {
 
   /**
    * @param {function(ArrayBuffer)} callback
+   * @export
    */
   setLoadCallback(callback) {
     this.loadCallback = callback;

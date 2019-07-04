@@ -1,28 +1,29 @@
 /**
  * Riff Parser class
+ * @private
  */
 export default class Riff {
   /**
    * @param {ByteArray} input input buffer.
-   * @param {Object=} opt_params option parameters.
+   * @param {Object=} optParams option parameters.
    */
-  constructor(input, opt_params = {}) {
+  constructor(input, optParams = {}) {
     /** @type {ByteArray} */
     this.input = input;
     /** @type {number} */
-    this.ip = opt_params['index'] || 0;
+    this.ip = optParams.index || 0;
     /** @type {number} */
-    this.length = opt_params['length'] || input.length - this.ip;
+    this.length = optParams.length || input.length - this.ip;
     /** @type {Array.<RiffChunk>} */
     this.chunkList;
     /** @type {number} */
     this.offset = this.ip;
     /** @type {boolean} */
     this.padding =
-      opt_params['padding'] !== void 0 ? opt_params['padding'] : true;
+      optParams.padding !== void 0 ? optParams.padding : true;
     /** @type {boolean} */
     this.bigEndian =
-      opt_params['bigEndian'] !== void 0 ? opt_params['bigEndian'] : false;
+      optParams.bigEndian !== void 0 ? optParams.bigEndian : false;
   }
 
   /**

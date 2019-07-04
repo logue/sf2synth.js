@@ -329,29 +329,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Riff; });
 /**
  * Riff Parser class
+ * @private
  */
 class Riff {
   /**
    * @param {ByteArray} input input buffer.
-   * @param {Object=} opt_params option parameters.
+   * @param {Object=} optParams option parameters.
    */
-  constructor(input, opt_params = {}) {
+  constructor(input, optParams = {}) {
     /** @type {ByteArray} */
     this.input = input;
     /** @type {number} */
-    this.ip = opt_params['index'] || 0;
+    this.ip = optParams.index || 0;
     /** @type {number} */
-    this.length = opt_params['length'] || input.length - this.ip;
+    this.length = optParams.length || input.length - this.ip;
     /** @type {Array.<RiffChunk>} */
     this.chunkList;
     /** @type {number} */
     this.offset = this.ip;
     /** @type {boolean} */
     this.padding =
-      opt_params['padding'] !== void 0 ? opt_params['padding'] : true;
+      optParams.padding !== void 0 ? optParams.padding : true;
     /** @type {boolean} */
     this.bigEndian =
-      opt_params['bigEndian'] !== void 0 ? opt_params['bigEndian'] : false;
+      optParams.bigEndian !== void 0 ? optParams.bigEndian : false;
   }
 
   /**
@@ -468,9 +469,9 @@ class Parser {
     /** @type {ByteArray} */
     this.input = input;
     /** @type {(Object|undefined)} */
-    this.parserOption = optParams['parserOption'];
+    this.parserOption = optParams.parserOption || {};
     /** @type {(Number|undefined)} */
-    this.sampleRate = optParams['sampleRate'] || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
+    this.sampleRate = optParams.sampleRate || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
     /** @type {Array.<Object>} */
     this.presetHeader;
@@ -552,8 +553,7 @@ class Parser {
     ];
   }
 
-  /**
-   */
+  /** @export */
   parse() {
     /** @type {Riff} */
     const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption);
@@ -1419,6 +1419,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * Synthesizer Class
+ * @private
  */
 class Synthesizer {
   /**
@@ -2613,7 +2614,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SynthesizerNote", function() { return SynthesizerNote; });
 /**
  * SynthesizerNote Class
- * @interface
+ * @private
  */
 class SynthesizerNote {
   /**
@@ -3078,16 +3079,17 @@ class WebMidiLink {
     this.xhr;
     /** @type {boolean} */
     this.rpnMode = true;
-    /** @type {Object} */
-    this.option = option || {};
+    /** @type {object} */
+    this.option = option;
     /** @type {boolean} */
-    this.disableDrawSynth = option.disableDrawSynth !== void 0;
+    this.option.disableDrawSynth = option.disableDrawSynth || false;
     /** @type {boolean} */
-    this.cache = option.cache !== void 0;
-    /** @type {Window} */
-    this.opener;
+    this.option.cache = option.cache || true;
     /** @type {HTMLElement} */
     this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body;
+    /** @type {Window} */
+    this.opener;
+
 
     // eslint-disable-next-line space-before-function-paren
     window.addEventListener('DOMContentLoaded', function () {
@@ -3095,6 +3097,7 @@ class WebMidiLink {
     }.bind(this), false);
   };
 
+  /** @export */
   /**
    * @param {string} url
    */
@@ -3120,25 +3123,21 @@ class WebMidiLink {
 
   /**
    * @param {string} url
+   * @export
    */
   load(url) {
     /** @type {Window} */
     const opener = window.opener ? window.opener : window.parent;
     /** @type {WebMidiLink} */
     const self = this;
-    /** @type {HTMLProgressElement} */
-    const progress =
-      this.placeholder.appendChild(document.createElement('progress'));
-    /** @type {HTMLOutputElement} */
-    const percentage =
-      progress.parentNode.insertBefore(document.createElement('output'), progress.nextElementSibling);
+    /** @type {HtmlDIVElement} */
+    const loading = this.placeholder.appendChild(document.createElement('div'));
 
     opener.postMessage('link,progress', '*');
 
     const ready = (stream) => {
       console.info('ready');
-      self.placeholder.removeChild(progress);
-      self.placeholder.removeChild(percentage);
+      self.placeholder.removeChild(loading);
       self.onload(stream);
       if (typeof self.loadCallback === 'function') {
         self.loadCallback(stream);
@@ -3146,37 +3145,58 @@ class WebMidiLink {
       opener.postMessage('link,ready', '*');
     };
 
-    if (window.caches) {
+    if (this.option.cache && window.caches) {
       // キャッシュが利用可能な場合
+
+      loading.className = 'd-flex';
+
+      /** @type {HTMLDivElement} */
+      const spiner = loading.appendChild(document.createElement('div'));
+      spiner.className = 'spinner-border text-primary';
+      spiner.role = 'status';
+      spiner.ariaHidden = true;
+
+      /** @type {HTMLStrongElement} */
+      const loadingText = loading.appendChild(document.createElement('strong'));
+      loadingText.className = 'ml-1';
+      loadingText.innerText = 'Now Loading...';
+
       window.caches.open('wml').then((cache) => {
         cache
           .match(url)
-          .then((response) => {
-            console.info('Fetch Soundfont from cache.');
-            response.arrayBuffer().then((stream) => {
-              ready(stream);
-            }).catch((e) => {
-              console.err(e);
-            });
-          })
+          .then((response) => response.arrayBuffer())
+          .then((stream) => ready(stream))
           .catch(() => {
+            console.info('Fetch from server.');
             fetch(url)
               .then((response) => {
                 if (!response.ok) {
                   throw new Error('Network response was not ok.');
                 }
+                const copy = response.clone();
                 cache.put(url, response);
-                console.info('Save Soundfont to cache.');
-                response.arrayBuffer().then((stream) => {
-                  ready(stream);
-                }).catch((e) => console.err(e));
+                return copy.arrayBuffer();
               })
-              .catch((e) => alert('There has been a problem with your fetch operation: '+ e.message));
+              .then((stream) => ready(stream))
+              .catch((e) => alert('There has been a problem with your fetch operation: ' + e.message));
           });
       });
     } else {
       // キャッシュが使えない場合
       console.info('This server/client does not cache function.');
+
+      // プログレスバーを表示
+
+      /** @type {HTMLDivElement} */
+      const progress =
+        loading.appendChild(document.createElement('div'));
+      progress.className = 'progress';
+      /** @type {HTMLDivElement} */
+      const progressBar =
+        progress.appendChild(document.createElement('div'));
+      progressBar.className = 'progress-bar';
+      progressBar.role = 'progressbar';
+      progressBar.innerText = '0%';
 
       // 結合処理
       const concatenation = (segments) => {
@@ -3215,8 +3235,9 @@ class WebMidiLink {
             chunk += result.value.length;
             buffer.push(result.value);
             // 進捗を更新
-            progress.value = chunk;
-            percentage.innerText = Math.round((chunk / total) * 100) + ' %';
+            const percentage = Math.round((chunk / total) * 100) + ' %';
+            progressBar.style.width = percentage;
+            progressBar.innerText = percentage;
             opener.postMessage('link,progress,' + chunk + ',' + total, '*');
 
             // 再帰する
@@ -3224,12 +3245,13 @@ class WebMidiLink {
           };
           reader.read().then(processResult);
         })
-        .catch((e) => alert('There has been a problem with your fetch operation: '+ e.message));
+        .catch((e) => alert('There has been a problem with your fetch operation: ' + e.message));
     }
   }
 
   /**
    * @param {boolean} sw
+   * @export
    */
   setReverb(sw) {
     this.synth.setReverb(sw);
@@ -3320,6 +3342,7 @@ class WebMidiLink {
 
   /**
    * @param {function(ArrayBuffer)} callback
+   * @export
    */
   setLoadCallback(callback) {
     this.loadCallback = callback;

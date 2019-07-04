@@ -11,9 +11,9 @@ export class Parser {
     /** @type {ByteArray} */
     this.input = input;
     /** @type {(Object|undefined)} */
-    this.parserOption = optParams['parserOption'];
+    this.parserOption = optParams.parserOption || {};
     /** @type {(Number|undefined)} */
-    this.sampleRate = optParams['sampleRate'] || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
+    this.sampleRate = optParams.sampleRate || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
     /** @type {Array.<Object>} */
     this.presetHeader;
@@ -95,8 +95,7 @@ export class Parser {
     ];
   }
 
-  /**
-   */
+  /** @export */
   parse() {
     /** @type {Riff} */
     const parser = new Riff(this.input, this.parserOption);

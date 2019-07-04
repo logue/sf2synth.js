@@ -109,29 +109,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Riff; });
 /**
  * Riff Parser class
+ * @private
  */
 class Riff {
   /**
    * @param {ByteArray} input input buffer.
-   * @param {Object=} opt_params option parameters.
+   * @param {Object=} optParams option parameters.
    */
-  constructor(input, opt_params = {}) {
+  constructor(input, optParams = {}) {
     /** @type {ByteArray} */
     this.input = input;
     /** @type {number} */
-    this.ip = opt_params['index'] || 0;
+    this.ip = optParams.index || 0;
     /** @type {number} */
-    this.length = opt_params['length'] || input.length - this.ip;
+    this.length = optParams.length || input.length - this.ip;
     /** @type {Array.<RiffChunk>} */
     this.chunkList;
     /** @type {number} */
     this.offset = this.ip;
     /** @type {boolean} */
     this.padding =
-      opt_params['padding'] !== void 0 ? opt_params['padding'] : true;
+      optParams.padding !== void 0 ? optParams.padding : true;
     /** @type {boolean} */
     this.bigEndian =
-      opt_params['bigEndian'] !== void 0 ? opt_params['bigEndian'] : false;
+      optParams.bigEndian !== void 0 ? optParams.bigEndian : false;
   }
 
   /**
@@ -248,9 +249,9 @@ class Parser {
     /** @type {ByteArray} */
     this.input = input;
     /** @type {(Object|undefined)} */
-    this.parserOption = optParams['parserOption'];
+    this.parserOption = optParams.parserOption || {};
     /** @type {(Number|undefined)} */
-    this.sampleRate = optParams['sampleRate'] || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
+    this.sampleRate = optParams.sampleRate || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
     /** @type {Array.<Object>} */
     this.presetHeader;
@@ -332,8 +333,7 @@ class Parser {
     ];
   }
 
-  /**
-   */
+  /** @export */
   parse() {
     /** @type {Riff} */
     const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption);

@@ -11,7 +11,7 @@ npm install @logue/sf2synth
 or
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/logue/sf2synth.js@master/bin/sf2synth.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/logue/sf2synth.js@develop/bin/sf2.synth.min.js"></script>
 ```
 
 ## Usage
@@ -28,10 +28,12 @@ const option = {
   // attach dom id
   placeholder : 'placeholder',
   // If you not nessesaly to draw keyboad, set true.
-  disableSynth : false.
+  disableSynth : false,
+  // Cache Soundfont
+  cache : true
 };
 
-const wml = new SoundFont.WebMidiLink();
+const wml = new SoundFont.WebMidiLink(option);
 wml.setLoadCallback(() => {
     // Finishd to 
 });
@@ -64,4 +66,4 @@ iOS is not supported.
 Licensed under the MIT License.
 
 * 2013      by imaya / GREE Inc.
-* 2013-2019 by Logue.
+* 2013-2019 by Logue.np

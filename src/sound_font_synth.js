@@ -3,6 +3,7 @@ import Parser from './sf2';
 import Reverb from '@logue/reverb/src/reverb';
 /**
  * Synthesizer Class
+ * @private
  */
 export class Synthesizer {
   /**

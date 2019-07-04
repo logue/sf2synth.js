@@ -1,6 +1,6 @@
 /**
  * SynthesizerNote Class
- * @interface
+ * @private
  */
 export class SynthesizerNote {
   /**
