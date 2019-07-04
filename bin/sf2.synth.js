@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.2 | imaya / GREE Inc. / Logue | license: MIT */
+/*! @logue/sf2synth v0.3.3 | imaya / GREE Inc. / Logue | license: MIT */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
