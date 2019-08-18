@@ -121,6 +121,8 @@ export class WebMidiLink {
                 if (!response.ok) {
                   throw new Error('Network response was not ok.');
                 }
+                const total = response.headers.get('content-length');
+                loadingText.innerText += ' (' + total + 'byte)';
                 const copy = response.clone();
                 cache.put(url, response);
                 return copy.arrayBuffer();

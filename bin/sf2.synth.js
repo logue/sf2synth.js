@@ -1538,6 +1538,14 @@ class Synthesizer {
 
     /** @type {Reverb} */
     this.reverb = new _logue_reverb_src_reverb__WEBPACK_IMPORTED_MODULE_2__["default"](this.ctx);
+
+
+    this.observer = new IntersectionObserver((entries, object) => {
+      entries.forEach((entry, i) => {
+        // 交差していない
+        entry.target.dataset.isIntersecting = entry.isIntersecting;
+      });
+    }, {});
   }
 
   /**
@@ -2041,6 +2049,7 @@ class Synthesizer {
         }
       }
       instElem.appendChild(channelElem);
+      this.observer.observe(channelElem);
     }
     wrapper.appendChild(instElem);
     return wrapper;
@@ -2056,14 +2065,20 @@ class Synthesizer {
       return;
     }
     /** @type {HTMLDivElement} */
-    const keyElem = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .key:nth-child(' + (key + 1) + ')');
+    const channelElem = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
 
-    if (velocity === 0) {
-      keyElem.classList.remove('note-on');
-      keyElem.style.opacity = 1;
-    } else {
-      keyElem.classList.add('note-on');
-      keyElem.style.opacity = (velocity / 127).toFixed(2);
+    if (channelElem.dataset.isIntersecting) {
+      /** @type {HTMLDivElement} */
+      const keyElem = channelElem.querySelector('.key:nth-child(' + (key + 1) + ')');
+      if (velocity === 0) {
+        if (keyElem.classList.contains('note-on')) {
+          keyElem.classList.remove('note-on');
+        }
+        keyElem.style.opacity = 1;
+      } else {
+        keyElem.classList.add('note-on');
+        keyElem.style.opacity = (velocity / 127).toFixed(2);
+      }
     }
   }
 
@@ -2368,6 +2383,7 @@ class Synthesizer {
     if (this.element) {
       this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume').innerText = volume;
     }
+
     this.channelVolume[channel] = volume;
   }
 
@@ -3171,6 +3187,8 @@ class WebMidiLink {
                 if (!response.ok) {
                   throw new Error('Network response was not ok.');
                 }
+                const total = response.headers.get('content-length');
+                loadingText.innerText += ' (' + total + 'byte)';
                 const copy = response.clone();
                 cache.put(url, response);
                 return copy.arrayBuffer();

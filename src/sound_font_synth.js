@@ -122,6 +122,14 @@ export class Synthesizer {
 
     /** @type {Reverb} */
     this.reverb = new Reverb(this.ctx);
+
+
+    this.observer = new IntersectionObserver((entries, object) => {
+      entries.forEach((entry, i) => {
+        // 交差していない
+        entry.target.dataset.isIntersecting = entry.isIntersecting;
+      });
+    }, {});
   }
 
   /**
@@ -625,6 +633,7 @@ export class Synthesizer {
         }
       }
       instElem.appendChild(channelElem);
+      this.observer.observe(channelElem);
     }
     wrapper.appendChild(instElem);
     return wrapper;
@@ -640,14 +649,20 @@ export class Synthesizer {
       return;
     }
     /** @type {HTMLDivElement} */
-    const keyElem = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .key:nth-child(' + (key + 1) + ')');
+    const channelElem = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
 
-    if (velocity === 0) {
-      keyElem.classList.remove('note-on');
-      keyElem.style.opacity = 1;
-    } else {
-      keyElem.classList.add('note-on');
-      keyElem.style.opacity = (velocity / 127).toFixed(2);
+    if (channelElem.dataset.isIntersecting) {
+      /** @type {HTMLDivElement} */
+      const keyElem = channelElem.querySelector('.key:nth-child(' + (key + 1) + ')');
+      if (velocity === 0) {
+        if (keyElem.classList.contains('note-on')) {
+          keyElem.classList.remove('note-on');
+        }
+        keyElem.style.opacity = 1;
+      } else {
+        keyElem.classList.add('note-on');
+        keyElem.style.opacity = (velocity / 127).toFixed(2);
+      }
     }
   }
 
@@ -952,6 +967,7 @@ export class Synthesizer {
     if (this.element) {
       this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume').innerText = volume;
     }
+
     this.channelVolume[channel] = volume;
   }
 
