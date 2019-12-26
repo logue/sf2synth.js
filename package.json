@@ -24,39 +24,43 @@
     "wml",
     "sf2",
     "soundfont",
-    "synthesizer"
+    "synthesizer",
+    "webaudio",
+    "gm",
+    "xg",
+    "gs"
   ],
   "author": {
-     "name": "imaya / GREE Inc.",
-     "url": "https://github.com/gree"
+    "name": "imaya / GREE Inc.",
+    "url": "https://github.com/gree"
   },
   "contributors": [
     {
-      "name": "Masashi Yoshikawa",
+      "name": "Logue",
       "email": "logue@hotmail.co.jp",
-      "url": "https://logue.dev/"
+      "url": "https://logue.dev"
     }
   ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/logue/sf2synth.js/issues"
   },
-  "homepage": "https://github.com/logue/sf2synth.js#readme",
+  "homepage": "https://github.com/logue/sf2synth.js",
   "devDependencies": {
     "@babel/cli": "^7.7.7",
     "@babel/core": "^7.7.7",
     "@babel/polyfill": "^7.7.0",
     "@babel/preset-env": "^7.7.7",
     "babel-loader": "^8.0.6",
-    "drop-console-webpack-plugin": "^4.0.1",
     "eslint": "^6.8.0",
     "eslint-config-google": "^0.13.0",
     "fs": "0.0.1-security",
+    "terser-webpack-plugin": "^2.3.1",
     "webpack": "^4.41.4",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
-    "@logue/reverb": "^0.2.1"
+    "@logue/reverb": "^0.2.2"
   }
 }

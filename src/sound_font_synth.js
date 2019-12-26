@@ -60,8 +60,6 @@ export class Synthesizer {
       false, false, false, false, false, false, false, false,
     ];
     /** @type {Array.<number>} */
-    this.channelReverbDepth = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
-    /** @type {Array.<number>} */
     this.channelHarmonicContent = [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64];
     /** @type {Array.<number>} */
     this.channelCutOffFrequency = [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64];
@@ -213,6 +211,8 @@ export class Synthesizer {
       this.element.querySelector('.header div:before').innerText = mode + ' Mode';
     }
     */
+
+    this.element.dataset.mode = mode;
   }
 
   /**
@@ -638,6 +638,7 @@ export class Synthesizer {
   }
 
   /**
+   * バンクセレクタの選択ボックスの処理
    * @param {number} channel
    */
   updateBankSelect(channel) {
@@ -660,6 +661,7 @@ export class Synthesizer {
   }
 
   /**
+   * プログラムチェンジの選択ボックスの処理
    * @param {number} channel
    */
   updateProgramSelect(channel) {
@@ -1066,6 +1068,7 @@ export class Synthesizer {
    * @param {number} depth
    */
   reverbDepth(channel, depth) {
+    // リバーブ深度は、ドライ／ウェット比とする。
     this.reverb[channel].mix(depth / 127);
   }
 
