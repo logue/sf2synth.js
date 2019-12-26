@@ -57,7 +57,7 @@ export default class Riff {
         ((input[ip++]) | (input[ip++] << 8) |
           (input[ip++] << 16) | (input[ip++] << 24)) >>> 0
       ),
-      ip
+      ip,
     ));
 
     ip += size;

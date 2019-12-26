@@ -1,4 +1,5 @@
 import Riff from './riff.js';
+
 /**
  * SoundFont Parser Class
  */
@@ -480,7 +481,7 @@ export class Parser {
 
       let sample = new Int16Array(new Uint8Array(data.subarray(
         this.samplingData.offset + start * 2,
-        this.samplingData.offset + end * 2
+        this.samplingData.offset + end * 2,
       )).buffer);
 
       startLoop -= start;
@@ -824,7 +825,7 @@ export class Parser {
       zone,
       zone[index].instrumentGeneratorIndex,
       zone[index + 1] ? zone[index + 1].instrumentGeneratorIndex : this.instrumentZoneGenerator.length,
-      this.instrumentZoneGenerator
+      this.instrumentZoneGenerator,
     );
 
     return {
@@ -844,7 +845,7 @@ export class Parser {
       zone,
       zone[index].presetModulatorIndex,
       zone[index + 1] ? zone[index + 1].instrumentModulatorIndex : this.instrumentZoneModulator.length,
-      this.instrumentZoneModulator
+      this.instrumentZoneModulator,
     );
 
     return {
@@ -864,7 +865,7 @@ export class Parser {
       zone,
       zone[index].presetGeneratorIndex,
       zone[index + 1] ? zone[index + 1].presetGeneratorIndex : this.presetZoneGenerator.length,
-      this.presetZoneGenerator
+      this.presetZoneGenerator,
     );
 
     return {
@@ -885,7 +886,7 @@ export class Parser {
       zone,
       zone[index].presetModulatorIndex,
       zone[index + 1] ? zone[index + 1].presetModulatorIndex : this.presetZoneModulator.length,
-      this.presetZoneModulator
+      this.presetZoneModulator,
     );
 
     return {

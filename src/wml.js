@@ -1,3 +1,4 @@
+import Meta from './meta.js';
 import Synthesizer from './sound_font_synth';
 
 /**
@@ -38,6 +39,10 @@ export class WebMidiLink {
     this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body;
     /** @type {Window} */
     this.opener;
+    /** @type {number} */
+    this.version = Meta.version;
+    /** @type {string} */
+    this.build = Meta.date;
 
     // eslint-disable-next-line space-before-function-paren
     window.addEventListener('DOMContentLoaded', function () {
@@ -76,25 +81,30 @@ export class WebMidiLink {
   load(url) {
     /** @type {Window} */
     const opener = window.opener ? window.opener : window.parent;
-    /** @type {WebMidiLink} */
-    const self = this;
     /** @type {HtmlDIVElement} */
     const loading = this.placeholder.appendChild(document.createElement('div'));
+    /** @type {HTMLStrongElement} */
+    const loadingText = loading.appendChild(document.createElement('strong'));
+    /** @type {WebMidiLink} */
+    const self = this;
 
     opener.postMessage('link,progress', '*');
+    loadingText.innerText = 'Now Loading...';
 
     const ready = (stream) => {
       console.info('ready');
-      self.placeholder.removeChild(loading);
+      loadingText.innerText = 'Parsing SoundFont...';
       self.onload(stream);
       if (typeof self.loadCallback === 'function') {
         self.loadCallback(stream);
       }
+      self.placeholder.removeChild(loading);
       opener.postMessage('link,ready', '*');
     };
 
     if (this.option.cache && window.caches) {
       // キャッシュが利用可能な場合
+      loadingText.className = 'ml-1';
 
       loading.className = 'd-flex';
 
@@ -103,11 +113,6 @@ export class WebMidiLink {
       spiner.className = 'spinner-border text-primary';
       spiner.role = 'status';
       spiner.ariaHidden = true;
-
-      /** @type {HTMLStrongElement} */
-      const loadingText = loading.appendChild(document.createElement('strong'));
-      loadingText.className = 'ml-1';
-      loadingText.innerText = 'Now Loading...';
 
       window.caches.open('wml').then((cache) => {
         cache
@@ -128,14 +133,17 @@ export class WebMidiLink {
                 return copy.arrayBuffer();
               })
               .then((stream) => ready(stream))
-              .catch((e) => alert('There has been a problem with your fetch operation: ' + e.message));
+              .catch((e) => {
+                console.error(e);
+                alert('There has been a problem with your fetch operation: ' + e.message);
+              });
           });
       });
     } else {
       // キャッシュが使えない場合
       console.info('This server/client does not cache function.');
 
-      // プログレスバーを表示
+      // プログレスバーを表示（こっちの処理系はCacheStorageが使えないときのみ使われる。）
 
       /** @type {HTMLDivElement} */
       const progress =
@@ -372,7 +380,7 @@ export class WebMidiLink {
                     case 0: // Pitch Bend Sensitivity
                       synth.pitchBendSensitivity(
                         channel,
-                        synth.getPitchBendSensitivity(channel) + value / 100
+                        synth.getPitchBendSensitivity(channel) + value / 100,
                       );
                       break;
                     case 1:

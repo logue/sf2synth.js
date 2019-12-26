@@ -1,6 +1,6 @@
 import SynthesizerNote from './sound_font_synth_note';
 import Parser from './sf2';
-import Reverb from '@logue/reverb/src/reverb';
+import Reverb from '@logue/reverb/bin/reverb';
 /**
  * Synthesizer Class
  * @private
@@ -117,12 +117,12 @@ export class Synthesizer {
 
     this.programSet = {};
 
-    /** @type {boolean} */
-    this.useReverb = true;
+    /** @type {Array.<Reverb>}リバーブエフェクト（チャンネル毎に用意する） */
+    this.reverb = [];
 
-    /** @type {Reverb} */
-    this.reverb = new Reverb(this.ctx);
-
+    for (i = 0; i < 16; ++i) {
+      this.reverb[i] = new Reverb(this.ctx, { mix: 0.315 });// リバーブエフェクトのデフォルト値は40なので40/127の値がドライ／ウェット値となる
+    }
 
     this.observer = new IntersectionObserver((entries, object) => {
       entries.forEach((entry, i) => {
@@ -161,6 +161,8 @@ export class Synthesizer {
    * @param {string} mode
    */
   init(mode = 'GM') {
+    this.gainMaster.disconnect();
+
     /** @type {number} */
     let i;
 
@@ -204,12 +206,7 @@ export class Synthesizer {
       this.percussionVolume[i] = 127;
     }
 
-    if (this.useReverb) {
-      // エフェクターをリセット
-      this.reverb.node.disconnect(0);
-      this.gainMaster.connect(this.reverb.node);
-      this.reverb.node.connect(this.ctx.destination);
-    }
+    this.gainMaster.connect(this.ctx.destination);
 
     /*
     if (this.element) {
@@ -349,7 +346,6 @@ export class Synthesizer {
     /** @type {number} */
     const tune = this.getModGenAmount(generator, 'coarseTune') + this.getModGenAmount(generator, 'fineTune') / 100;
 
-
     for (let i = generator['keyRange'].lo, il = generator['keyRange'].hi; i <= il; ++i) {
       if (preset[i]) {
         continue;
@@ -362,14 +358,14 @@ export class Synthesizer {
         'sample': parser.sample[sampleId],
         'sampleRate': sampleHeader.sampleRate,
         'sampleModes': this.getModGenAmount(generator, 'sampleModes'),
-        'basePlaybackRate': Math.pow(
-          Math.pow(2, 1 / 12),
-          (
+        'basePlaybackRate':
+          1.0594630943592953 // Math.pow(2, 1 / 12)
+          ** ((
             i -
             this.getModGenAmount(generator, 'overridingRootKey', sampleHeader.originalPitch) +
             tune + (sampleHeader.pitchCorrection / 100)
           ) * scale
-        ),
+          ),
         'modEnvToPitch': this.getModGenAmount(generator, 'modEnvToPitch') / 100,
         'scaleTuning': scale,
         'start': this.getModGenAmount(generator, 'startAddrsCoarseOffset') * 32768 +
@@ -388,28 +384,28 @@ export class Synthesizer {
           this.getModGenAmount(generator, 'endloopAddrsCoarseOffset') * 32768 +
           this.getModGenAmount(generator, 'endloopAddrsOffset')
         ),
-        'volDelay': Math.pow(2, volDelay / 1200),
-        'volAttack': Math.pow(2, volAttack / 1200),
-        'volHold': Math.pow(2, volHold / 1200) *
-          Math.pow(2, (60 - i) * this.getModGenAmount(generator, 'keynumToVolEnvHold') / 1200),
-        'volDecay': Math.pow(2, volDecay / 1200) *
-          Math.pow(2, (60 - i) * this.getModGenAmount(generator, 'keynumToVolEnvDecay') / 1200),
+        'volDelay': 2 ** (volDelay / 1200),
+        'volAttack': 2 ** (volAttack / 1200),
+        'volHold': 2 ** (volHold / 1200) *
+          2 ** ((60 - i) * this.getModGenAmount(generator, 'keynumToVolEnvHold') / 1200),
+        'volDecay': 2 ** (volDecay / 1200) *
+          2 ** ((60 - i) * this.getModGenAmount(generator, 'keynumToVolEnvDecay') / 1200),
         'volSustain': volSustain / 1000,
-        'volRelease': Math.pow(2, volRelease / 1200),
-        'modDelay': Math.pow(2, modDelay / 1200),
-        'modAttack': Math.pow(2, modAttack / 1200),
-        'modHold': Math.pow(2, modHold / 1200) *
-          Math.pow(2, (60 - i) * this.getModGenAmount(generator, 'keynumToModEnvHold') / 1200),
-        'modDecay': Math.pow(2, modDecay / 1200) *
-          Math.pow(2, (60 - i) * this.getModGenAmount(generator, 'keynumToModEnvDecay') / 1200),
+        'volRelease': 2 ** (volRelease / 1200),
+        'modDelay': 2 ** (modDelay / 1200),
+        'modAttack': 2 ** (modAttack / 1200),
+        'modHold': 2 ** (modHold / 1200) *
+          2 ** ((60 - i) * this.getModGenAmount(generator, 'keynumToModEnvHold') / 1200),
+        'modDecay': 2 ** (modDecay / 1200) *
+          2 ** ((60 - i) * this.getModGenAmount(generator, 'keynumToModEnvDecay') / 1200),
         'modSustain': modSustain / 1000,
-        'modRelease': Math.pow(2, modRelease / 1200),
+        'modRelease': 2 ** (modRelease / 1200),
         'initialFilterFc': this.getModGenAmount(generator, 'initialFilterFc', 13500),
         'modEnvToFilterFc': this.getModGenAmount(generator, 'modEnvToFilterFc'),
         'initialFilterQ': this.getModGenAmount(generator, 'initialFilterQ'),
         'reverbEffectSend': this.getModGenAmount(generator, 'reverbEffectSend'),
         'initialAttenuation': this.getModGenAmount(generator, 'initialAttenuation'),
-        'freqVibLFO': freqVibLFO ? Math.pow(2, freqVibLFO / 1200) * 8.176 : void 0,
+        'freqVibLFO': freqVibLFO ? (2 ** (freqVibLFO / 1200)) * 8.176 : void 0,
         'pan': pan ? pan / 1200 : void 0,
       };
     }
@@ -421,11 +417,7 @@ export class Synthesizer {
    * @param {number=} optDefault
    * @return {number}
    */
-  getModGenAmount(generator, enumeratorType, optDefault) {
-    if (optDefault === void 0) {
-      optDefault = 0;
-    }
-
+  getModGenAmount(generator, enumeratorType, optDefault = 0) {
     return generator[enumeratorType] ? generator[enumeratorType].amount : optDefault;
   }
 
@@ -442,41 +434,20 @@ export class Synthesizer {
    */
   setMasterVolume(volume) {
     this.masterVolume = volume;
-    // this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
-    this.gainMaster.gain.setTargetAtTime(this.baseVolume * (volume / 16384), this.ctx.currentTime, 0.015);
+    this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
   }
 
   /**
    */
   connect() {
     this.bufSrc.connect(this.gainMaster);
-    this.gainMaster.connect(this.ctx.destination);
-    if (this.useReverb) {
-      this.gainMaster.connect(this.reverb.node);
-      this.reverb.node.connect(this.ctx.destination);
-    }
   }
 
   /**
    */
   disconnect() {
-    this.bufSrc.disconnect(0);
-    this.gainMaster.disconnect(0);
-    if (this.useReverb) {
-      this.reverb.node.disconnect(0);
-    }
+    this.bufSrc.disconnect(this.gainMaster);
     this.bufSrc.buffer = null;
-  }
-
-  /** @param {boolean} use */
-  setReverb(use) {
-    this.useReverb = use;
-    if (use) {
-      this.gainMaster.connect(this.reverb.node);
-      this.reverb.node.connect(this.ctx.destination);
-    } else {
-      this.reverb.node.disconnect(0);
-    }
   }
 
   /**
@@ -750,7 +721,7 @@ export class Synthesizer {
         bankIndex,
         this.channelInstrument[channel],
         channel,
-        key
+        key,
       );
       return;
     }
@@ -773,6 +744,7 @@ export class Synthesizer {
     instrumentKey['releaseTime'] = this.channelRelease[channel];
     instrumentKey['cutOffFrequency'] = this.cutOffFrequency[channel];
     instrumentKey['harmonicContent'] = this.harmonicContent[channel];
+    instrumentKey['reverb'] = this.reverb[channel];
 
     // percussion
     if (bankIndex > 125) {
@@ -1094,7 +1066,7 @@ export class Synthesizer {
    * @param {number} depth
    */
   reverbDepth(channel, depth) {
-    this.reverbDepth[channel] = depth;
+    this.reverb[channel].mix(depth / 127);
   }
 
   /**

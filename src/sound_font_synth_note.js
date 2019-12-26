@@ -67,6 +67,9 @@ export class SynthesizerNote {
     /** @type {number} */
     this.hermonicContent = instrument['hermonicContent'];
 
+    /** @type {Reverb} */
+    this.reverb = instrument['reverb'];
+
     // state
     /** @type {number} */
     this.startTime = ctx.currentTime;
@@ -86,9 +89,9 @@ export class SynthesizerNote {
     /** @type {StereoPannerNode} */
     this.panner = ctx.createPanner();
     /** @type {GainNode} */
-    this.outputGainNode = ctx.createGain ? ctx.createGain() : ctx.createGainNode();
+    this.outputGainNode = ctx.createGain();
     /** @type {GainNode} */
-    this.expressionGainNode = ctx.createGain ? ctx.createGain() : ctx.createGainNode();
+    this.expressionGainNode = ctx.createGain();
     /** @type {BiquadFilterNode} */
     this.filter = ctx.createBiquadFilter();
     /** @type {BiquadFilterNode} */
@@ -155,7 +158,7 @@ export class SynthesizerNote {
     /** @type {AudioBufferSourceNode} */
     const bufferSource = this.bufferSource;
     bufferSource.buffer = buffer;
-    bufferSource.loop = instrument['sampleModes'];
+    bufferSource.loop = instrument['sampleModes'] | 0 || 0;
     bufferSource.loopStart = loopStart;
     bufferSource.loopEnd = loopEnd;
     this.updatePitchBend(this.pitchBend);
@@ -165,8 +168,7 @@ export class SynthesizerNote {
     const output = this.outputGainNode;
 
     // expression
-    // this.expressionGainNode.gain.value = this.expression / 127;
-    this.expressionGainNode.gain.setTargetAtTime(this.expression / 127, this.startTime, 0.015);
+    this.expressionGainNode.gain.value = this.expression / 127;
 
     // panpot
     /** @type {StereoPannerNode} */
@@ -176,7 +178,7 @@ export class SynthesizerNote {
     panner.setPosition(
       Math.sin(pan * Math.PI / 2),
       0,
-      Math.cos(pan * Math.PI / 2)
+      Math.cos(pan * Math.PI / 2),
     );
 
     // ---------------------------------------------------------------------------
@@ -208,8 +210,8 @@ export class SynthesizerNote {
 
     /** @type {BiquadFilterNode} */
     const modulator = this.modulator;
-    modulator.Q.setValueAtTime(Math.pow(10, instrument['initialFilterQ'] / 200), now);
-    // modulator.frequency.value = baseFreq;
+    modulator.Q.setValueAtTime(10 ** (instrument['initialFilterQ'] / 200), now);
+    modulator.frequency.value = baseFreq;
     modulator.type = 'lowpass';
     modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
     modulator.frequency.setValueAtTime(baseFreq, now);
@@ -256,7 +258,7 @@ export class SynthesizerNote {
    * @return {number}
    */
   amountToFreq(val) {
-    return Math.pow(2, (val - 6900) / 1200) * 440;
+    return 2 ** ((val - 6900) / 1200) * 440;
   }
 
   /**
@@ -362,7 +364,7 @@ export class SynthesizerNote {
   /**
    */
   connect() {
-    this.outputGainNode.connect(this.destination);
+    this.reverb.connect(this.outputGainNode).connect(this.destination);
   }
 
   /**
@@ -385,10 +387,10 @@ export class SynthesizerNote {
     /** @type {number} */
     const modDecay = modAttack + instrument['modDecay'];
     /** @type {number} */
-    const peekPitch = computed * Math.pow(
-      Math.pow(2, 1 / 12),
-      this.modEnvToPitch * this.instrument['scaleTuning']
-    );
+    const peekPitch = computed *
+      1.0594630943592953 // Math.pow(2, 1 / 12)
+      **
+      (this.modEnvToPitch * this.instrument['scaleTuning']);
 
     playbackRate.cancelScheduledValues(0);
     playbackRate.setValueAtTime(computed, start);
@@ -400,20 +402,19 @@ export class SynthesizerNote {
    * @param {number} expression
    */
   updateExpression(expression) {
-    // this.expressionGain.gain.value = (this.expression = expression) / 127;
-    this.expressionGainNode.gain.setTargetAtTime((this.expression = expression) / 127, this.ctx.currentTime, 0.015);
+    this.expressionGainNode.gain.value = (this.expression = expression) / 127;
   }
 
   /**
    * @param {number} pitchBend
    */
   updatePitchBend(pitchBend) {
-    this.computedPlaybackRate = this.playbackRate * Math.pow(
-      Math.pow(2, 1 / 12),
-      (pitchBend / (pitchBend < 0 ? 8192 : 8191)) *
-      this.pitchBendSensitivity *
-      this.instrument['scaleTuning']
-    );
+    this.computedPlaybackRate = this.playbackRate * (
+      1.0594630943592953 // Math.pow(2, 1 / 12)
+      **
+      ((pitchBend / (pitchBend < 0 ? 8192 : 8191)) *
+        this.pitchBendSensitivity *
+        this.instrument['scaleTuning']));
     this.schedulePlaybackRate();
   }
 }
