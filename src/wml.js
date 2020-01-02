@@ -84,135 +84,119 @@ export class WebMidiLink {
     /** @type {HtmlDIVElement} */
     const loading = this.placeholder.appendChild(document.createElement('div'));
     /** @type {HTMLStrongElement} */
-    const loadingText = loading.appendChild(document.createElement('strong'));
+    const loadingText = loading.appendChild(document.createElement('p'));
+    /** @type {HTMLDivElement} */
+    const progress = loading.appendChild(document.createElement('div'));
+    progress.className = 'progress';
+    /** @type {HTMLDivElement} */
+    const progressBar = progress.appendChild(document.createElement('div'));
+    progressBar.className = 'progress-bar';
+    progressBar.role = 'progressbar';
     /** @type {WebMidiLink} */
     const self = this;
 
     opener.postMessage('link,progress', '*');
+    loading.className = 'alert alert-warning';
     loadingText.innerText = 'Now Loading...';
 
-    const ready = (stream) => {
+    const promise = new Promise(resolve =>{ 
+      if (this.option.cache && window.caches) {
+        // キャッシュが利用可能な場合
+        loadingText.className = 'ml-1';
+        loading.className = 'd-flex';
+
+        window.caches.open('wml').then((cache) => {
+          cache
+            .match(url)
+            .then((response) => response.arrayBuffer())
+            .then((stream) => resolve(stream))
+            .catch(() => {
+              console.info('Fetch from server.');
+              fetch(url)
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                  }
+                  /** @type {number} */
+                  const total = response.headers.get('content-length') | 0;
+                  loadingText.innerText += ` (${total}bytes)`;
+                  /** @type {Response} レスポンスのストリーム */
+                  const copy = response.clone();
+                  cache.put(url, response);
+                  return copy.arrayBuffer();
+                })
+                .then((stream) => resolve(stream))
+                // .catch((e) => {
+
+              // console.error(e);
+              // alert('There has been a problem with your fetch operation: ' + e.message);
+              //  )}
+              ;
+            });
+        });
+      } else {
+        // キャッシュが使えない場合
+        console.info('This server/client does not cache function.');
+
+        // 結合処理
+        const concatenation = (segments) => {
+          let sumLength = 0;
+          for (let i = 0; i < segments.length; ++i) {
+            sumLength += segments[i].byteLength;
+          }
+          const whole = new Uint8Array(sumLength);
+          let pos = 0;
+          for (let i = 0; i < segments.length; ++i) {
+            whole.set(new Uint8Array(segments[i]), pos);
+            pos += segments[i].byteLength;
+          }
+          return whole.buffer;
+        };
+
+        fetch(url)
+          .then((res) => {
+            // 全体サイズ
+            const total = res.headers.get('content-length');
+            progress.max = total;
+
+            // body の reader を取得する
+            const reader = res.body.getReader();
+            let chunk = 0;
+            const buffer = [];
+            const processResult = (result) => {
+              // done が true なら最後の chunk
+              if (result.done) {
+                const stream = concatenation(buffer);
+                resolve(stream);
+                return;
+              }
+
+              // chunk の長さの蓄積を total で割れば進捗が分かる
+              chunk += result.value.length;
+              buffer.push(result.value);
+              // 進捗を更新
+              const percentage = Math.round((chunk / total) * 100);
+              progressBar.style.width = percentage + '%';
+              progressBar.innerText = percentage + ' %';
+              opener.postMessage('link,progress,' + chunk + ',' + total, '*');
+
+              // 再帰する
+              return reader.read().then(processResult);
+            };
+            reader.read().then(processResult);
+          })
+          .catch((e) => alert('There has been a problem with your fetch operation: ' + e.message));
+      }
+    }).then(stream => {
       console.info('ready');
       loadingText.innerText = 'Parsing SoundFont...';
       self.onload(stream);
+      loadingText.innerText = '';
       if (typeof self.loadCallback === 'function') {
         self.loadCallback(stream);
       }
-      self.placeholder.removeChild(loading);
       opener.postMessage('link,ready', '*');
-    };
-
-    if (this.option.cache && window.caches) {
-      // キャッシュが利用可能な場合
-      loadingText.className = 'ml-1';
-
-      loading.className = 'd-flex';
-
-      /** @type {HTMLDivElement} */
-      const spiner = loading.appendChild(document.createElement('div'));
-      spiner.className = 'spinner-border text-primary';
-      spiner.role = 'status';
-      spiner.ariaHidden = true;
-
-      window.caches.open('wml').then((cache) => {
-        cache
-          .match(url)
-          .then((response) => response.arrayBuffer())
-          .then((stream) => ready(stream))
-          .catch(() => {
-            console.info('Fetch from server.');
-            fetch(url)
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error('Network response was not ok.');
-                }
-                const total = response.headers.get('content-length');
-                loadingText.innerText += ' (' + total + 'byte)';
-                const copy = response.clone();
-                cache.put(url, response);
-                return copy.arrayBuffer();
-              })
-              .then((stream) => ready(stream))
-              .catch((e) => {
-                console.error(e);
-                alert('There has been a problem with your fetch operation: ' + e.message);
-              });
-          });
-      });
-    } else {
-      // キャッシュが使えない場合
-      console.info('This server/client does not cache function.');
-
-      // プログレスバーを表示（こっちの処理系はCacheStorageが使えないときのみ使われる。）
-
-      /** @type {HTMLDivElement} */
-      const progress =
-        loading.appendChild(document.createElement('div'));
-      progress.className = 'progress';
-      /** @type {HTMLDivElement} */
-      const progressBar =
-        progress.appendChild(document.createElement('div'));
-      progressBar.className = 'progress-bar';
-      progressBar.role = 'progressbar';
-      progressBar.innerText = '0%';
-
-      // 結合処理
-      const concatenation = (segments) => {
-        let sumLength = 0;
-        for (let i = 0; i < segments.length; ++i) {
-          sumLength += segments[i].byteLength;
-        }
-        const whole = new Uint8Array(sumLength);
-        let pos = 0;
-        for (let i = 0; i < segments.length; ++i) {
-          whole.set(new Uint8Array(segments[i]), pos);
-          pos += segments[i].byteLength;
-        }
-        return whole.buffer;
-      };
-
-      fetch(url)
-        .then((res) => {
-          // 全体サイズ
-          const total = res.headers.get('content-length');
-          progress.max = total;
-
-          // body の reader を取得する
-          const reader = res.body.getReader();
-          let chunk = 0;
-          const buffer = [];
-          const processResult = (result) => {
-            // done が true なら最後の chunk
-            if (result.done) {
-              const stream = concatenation(buffer);
-              ready(stream);
-              return;
-            }
-
-            // chunk の長さの蓄積を total で割れば進捗が分かる
-            chunk += result.value.length;
-            buffer.push(result.value);
-            // 進捗を更新
-            const percentage = Math.round((chunk / total) * 100);
-            progressBar.style.width = percentage + '%';
-            progressBar.innerText = percentage + ' %';
-            opener.postMessage('link,progress,' + chunk + ',' + total, '*');
-
-            // 再帰する
-            return reader.read().then(processResult);
-          };
-          reader.read().then(processResult);
-        })
-        .catch((e) => alert('There has been a problem with your fetch operation: ' + e.message));
-    }
-  }
-
-  /**
-   * @param {boolean} sw
-   * @export
-   */
-  setReverb(sw) {
-    this.synth.setReverb(sw);
+    });
   }
 
   /**
@@ -229,22 +213,28 @@ export class WebMidiLink {
    * @param {Uint8Array} input
    */
   loadSoundFont(input) {
-    /** @type {Synthesizer} */
-    let synth;
     /** @type {Window} */
     const w = window;
 
     if (!this.synth) {
-      synth = this.synth = new Synthesizer(input);
+      // 子要素を全削除
+      //while (this.placeholder.firstChild) {
+      //  this.placeholder.removeChild(this.placeholder.firstChild);
+      //}
+      /** @type {Synthesizer} */
+      const synth = this.synth = new Synthesizer(input);
       if (this.option.drawSynth) {
         this.placeholder.appendChild(synth.drawSynth());
+      } else {
+        const readyElem = document.createElement('strong');
+        readyElem.innerText = 'Ready.';
+        this.placeholder.appendChild(readyElem);
       }
       synth.init();
       synth.start();
       w.addEventListener('message', this.messageHandler, false);
     } else {
-      synth = this.synth;
-      synth.refreshInstruments(input);
+      this.synth.refreshInstruments(input);
     }
 
     // link ready
@@ -333,7 +323,10 @@ export class WebMidiLink {
           case 0x00: // Bank Select MSB: Bn 00 dd
             synth.bankSelectMsb(channel, value);
             break;
-          case 0x01: // Modulation
+          case 0x01: // Modulation Depth
+            synth.modulationDepth(channel, value);
+            break;
+          case 0x05: // Portament Time
             break;
           case 0x06: // Data Entry(MSB): Bn 06 dd
             if (this.rpnMode) {
@@ -468,108 +461,156 @@ export class WebMidiLink {
         synth.pitchBend(channel, message[1], message[2]);
         break;
       case 0xf0: // System Exclusive Message
-        // ID number
-        switch (message[1]) {
-          case 0x7e: // non-realtime
-            // TODO
-            // GM Reset: F0 7E 7F 09 01 F7
-            if (message[2] === 0x7f && message[3] === 0x09 && message[4] === 0x01) {
+        //   F0
+        //   [2]<vendor ID>
+        //   [3]<device ID>
+        //   [4]<sub ID 1>
+        //   [5]<sub ID 2>
+        //   [6]<size of parameter key>
+        //   [7]<size of parameter value>
+        //   [8]<MSB>
+        //   [9]<LSB>
+        //   [10]<data>
+        //   [11]<checksum> [IGNORE]
+        //   F7 EOX [IGNORE]
+
+        /** @type {number} Vendor ID (Roland=0x41 / YAMAHA=0x43 / Non Realtime=0x7E / Realtime=0x7F) */
+        const vendor = message[2];
+        /** @type {number} Device ID (GM extended=0x10 / ポケミク=0x79 / Any=0x7F) */
+        const device = message[3];
+        /** @type {number} Sub ID 1 (Model ID: GM=0x09 / GS=0x42 / XG=0x4C) */
+        const subId1 = message[4];
+        /** @type {number} Sub ID 2 */
+        const subId2 = message[5];
+
+        // Gneral MIDI
+        // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
+
+        if (vendor === 0x7e && device === 0x09) {
+          // Non Realtime
+          switch (subId1) {
+            case 0x01:
+              // GM System On
               synth.init('GM');
-            }
-            break;
-          case 0x7f: // realtime
-            // sub ID 1
-            switch (message[3]) {
-              case 0x04: // device control
-                // sub ID 2
-                switch (message[4]) {
-                  case 0x01: // master volume: F0 7F 7F 04 01 [value] [value] F7
-                    synth.setMasterVolume(message[5] + (message[6] << 7));
-                    break;
-                }
-                break;
-            }
-            break;
+              break;
+            case 0x02:
+              // GM System Off
+              // Ignore
+            case 0x03:
+              // GM2 System On
+              synth.init('GM2');
+              break;
+          }
+        } else if (vendor === 0x7f) {
+          // Realtime
+
+          // Through
         }
 
-        // Vendor
-        switch (message[2]) {
-          case 0x43: // Yamaha XG
-            if (message[5] === 0x08) {
-              // XG Dram Part: F0 43 [dev] 4C 08 [partNum] 07 [map] F7
-              // but there is no file to use much this parameter...
-              if (message[7] !== 0x00) { // [map]
-                synth.setPercussionPart(message[6], true);
-              } else {
-                synth.setPercussionPart(message[6], false);
-              }
-              // console.log(message);
-            }
-            switch (message[7]) {
-              case 0x04:
-                // XG Master Volume: F0 43 [dev] 4C 00 00 04 [value] F7
-                synth.setMasterVolume((message[8] << 7) * 2);
-                // console.log(message[8] << 7);
-                break;
-              case 0x7E:
-                // XG Reset: F0 43 [dev] 4C 00 00 7E 00 F7
-                synth.init('XG');
-                console.log('XG Reset');
-                break;
-            }
-            break;
-          case 0x41: // Roland GS / TG300B Mode
-            // TODO
-            switch (message[8]) {
-              case 0x04:
-                // GS Master Volume: F0 41 [dev] 42 12 40 00 04 [value] 58 F7
-                synth.setMasterVolume(message[9] << 7);
-                break;
-              case 0x7F:
-                // GS Reset: F0 41 [dev] 42 12 40 00 7F 00 41 F7
-                synth.init('GS');
-                console.log('GS Reset');
-                break;
-              case 0x15:
-                // GS Dram part: F0 41 [dev] 42 12 40 1[part no] [Map] [sum] F7
-                // Notice: [sum] is ignroe in this program.
-                // http://www.ssw.co.jp/dtm/drums/drsetup.htm
-                // http://www.roland.co.jp/support/by_product/sd-20/knowledge_base/1826700/
+        // http://www.amei.or.jp/report/report4.html
+        if (vendor === 0x41) {
+          console.log('GS:', this.dumpMessage(message));
+          // GS
+          // http://lib.roland.co.jp/support/jp/manuals/res/1809974/SC-88VL_j.pdf
+          // F0 42 10 42 12 40 [part] [key] [value] [checksum] F7
+          // TODO
+          switch (message[8]) {
+            case 0x04:
+              // GS Master Volume: F0 41 10 42 12 40 00 04 [value] [checksum] F7
+              synth.setMasterVolume(message[9] << 7);
+              break;
+            case 0x7F:
+              // GS Reset: F0 41 10 42 12 40 00 7F 00 [checksum] F7
+              synth.init('GS');
+              console.info('GS Reset');
+              break;
+            case 0x15:
+              // GS Dram part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
+              // Notice: [sum] is ignroe in this program.
 
-                const part = message[7] - 0x0F;
-                const map = message[8];
-                if (part === 0) {
-                  // 10 Ch.
-                  if (map !== 0x00) {
-                    synth.setPercussionPart(9, true);
-                  } else {
-                    synth.setPercussionPart(9, false);
-                  }
-                } else if (part >= 10) {
-                  // 1~9 Ch.
-                  if (map !== 0x00) {
-                    synth.setPercussionPart(part - 1, true);
-                  } else {
-                    synth.setPercussionPart(part - 1, false);
-                  }
+              const part = message[7] - 0x0F;
+              const map = message[8];
+              if (part === 0) {
+                // 10 Ch.
+                if (map !== 0x00) {
+                  synth.setPercussionPart(9, true);
                 } else {
-                  // 11~16 Ch.
-                  if (map !== 0x00) {
-                    synth.setPercussionPart(part, true);
-                  } else {
-                    synth.setPercussionPart(part, false);
-                  }
+                  synth.setPercussionPart(9, false);
                 }
+              } else if (part >= 10) {
+                // 1~9 Ch.
+                if (map !== 0x00) {
+                  synth.setPercussionPart(part - 1, true);
+                } else {
+                  synth.setPercussionPart(part - 1, false);
+                }
+              } else {
+                // 11~16 Ch.
+                if (map !== 0x00) {
+                  synth.setPercussionPart(part, true);
+                } else {
+                  synth.setPercussionPart(part, false);
+                }
+              }
+              break;
+          }
+        } else if (vendor == 0x43) {
+          console.log('XG:', this.dumpMessage(message));
+          // XG
+          if (subId2 === 0x08) {
+            // XG Dram Part: F0 43 10 4C 08 [partNum] 07 [map] F7
+            // but there is no file to use much this parameter...
+            if (message[7] !== 0x00) { // [map]
+              synth.setPercussionPart(message[6], true);
+            } else {
+              synth.setPercussionPart(message[6], false);
+            }
+            // console.log(message);
+          }
+          switch (message[7]) {
+            case 0x04:
+              // XG Master Volume: F0 43 10 4C 00 00 04 [value] F7
+              synth.setMasterVolume((message[8] << 7) * 2);
+              // console.log(message[8] << 7);
+              break;
+            case 0x7E:
+              // XG Reset: F0 43 10 4C 00 00 7E 00 F7
+              synth.init('XG');
+              console.info('XG Reset');
+              break;
+          }
+        }
+
+        switch (device) {
+          case 0x04: // device control
+            // sub ID 2
+            switch (subId2) {
+              case 0x01: // master volume: F0 7F 7F 04 01 [value] [value] F7
+                synth.setMasterVolume(message[5] + (message[6] << 7));
                 break;
             }
             break;
         }
+
         break;
       default: // not supported
         synth.setPercussionPart(9, true);
         break;
     }
   };
+
+  /**
+   * Dump System Exclusive Message
+   * @private
+   * @param {Array} message
+   */
+  dumpMessage(message) {
+    const ret = [];
+    for (const msg of message) {
+      ret.push(msg.toString(16).toUpperCase());
+    }
+    return ret.join(' ');
+  }
 }
 
 export default WebMidiLink;

@@ -1,0 +1,340 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/input-group";
+@import "~bootstrap/scss/custom-forms";
+@import "~bootstrap/scss/alert";
+@import "~bootstrap/scss/progress";
+@import "~bootstrap/scss/spinners";
+@import "~bootstrap/scss/utilities";
+
+.synthesizer {
+    meter {
+        width: 100%;
+    }
+
+    .instrument {
+        padding: 0 auto;
+        font-size: 0.625rem;
+    }
+
+    .custom-select-sm {
+        height: 1.66rem;
+        font-size: inherit;
+    }
+
+    .custom-select {
+        padding: 0.2rem;
+    }
+
+    .hold {
+        color: #dc3545;
+    }
+
+    .channel,
+    .header {
+        display: flex;
+        align-items: center;
+        margin: 1px auto;
+    }
+
+    .channel {
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .channel:nth-child(2n) {
+        background-color: #f8f9fa;
+        /* 100 */
+    }
+
+    .mute {
+        margin-right: 0;
+        width: 2rem;
+    }
+
+    .bank,
+    .bank select {
+        width: 4rem;
+    }
+
+    .program,
+    .program select {
+        width: 10rem;
+    }
+
+    .volume {
+        width: 1.5rem;
+        font-size: 0.75rem;
+        align-self:center;
+    }
+
+    .channel .volume,
+    .channel .pitchBendSensitivity {
+        text-align: right;
+    }
+
+    .panpot,
+    .pitchBend {
+        padding: 0 0.1rem;
+        min-width: 4rem;
+        align-self:center;
+    }
+
+
+    .pitchBendSensitivity {
+        width: 1rem;
+        align-self:center;
+    }
+
+    .keys {
+        overflow: hidden;
+        -webkit-app-region: no-drag;
+        margin: 0.1rem;
+        align-self: flex-end;
+        display:block;
+    }
+
+    .channel .keys {
+        height: 1.66rem;
+        border: 1px solid #adb5bd;
+    }
+
+    .keys>.key {
+        cursor: pointer;
+        position: relative;
+        float: left;
+        border: none;
+        padding: 0;
+        margin: 0;
+        background-color: transparent;
+    }
+
+    .keys>.tone {
+        width: 10px;
+        height: 100%;
+        border-left: 1px solid #adb5bd;
+        /* 500 */
+        box-sizing: border-box;
+    }
+
+    .keys>.key:nth-child(12n + 1) {
+        border-left: 1px solid #495057;
+        /* 700 */
+    }
+
+    .keys>.tone:first-child {
+        border-left: 0 none;
+    }
+
+    .keys>.semitone {
+        width: 7px;
+        height: 50%;
+        left: 4px;
+        margin-left: -6px;
+        border: 1px solid #343a40;
+        border-top: none;
+        background-color: #343a40;
+        /* 800 */
+        z-index: 999;
+    }
+
+    .channel:nth-child(1){
+        >*:before{
+            top: -1rem;
+            position:relative;
+            font-weight: bold;
+        }
+        .mute:before{
+            content: 'Ch';
+        }
+        .bank:before{
+            content: 'Bank';
+        }
+
+        .program:before{
+            content: 'Prog.';
+        }
+
+        /*
+        .volume:before {
+            content: 'Vol.';
+        }
+        */
+
+        .panpot:before{
+            content: 'Pan';
+        }
+        .pitchBend:before {
+            content: 'Pitch';
+        }
+    }
+
+    .channel:nth-child(1) .key.note-on {
+        background-color: #e53636;
+    }
+
+    .channel:nth-child(2) .key.note-on {
+        background-color: #e57636;
+    }
+
+    .channel:nth-child(3) .key.note-on {
+        background-color: #e5ba3b;
+    }
+
+    .channel:nth-child(4) .key.note-on {
+        background-color: #d5e84c;
+    }
+
+    .channel:nth-child(5) .key.note-on {
+        background-color: #8de536;
+    }
+
+    .channel:nth-child(6) .key.note-on {
+        background-color: #51d83c;
+    }
+
+    .channel:nth-child(7) .key.note-on {
+        background-color: #35dd5f;
+    }
+
+    .channel:nth-child(8) .key.note-on {
+        background-color: #33d697;
+    }
+
+    .channel:nth-child(9) .key.note-on {
+        background-color: #30cccc;
+    }
+
+    .channel:nth-child(10) .key.note-on {
+        background-color: #40aae8;
+    }
+
+    .channel:nth-child(11) .key.note-on {
+        background-color: #5d80ea;
+    }
+
+    .channel:nth-child(12) .key.note-on {
+        background-color: #796aed;
+    }
+
+    .channel:nth-child(13) .key.note-on {
+        background-color: #a056ea;
+    }
+
+    .channel:nth-child(14) .key.note-on {
+        background-color: #cf44e5;
+    }
+
+    .channel:nth-child(15) .key.note-on {
+        background-color: #e536b9;
+    }
+
+    .channel:nth-child(16) .key.note-on {
+        background-color: #e53679;
+    }
+
+    @media(max-width: 1200px) {
+        .keys>.tone {
+            width: 7px;
+        }
+
+        .keys>.semitone {
+            width: 5px;
+            left: 3px;
+            margin-left: -5px;
+        }
+    }
+
+    @media(max-width: 991.98px) {
+
+        .panpot,
+        .pitchBend {
+            min-width: 2rem;
+        }
+
+        .keys>.tone {
+            width: 6px;
+        }
+
+        .keys>.semitone {
+            width: 4px;
+            left: 2px;
+            margin-left: -4px;
+        }
+
+    }
+
+    @media(max-width: 767.98px) {
+
+        .panpot,
+        .pitchBend {
+            min-width: 2rem;
+        }
+
+        .keys>.tone {
+            width: 5px;
+        }
+
+        .keys>.semitone {
+            width: 3px;
+            left: 3px;
+            margin-left: -4px
+        }
+    }
+
+    @media(max-width: 720px) {
+        .channel {
+            flex-wrap: wrap;
+        }
+
+        .panpot,
+        .pitchBend {
+            min-width: 4rem;
+        }
+
+        .keys {
+            height: 1.75rem;
+        }
+
+        .keys>.tone {
+            width: 7px;
+        }
+
+        .keys>.semitone {
+            width: 5px;
+            left: 3px;
+            margin-left: -5px;
+        }
+    }
+
+    @media(max-width: 576px) {
+        .channel {
+            flex-wrap: wrap;
+        }
+
+        .panpot,
+        .pitchBend {
+            min-width: 2rem;
+        }
+
+        .keys {
+            height: 1.75rem;
+        }
+
+        .keys>.tone {
+            width: 6px;
+        }
+
+        .keys>.semitone {
+            width: 4px;
+            left: 2px;
+            margin-left: -4px;
+        }
+    }
+}

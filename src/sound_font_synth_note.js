@@ -114,6 +114,7 @@ export class SynthesizerNote {
      *   panpot: number
      * }} */
     const instrument = this.instrument;
+    // console.log(instrument);
     /** @type {number} */
     const now = this.ctx.currentTime || 0;
     /** @type {number} */
@@ -142,10 +143,6 @@ export class SynthesizerNote {
     // http://cpansearch.perl.org/src/PJB/MIDI-SoundFont-1.08/doc/sfspec21.html#8.4.6
     /** @type {number} */
     const pan = instrument['pan'] !== void 0 ? instrument['pan'] : this.panpot;
-    /** @type {number} */
-    // const cutOffFrequency = instrument['cutOffFrequency']; // (Brightness)
-    /** @type {number} */
-    // const harmonicContent = instrument['harmonicContent']; // (Resonance)
 
     const sample = this.buffer.subarray(0, this.buffer.length + instrument['end']);
     /** @type {AudioBuffer} */
@@ -220,29 +217,11 @@ export class SynthesizerNote {
     modulator.frequency.setValueAtTime(peekFreq, modHold);
     modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
 
-    // filter
-    /*
-    const filter = this.filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = this.ctx.sampleRate / 2;
-    filter.gain.value = 0;
-    filter.Q.value = 0;
-    // console.log(this.sampleRate, 'Hz');
-    filter.frequency.value = (cutOffFrequency / this.sampleRate) * 100000; // Brightness = 0 ~ 127  64 = 350 / LPF 100~20000
-    // console.log('Brightness:', cutOffFrequency, ' = ', filter.frequency.value, 'Hz');
-    filter.Q.value = harmonicContent < 0 ? 0 : harmonicContent - 64; // Resonance 0 ~ 127 / Q = 0~50
-    // console.log('Resonance:', harmonicContent, ' = ', filter.Q.value);
-    */
-
     // connect
     bufferSource.connect(modulator);
     modulator.connect(panner);
     panner.connect(this.expressionGainNode);
 
-    /*
-    this.expressionGainNode.connect(filter);
-    filter.connect(output);
-    */
     this.expressionGainNode.connect(output);
 
     if (!instrument['mute']) {
@@ -334,8 +313,13 @@ export class SynthesizerNote {
 
     switch (instrument['sampleModes']) {
       case 0:
+        // ループしない
+        bufferSource.loop = false;
+        bufferSource.disconnect();
+        bufferSource.buffer = null;
         break;
       case 1:
+        // ループさせる
         output.gain.cancelScheduledValues(0);
         output.gain.setValueAtTime(output.gain.value, now);
         output.gain.linearRampToValueAtTime(0, volEndTime);
@@ -351,12 +335,24 @@ export class SynthesizerNote {
         bufferSource.stop(volEndTime);
         break;
       case 2:
-        console.log('detect unused sampleModes');
+        // 未定義
+        console.error('detect unused sampleModes');
         break;
       case 3:
+        // ノートオフまでループさせる
+        output.gain.cancelScheduledValues(0);
+        output.gain.setValueAtTime(output.gain.value, now);
+        output.gain.linearRampToValueAtTime(0, volEndTime);
+
+        modulator.frequency.cancelScheduledValues(0);
+        modulator.frequency.setValueAtTime(modulator.frequency.value, now);
+        modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
+
+        bufferSource.playbackRate.cancelScheduledValues(0);
+        bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
+        bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
+      default:
         bufferSource.loop = false;
-        bufferSource.disconnect();
-        bufferSource.buffer = null;
         break;
     }
   }

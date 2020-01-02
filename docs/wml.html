@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="robots" content="noindex" />
+  <title>Web Midi Link</title>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-33600926-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-33600926-1');
+  </script>
+  <link rel="stylesheet" href="wml.css" />
+</head>
+
+<body>
+  <div class="container-fluid">
+    <header class="d-flex justify-content-between align-items-end">
+      <h1 class="h2">SoundFont:<span id="soundfont"></span></h1>
+      <p class="text-right">
+        By
+        <a href="https://logue.be/" target="_blank">Logue</a> /
+        <small>Last Modified: <span id="build"></span></small>
+      </p>
+    </header>
+    <main>
+      <div id="message" class="alert alert-warning">Loading...</div>
+      <div class="d-flex justify-content-between align-items-center">
+        <!--div class="custom-control custom-checkbox custom-control-inline">
+          <input type="checkbox" class="custom-control-input" id="velocity" />
+          <label class="custom-control-label" for="velocity">Display Velocity</label>
+        </div-->
+        <div class="custom-file form-control-sm ml-3">
+          <input type="file" class="custom-file-input" id="file" accept="audio/x-soundfont">
+          <label class="custom-file-label" for="file">Load SoundFont2 file
+            <small class="d-none d-sm-inline">(drag and drop here *.sf2 file to change sound font)</small>
+          </label>
+        </div>
+      </div>
+      <hr />
+      <div id="placeholder"></div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/query-string@1.0.1/query-string.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/g200kg/WAAPISim@master/waapisim.min.js"></script>
+  <script src="sf2.synth.js"></script>
+  <script>
+    /*<![CDATA[*/
+    const message = document.getElementById('message');
+    const qs = queryString.parse(window.location.search);
+    var option = {};
+    if (qs.ui === 'false') {
+      option.drawSynth = false;
+    }
+    const sf = qs.soundfont ? decodeURIComponent(qs.soundfont) : 'Yamaha XG Sound Set.sf2';
+    document.getElementById('soundfont').innerText = sf;
+    option.placeholder = 'placeholder';
+    const wml = new SoundFont.WebMidiLink(option);
+    document.getElementById('build').innerText = wml.build;;
+    wml.setLoadCallback(function () {
+      message.style.display = 'none';
+    });
+    wml.setup(sf);
+
+    // Load sound font
+    const handleSoundFont = (file) => {
+      const reader = new FileReader();
+
+      // wml.cancelLoading();
+
+      reader.readAsArrayBuffer(file);
+
+      reader.onload = function (e) {
+        var data = new Uint8Array(e.target.result);
+        wml.loadSoundFont(data);
+        document.getElementById('soundfont').innerText = file.name;
+        message.style.display = 'none';
+      };
+
+      reader.onloadstart = function (e) {
+        message.style.display = 'block';
+      };
+
+      reader.onprogress = function (e) {
+        if (e.lengthComputable) {
+          let percentLoaded = Math.round((e.loaded / e.total) * 10000);
+          message.innerHTML = '<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="' +
+            percentLoaded + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + percentLoaded + '%;">' +
+            percentLoaded + ' %</div></div>';
+        }
+      }
+    }
+
+    // local file
+    window.addEventListener('DOMContentLoaded', (event) => {
+      // File selector
+      const fileElement = document.getElementById('file');
+      document.getElementById('file').addEventListener('change', (event) => {
+        var file = document.getElementById("file").files[0];
+        handleSoundFont(file);
+        event.preventDefault();
+      }, false);
+
+      const droparea = document.getElementById('placeholder');
+      droparea.addEventListener('dragover', (e) => {
+        droparea.className = "alert-danger";
+        e.preventDefault();
+      }, true);
+
+      droparea.addEventListener('drop', (e) => {
+        droparea.className = "";
+        var dt = e.dataTransfer;
+        var files = dt.files;
+        e.stopPropagation();
+        e.preventDefault();
+        handleSoundFont(files[0]);
+      }, true);
+
+      droparea.addEventListener('dragleave', (e) => {
+        droparea.className = "";
+      }, true);
+
+    }, false);
+    /*]]>*/
+  </script>
+  </div>
+</body>
+
+</html>

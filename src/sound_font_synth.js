@@ -1,6 +1,6 @@
 import SynthesizerNote from './sound_font_synth_note';
 import Parser from './sf2';
-import Reverb from '@logue/reverb/bin/reverb';
+import Reverb from '@logue/reverb/src/reverb';
 /**
  * Synthesizer Class
  * @private
@@ -118,8 +118,13 @@ export class Synthesizer {
     /** @type {Array.<Reverb>}リバーブエフェクト（チャンネル毎に用意する） */
     this.reverb = [];
 
+    /** @type {Array.<BiquadFilterNode>} フィルタ（ビブラートなど） */
+    this.filter = [];
+
     for (i = 0; i < 16; ++i) {
-      this.reverb[i] = new Reverb(this.ctx, { mix: 0.315 });// リバーブエフェクトのデフォルト値は40なので40/127の値がドライ／ウェット値となる
+      this.reverb[i] = new Reverb(this.ctx, { mix: 0.315 });// リバーブエフェクトのデフォルト値は40なので40/127の値をドライ／ウェット値となる
+      // フィルタを定義
+      this.filter[i] = this.ctx.createBiquadFilter();
     }
 
     this.observer = new IntersectionObserver((entries, object) => {
@@ -310,9 +315,10 @@ export class Synthesizer {
     /** @type {Generator} */
     const generator = info.generator;
 
-    if (generator['keyRange'] === void 0 || generator['sampleID'] === void 0) {
+    if (generator.keyRange === void 0 || generator.sampleID === void 0) {
       return;
     }
+    // console.log(generator);
     /** @type {number} */
     const volDelay = this.getModGenAmount(generator, 'delayVolEnv', -12000);
     /** @type {number} */
@@ -346,7 +352,7 @@ export class Synthesizer {
     /** @type {number} */
     const tune = this.getModGenAmount(generator, 'coarseTune') + this.getModGenAmount(generator, 'fineTune') / 100;
 
-    for (let i = generator['keyRange'].lo, il = generator['keyRange'].hi; i <= il; ++i) {
+    for (let i = generator.keyRange.lo, il = generator.keyRange.hi; i <= il; ++i) {
       if (preset[i]) {
         continue;
       }
@@ -417,7 +423,7 @@ export class Synthesizer {
    * @param {number=} optDefault
    * @return {number}
    */
-  getModGenAmount(generator, enumeratorType, optDefault = 0) {
+  getModGenAmount(generator, enumeratorType, optDefault = null) {
     return generator[enumeratorType] ? generator[enumeratorType].amount : optDefault;
   }
 
@@ -458,6 +464,7 @@ export class Synthesizer {
     const doc = window.document;
     /** @type {HTMLDivElement} */
     const wrapper = this.element = doc.createElement('div');
+    wrapper.className = 'synthesizer';
     /** @type {HTMLDivElement} */
     const instElem = doc.createElement('div');
     instElem.className = 'instrument';
@@ -538,16 +545,24 @@ export class Synthesizer {
               select.selectedIndex = this.channelInstrument[item];
               break;
             case 'volume':
-              itemElem.innerText = 100;
+              const volumeElem = document.createElement('var');
+              volumeElem.innerText = 100;
+              itemElem.appendChild(volumeElem);
+              break;
             case 'pitchBendSensitivity':
-              itemElem.innerText = 2;
+              const pitchSensElem = document.createElement('var');
+              pitchSensElem.innerText = 2;
+              itemElem.appendChild(pitchSensElem);
               break;
             case 'panpot':
               /** @type {HTMLMeterElement|null} */
               const panpot = doc.createElement('meter');
-              panpot.min = 0;
+              panpot.min = 1;
               panpot.max = 127;
               panpot.value = 64;
+              panpot.optimum = 64;
+              panpot.low = 63;
+              panpot.high = 65;
               itemElem.appendChild(panpot);
               break;
             case 'pitchBend':
@@ -555,6 +570,9 @@ export class Synthesizer {
               const pitch = doc.createElement('meter');
               pitch.min = -8192;
               pitch.max = 8192;
+              pitch.low = -1;
+              pitch.high = 1;
+              pitch.optimum = 0;
               pitch.value = 0;
               itemElem.appendChild(pitch);
               break;
@@ -730,7 +748,7 @@ export class Synthesizer {
     /** @type {Object} */
     const instrumentKey = instrument[key];
     /** @type {number} */
-    let panpot = this.channelPanpot[channel] - 64;
+    let panpot = this.channelPanpot[channel] === 0 ? (Math.random()*127)|0 : this.channelPanpot[channel] - 64;
     panpot /= panpot < 0 ? 64 : 63;
 
     // create note information
@@ -939,7 +957,7 @@ export class Synthesizer {
    */
   volumeChange(channel, volume) {
     if (this.element) {
-      this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume').innerText = volume;
+      this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume var').innerText = volume;
     }
 
     this.channelVolume[channel] = volume;
@@ -1010,7 +1028,7 @@ export class Synthesizer {
    */
   pitchBendSensitivity(channel, sensitivity) {
     if (this.element) {
-      document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBendSensitivity').innerText = sensitivity;
+      document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBendSensitivity > var').innerText = sensitivity;
     }
     this.channelPitchBendSensitivity[channel] = sensitivity;
   }
@@ -1064,12 +1082,23 @@ export class Synthesizer {
   }
 
   /**
+   * リバーブエフェクト
    * @param {number} channel
    * @param {number} depth
    */
   reverbDepth(channel, depth) {
     // リバーブ深度は、ドライ／ウェット比とする。
     this.reverb[channel].mix(depth / 127);
+  }
+
+  /**
+   * モデュレーター
+   * @param {number} channel
+   * @param {number} depth
+   */
+  modulationDepth(channel, depth) {
+    // TODO: LFOの反映量
+    // this.filter[channel].mix(depth / 127);
   }
 
   /**

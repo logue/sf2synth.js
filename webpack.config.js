@@ -2,6 +2,9 @@ const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
 
 const pjson = require('./package.json');
 const build = new Date().toISOString();
@@ -24,12 +27,19 @@ module.exports = (env) => {
     target: 'node',
     devtool: !isProduction ? 'source-map' : false,
     devServer: {
-      contentBase: 'docs',
-      open: false,
+      contentBase: path.join(__dirname, 'docs'),
+      open: true,
+      port: 3001,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+      }
     },
     entry: {
       'sf2.synth': './src/wml.js',
       'sf2.parser': './src/sf2.js',
+      'wml': './src/wml.scss'
     },
     output: {
       path: path.resolve(__dirname, 'bin'),
@@ -58,6 +68,27 @@ module.exports = (env) => {
             },
           },
         }),
+        new OptimizeCSSAssetsPlugin({
+          /*
+          cssProcessorPluginOptions: {
+            preset: ['advanced', 
+              { 
+                autoprefixer: {
+                  // autoprefixerによる vendor prefix の追加を行う   
+                  add: true,   
+                  // サポートするブラウザVersionの指定    
+                  browsers: ["last 2 versions", "ie >= 11", "Android >= 4"]
+                },
+                // ライセンスも含めて、コメントを全て削除する
+                discardComments: { removeAll: true }, 
+                // CSSの定義のソートを行う    
+                cssDeclarationSorter : { order: 'smacss' }
+              }
+            ],
+          },
+          canPrint: true
+          */
+        })
       ],
       splitChunks: {
         minSize: 0,
@@ -75,16 +106,52 @@ module.exports = (env) => {
             },
           ],
         },
+        {
+          test: /\.scss/,
+          use:
+          [
+            {
+              loader: MiniCssExtractPlugin.loader,
+            },
+            {
+              loader: 'css-loader',
+              options: {
+                url: false,
+                sourceMap: !isProduction,
+
+                // 0 => no loaders (default);
+                // 1 => postcss-loader;
+                // 2 => postcss-loader, sass-loader
+                importLoaders: 2,
+              },
+            },
+            {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: !isProduction,
+              },
+            },
+          ],
+        },
       ],
     },
     resolve: {
       modules: [`${__dirname}/src`, 'node_modules'],
-      extensions: ['.js'],
+      extensions: ['.js', '.scss'],
     },
     plugins: [
       new webpack.BannerPlugin({
         banner: banner,
       }),
+      new MiniCssExtractPlugin({
+        // ファイル名を設定します
+        filename: !isProduction ? '[name].css' : '[name].min.css',
+      }),
+      new CopyPlugin([
+        { from: 'bin/sf2.synth.js', to: '../docs' },
+        { from: 'bin/sf2.synth.js.map', to: '../docs' },
+        { from: 'bin/wml.css', to: '../docs' },
+      ]),
     ],
   };
 };
