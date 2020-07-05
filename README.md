@@ -66,4 +66,4 @@ equires a browser that supports the Web Audio API.
 Licensed under the MIT License.
 
 * 2013      by imaya / GREE Inc.
-* 2013-2019 by Logue.np
+* 2013-2019 by Logue
