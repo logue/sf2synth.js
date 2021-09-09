@@ -1,3 +1,6 @@
+/* eslint-disable no-case-declarations */
+import 'regenerator-runtime/runtime';
+import axios from 'axios';
 import Meta from './meta.js';
 import Synthesizer from './sound_font_synth';
 
@@ -20,193 +23,174 @@ export class WebMidiLink {
     /** @type {boolean} */
     this.ready = false;
     /** @type {Synthesizer} */
-    this.synth;
+    this.synth = null;
     /** @type {function(ArrayBuffer)} */
-    this.loadCallback = () => { };
+    this.loadCallback = null;
     /** @type {Function} */
     this.messageHandler = this.onmessage.bind(this);
-    /** @type {XMLHttpRequest} */
-    this.xhr;
     /** @type {boolean} */
     this.rpnMode = true;
     /** @type {object} */
     this.option = option;
     /** @type {boolean} */
-    this.option.drawSynth = option.drawSynth !== void 0 ? option.drawSynth : true;
+    this.option.drawSynth =
+      option.drawSynth !== void 0 ? option.drawSynth : true;
     /** @type {boolean} */
     this.option.cache = option.cache !== void 0 ? option.cache : true;
     /** @type {HTMLElement} */
-    this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body;
+    this.placeholder =
+      option.placeholder !== void 0
+        ? document.getElementById(option.placeholder)
+        : window.document.body;
     /** @type {Window} */
-    this.opener;
+    this.opener = null;
     /** @type {number} */
     this.version = Meta.version;
     /** @type {string} */
     this.build = Meta.date;
+  }
 
-    // eslint-disable-next-line space-before-function-paren
-    window.addEventListener('DOMContentLoaded', function () {
-      this.ready = true;
-    }.bind(this), false);
-  };
+  /**
+   * DOMContentLoadedが発生するのを待機する（確実にJavaScriptが実行されるようにする）
+   */
+  async waitForReadystate() {
+    // DOMが読み込み済みの場合は実行しない
+    if (document.readyState === 'interactive') return;
+
+    await new Promise((resolve) => {
+      const cb = () => {
+        // ブラウザのアニメーション実行
+        window.requestAnimationFrame(resolve);
+        // 登録したイベントの解除
+        window.removeEventListener('DOMContentLoaded', cb);
+      };
+
+      // レンダリング完了時に、ブラウザのアニメーションを実行する関数を登録
+      window.addEventListener('DOMContentLoaded', cb);
+    });
+  }
 
   /**
    * @param {string} url
    * @export
    */
-  setup(url) {
+  async setup(url) {
+    await this.waitForReadystate();
+
+    console.log('setup');
+
     /** @type {Window} */
     const w = window;
-
-    if (!this.ready) {
-      w.addEventListener('DOMContentLoaded', function onload() {
-        w.removeEventListener('DOMContentLoaded', onload, false);
-        this.load(url);
-      }.bind(this), false);
-    } else {
-      this.load(url);
-    }
 
     if (w.opener) {
       this.opener = w.opener;
     } else if (w.parent !== w) {
       this.opener = w.parent;
     }
+
+    this.load(url);
   }
 
   /**
    * @param {string} url
    * @export
    */
-  load(url) {
+  async load(url) {
     /** @type {Window} */
     const opener = window.opener ? window.opener : window.parent;
-    /** @type {HtmlDIVElement} */
-    const loading = this.placeholder.appendChild(document.createElement('div'));
-    /** @type {HTMLStrongElement} */
-    const loadingText = loading.appendChild(document.createElement('p'));
-    /** @type {HTMLDivElement} */
-    const progress = loading.appendChild(document.createElement('div'));
-    progress.className = 'progress';
-    /** @type {HTMLDivElement} */
-    const progressBar = progress.appendChild(document.createElement('div'));
-    progressBar.className = 'progress-bar';
-    progressBar.role = 'progressbar';
-    /** @type {WebMidiLink} */
-    const self = this;
-
     opener.postMessage('link,progress', '*');
-    loading.className = 'alert alert-warning';
-    loadingText.innerText = 'Now Loading...';
 
-    const promise = new Promise(resolve =>{ 
-      if (this.option.cache && window.caches) {
-        // キャッシュが利用可能な場合
-        loadingText.className = 'ml-1';
-        loading.className = 'd-flex';
+    /** @type {HtmlDIVElement} */
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-warning';
 
-        window.caches.open('wml').then((cache) => {
-          cache
-            .match(url)
-            .then((response) => response.arrayBuffer())
-            .then((stream) => resolve(stream))
-            .catch(() => {
-              console.info('Fetch from server.');
-              fetch(url)
-                .then((response) => {
-                  if (!response.ok) {
-                    throw new Error('Network response was not ok.');
-                  }
-                  /** @type {number} */
-                  const total = response.headers.get('content-length') | 0;
-                  loadingText.innerText += ` (${total}bytes)`;
-                  /** @type {Response} レスポンスのストリーム */
-                  const copy = response.clone();
-                  cache.put(url, response);
-                  return copy.arrayBuffer();
-                })
-                .then((stream) => resolve(stream))
-                // .catch((e) => {
+    /** @type {HTMLParagraphElement} */
+    const message = document.createElement('p');
+    message.innerText = 'Now Loading...';
 
-              // console.error(e);
-              // alert('There has been a problem with your fetch operation: ' + e.message);
-              //  )}
-              ;
-            });
-        });
+    /** @type {HTMLDivElement} */
+    const progressOuter = document.createElement('div');
+    progressOuter.className = 'progress';
+    /** @type {HTMLDivElement} */
+    const progress = document.createElement('div');
+    progress.className = 'progress-bar';
+
+    progressOuter.appendChild(progress);
+    alert.appendChild(message);
+    alert.appendChild(progressOuter);
+    this.placeholder.appendChild(alert);
+
+    console.log('dom');
+
+    /**
+     * データを取得.
+     * @return {axios.Response}
+     */
+    const getContent = () => {
+      console.info('Load from server.');
+      return axios.get(
+        url,
+        {
+          headers: {
+            Accept: 'audio/x-soundfont',
+          },
+          responseType: 'arraybuffer',
+        },
+        {
+          onDownloadProgress: (progressEvent) => {
+            const total = parseFloat(
+              progressEvent.currentTarget.responseHeaders['Content-Length']
+            );
+            const current = progressEvent.currentTarget.response.length;
+            const percentCompleted = Math.floor((current / total) * 100);
+            message.innerText = `Now Loading... (${current}/${total})`;
+            progress.style.width = percentCompleted + '%';
+            progress.innerText = percentCompleted + ' %';
+            opener.postMessage('link,progress,' + current + ',' + total, '*');
+          },
+        }
+      );
+    };
+
+    /** @type {Response} */
+    let stream = null;
+
+    if (this.option.cache && window.caches) {
+      console.info('load from cache.');
+
+      // キャッシュが利用可能な場合
+      const cacheStorage = await caches.open('wml');
+      stream = await cacheStorage.match(url);
+
+      if (!stream) {
+        stream = await getContent();
       } else {
-        // キャッシュが使えない場合
-        console.info('This server/client does not cache function.');
-
-        // 結合処理
-        const concatenation = (segments) => {
-          let sumLength = 0;
-          for (let i = 0; i < segments.length; ++i) {
-            sumLength += segments[i].byteLength;
-          }
-          const whole = new Uint8Array(sumLength);
-          let pos = 0;
-          for (let i = 0; i < segments.length; ++i) {
-            whole.set(new Uint8Array(segments[i]), pos);
-            pos += segments[i].byteLength;
-          }
-          return whole.buffer;
-        };
-
-        fetch(url)
-          .then((res) => {
-            // 全体サイズ
-            const total = res.headers.get('content-length');
-            progress.max = total;
-
-            // body の reader を取得する
-            const reader = res.body.getReader();
-            let chunk = 0;
-            const buffer = [];
-            const processResult = (result) => {
-              // done が true なら最後の chunk
-              if (result.done) {
-                const stream = concatenation(buffer);
-                resolve(stream);
-                return;
-              }
-
-              // chunk の長さの蓄積を total で割れば進捗が分かる
-              chunk += result.value.length;
-              buffer.push(result.value);
-              // 進捗を更新
-              const percentage = Math.round((chunk / total) * 100);
-              progressBar.style.width = percentage + '%';
-              progressBar.innerText = percentage + ' %';
-              opener.postMessage('link,progress,' + chunk + ',' + total, '*');
-
-              // 再帰する
-              return reader.read().then(processResult);
-            };
-            reader.read().then(processResult);
-          })
-          .catch((e) => alert('There has been a problem with your fetch operation: ' + e.message));
+        console.info('load from cache.');
       }
-    }).then(stream => {
-      console.info('ready');
-      loadingText.innerText = 'Parsing SoundFont...';
-      self.onload(stream);
-      loadingText.innerText = '';
-      if (typeof self.loadCallback === 'function') {
-        self.loadCallback(stream);
-      }
-      opener.postMessage('link,ready', '*');
-    });
-  }
+    } else {
+      // キャッシュが使えない場合
+      console.info('This server/client does not cache function.');
+      stream = await getContent();
+    }
 
-  /**
-   * @param {ArrayBuffer} response
-   */
-  onload(response) {
-    /** @type {Uint8Array} */
-    const input = new Uint8Array(response);
+    if (stream.error) {
+      alert.className = 'alert alert-danger';
+      message.innerText = 'An error occurred when downloading a SoundFont.';
+      this.placeholder.removeChild(progress);
+      throw Error(stream.error);
+    }
 
+    alert.className = 'alert alert-info';
+    message.innerText = 'Initializing...';
+    progress.style.width = '100%';
+    progress.className =
+      'progress-bar progress-bar-striped progress-bar-animated';
+    // window.requestAnimationFrame(1);
+    console.info('ready');
+    const input = new Uint8Array(stream.data);
     this.loadSoundFont(input);
+    this.placeholder.removeChild(alert);
+    opener.postMessage('link,ready', '*');
   }
 
   /**
@@ -217,12 +201,8 @@ export class WebMidiLink {
     const w = window;
 
     if (!this.synth) {
-      // 子要素を全削除
-      //while (this.placeholder.firstChild) {
-      //  this.placeholder.removeChild(this.placeholder.firstChild);
-      //}
       /** @type {Synthesizer} */
-      const synth = this.synth = new Synthesizer(input);
+      const synth = (this.synth = new Synthesizer(input));
       if (this.option.drawSynth) {
         this.placeholder.appendChild(synth.drawSynth());
       } else {
@@ -236,10 +216,9 @@ export class WebMidiLink {
     } else {
       this.synth.refreshInstruments(input);
     }
-
     // link ready
     w.postMessage('link,ready', '*');
-  };
+  }
 
   /**
    * @param {Event} ev
@@ -256,9 +235,11 @@ export class WebMidiLink {
 
     switch (type) {
       case 'midi':
-        this.processMidiMessage(msg.map((hex) => {
-          return parseInt(hex, 16);
-        }));
+        this.processMidiMessage(
+          msg.map((hex) => {
+            return parseInt(hex, 16);
+          })
+        );
         break;
       case 'link':
         if (opener === void 0) {
@@ -286,7 +267,7 @@ export class WebMidiLink {
       default:
       // console.error('unknown message type');
     }
-  };
+  }
 
   /**
    * @param {function(ArrayBuffer)} callback
@@ -294,7 +275,7 @@ export class WebMidiLink {
    */
   setLoadCallback(callback) {
     this.loadCallback = callback;
-  };
+  }
 
   /**
    * @param {Array.<number>} message
@@ -316,7 +297,7 @@ export class WebMidiLink {
           synth.noteOff(channel, message[1], 0);
         }
         break;
-      case 0xB0: // Control Change: Bn cc dd
+      case 0xb0: // Control Change: Bn cc dd
         /** @type {number} */
         const value = message[2];
         switch (message[1]) {
@@ -373,7 +354,7 @@ export class WebMidiLink {
                     case 0: // Pitch Bend Sensitivity
                       synth.pitchBendSensitivity(
                         channel,
-                        synth.getPitchBendSensitivity(channel) + value / 100,
+                        synth.getPitchBendSensitivity(channel) + value / 100
                       );
                       break;
                     case 1:
@@ -391,7 +372,7 @@ export class WebMidiLink {
           case 0x07: // Volume Change: Bn 07 dd
             synth.volumeChange(channel, value);
             break;
-          case 0x0A: // Panpot Change: Bn 0A dd
+          case 0x0a: // Panpot Change: Bn 0A dd
             synth.panpotChange(channel, value);
             break;
           case 0x78: // All Sound Off: Bn 78 00
@@ -440,13 +421,13 @@ export class WebMidiLink {
           case 0x49: // ReleaseTime
             synth.releaseTime(channel, value);
             break;
-          case 0x4A: // Attack time
+          case 0x4a: // Attack time
             synth.attackTime(channel, value);
             break;
-          case 0x4B: // Brightness
+          case 0x4b: // Brightness
             synth.cutOffFrequency(channel, value);
             break;
-          case 0x5B: // Effect1 Depth（Reverb Send Level）
+          case 0x5b: // Effect1 Depth（Reverb Send Level）
             synth.reverbDepth(channel, value);
             break;
           default:
@@ -454,10 +435,10 @@ export class WebMidiLink {
             break;
         }
         break;
-      case 0xC0: // Program Change: Cn pp
+      case 0xc0: // Program Change: Cn pp
         synth.programChange(channel, message[1]);
         break;
-      case 0xE0: // Pitch Bend
+      case 0xe0: // Pitch Bend
         synth.pitchBend(channel, message[1], message[2]);
         break;
       case 0xf0: // System Exclusive Message
@@ -496,6 +477,7 @@ export class WebMidiLink {
             case 0x02:
               // GM System Off
               // Ignore
+              break;
             case 0x03:
               // GM2 System On
               synth.init('GM2');
@@ -503,7 +485,6 @@ export class WebMidiLink {
           }
         } else if (vendor === 0x7f) {
           // Realtime
-
           // Through
         }
 
@@ -519,7 +500,7 @@ export class WebMidiLink {
               // GS Master Volume: F0 41 10 42 12 40 00 04 [value] [checksum] F7
               synth.setMasterVolume(message[9] << 7);
               break;
-            case 0x7F:
+            case 0x7f:
               // GS Reset: F0 41 10 42 12 40 00 7F 00 [checksum] F7
               synth.init('GS');
               console.info('GS Reset');
@@ -528,7 +509,7 @@ export class WebMidiLink {
               // GS Dram part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
               // Notice: [sum] is ignroe in this program.
 
-              const part = message[7] - 0x0F;
+              const part = message[7] - 0x0f;
               const map = message[8];
               if (part === 0) {
                 // 10 Ch.
@@ -552,7 +533,6 @@ export class WebMidiLink {
                   synth.setPercussionPart(part, false);
                 }
               }
-              break;
           }
         } else if (vendor == 0x43) {
           console.log('XG:', this.dumpMessage(message));
@@ -560,7 +540,8 @@ export class WebMidiLink {
           if (subId2 === 0x08) {
             // XG Dram Part: F0 43 10 4C 08 [partNum] 07 [map] F7
             // but there is no file to use much this parameter...
-            if (message[7] !== 0x00) { // [map]
+            if (message[7] !== 0x00) {
+              // [map]
               synth.setPercussionPart(message[6], true);
             } else {
               synth.setPercussionPart(message[6], false);
@@ -573,7 +554,7 @@ export class WebMidiLink {
               synth.setMasterVolume((message[8] << 7) * 2);
               // console.log(message[8] << 7);
               break;
-            case 0x7E:
+            case 0x7e:
               // XG Reset: F0 43 10 4C 00 00 7E 00 F7
               synth.init('XG');
               console.info('XG Reset');
@@ -593,16 +574,18 @@ export class WebMidiLink {
         }
 
         break;
-      default: // not supported
+      default:
+        // not supported
         synth.setPercussionPart(9, true);
         break;
     }
-  };
+  }
 
   /**
    * Dump System Exclusive Message
    * @private
    * @param {Array} message
+   * @return {string}
    */
   dumpMessage(message) {
     const ret = [];

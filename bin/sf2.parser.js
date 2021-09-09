@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.4 | imaya / GREE Inc. / Logue | license: MIT | build: 2020-01-02T16:21:34.166Z */
+/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-09T11:46:22.605Z */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -9,114 +9,40 @@
 	else
 		root["SoundFont"] = factory();
 })((typeof self !== 'undefined' ? self : this), function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/sf2.js");
-/******/ })
-/************************************************************************/
-/******/ ({
+return /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
 
 /***/ "./src/riff.js":
 /*!*********************!*\
   !*** ./src/riff.js ***!
   \*********************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Riff; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Riff)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 /**
  * Riff Parser class
  * @private
  */
-class Riff {
+var Riff = /*#__PURE__*/function () {
   /**
    * @param {ByteArray} input input buffer.
    * @param {Object=} optParams option parameters.
    */
-  constructor(input, optParams = {}) {
+  function Riff(input) {
+    var optParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    _classCallCheck(this, Riff);
+
     /** @type {ByteArray} */
     this.input = input;
     /** @type {number} */
@@ -127,7 +53,7 @@ class Riff {
     this.length = optParams.length || input.length - this.ip;
     /** @type {Array.<RiffChunk>} */
 
-    this.chunkList;
+    this.chunkList = [];
     /** @type {number} */
 
     this.offset = this.ip;
@@ -142,111 +68,188 @@ class Riff {
    */
 
 
-  parse() {
-    /** @type {number} */
-    const length = this.length + this.offset;
-    this.chunkList = [];
+  _createClass(Riff, [{
+    key: "parse",
+    value: function parse() {
+      /** @type {number} */
+      var length = this.length + this.offset;
+      this.chunkList = [];
 
-    while (this.ip < length) {
-      this.parseChunk();
+      while (this.ip < length) {
+        this.parseChunk();
+      }
     }
-  }
-  /**
-   */
+    /**
+     */
 
+  }, {
+    key: "parseChunk",
+    value: function parseChunk() {
+      /** @type {ByteArray} */
+      var input = this.input;
+      /** @type {number} */
 
-  parseChunk() {
-    /** @type {ByteArray} */
-    const input = this.input;
-    /** @type {number} */
+      var ip = this.ip;
+      /** @type {number} */
 
-    let ip = this.ip;
-    /** @type {number} */
+      var size;
+      this.chunkList.push(new RiffChunk(String.fromCharCode(input[ip++], input[ip++], input[ip++], input[ip++]), size = this.bigEndian ? (input[ip++] << 24 | input[ip++] << 16 | input[ip++] << 8 | input[ip++]) >>> 0 : (input[ip++] | input[ip++] << 8 | input[ip++] << 16 | input[ip++] << 24) >>> 0, ip));
+      ip += size; // padding
 
-    let size;
-    this.chunkList.push(new RiffChunk(String.fromCharCode(input[ip++], input[ip++], input[ip++], input[ip++]), size = this.bigEndian ? (input[ip++] << 24 | input[ip++] << 16 | input[ip++] << 8 | input[ip++]) >>> 0 : (input[ip++] | input[ip++] << 8 | input[ip++] << 16 | input[ip++] << 24) >>> 0, ip));
-    ip += size; // padding
+      if (this.padding && (ip - this.offset & 1) === 1) {
+        ip++;
+      }
 
-    if (this.padding && (ip - this.offset & 1) === 1) {
-      ip++;
+      this.ip = ip;
     }
+    /**
+     * @param {number} index chunk index.
+     * @return {?RiffChunk}
+     */
 
-    this.ip = ip;
-  }
-  /**
-   * @param {number} index chunk index.
-   * @return {?RiffChunk}
-   */
+  }, {
+    key: "getChunk",
+    value: function getChunk(index) {
+      /** @type {RiffChunk} */
+      var chunk = this.chunkList[index];
 
+      if (chunk === void 0) {
+        return null;
+      }
 
-  getChunk(index) {
-    /** @type {RiffChunk} */
-    const chunk = this.chunkList[index];
-
-    if (chunk === void 0) {
-      return null;
+      return chunk;
     }
+    /**
+     * @return {number}
+     */
 
-    return chunk;
-  }
-  /**
-   * @return {number}
-   */
+  }, {
+    key: "getNumberOfChunks",
+    value: function getNumberOfChunks() {
+      return this.chunkList.length;
+    }
+  }]);
 
-
-  getNumberOfChunks() {
-    return this.chunkList.length;
-  }
-
-}
+  return Riff;
+}();
 /**
  * Riff Chunk Structure
  * @interface
  */
 
-class RiffChunk {
-  /**
-   * @param {string} type
-   * @param {number} size
-   * @param {number} offset
-   */
-  constructor(type, size, offset) {
-    /** @type {string} */
-    this.type = type;
-    /** @type {number} */
 
-    this.size = size;
-    /** @type {number} */
 
-    this.offset = offset;
-  }
 
-}
+var RiffChunk =
+/**
+ * @param {string} type
+ * @param {number} size
+ * @param {number} offset
+ */
+function RiffChunk(type, size, offset) {
+  _classCallCheck(this, RiffChunk);
 
-/***/ }),
+  /** @type {string} */
+  this.type = type;
+  /** @type {number} */
 
-/***/ "./src/sf2.js":
+  this.size = size;
+  /** @type {number} */
+
+  this.offset = offset;
+};
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
 /*!********************!*\
   !*** ./src/sf2.js ***!
   \********************/
-/*! exports provided: Parser, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Parser", function() { return Parser; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Parser": () => (/* binding */ Parser),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _riff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./riff.js */ "./src/riff.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 /**
  * SoundFont Parser Class
  */
 
-class Parser {
+var Parser = /*#__PURE__*/function () {
   /**
    * @param {ByteArray} input
    * @param {Object=} optParams
    */
-  constructor(input, optParams = {}) {
+  function Parser(input) {
+    var optParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    _classCallCheck(this, Parser);
+
     /** @type {ByteArray} */
     this.input = input;
     /** @type {(Object|undefined)} */
@@ -258,610 +261,700 @@ class Parser {
 
     /** @type {Array.<Object>} */
 
-    this.presetHeader;
+    this.presetHeader = [];
     /** @type {Array.<Object>} */
 
-    this.presetZone;
+    this.presetZone = [];
     /** @type {Array.<Object>} */
 
-    this.presetZoneModulator;
+    this.presetZoneModulator = [];
     /** @type {Array.<Object>} */
 
-    this.presetZoneGenerator;
+    this.presetZoneGenerator = [];
     /** @type {Array.<Object>} */
 
-    this.instrument;
+    this.instrument = [];
     /** @type {Array.<Object>} */
 
-    this.instrumentZone;
+    this.instrumentZone = [];
     /** @type {Array.<Object>} */
 
-    this.instrumentZoneModulator;
+    this.instrumentZoneModulator = [];
     /** @type {Array.<Object>} */
 
-    this.instrumentZoneGenerator;
+    this.instrumentZoneGenerator = [];
     /** @type {Array.<Object>} */
 
-    this.sampleHeader;
+    this.sampleHeader = [];
     /**
      * @type {Array.<string>}
      * @const
      */
+    // eslint-disable-next-line no-sparse-arrays
 
-    this.GeneratorEnumeratorTable = ['startAddrsOffset', 'endAddrsOffset', 'startloopAddrsOffset', 'endloopAddrsOffset', 'startAddrsCoarseOffset', 'modLfoToPitch', 'vibLfoToPitch', 'modEnvToPitch', 'initialFilterFc', 'initialFilterQ', 'modLfoToFilterFc', 'modEnvToFilterFc', 'endAddrsCoarseOffset', 'modLfoToVolume',, // 14
-    'chorusEffectsSend', 'reverbEffectsSend', 'pan',,,, // 18,19,20
-    'delayModLFO', 'freqModLFO', 'delayVibLFO', 'freqVibLFO', 'delayModEnv', 'attackModEnv', 'holdModEnv', 'decayModEnv', 'sustainModEnv', 'releaseModEnv', 'keynumToModEnvHold', 'keynumToModEnvDecay', 'delayVolEnv', 'attackVolEnv', 'holdVolEnv', 'decayVolEnv', 'sustainVolEnv', 'releaseVolEnv', 'keynumToVolEnvHold', 'keynumToVolEnvDecay', 'instrument',, // 42
-    'keyRange', 'velRange', 'startloopAddrsCoarseOffset', 'keynum', 'velocity', 'initialAttenuation',, // 49
-    'endloopAddrsCoarseOffset', 'coarseTune', 'fineTune', 'sampleID', 'sampleModes',, // 55
-    'scaleTuning', 'exclusiveClass', 'overridingRootKey', // 59
+    this.GeneratorEnumeratorTable = [// 14
+      // 18,19,20
+      // 42
+      // 49
+      // 55
+    'startAddrsOffset', 'endAddrsOffset', 'startloopAddrsOffset', 'endloopAddrsOffset', 'startAddrsCoarseOffset', 'modLfoToPitch', 'vibLfoToPitch', 'modEnvToPitch', 'initialFilterFc', 'initialFilterQ', 'modLfoToFilterFc', 'modEnvToFilterFc', 'endAddrsCoarseOffset', 'modLfoToVolume',, 'chorusEffectsSend', 'reverbEffectsSend', 'pan',,,, 'delayModLFO', 'freqModLFO', 'delayVibLFO', 'freqVibLFO', 'delayModEnv', 'attackModEnv', 'holdModEnv', 'decayModEnv', 'sustainModEnv', 'releaseModEnv', 'keynumToModEnvHold', 'keynumToModEnvDecay', 'delayVolEnv', 'attackVolEnv', 'holdVolEnv', 'decayVolEnv', 'sustainVolEnv', 'releaseVolEnv', 'keynumToVolEnvHold', 'keynumToVolEnvDecay', 'instrument',, 'keyRange', 'velRange', 'startloopAddrsCoarseOffset', 'keynum', 'velocity', 'initialAttenuation',, 'endloopAddrsCoarseOffset', 'coarseTune', 'fineTune', 'sampleID', 'sampleModes',, 'scaleTuning', 'exclusiveClass', 'overridingRootKey', // 59
     'endOper'];
   }
   /** @export */
 
 
-  parse() {
-    /** @type {Riff} */
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption); // parse RIFF chunk
+  _createClass(Parser, [{
+    key: "parse",
+    value: function parse() {
+      /** @type {Riff} */
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption); // parse RIFF chunk
 
-    parser.parse();
+      parser.parse();
 
-    if (parser.chunkList.length !== 1) {
-      throw new Error('wrong chunk length');
-    }
-    /** @type {?RiffChunk} */
+      if (parser.chunkList.length !== 1) {
+        throw new Error('wrong chunk length');
+      }
+      /** @type {?RiffChunk} */
 
 
-    const chunk = parser.getChunk(0);
+      var chunk = parser.getChunk(0);
 
-    if (chunk === null) {
-      throw new Error('chunk not found');
-    }
-
-    this.parseRiffChunk(chunk); // console.log(this.sampleHeader);
-
-    this.input = null;
-  }
-  /**
-   * @param {RiffChunk} chunk
-   */
-
-
-  parseRiffChunk(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset; // check parse target
-
-    if (chunk.type !== 'RIFF') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    } // check signature
-
-    /** @type {string} */
-
-
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
-
-    if (signature !== 'sfbk') {
-      throw new Error('invalid signature:' + signature);
-    } // read structure
-
-    /** @type {Riff} */
-
-
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
-      'index': ip,
-      'length': chunk.size - 4
-    });
-    parser.parse();
-
-    if (parser.getNumberOfChunks() !== 3) {
-      throw new Error('invalid sfbk structure');
-    } // INFO-list
-
-
-    this.parseInfoList(
-    /** @type {!RiffChunk} */
-    parser.getChunk(0)); // sdta-list
-
-    this.parseSdtaList(
-    /** @type {!RiffChunk} */
-    parser.getChunk(1)); // pdta-list
-
-    this.parsePdtaList(
-    /** @type {!RiffChunk} */
-    parser.getChunk(2));
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseInfoList(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset; // check parse target
-
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    } // check signature
-
-    /** @type {string} */
-
-
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
-
-    if (signature !== 'INFO') {
-      throw new Error('invalid signature:' + signature);
-    } // read structure
-
-    /** @type {Riff} */
-
-
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
-      'index': ip,
-      'length': chunk.size - 4
-    });
-    parser.parse();
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseSdtaList(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset; // check parse target
-
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    } // check signature
-
-    /** @type {string} */
-
-
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
-
-    if (signature !== 'sdta') {
-      throw new Error('invalid signature:' + signature);
-    } // read structure
-
-    /** @type {Riff} */
-
-
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
-      'index': ip,
-      'length': chunk.size - 4
-    });
-    parser.parse();
-
-    if (parser.chunkList.length !== 1) {
-      throw new Error('TODO');
-    }
-
-    this.samplingData =
-    /** @type {{type: string, size: number, offset: number}} */
-    parser.getChunk(0);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePdtaList(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset; // check parse target
-
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    } // check signature
-
-    /** @type {string} */
-
-
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
-
-    if (signature !== 'pdta') {
-      throw new Error('invalid signature:' + signature);
-    } // read structure
-
-    /** @type {Riff} */
-
-
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
-      'index': ip,
-      'length': chunk.size - 4
-    });
-    parser.parse(); // check number of chunks
-
-    if (parser.getNumberOfChunks() !== 9) {
-      throw new Error('invalid pdta chunk');
-    }
-
-    this.parsePhdr(
-    /** @type {RiffChunk} */
-    parser.getChunk(0));
-    this.parsePbag(
-    /** @type {RiffChunk} */
-    parser.getChunk(1));
-    this.parsePmod(
-    /** @type {RiffChunk} */
-    parser.getChunk(2));
-    this.parsePgen(
-    /** @type {RiffChunk} */
-    parser.getChunk(3));
-    this.parseInst(
-    /** @type {RiffChunk} */
-    parser.getChunk(4));
-    this.parseIbag(
-    /** @type {RiffChunk} */
-    parser.getChunk(5));
-    this.parseImod(
-    /** @type {RiffChunk} */
-    parser.getChunk(6));
-    this.parseIgen(
-    /** @type {RiffChunk} */
-    parser.getChunk(7));
-    this.parseShdr(
-    /** @type {RiffChunk} */
-    parser.getChunk(8));
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePhdr(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const presetHeader = this.presetHeader = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size; // check parse target
-
-    if (chunk.type !== 'phdr') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      presetHeader.push({
-        presetName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
-        preset: data[ip++] | data[ip++] << 8,
-        bank: data[ip++] | data[ip++] << 8,
-        presetBagIndex: data[ip++] | data[ip++] << 8,
-        library: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0,
-        genre: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0,
-        morphology: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0
-      });
-    }
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePbag(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const presetZone = this.presetZone = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size; // check parse target
-
-    if (chunk.type !== 'pbag') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      presetZone.push({
-        presetGeneratorIndex: data[ip++] | data[ip++] << 8,
-        presetModulatorIndex: data[ip++] | data[ip++] << 8
-      });
-    }
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePmod(chunk) {
-    // check parse target
-    if (chunk.type !== 'pmod') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    this.presetZoneModulator = this.parseModulator(chunk);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePgen(chunk) {
-    // check parse target
-    if (chunk.type !== 'pgen') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    this.presetZoneGenerator = this.parseGenerator(chunk);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseInst(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const instrument = this.instrument = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size; // check parse target
-
-    if (chunk.type !== 'inst') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      instrument.push({
-        instrumentName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
-        instrumentBagIndex: data[ip++] | data[ip++] << 8
-      });
-    }
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseIbag(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const instrumentZone = this.instrumentZone = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size; // check parse target
-
-    if (chunk.type !== 'ibag') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      instrumentZone.push({
-        instrumentGeneratorIndex: data[ip++] | data[ip++] << 8,
-        instrumentModulatorIndex: data[ip++] | data[ip++] << 8
-      });
-    }
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseImod(chunk) {
-    // check parse target
-    if (chunk.type !== 'imod') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    this.instrumentZoneModulator = this.parseModulator(chunk);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseIgen(chunk) {
-    // check parse target
-    if (chunk.type !== 'igen') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    this.instrumentZoneGenerator = this.parseGenerator(chunk);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseShdr(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const samples = this.sample = [];
-    /** @type {Array.<Object>} */
-
-    const sampleHeader = this.sampleHeader = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size;
-    /** @type {string} */
-
-    let sampleName;
-    /** @type {number} */
-
-    let start;
-    /** @type {number} */
-
-    let end;
-    /** @type {number} */
-
-    let startLoop;
-    /** @type {number} */
-
-    let endLoop;
-    /** @type {number} */
-
-    let sampleRate;
-    /** @type {number} */
-
-    let originalPitch;
-    /** @type {number} */
-
-    let pitchCorrection;
-    /** @type {number} */
-
-    let sampleLink;
-    /** @type {number} */
-
-    let sampleType; // check parse target
-
-    if (chunk.type !== 'shdr') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      sampleName = String.fromCharCode.apply(null, data.subarray(ip, ip += 20));
-      start = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      end = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      startLoop = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      endLoop = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      sampleRate = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      originalPitch = data[ip++];
-      pitchCorrection = data[ip++] << 24 >> 24;
-      sampleLink = data[ip++] | data[ip++] << 8;
-      sampleType = data[ip++] | data[ip++] << 8;
-      let sample = new Int16Array(new Uint8Array(data.subarray(this.samplingData.offset + start * 2, this.samplingData.offset + end * 2)).buffer);
-      startLoop -= start;
-      endLoop -= start;
-
-      if (sampleRate > 0) {
-        const adjust = this.adjustSampleData(sample, sampleRate);
-        sample = adjust.sample;
-        sampleRate *= adjust.multiply;
-        startLoop *= adjust.multiply;
-        endLoop *= adjust.multiply;
+      if (chunk === null) {
+        throw new Error('chunk not found');
       }
 
-      samples.push(sample);
-      sampleHeader.push({
-        sampleName: sampleName,
-        start: start,
-        end: end,
-        startLoop: startLoop,
-        endLoop: endLoop,
-        sampleRate: sampleRate,
-        originalPitch: originalPitch,
-        pitchCorrection: pitchCorrection,
-        sampleLink: sampleLink,
-        sampleType: sampleType
-      });
+      this.parseRiffChunk(chunk); // console.log(this.sampleHeader);
+
+      this.input = null;
     }
-  }
+    /**
+     * @param {RiffChunk} chunk
+     */
 
-  /**
-   * @param {Array} sample
-   * @param {number} sampleRate
-   * @return {object}
-   */
-  adjustSampleData(sample, sampleRate) {
-    /** @type {Int16Array} */
-    let newSample;
-    /** @type {number} */
+  }, {
+    key: "parseRiffChunk",
+    value: function parseRiffChunk(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
 
-    let i;
-    /** @type {number} */
+      var ip = chunk.offset; // check parse target
 
-    let il;
-    /** @type {number} */
+      if (chunk.type !== 'RIFF') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      } // check signature
 
-    let j;
-    /** @type {number} */
+      /** @type {string} */
 
-    let multiply = 1; // buffer
 
-    while (sampleRate < this.sampleRate) {
-      // AudioContextのサンプルレートに変更
-      newSample = new Int16Array(sample.length * 2);
+      var signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
 
-      for (i = j = 0, il = sample.length; i < il; ++i) {
-        newSample[j++] = sample[i];
-        newSample[j++] = sample[i];
+      if (signature !== 'sfbk') {
+        throw new Error('invalid signature:' + signature);
+      } // read structure
+
+      /** @type {Riff} */
+
+
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+        index: ip,
+        length: chunk.size - 4
+      });
+      parser.parse();
+
+      if (parser.getNumberOfChunks() !== 3) {
+        throw new Error('invalid sfbk structure');
+      } // INFO-list
+
+
+      this.parseInfoList(parser.getChunk(0)); // sdta-list
+
+      this.parseSdtaList(parser.getChunk(1)); // pdta-list
+
+      this.parsePdtaList(parser.getChunk(2));
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseInfoList",
+    value: function parseInfoList(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset; // check parse target
+
+      if (chunk.type !== 'LIST') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      } // check signature
+
+      /** @type {string} */
+
+
+      var signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
+
+      if (signature !== 'INFO') {
+        throw new Error('invalid signature:' + signature);
+      } // read structure
+
+      /** @type {Riff} */
+
+
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+        index: ip,
+        length: chunk.size - 4
+      });
+      parser.parse();
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseSdtaList",
+    value: function parseSdtaList(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset; // check parse target
+
+      if (chunk.type !== 'LIST') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      } // check signature
+
+      /** @type {string} */
+
+
+      var signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
+
+      if (signature !== 'sdta') {
+        throw new Error('invalid signature:' + signature);
+      } // read structure
+
+      /** @type {Riff} */
+
+
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+        index: ip,
+        length: chunk.size - 4
+      });
+      parser.parse();
+
+      if (parser.chunkList.length !== 1) {
+        throw new Error('TODO');
       }
 
-      sample = newSample;
-      multiply *= 2;
-      sampleRate *= 2;
+      this.samplingData = parser.getChunk(0);
     }
+    /**
+     * @param {RiffChunk} chunk
+     */
 
-    return {
-      sample: sample,
-      multiply: multiply
-    };
-  }
+  }, {
+    key: "parsePdtaList",
+    value: function parsePdtaList(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
 
-  /**
-   * @param {RiffChunk} chunk
-   * @return {Array.<Object>}
-   */
-  parseModulator(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
+      var ip = chunk.offset; // check parse target
 
-    let ip = chunk.offset;
-    /** @type {number} */
+      if (chunk.type !== 'LIST') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      } // check signature
 
-    const size = chunk.offset + chunk.size;
-    /** @type {number} */
+      /** @type {string} */
 
-    let code;
-    /** @type {string} */
 
-    let key;
-    /** @type {Array.<Object>} */
+      var signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
 
-    const output = [];
+      if (signature !== 'pdta') {
+        throw new Error('invalid signature:' + signature);
+      } // read structure
 
-    while (ip < size) {
-      // Src  Oper
-      // TODO
-      ip += 2; // Dest Oper
+      /** @type {Riff} */
 
-      code = data[ip++] | data[ip++] << 8;
-      key = this.GeneratorEnumeratorTable[code];
 
-      if (key === void 0) {
-        // Amount
-        output.push({
-          type: key,
-          value: {
-            code: code,
-            amount: data[ip] | data[ip + 1] << 8 << 16 >> 16,
-            lo: data[ip++],
-            hi: data[ip++]
-          }
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+        index: ip,
+        length: chunk.size - 4
+      });
+      parser.parse(); // check number of chunks
+
+      if (parser.getNumberOfChunks() !== 9) {
+        throw new Error('invalid pdta chunk');
+      }
+
+      this.parsePhdr(parser.getChunk(0));
+      this.parsePbag(parser.getChunk(1));
+      this.parsePmod(parser.getChunk(2));
+      this.parsePgen(parser.getChunk(3));
+      this.parseInst(parser.getChunk(4));
+      this.parseIbag(parser.getChunk(5));
+      this.parseImod(parser.getChunk(6));
+      this.parseIgen(parser.getChunk(7));
+      this.parseShdr(parser.getChunk(8));
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parsePhdr",
+    value: function parsePhdr(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var presetHeader = this.presetHeader = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size; // check parse target
+
+      if (chunk.type !== 'phdr') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        presetHeader.push({
+          presetName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
+          preset: data[ip++] | data[ip++] << 8,
+          bank: data[ip++] | data[ip++] << 8,
+          presetBagIndex: data[ip++] | data[ip++] << 8,
+          library: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0,
+          genre: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0,
+          morphology: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0
         });
-      } else {
-        // Amount
+      }
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parsePbag",
+    value: function parsePbag(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var presetZone = this.presetZone = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size; // check parse target
+
+      if (chunk.type !== 'pbag') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        presetZone.push({
+          presetGeneratorIndex: data[ip++] | data[ip++] << 8,
+          presetModulatorIndex: data[ip++] | data[ip++] << 8
+        });
+      }
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parsePmod",
+    value: function parsePmod(chunk) {
+      // check parse target
+      if (chunk.type !== 'pmod') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      this.presetZoneModulator = this.parseModulator(chunk);
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parsePgen",
+    value: function parsePgen(chunk) {
+      // check parse target
+      if (chunk.type !== 'pgen') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      this.presetZoneGenerator = this.parseGenerator(chunk);
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseInst",
+    value: function parseInst(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var instrument = this.instrument = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size; // check parse target
+
+      if (chunk.type !== 'inst') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        instrument.push({
+          instrumentName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
+          instrumentBagIndex: data[ip++] | data[ip++] << 8
+        });
+      }
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseIbag",
+    value: function parseIbag(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var instrumentZone = this.instrumentZone = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size; // check parse target
+
+      if (chunk.type !== 'ibag') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        instrumentZone.push({
+          instrumentGeneratorIndex: data[ip++] | data[ip++] << 8,
+          instrumentModulatorIndex: data[ip++] | data[ip++] << 8
+        });
+      }
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseImod",
+    value: function parseImod(chunk) {
+      // check parse target
+      if (chunk.type !== 'imod') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      this.instrumentZoneModulator = this.parseModulator(chunk);
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseIgen",
+    value: function parseIgen(chunk) {
+      // check parse target
+      if (chunk.type !== 'igen') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      this.instrumentZoneGenerator = this.parseGenerator(chunk);
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseShdr",
+    value: function parseShdr(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var samples = this.sample = [];
+      /** @type {Array.<Object>} */
+
+      var sampleHeader = this.sampleHeader = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size;
+      /** @type {string} */
+
+      var sampleName;
+      /** @type {number} */
+
+      var start;
+      /** @type {number} */
+
+      var end;
+      /** @type {number} */
+
+      var startLoop;
+      /** @type {number} */
+
+      var endLoop;
+      /** @type {number} */
+
+      var sampleRate;
+      /** @type {number} */
+
+      var originalPitch;
+      /** @type {number} */
+
+      var pitchCorrection;
+      /** @type {number} */
+
+      var sampleLink;
+      /** @type {number} */
+
+      var sampleType; // check parse target
+
+      if (chunk.type !== 'shdr') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        sampleName = String.fromCharCode.apply(null, data.subarray(ip, ip += 20));
+        start = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        end = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        startLoop = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        endLoop = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        sampleRate = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        originalPitch = data[ip++];
+        pitchCorrection = data[ip++] << 24 >> 24;
+        sampleLink = data[ip++] | data[ip++] << 8;
+        sampleType = data[ip++] | data[ip++] << 8;
+        var sample = new Int16Array(new Uint8Array(data.subarray(this.samplingData.offset + start * 2, this.samplingData.offset + end * 2)).buffer);
+        startLoop -= start;
+        endLoop -= start;
+
+        if (sampleRate > 0) {
+          var adjust = this.adjustSampleData(sample, sampleRate);
+          sample = adjust.sample;
+          sampleRate *= adjust.multiply;
+          startLoop *= adjust.multiply;
+          endLoop *= adjust.multiply;
+        }
+
+        samples.push(sample);
+        sampleHeader.push({
+          sampleName: sampleName,
+          start: start,
+          end: end,
+          startLoop: startLoop,
+          endLoop: endLoop,
+          sampleRate: sampleRate,
+          originalPitch: originalPitch,
+          pitchCorrection: pitchCorrection,
+          sampleLink: sampleLink,
+          sampleType: sampleType
+        });
+      }
+    }
+    /**
+     * @param {Array} sample
+     * @param {number} sampleRate
+     * @return {object}
+     */
+
+  }, {
+    key: "adjustSampleData",
+    value: function adjustSampleData(sample, sampleRate) {
+      /** @type {Int16Array} */
+      var newSample;
+      /** @type {number} */
+
+      var i;
+      /** @type {number} */
+
+      var il;
+      /** @type {number} */
+
+      var j;
+      /** @type {number} */
+
+      var multiply = 1; // buffer
+
+      while (sampleRate < this.sampleRate) {
+        // AudioContextのサンプルレートに変更
+        newSample = new Int16Array(sample.length * 2);
+
+        for (i = j = 0, il = sample.length; i < il; ++i) {
+          newSample[j++] = sample[i];
+          newSample[j++] = sample[i];
+        }
+
+        sample = newSample;
+        multiply *= 2;
+        sampleRate *= 2;
+      }
+
+      return {
+        sample: sample,
+        multiply: multiply
+      };
+    }
+    /**
+     * @param {RiffChunk} chunk
+     * @return {Array.<Object>}
+     */
+
+  }, {
+    key: "parseModulator",
+    value: function parseModulator(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size;
+      /** @type {number} */
+
+      var code;
+      /** @type {string} */
+
+      var key;
+      /** @type {Array.<Object>} */
+
+      var output = [];
+
+      while (ip < size) {
+        // Src  Oper
+        // TODO
+        ip += 2; // Dest Oper
+
+        code = data[ip++] | data[ip++] << 8;
+        key = this.GeneratorEnumeratorTable[code];
+
+        if (key === void 0) {
+          // Amount
+          output.push({
+            type: key,
+            value: {
+              code: code,
+              amount: data[ip] | data[ip + 1] << 8 << 16 >> 16,
+              lo: data[ip++],
+              hi: data[ip++]
+            }
+          });
+        } else {
+          // Amount
+          switch (key) {
+            case 'keyRange':
+            /* FALLTHROUGH */
+
+            case 'velRange':
+            /* FALLTHROUGH */
+
+            case 'keynum':
+            /* FALLTHROUGH */
+
+            case 'velocity':
+              output.push({
+                type: key,
+                value: {
+                  lo: data[ip++],
+                  hi: data[ip++]
+                }
+              });
+              break;
+
+            default:
+              output.push({
+                type: key,
+                value: {
+                  amount: data[ip++] | data[ip++] << 8 << 16 >> 16
+                }
+              });
+              break;
+          }
+        } // AmtSrcOper
+        // TODO
+
+
+        ip += 2; // Trans Oper
+        // TODO
+
+        ip += 2;
+      }
+
+      return output;
+    }
+    /**
+     * @param {RiffChunk} chunk
+     * @return {Array.<Object>}
+     */
+
+  }, {
+    key: "parseGenerator",
+    value: function parseGenerator(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size;
+      /** @type {number} */
+
+      var code;
+      /** @type {string} */
+
+      var key;
+      /** @type {Array.<Object>} */
+
+      var output = [];
+
+      while (ip < size) {
+        code = data[ip++] | data[ip++] << 8;
+        key = this.GeneratorEnumeratorTable[code];
+
+        if (key === void 0) {
+          output.push({
+            type: key,
+            value: {
+              code: code,
+              amount: data[ip] | data[ip + 1] << 8 << 16 >> 16,
+              lo: data[ip++],
+              hi: data[ip++]
+            }
+          });
+          continue;
+        }
+
         switch (key) {
+          case 'keynum':
+          /* FALLTHROUGH */
+
           case 'keyRange':
           /* FALLTHROUGH */
 
           case 'velRange':
-          /* FALLTHROUGH */
-
-          case 'keynum':
           /* FALLTHROUGH */
 
           case 'velocity':
@@ -883,339 +976,274 @@ class Parser {
             });
             break;
         }
-      } // AmtSrcOper
-      // TODO
+      }
 
-
-      ip += 2; // Trans Oper
-      // TODO
-
-      ip += 2;
+      return output;
     }
+    /**
+     * @return {Array.<object>}
+     */
 
-    return output;
-  }
+  }, {
+    key: "createInstrument",
+    value: function createInstrument() {
+      /** @type {Array.<Object>} */
+      var instrument = this.instrument;
+      /** @type {Array.<Object>} */
 
-  /**
-   * @param {RiffChunk} chunk
-   * @return {Array.<Object>}
-   */
-  parseGenerator(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
+      var zone = this.instrumentZone;
+      /** @type {Array.<Object>} */
 
-    let ip = chunk.offset;
-    /** @type {number} */
+      var output = [];
+      /** @type {number} */
 
-    const size = chunk.offset + chunk.size;
-    /** @type {number} */
+      var bagIndex;
+      /** @type {number} */
 
-    let code;
-    /** @type {string} */
+      var bagIndexEnd;
+      /** @type {Array.<Object>} */
 
-    let key;
-    /** @type {Array.<Object>} */
+      var zoneInfo;
+      /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
 
-    const output = [];
+      var instrumentGenerator;
+      /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
 
-    while (ip < size) {
-      code = data[ip++] | data[ip++] << 8;
-      key = this.GeneratorEnumeratorTable[code];
+      var instrumentModulator;
+      /** @type {number} */
 
-      if (key === void 0) {
+      var i;
+      /** @type {number} */
+
+      var il;
+      /** @type {number} */
+
+      var j;
+      /** @type {number} */
+
+      var jl; // instrument -> instrument bag -> generator / modulator
+
+      for (i = 0, il = instrument.length; i < il; ++i) {
+        bagIndex = instrument[i].instrumentBagIndex;
+        bagIndexEnd = instrument[i + 1] ? instrument[i + 1].instrumentBagIndex : zone.length;
+        zoneInfo = []; // instrument bag
+
+        for (j = bagIndex, jl = bagIndexEnd; j < jl; ++j) {
+          instrumentGenerator = this.createInstrumentGenerator_(zone, j);
+          instrumentModulator = this.createInstrumentModulator_(zone, j);
+          zoneInfo.push({
+            generator: instrumentGenerator.generator,
+            generatorSequence: instrumentGenerator.generatorInfo,
+            modulator: instrumentModulator.modulator,
+            modulatorSequence: instrumentModulator.modulatorInfo
+          });
+        }
+
         output.push({
-          type: key,
-          value: {
-            code: code,
-            amount: data[ip] | data[ip + 1] << 8 << 16 >> 16,
-            lo: data[ip++],
-            hi: data[ip++]
-          }
+          name: instrument[i].instrumentName,
+          info: zoneInfo
         });
-        continue;
       }
 
-      switch (key) {
-        case 'keynum':
-        /* FALLTHROUGH */
+      return output;
+    }
+    /**
+     * @return {Array.<object>}
+     */
 
-        case 'keyRange':
-        /* FALLTHROUGH */
+  }, {
+    key: "createPreset",
+    value: function createPreset() {
+      /** @type {Array.<Object>} */
+      var preset = this.presetHeader;
+      /** @type {Array.<Object>} */
 
-        case 'velRange':
-        /* FALLTHROUGH */
+      var zone = this.presetZone;
+      /** @type {Array.<Object>} */
 
-        case 'velocity':
-          output.push({
-            type: key,
-            value: {
-              lo: data[ip++],
-              hi: data[ip++]
-            }
+      var output = [];
+      /** @type {number} */
+
+      var bagIndex;
+      /** @type {number} */
+
+      var bagIndexEnd;
+      /** @type {Array.<Object>} */
+
+      var zoneInfo;
+      /** @type {number} */
+
+      var instrument;
+      /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
+
+      var presetGenerator;
+      /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
+
+      var presetModulator;
+      /** @type {number} */
+
+      var i;
+      /** @type {number} */
+
+      var il;
+      /** @type {number} */
+
+      var j;
+      /** @type {number} */
+
+      var jl; // preset -> preset bag -> generator / modulator
+
+      for (i = 0, il = preset.length; i < il; ++i) {
+        bagIndex = preset[i].presetBagIndex;
+        bagIndexEnd = preset[i + 1] ? preset[i + 1].presetBagIndex : zone.length;
+        zoneInfo = []; // preset bag
+
+        for (j = bagIndex, jl = bagIndexEnd; j < jl; ++j) {
+          presetGenerator = this.createPresetGenerator_(zone, j);
+          presetModulator = this.createPresetModulator_(zone, j);
+          zoneInfo.push({
+            generator: presetGenerator.generator,
+            generatorSequence: presetGenerator.generatorInfo,
+            modulator: presetModulator.modulator,
+            modulatorSequence: presetModulator.modulatorInfo
           });
-          break;
+          instrument = presetGenerator.generator['instrument'] !== void 0 ? presetGenerator.generator['instrument'].amount : presetModulator.modulator['instrument'] !== void 0 ? presetModulator.modulator['instrument'].amount : null;
+        }
 
-        default:
-          output.push({
-            type: key,
-            value: {
-              amount: data[ip++] | data[ip++] << 8 << 16 >> 16
-            }
-          });
-          break;
-      }
-    }
-
-    return output;
-  }
-
-  /**
-   * @return {Array.<object>}
-   */
-  createInstrument() {
-    /** @type {Array.<Object>} */
-    const instrument = this.instrument;
-    /** @type {Array.<Object>} */
-
-    const zone = this.instrumentZone;
-    /** @type {Array.<Object>} */
-
-    const output = [];
-    /** @type {number} */
-
-    let bagIndex;
-    /** @type {number} */
-
-    let bagIndexEnd;
-    /** @type {Array.<Object>} */
-
-    let zoneInfo;
-    /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
-
-    let instrumentGenerator;
-    /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
-
-    let instrumentModulator;
-    /** @type {number} */
-
-    let i;
-    /** @type {number} */
-
-    let il;
-    /** @type {number} */
-
-    let j;
-    /** @type {number} */
-
-    let jl; // instrument -> instrument bag -> generator / modulator
-
-    for (i = 0, il = instrument.length; i < il; ++i) {
-      bagIndex = instrument[i].instrumentBagIndex;
-      bagIndexEnd = instrument[i + 1] ? instrument[i + 1].instrumentBagIndex : zone.length;
-      zoneInfo = []; // instrument bag
-
-      for (j = bagIndex, jl = bagIndexEnd; j < jl; ++j) {
-        instrumentGenerator = this.createInstrumentGenerator_(zone, j);
-        instrumentModulator = this.createInstrumentModulator_(zone, j);
-        zoneInfo.push({
-          generator: instrumentGenerator.generator,
-          generatorSequence: instrumentGenerator.generatorInfo,
-          modulator: instrumentModulator.modulator,
-          modulatorSequence: instrumentModulator.modulatorInfo
+        output.push({
+          name: preset[i].presetName,
+          info: zoneInfo,
+          header: preset[i],
+          instrument: instrument
         });
       }
 
-      output.push({
-        name: instrument[i].instrumentName,
-        info: zoneInfo
-      });
+      return output;
     }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} index
+     * @return {{generator: Object, generatorInfo: Array.<Object>}}
+     * @private
+     */
 
-    return output;
-  }
+  }, {
+    key: "createInstrumentGenerator_",
+    value: function createInstrumentGenerator_(zone, index) {
+      var modgen = this.createBagModGen_(zone, zone[index].instrumentGeneratorIndex, zone[index + 1] ? zone[index + 1].instrumentGeneratorIndex : this.instrumentZoneGenerator.length, this.instrumentZoneGenerator);
+      return {
+        generator: modgen.modgen,
+        generatorInfo: modgen.modgenInfo
+      };
+    }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} index
+     * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
+     * @private
+     */
 
-  /**
-   * @return {Array.<object>}
-   */
-  createPreset() {
-    /** @type {Array.<Object>} */
-    const preset = this.presetHeader;
-    /** @type {Array.<Object>} */
+  }, {
+    key: "createInstrumentModulator_",
+    value: function createInstrumentModulator_(zone, index) {
+      var modgen = this.createBagModGen_(zone, zone[index].presetModulatorIndex, zone[index + 1] ? zone[index + 1].instrumentModulatorIndex : this.instrumentZoneModulator.length, this.instrumentZoneModulator);
+      return {
+        modulator: modgen.modgen,
+        modulatorInfo: modgen.modgenInfo
+      };
+    }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} index
+     * @return {{generator: Object, generatorInfo: Array.<Object>}}
+     * @private
+     */
 
-    const zone = this.presetZone;
-    /** @type {Array.<Object>} */
+  }, {
+    key: "createPresetGenerator_",
+    value: function createPresetGenerator_(zone, index) {
+      var modgen = this.createBagModGen_(zone, zone[index].presetGeneratorIndex, zone[index + 1] ? zone[index + 1].presetGeneratorIndex : this.presetZoneGenerator.length, this.presetZoneGenerator);
+      return {
+        generator: modgen.modgen,
+        generatorInfo: modgen.modgenInfo
+      };
+    }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} index
+     * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
+     * @private
+     */
 
-    const output = [];
-    /** @type {number} */
+  }, {
+    key: "createPresetModulator_",
+    value: function createPresetModulator_(zone, index) {
+      /** @type {{modgen: Object, modgenInfo: Array.<Object>}} */
+      var modgen = this.createBagModGen_(zone, zone[index].presetModulatorIndex, zone[index + 1] ? zone[index + 1].presetModulatorIndex : this.presetZoneModulator.length, this.presetZoneModulator);
+      return {
+        modulator: modgen.modgen,
+        modulatorInfo: modgen.modgenInfo
+      };
+    }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} indexStart
+     * @param {number} indexEnd
+     * @param {Array} zoneModGen
+     * @return {{modgen: Object, modgenInfo: Array.<Object>}}
+     * @private
+     */
 
-    let bagIndex;
-    /** @type {number} */
+  }, {
+    key: "createBagModGen_",
+    value: function createBagModGen_(zone, indexStart, indexEnd, zoneModGen) {
+      /** @type {Array.<Object>} */
+      var modgenInfo = [];
+      /** @type {Object} */
 
-    let bagIndexEnd;
-    /** @type {Array.<Object>} */
+      var modgen = {
+        unknown: [],
+        keyRange: {
+          hi: 127,
+          lo: 0
+        }
+      }; // TODO
 
-    let zoneInfo;
-    /** @type {number} */
+      /** @type {Object} */
 
-    let instrument;
-    /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
+      var info;
+      /** @type {number} */
 
-    let presetGenerator;
-    /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
+      var i;
+      /** @type {number} */
 
-    let presetModulator;
-    /** @type {number} */
+      var il;
 
-    let i;
-    /** @type {number} */
+      for (i = indexStart, il = indexEnd; i < il; ++i) {
+        info = zoneModGen[i];
+        modgenInfo.push(info);
 
-    let il;
-    /** @type {number} */
-
-    let j;
-    /** @type {number} */
-
-    let jl; // preset -> preset bag -> generator / modulator
-
-    for (i = 0, il = preset.length; i < il; ++i) {
-      bagIndex = preset[i].presetBagIndex;
-      bagIndexEnd = preset[i + 1] ? preset[i + 1].presetBagIndex : zone.length;
-      zoneInfo = []; // preset bag
-
-      for (j = bagIndex, jl = bagIndexEnd; j < jl; ++j) {
-        presetGenerator = this.createPresetGenerator_(zone, j);
-        presetModulator = this.createPresetModulator_(zone, j);
-        zoneInfo.push({
-          generator: presetGenerator.generator,
-          generatorSequence: presetGenerator.generatorInfo,
-          modulator: presetModulator.modulator,
-          modulatorSequence: presetModulator.modulatorInfo
-        });
-        instrument = presetGenerator.generator['instrument'] !== void 0 ? presetGenerator.generator['instrument'].amount : presetModulator.modulator['instrument'] !== void 0 ? presetModulator.modulator['instrument'].amount : null;
+        if (info.type === 'unknown') {
+          modgen.unknown.push(info.value);
+        } else {
+          modgen[info.type] = info.value;
+        }
       }
 
-      output.push({
-        name: preset[i].presetName,
-        info: zoneInfo,
-        header: preset[i],
-        instrument: instrument
-      });
+      return {
+        modgen: modgen,
+        modgenInfo: modgenInfo
+      };
     }
+  }]);
 
-    return output;
-  }
+  return Parser;
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Parser);
+})();
 
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{generator: Object, generatorInfo: Array.<Object>}}
-   * @private
-   */
-  createInstrumentGenerator_(zone, index) {
-    const modgen = this.createBagModGen_(zone, zone[index].instrumentGeneratorIndex, zone[index + 1] ? zone[index + 1].instrumentGeneratorIndex : this.instrumentZoneGenerator.length, this.instrumentZoneGenerator);
-    return {
-      generator: modgen.modgen,
-      generatorInfo: modgen.modgenInfo
-    };
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
-   * @private
-   */
-  createInstrumentModulator_(zone, index) {
-    const modgen = this.createBagModGen_(zone, zone[index].presetModulatorIndex, zone[index + 1] ? zone[index + 1].instrumentModulatorIndex : this.instrumentZoneModulator.length, this.instrumentZoneModulator);
-    return {
-      modulator: modgen.modgen,
-      modulatorInfo: modgen.modgenInfo
-    };
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{generator: Object, generatorInfo: Array.<Object>}}
-   * @private
-   */
-  createPresetGenerator_(zone, index) {
-    const modgen = this.createBagModGen_(zone, zone[index].presetGeneratorIndex, zone[index + 1] ? zone[index + 1].presetGeneratorIndex : this.presetZoneGenerator.length, this.presetZoneGenerator);
-    return {
-      generator: modgen.modgen,
-      generatorInfo: modgen.modgenInfo
-    };
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
-   * @private
-   */
-  createPresetModulator_(zone, index) {
-    /** @type {{modgen: Object, modgenInfo: Array.<Object>}} */
-    const modgen = this.createBagModGen_(zone, zone[index].presetModulatorIndex, zone[index + 1] ? zone[index + 1].presetModulatorIndex : this.presetZoneModulator.length, this.presetZoneModulator);
-    return {
-      modulator: modgen.modgen,
-      modulatorInfo: modgen.modgenInfo
-    };
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} indexStart
-   * @param {number} indexEnd
-   * @param {Array} zoneModGen
-   * @return {{modgen: Object, modgenInfo: Array.<Object>}}
-   * @private
-   */
-  createBagModGen_(zone, indexStart, indexEnd, zoneModGen) {
-    /** @type {Array.<Object>} */
-    const modgenInfo = [];
-    /** @type {Object} */
-
-    const modgen = {
-      'unknown': [],
-      'keyRange': {
-        hi: 127,
-        lo: 0
-      }
-    }; // TODO
-
-    /** @type {Object} */
-
-    let info;
-    /** @type {number} */
-
-    let i;
-    /** @type {number} */
-
-    let il;
-
-    for (i = indexStart, il = indexEnd; i < il; ++i) {
-      info = zoneModGen[i];
-      modgenInfo.push(info);
-
-      if (info.type === 'unknown') {
-        modgen.unknown.push(info.value);
-      } else {
-        modgen[info.type] = info.value;
-      }
-    }
-
-    return {
-      modgen: modgen,
-      modgenInfo: modgenInfo
-    };
-  }
-
-}
-/* harmony default export */ __webpack_exports__["default"] = (Parser);
-
-/***/ })
-
-/******/ });
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
 });
 //# sourceMappingURL=sf2.parser.js.map

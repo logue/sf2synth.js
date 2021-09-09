@@ -15,12 +15,11 @@ export default class Riff {
     /** @type {number} */
     this.length = optParams.length || input.length - this.ip;
     /** @type {Array.<RiffChunk>} */
-    this.chunkList;
+    this.chunkList = [];
     /** @type {number} */
     this.offset = this.ip;
     /** @type {boolean} */
-    this.padding =
-      optParams.padding !== void 0 ? optParams.padding : true;
+    this.padding = optParams.padding !== void 0 ? optParams.padding : true;
     /** @type {boolean} */
     this.bigEndian =
       optParams.bigEndian !== void 0 ? optParams.bigEndian : false;
@@ -49,16 +48,23 @@ export default class Riff {
     /** @type {number} */
     let size;
 
-    this.chunkList.push(new RiffChunk(
-      String.fromCharCode(input[ip++], input[ip++], input[ip++], input[ip++]),
-      (size = this.bigEndian ?
-        ((input[ip++] << 24) | (input[ip++] << 16) |
-          (input[ip++] << 8) | (input[ip++])) >>> 0 :
-        ((input[ip++]) | (input[ip++] << 8) |
-          (input[ip++] << 16) | (input[ip++] << 24)) >>> 0
-      ),
-      ip,
-    ));
+    this.chunkList.push(
+      new RiffChunk(
+        String.fromCharCode(input[ip++], input[ip++], input[ip++], input[ip++]),
+        (size = this.bigEndian
+          ? ((input[ip++] << 24) |
+              (input[ip++] << 16) |
+              (input[ip++] << 8) |
+              input[ip++]) >>>
+            0
+          : (input[ip++] |
+              (input[ip++] << 8) |
+              (input[ip++] << 16) |
+              (input[ip++] << 24)) >>>
+            0),
+        ip
+      )
+    );
 
     ip += size;
 

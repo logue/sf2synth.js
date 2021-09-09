@@ -17,28 +17,29 @@ export class Parser {
     this.sampleRate = optParams.sampleRate || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
     /** @type {Array.<Object>} */
-    this.presetHeader;
+    this.presetHeader = [];
     /** @type {Array.<Object>} */
-    this.presetZone;
+    this.presetZone = [];
     /** @type {Array.<Object>} */
-    this.presetZoneModulator;
+    this.presetZoneModulator = [];
     /** @type {Array.<Object>} */
-    this.presetZoneGenerator;
+    this.presetZoneGenerator = [];
     /** @type {Array.<Object>} */
-    this.instrument;
+    this.instrument = [];
     /** @type {Array.<Object>} */
-    this.instrumentZone;
+    this.instrumentZone = [];
     /** @type {Array.<Object>} */
-    this.instrumentZoneModulator;
+    this.instrumentZoneModulator = [];
     /** @type {Array.<Object>} */
-    this.instrumentZoneGenerator;
+    this.instrumentZoneGenerator = [];
     /** @type {Array.<Object>} */
-    this.sampleHeader;
+    this.sampleHeader = [];
 
     /**
      * @type {Array.<string>}
      * @const
      */
+    // eslint-disable-next-line no-sparse-arrays
     this.GeneratorEnumeratorTable = [
       'startAddrsOffset',
       'endAddrsOffset',
@@ -53,10 +54,14 @@ export class Parser {
       'modLfoToFilterFc',
       'modEnvToFilterFc',
       'endAddrsCoarseOffset',
-      'modLfoToVolume', , // 14
+      'modLfoToVolume', // 14
+      ,
       'chorusEffectsSend',
       'reverbEffectsSend',
-      'pan', , , , // 18,19,20
+      'pan', // 18,19,20
+      ,
+      ,
+      ,
       'delayModLFO',
       'freqModLFO',
       'delayVibLFO',
@@ -77,18 +82,21 @@ export class Parser {
       'releaseVolEnv',
       'keynumToVolEnvHold',
       'keynumToVolEnvDecay',
-      'instrument', , // 42
+      'instrument', // 42
+      ,
       'keyRange',
       'velRange',
       'startloopAddrsCoarseOffset',
       'keynum',
       'velocity',
-      'initialAttenuation', , // 49
+      'initialAttenuation', // 49
+      ,
       'endloopAddrsCoarseOffset',
       'coarseTune',
       'fineTune',
       'sampleID',
-      'sampleModes', , // 55
+      'sampleModes', // 55
+      ,
       'scaleTuning',
       'exclusiveClass',
       'overridingRootKey', // 59
@@ -134,28 +142,33 @@ export class Parser {
 
     // check signature
     /** @type {string} */
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
+    const signature = String.fromCharCode(
+      data[ip++],
+      data[ip++],
+      data[ip++],
+      data[ip++]
+    );
     if (signature !== 'sfbk') {
       throw new Error('invalid signature:' + signature);
     }
 
     // read structure
     /** @type {Riff} */
-    const parser = new Riff(data, { 'index': ip, 'length': chunk.size - 4 });
+    const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
     parser.parse();
     if (parser.getNumberOfChunks() !== 3) {
       throw new Error('invalid sfbk structure');
     }
 
     // INFO-list
-    this.parseInfoList( /** @type {!RiffChunk} */(parser.getChunk(0)));
+    this.parseInfoList(/** @type {!RiffChunk} */ (parser.getChunk(0)));
 
     // sdta-list
-    this.parseSdtaList( /** @type {!RiffChunk} */(parser.getChunk(1)));
+    this.parseSdtaList(/** @type {!RiffChunk} */ (parser.getChunk(1)));
 
     // pdta-list
-    this.parsePdtaList( /** @type {!RiffChunk} */(parser.getChunk(2)));
-  };
+    this.parsePdtaList(/** @type {!RiffChunk} */ (parser.getChunk(2)));
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -173,16 +186,21 @@ export class Parser {
 
     // check signature
     /** @type {string} */
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
+    const signature = String.fromCharCode(
+      data[ip++],
+      data[ip++],
+      data[ip++],
+      data[ip++]
+    );
     if (signature !== 'INFO') {
       throw new Error('invalid signature:' + signature);
     }
 
     // read structure
     /** @type {Riff} */
-    const parser = new Riff(data, { 'index': ip, 'length': chunk.size - 4 });
+    const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
     parser.parse();
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -200,14 +218,19 @@ export class Parser {
 
     // check signature
     /** @type {string} */
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
+    const signature = String.fromCharCode(
+      data[ip++],
+      data[ip++],
+      data[ip++],
+      data[ip++]
+    );
     if (signature !== 'sdta') {
       throw new Error('invalid signature:' + signature);
     }
 
     // read structure
     /** @type {Riff} */
-    const parser = new Riff(data, { 'index': ip, 'length': chunk.size - 4 });
+    const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
     parser.parse();
     if (parser.chunkList.length !== 1) {
       throw new Error('TODO');
@@ -215,7 +238,7 @@ export class Parser {
     this.samplingData =
       /** @type {{type: string, size: number, offset: number}} */
       (parser.getChunk(0));
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -233,14 +256,19 @@ export class Parser {
 
     // check signature
     /** @type {string} */
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
+    const signature = String.fromCharCode(
+      data[ip++],
+      data[ip++],
+      data[ip++],
+      data[ip++]
+    );
     if (signature !== 'pdta') {
       throw new Error('invalid signature:' + signature);
     }
 
     // read structure
     /** @type {Riff} */
-    const parser = new Riff(data, { 'index': ip, 'length': chunk.size - 4 });
+    const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
     parser.parse();
 
     // check number of chunks
@@ -248,16 +276,16 @@ export class Parser {
       throw new Error('invalid pdta chunk');
     }
 
-    this.parsePhdr( /** @type {RiffChunk} */(parser.getChunk(0)));
-    this.parsePbag( /** @type {RiffChunk} */(parser.getChunk(1)));
-    this.parsePmod( /** @type {RiffChunk} */(parser.getChunk(2)));
-    this.parsePgen( /** @type {RiffChunk} */(parser.getChunk(3)));
-    this.parseInst( /** @type {RiffChunk} */(parser.getChunk(4)));
-    this.parseIbag( /** @type {RiffChunk} */(parser.getChunk(5)));
-    this.parseImod( /** @type {RiffChunk} */(parser.getChunk(6)));
-    this.parseIgen( /** @type {RiffChunk} */(parser.getChunk(7)));
-    this.parseShdr( /** @type {RiffChunk} */(parser.getChunk(8)));
-  };
+    this.parsePhdr(/** @type {RiffChunk} */ (parser.getChunk(0)));
+    this.parsePbag(/** @type {RiffChunk} */ (parser.getChunk(1)));
+    this.parsePmod(/** @type {RiffChunk} */ (parser.getChunk(2)));
+    this.parsePgen(/** @type {RiffChunk} */ (parser.getChunk(3)));
+    this.parseInst(/** @type {RiffChunk} */ (parser.getChunk(4)));
+    this.parseIbag(/** @type {RiffChunk} */ (parser.getChunk(5)));
+    this.parseImod(/** @type {RiffChunk} */ (parser.getChunk(6)));
+    this.parseIgen(/** @type {RiffChunk} */ (parser.getChunk(7)));
+    this.parseShdr(/** @type {RiffChunk} */ (parser.getChunk(8)));
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -268,7 +296,7 @@ export class Parser {
     /** @type {number} */
     let ip = chunk.offset;
     /** @type {Array.<Object>} */
-    const presetHeader = this.presetHeader = [];
+    const presetHeader = (this.presetHeader = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
 
@@ -279,16 +307,34 @@ export class Parser {
 
     while (ip < size) {
       presetHeader.push({
-        presetName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
+        presetName: String.fromCharCode.apply(
+          null,
+          data.subarray(ip, (ip += 20))
+        ),
         preset: data[ip++] | (data[ip++] << 8),
         bank: data[ip++] | (data[ip++] << 8),
         presetBagIndex: data[ip++] | (data[ip++] << 8),
-        library: (data[ip++] | (data[ip++] << 8) | (data[ip++] << 16) | (data[ip++] << 24)) >>> 0,
-        genre: (data[ip++] | (data[ip++] << 8) | (data[ip++] << 16) | (data[ip++] << 24)) >>> 0,
-        morphology: (data[ip++] | (data[ip++] << 8) | (data[ip++] << 16) | (data[ip++] << 24)) >>> 0,
+        library:
+          (data[ip++] |
+            (data[ip++] << 8) |
+            (data[ip++] << 16) |
+            (data[ip++] << 24)) >>>
+          0,
+        genre:
+          (data[ip++] |
+            (data[ip++] << 8) |
+            (data[ip++] << 16) |
+            (data[ip++] << 24)) >>>
+          0,
+        morphology:
+          (data[ip++] |
+            (data[ip++] << 8) |
+            (data[ip++] << 16) |
+            (data[ip++] << 24)) >>>
+          0,
       });
     }
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -299,7 +345,7 @@ export class Parser {
     /** @type {number} */
     let ip = chunk.offset;
     /** @type {Array.<Object>} */
-    const presetZone = this.presetZone = [];
+    const presetZone = (this.presetZone = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
 
@@ -314,7 +360,7 @@ export class Parser {
         presetModulatorIndex: data[ip++] | (data[ip++] << 8),
       });
     }
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -326,7 +372,7 @@ export class Parser {
     }
 
     this.presetZoneModulator = this.parseModulator(chunk);
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -337,7 +383,7 @@ export class Parser {
       throw new Error('invalid chunk type:' + chunk.type);
     }
     this.presetZoneGenerator = this.parseGenerator(chunk);
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -348,7 +394,7 @@ export class Parser {
     /** @type {number} */
     let ip = chunk.offset;
     /** @type {Array.<Object>} */
-    const instrument = this.instrument = [];
+    const instrument = (this.instrument = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
 
@@ -359,11 +405,14 @@ export class Parser {
 
     while (ip < size) {
       instrument.push({
-        instrumentName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
+        instrumentName: String.fromCharCode.apply(
+          null,
+          data.subarray(ip, (ip += 20))
+        ),
         instrumentBagIndex: data[ip++] | (data[ip++] << 8),
       });
     }
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -374,7 +423,7 @@ export class Parser {
     /** @type {number} */
     let ip = chunk.offset;
     /** @type {Array.<Object>} */
-    const instrumentZone = this.instrumentZone = [];
+    const instrumentZone = (this.instrumentZone = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
 
@@ -383,14 +432,13 @@ export class Parser {
       throw new Error('invalid chunk type:' + chunk.type);
     }
 
-
     while (ip < size) {
       instrumentZone.push({
         instrumentGeneratorIndex: data[ip++] | (data[ip++] << 8),
         instrumentModulatorIndex: data[ip++] | (data[ip++] << 8),
       });
     }
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -402,8 +450,7 @@ export class Parser {
     }
 
     this.instrumentZoneModulator = this.parseModulator(chunk);
-  };
-
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -415,7 +462,7 @@ export class Parser {
     }
 
     this.instrumentZoneGenerator = this.parseGenerator(chunk);
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -426,9 +473,9 @@ export class Parser {
     /** @type {number} */
     let ip = chunk.offset;
     /** @type {Array.<Object>} */
-    const samples = this.sample = [];
+    const samples = (this.sample = []);
     /** @type {Array.<Object>} */
-    const sampleHeader = this.sampleHeader = [];
+    const sampleHeader = (this.sampleHeader = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
     /** @type {string} */
@@ -458,31 +505,53 @@ export class Parser {
     }
 
     while (ip < size) {
-      sampleName = String.fromCharCode.apply(null, data.subarray(ip, ip += 20));
-      start = (
-        (data[ip++] << 0) | (data[ip++] << 8) | (data[ip++] << 16) | (data[ip++] << 24)
-      ) >>> 0;
-      end = (
-        (data[ip++] << 0) | (data[ip++] << 8) | (data[ip++] << 16) | (data[ip++] << 24)
-      ) >>> 0;
-      startLoop = (
-        (data[ip++] << 0) | (data[ip++] << 8) | (data[ip++] << 16) | (data[ip++] << 24)
-      ) >>> 0;
-      endLoop = (
-        (data[ip++] << 0) | (data[ip++] << 8) | (data[ip++] << 16) | (data[ip++] << 24)
-      ) >>> 0;
-      sampleRate = (
-        (data[ip++] << 0) | (data[ip++] << 8) | (data[ip++] << 16) | (data[ip++] << 24)
-      ) >>> 0;
+      sampleName = String.fromCharCode.apply(
+        null,
+        data.subarray(ip, (ip += 20))
+      );
+      start =
+        ((data[ip++] << 0) |
+          (data[ip++] << 8) |
+          (data[ip++] << 16) |
+          (data[ip++] << 24)) >>>
+        0;
+      end =
+        ((data[ip++] << 0) |
+          (data[ip++] << 8) |
+          (data[ip++] << 16) |
+          (data[ip++] << 24)) >>>
+        0;
+      startLoop =
+        ((data[ip++] << 0) |
+          (data[ip++] << 8) |
+          (data[ip++] << 16) |
+          (data[ip++] << 24)) >>>
+        0;
+      endLoop =
+        ((data[ip++] << 0) |
+          (data[ip++] << 8) |
+          (data[ip++] << 16) |
+          (data[ip++] << 24)) >>>
+        0;
+      sampleRate =
+        ((data[ip++] << 0) |
+          (data[ip++] << 8) |
+          (data[ip++] << 16) |
+          (data[ip++] << 24)) >>>
+        0;
       originalPitch = data[ip++];
       pitchCorrection = (data[ip++] << 24) >> 24;
       sampleLink = data[ip++] | (data[ip++] << 8);
       sampleType = data[ip++] | (data[ip++] << 8);
 
-      let sample = new Int16Array(new Uint8Array(data.subarray(
-        this.samplingData.offset + start * 2,
-        this.samplingData.offset + end * 2,
-      )).buffer);
+      let sample = new Int16Array(
+        new Uint8Array(
+          data.subarray(
+            this.samplingData.offset + start * 2,
+            this.samplingData.offset + end * 2
+          )
+        ).buffer
+      );
 
       startLoop -= start;
       endLoop -= start;
@@ -510,7 +579,7 @@ export class Parser {
         sampleType: sampleType,
       });
     }
-  };
+  }
 
   /**
    * @param {Array} sample
@@ -530,7 +599,8 @@ export class Parser {
     let multiply = 1;
 
     // buffer
-    while (sampleRate < (this.sampleRate)) { // AudioContextのサンプルレートに変更
+    while (sampleRate < this.sampleRate) {
+      // AudioContextのサンプルレートに変更
       newSample = new Int16Array(sample.length * 2);
       for (i = j = 0, il = sample.length; i < il; ++i) {
         newSample[j++] = sample[i];
@@ -545,7 +615,7 @@ export class Parser {
       sample: sample,
       multiply: multiply,
     };
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -579,7 +649,7 @@ export class Parser {
           type: key,
           value: {
             code: code,
-            amount: data[ip] | (data[ip + 1] << 8) << 16 >> 16,
+            amount: data[ip] | (((data[ip + 1] << 8) << 16) >> 16),
             lo: data[ip++],
             hi: data[ip++],
           },
@@ -606,7 +676,7 @@ export class Parser {
             output.push({
               type: key,
               value: {
-                amount: data[ip++] | (data[ip++] << 8) << 16 >> 16,
+                amount: data[ip++] | (((data[ip++] << 8) << 16) >> 16),
               },
             });
             break;
@@ -623,7 +693,7 @@ export class Parser {
     }
 
     return output;
-  };
+  }
 
   /**
    * @param {RiffChunk} chunk
@@ -651,7 +721,7 @@ export class Parser {
           type: key,
           value: {
             code: code,
-            amount: data[ip] | (data[ip + 1] << 8) << 16 >> 16,
+            amount: data[ip] | (((data[ip + 1] << 8) << 16) >> 16),
             lo: data[ip++],
             hi: data[ip++],
           },
@@ -679,7 +749,7 @@ export class Parser {
           output.push({
             type: key,
             value: {
-              amount: data[ip++] | (data[ip++] << 8) << 16 >> 16,
+              amount: data[ip++] | (((data[ip++] << 8) << 16) >> 16),
             },
           });
           break;
@@ -687,7 +757,7 @@ export class Parser {
     }
 
     return output;
-  };
+  }
 
   /**
    * @return {Array.<object>}
@@ -721,7 +791,9 @@ export class Parser {
     // instrument -> instrument bag -> generator / modulator
     for (i = 0, il = instrument.length; i < il; ++i) {
       bagIndex = instrument[i].instrumentBagIndex;
-      bagIndexEnd = instrument[i + 1] ? instrument[i + 1].instrumentBagIndex : zone.length;
+      bagIndexEnd = instrument[i + 1]
+        ? instrument[i + 1].instrumentBagIndex
+        : zone.length;
       zoneInfo = [];
 
       // instrument bag
@@ -744,7 +816,7 @@ export class Parser {
     }
 
     return output;
-  };
+  }
 
   /**
    * @return {Array.<object>}
@@ -796,11 +868,11 @@ export class Parser {
         });
 
         instrument =
-          presetGenerator.generator['instrument'] !== void 0 ?
-            presetGenerator.generator['instrument'].amount :
-            presetModulator.modulator['instrument'] !== void 0 ?
-              presetModulator.modulator['instrument'].amount :
-              null;
+          presetGenerator.generator['instrument'] !== void 0
+            ? presetGenerator.generator['instrument'].amount
+            : presetModulator.modulator['instrument'] !== void 0
+            ? presetModulator.modulator['instrument'].amount
+            : null;
       }
 
       output.push({
@@ -812,7 +884,7 @@ export class Parser {
     }
 
     return output;
-  };
+  }
 
   /**
    * @param {Array.<Object>} zone
@@ -824,15 +896,17 @@ export class Parser {
     const modgen = this.createBagModGen_(
       zone,
       zone[index].instrumentGeneratorIndex,
-      zone[index + 1] ? zone[index + 1].instrumentGeneratorIndex : this.instrumentZoneGenerator.length,
-      this.instrumentZoneGenerator,
+      zone[index + 1]
+        ? zone[index + 1].instrumentGeneratorIndex
+        : this.instrumentZoneGenerator.length,
+      this.instrumentZoneGenerator
     );
 
     return {
       generator: modgen.modgen,
       generatorInfo: modgen.modgenInfo,
     };
-  };
+  }
 
   /**
    * @param {Array.<Object>} zone
@@ -844,15 +918,17 @@ export class Parser {
     const modgen = this.createBagModGen_(
       zone,
       zone[index].presetModulatorIndex,
-      zone[index + 1] ? zone[index + 1].instrumentModulatorIndex : this.instrumentZoneModulator.length,
-      this.instrumentZoneModulator,
+      zone[index + 1]
+        ? zone[index + 1].instrumentModulatorIndex
+        : this.instrumentZoneModulator.length,
+      this.instrumentZoneModulator
     );
 
     return {
       modulator: modgen.modgen,
       modulatorInfo: modgen.modgenInfo,
     };
-  };
+  }
 
   /**
    * @param {Array.<Object>} zone
@@ -864,15 +940,17 @@ export class Parser {
     const modgen = this.createBagModGen_(
       zone,
       zone[index].presetGeneratorIndex,
-      zone[index + 1] ? zone[index + 1].presetGeneratorIndex : this.presetZoneGenerator.length,
-      this.presetZoneGenerator,
+      zone[index + 1]
+        ? zone[index + 1].presetGeneratorIndex
+        : this.presetZoneGenerator.length,
+      this.presetZoneGenerator
     );
 
     return {
       generator: modgen.modgen,
       generatorInfo: modgen.modgenInfo,
     };
-  };
+  }
 
   /**
    * @param {Array.<Object>} zone
@@ -885,15 +963,17 @@ export class Parser {
     const modgen = this.createBagModGen_(
       zone,
       zone[index].presetModulatorIndex,
-      zone[index + 1] ? zone[index + 1].presetModulatorIndex : this.presetZoneModulator.length,
-      this.presetZoneModulator,
+      zone[index + 1]
+        ? zone[index + 1].presetModulatorIndex
+        : this.presetZoneModulator.length,
+      this.presetZoneModulator
     );
 
     return {
       modulator: modgen.modgen,
       modulatorInfo: modgen.modgenInfo,
     };
-  };
+  }
 
   /**
    * @param {Array.<Object>} zone
@@ -908,8 +988,8 @@ export class Parser {
     const modgenInfo = [];
     /** @type {Object} */
     const modgen = {
-      'unknown': [],
-      'keyRange': {
+      unknown: [],
+      keyRange: {
         hi: 127,
         lo: 0,
       },

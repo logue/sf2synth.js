@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.4 | imaya / GREE Inc. / Logue | license: MIT | build: 2020-01-02T16:21:34.166Z */
+/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-09T11:46:22.605Z */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -9,420 +9,2947 @@
 	else
 		root["SoundFont"] = factory();
 })((typeof self !== 'undefined' ? self : this), function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/wml.js");
-/******/ })
-/************************************************************************/
-/******/ ({
+return /******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/@logue/reverb/src/meta.js":
-/*!************************************************!*\
-  !*** ./node_modules/@logue/reverb/src/meta.js ***!
-  \************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ "./node_modules/@logue/reverb/bin/reverb.min.js":
+/*!******************************************************!*\
+  !*** ./node_modules/@logue/reverb/bin/reverb.min.js ***!
+  \******************************************************/
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// This file is auto-generated by the build system.
-const Meta = {
-  version: '0.2.1',
-  date: '2019-12-26T15:48:03.337Z',
-};
-/* harmony default export */ __webpack_exports__["default"] = (Meta);
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+/*! For license information please see reverb.min.js.LICENSE.txt */
+!function (e, t) {
+  "object" == ( false ? 0 : _typeof(exports)) && "object" == ( false ? 0 : _typeof(module)) ? module.exports = t() :  true ? !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (t),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : 0;
+}("undefined" != typeof self ? self : this, function () {
+  return function () {
+    "use strict";
+
+    var e = {
+      35: function _(e, t) {
+        Object.defineProperty(t, "__esModule", {
+          value: !0
+        });
+        t["default"] = {
+          version: "0.4.2",
+          date: "2021-07-04T08:13:17.775Z"
+        };
+      },
+      804: function _(e, t) {
+        Object.defineProperty(t, "__esModule", {
+          value: !0
+        }), t.NoiseType = void 0, function (e) {
+          e[e.WHITE = 0] = "WHITE", e[e.PINK = 1] = "PINK", e[e.BROWN = 2] = "BROWN";
+        }(t.NoiseType || (t.NoiseType = {}));
+      },
+      850: function _(e, t, i) {
+        var s = this && this.__importDefault || function (e) {
+          return e && e.__esModule ? e : {
+            "default": e
+          };
+        };
+
+        Object.defineProperty(t, "__esModule", {
+          value: !0
+        });
+        var o = s(i(35)),
+            n = i(804);
+
+        var r = /*#__PURE__*/function () {
+          function r(e, t) {
+            _classCallCheck(this, r);
+
+            _defineProperty(this, "version", void 0);
+
+            _defineProperty(this, "build", void 0);
+
+            _defineProperty(this, "ctx", void 0);
+
+            _defineProperty(this, "wetGainNode", void 0);
+
+            _defineProperty(this, "dryGainNode", void 0);
+
+            _defineProperty(this, "filterNode", void 0);
+
+            _defineProperty(this, "convolverNode", void 0);
+
+            _defineProperty(this, "outputNode", void 0);
+
+            _defineProperty(this, "_options", void 0);
+
+            _defineProperty(this, "isConnected", void 0);
+
+            this.version = o["default"].version, this.build = o["default"].date, this.ctx = e, this._options = _objectSpread(_objectSpread({}, h), t), this.wetGainNode = this.ctx.createGain(), this.dryGainNode = this.ctx.createGain(), this.filterNode = this.ctx.createBiquadFilter(), this.convolverNode = this.ctx.createConvolver(), this.outputNode = this.ctx.createGain(), this.isConnected = !1, this.buildImpulse();
+          }
+
+          _createClass(r, [{
+            key: "connect",
+            value: function connect(e) {
+              return this.convolverNode.connect(this.filterNode), this.filterNode.connect(this.wetGainNode), e.connect(this.convolverNode), e.connect(this.dryGainNode).connect(this.outputNode), e.connect(this.wetGainNode).connect(this.outputNode), this.isConnected = !0, this.outputNode;
+            }
+          }, {
+            key: "disconnect",
+            value: function disconnect(e) {
+              return this.isConnected && (this.convolverNode.disconnect(this.filterNode), this.filterNode.disconnect(this.wetGainNode)), this.isConnected = !1, e;
+            }
+          }, {
+            key: "mix",
+            value: function mix(e) {
+              if (!this.inRange(e, 0, 1)) throw new RangeError("Reverb.js: Dry/Wet ratio must be between 0 to 1.");
+              this._options.mix = e, this.dryGainNode.gain.value = 1 - this._options.mix, this.wetGainNode.gain.value = this._options.mix;
+            }
+          }, {
+            key: "time",
+            value: function time(e) {
+              if (!this.inRange(e, 1, 50)) throw new RangeError("Reverb.js: Time length of inpulse response must be less than 50sec.");
+              this._options.time = e, this.buildImpulse();
+            }
+          }, {
+            key: "decay",
+            value: function decay(e) {
+              if (!this.inRange(e, 0, 100)) throw new RangeError("Reverb.js: Inpulse Response decay level must be less than 100.");
+              this._options.decay = e, this.buildImpulse();
+            }
+          }, {
+            key: "delay",
+            value: function delay(e) {
+              if (!this.inRange(e, 0, 100)) throw new RangeError("Reverb.js: Inpulse Response delay time must be less than 100.");
+              this._options.delay = e, this.buildImpulse();
+            }
+          }, {
+            key: "reverse",
+            value: function reverse(e) {
+              this._options.reverse = e, this.buildImpulse();
+            }
+          }, {
+            key: "filterType",
+            value: function filterType(e) {
+              this.filterNode.type = this._options.filterType = e;
+            }
+          }, {
+            key: "filterFreq",
+            value: function filterFreq(e) {
+              if (!this.inRange(e, 20, 5e3)) throw new RangeError("Reverb.js: Filter frequrncy must be between 20 and 5000.");
+              this._options.filterFreq = e, this.filterNode.frequency.value = this._options.filterFreq;
+            }
+          }, {
+            key: "filterQ",
+            value: function filterQ(e) {
+              if (!this.inRange(e, 0, 10)) throw new RangeError("Reverb.js: Filter quality value must be between 0 and 10.");
+              this._options.filterQ = e, this.filterNode.Q.value = this._options.filterQ;
+            }
+          }, {
+            key: "setNoise",
+            value: function setNoise(e) {
+              this._options.noise = e, this.buildImpulse();
+            }
+          }, {
+            key: "inRange",
+            value: function inRange(e, t, i) {
+              return (e - t) * (e - i) <= 0;
+            }
+          }, {
+            key: "buildImpulse",
+            value: function buildImpulse() {
+              var e = this.ctx.sampleRate,
+                  t = Math.max(e * this._options.time, 1),
+                  i = e * this._options.delay,
+                  s = this.ctx.createBuffer(2, t, e),
+                  o = new Float32Array(t),
+                  h = new Float32Array(t),
+                  a = [0, 0, 0, 0, 0, 0, 0];
+
+              for (var _e = 0; _e < t; _e++) {
+                var _s = 0;
+
+                switch (_e < i ? (o[_e] = 0, h[_e] = 0, _s = this._options.reverse ? t - (_e - i) : _e - i) : _s = this._options.reverse ? t - _e : _e, this._options.noise) {
+                  default:
+                  case n.NoiseType.WHITE:
+                    o[_e] = r.whiteNoise(), h[_e] = r.whiteNoise();
+                    break;
+
+                  case n.NoiseType.PINK:
+                    a[0] = .99886 * a[0] + .0555179 * r.whiteNoise(), a[1] = .99332 * a[1] + .0750759 * r.whiteNoise(), a[2] = .969 * a[2] + .153852 * r.whiteNoise(), a[3] = .8665 * a[3] + .3104856 * r.whiteNoise(), a[4] = .55 * a[4] + .5329522 * r.whiteNoise(), a[5] = -.7616 * a[5] - .016898 * r.whiteNoise(), o[_e] = a[0] + a[1] + a[2] + a[3] + a[4] + a[5] + a[6] + .5362 * r.whiteNoise(), h[_e] = a[0] + a[1] + a[2] + a[3] + a[4] + a[5] + a[6] + .5362 * r.whiteNoise(), o[_e] *= .11, h[_e] *= .11, a[6] = .115926 * r.whiteNoise();
+                    break;
+
+                  case n.NoiseType.BROWN:
+                    o[_e] = (a[0] + .02 * r.whiteNoise()) / 1.02, a[0] = o[_e], h[_e] = (a[1] + .02 * r.whiteNoise()) / 1.02, a[1] = h[_e], o[_e] *= 3.5, h[_e] *= 3.5;
+                }
+
+                o[_e] *= Math.pow(1 - _s / t, this._options.decay), h[_e] *= Math.pow(1 - _s / t, this._options.decay);
+              }
+
+              s.getChannelData(0).set(o), s.getChannelData(1).set(h), this.convolverNode.buffer = s;
+            }
+          }], [{
+            key: "whiteNoise",
+            value: function whiteNoise() {
+              return 2 * Math.random() - 1;
+            }
+          }]);
+
+          return r;
+        }();
+
+        t["default"] = r;
+        var h = {
+          noise: 1,
+          decay: 5,
+          delay: 0,
+          reverse: !1,
+          time: 3,
+          filterType: "lowpass",
+          filterFreq: 2200,
+          filterQ: 1,
+          mix: .5
+        };
+      }
+    },
+        t = {};
+    return function i(s) {
+      var o = t[s];
+      if (void 0 !== o) return o.exports;
+      var n = t[s] = {
+        exports: {}
+      };
+      return e[s].call(n.exports, n, n.exports, i), n.exports;
+    }(850);
+  }();
+});
 
 /***/ }),
 
-/***/ "./node_modules/@logue/reverb/src/reverb.js":
-/*!**************************************************!*\
-  !*** ./node_modules/@logue/reverb/src/reverb.js ***!
-  \**************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ "./node_modules/axios/index.js":
+/*!*************************************!*\
+  !*** ./node_modules/axios/index.js ***!
+  \*************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__(/*! ./lib/axios */ "./node_modules/axios/lib/axios.js");
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/adapters/xhr.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/adapters/xhr.js ***!
+  \************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Reverb; });
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./meta */ "./node_modules/@logue/reverb/src/meta.js");
 
-/**
- * JS reverb effect class
- *
- * @author    Logue <logue@hotmail.co.jp>
- * @copyright 2019 Masashi Yoshikawa <https://logue.dev/> All rights reserved.
- * @license   MIT
- * @see       {@link https://github.com/logue/Reverb.js}
- *            {@link https://github.com/web-audio-components/simple-reverb}
- */
-class Reverb {
-  /**
-   * constructor
-   * @param {AudioContext} ctx
-   * @param {{
-   *   decay: (number|undefined),
-   *   delay: (number|undefined),
-   *   filterFreq: (number|undefined),
-   *   filterQ: (number|undefined),
-   *   filterType: (string|undefined),
-   *   mix: (number|undefined),
-   *   reverse: (boolean|undefined),
-   *   time: (number|undefined)
-   * }} options
-   */
-  constructor(ctx, options = {}) {
-    /** @type {number} バージョン */
-    this.version = _meta__WEBPACK_IMPORTED_MODULE_0__["default"].version;
-    /** @type {Date} ビルド日時 */
-    this.build = _meta__WEBPACK_IMPORTED_MODULE_0__["default"].date;
-    /** @type {AudioContext} */
-    this.ctx = ctx;
-    /** @type {GainNode} ウェットレベル */
-    this.wetGainNode = this.ctx.createGain();
-    /** @type {GainNode} ドライレベル */
-    this.dryGainNode = this.ctx.createGain();
-    /** @type {BiquadFilterNode} インパルス応答用フィルタ */
-    this.filterNode = this.ctx.createBiquadFilter();
-    /** @type {ConvolverNode} 畳み込みノード */
-    this.convolverNode = this.ctx.createConvolver();
-    /** @type {GainNode} 出力ノード */
-    this.outputNode = this.ctx.createGain();
 
-    // デフォルト値
-    /** @type {number} ディケイ */
-    this._decay = options.decay | 0 || 5;
-    /** @type {number} ディレイ */
-    this._delay = options.delay | 0 || 0;
-    /** @type {boolean} レスポンス応答を反転 */
-    this._reverse = options.reverse || false;
-    /** @type {number} レスポンス応答の時間（秒） */
-    this._time = options.time | 0 || 3;
-    /** @type {BiquadFilterNode|null} フィルタの種類 */
-    this._filterType = options.filterType || 'lowpass';
-    /** @type {number} フィルタ周波数(Hz) */
-    this._freq = options.filterFreq | 0 || 2200;
-    /** @type {number} フィルタ品質 */
-    this._q = options.filterQ | 0 || 1;
-    /** @type {number} ドライ／ウェット比 */
-    this._mix = options.mix || 0.5;
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
 
-    // 値をセット
-    this.time(this._time);
-    this.delay(this._delay);
-    this.decay(this._decay);
-    this.reverse(this._reverse);
+var settle = __webpack_require__(/*! ./../core/settle */ "./node_modules/axios/lib/core/settle.js");
 
-    // エフェクタに反映
-    this.filterType(this._filterType);
-    this.filterFreq(this._freq);
-    this.filterQ(this._q);
+var cookies = __webpack_require__(/*! ./../helpers/cookies */ "./node_modules/axios/lib/helpers/cookies.js");
 
-    this.mix(this._mix);
+var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
 
-    /** @type {bool} 接続済みフラグ */
-    this.isConnected = false;
+var buildFullPath = __webpack_require__(/*! ../core/buildFullPath */ "./node_modules/axios/lib/core/buildFullPath.js");
 
-    this.buildImpulse();
-  }
+var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ "./node_modules/axios/lib/helpers/parseHeaders.js");
 
-  /**
-   * connect
-   * @param {GainNode} sourceNode
-   * @return {GainNode}
-   */
-  connect(sourceNode) {
-    this.isConnected = true;
-    // 畳み込みノードをウェットレベルに接続
-    this.convolverNode.connect(this.filterNode);
-    // フィルタノードをウェットレベルに接続
-    this.filterNode.connect(this.wetGainNode);
-    // 入力ノードを畳み込みノードに接続
-    sourceNode.connect(this.convolverNode);
-    // ドライレベルを出力ノードに接続
-    sourceNode.connect(this.dryGainNode).connect(this.outputNode);
-    // ウェットレベルを出力ノードに接続
-    sourceNode.connect(this.wetGainNode).connect(this.outputNode);
-    return this.outputNode;
-  }
+var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ "./node_modules/axios/lib/helpers/isURLSameOrigin.js");
 
-  /**
-   * disconnect
-   * @param {GainNode} sourceNode
-   * @return {GainNode}
-   */
-  disconnect(sourceNode) {
-    // 初期状態で接続されていない可能性があるためエラーを消す
-    try {
-      // 畳み込みノードをウェットレベルから切断
-      this.convolverNode.disconnect(this.filterNode);
-      // フィルタノードをウェットレベルから切断
-      this.filterNode.disconnect(this.wetGainNode);
-      // 入力ノードを畳み込みノードから切断
-      sourceNode.disconnect(this.convolverNode);
-      // ドライレベルを出力ノードから切断
-      sourceNode.disconnect(this.dryGainNode).disconnect(this.outputNode);
-      // ウェットレベルを出力ノードから切断
-      sourceNode.disconnect(this.wetGainNode).disconnect(this.outputNode);
-    } catch (e) { }
-    this.isConnected = false;
-    return sourceNode;
-  }
+var createError = __webpack_require__(/*! ../core/createError */ "./node_modules/axios/lib/core/createError.js");
 
-  /**
-   * Mixing Dry and Wet Level.
-   * @param {number} mix
-   */
-  mix(mix) {
-    if (!this.inRange(mix, 0, 1)) {
-      console.warn('Dry/Wet level must be between 0 to 1.');
-      return;
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+    var responseType = config.responseType;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
     }
-    this._mix = mix;
-    this.dryGainNode.gain.value = (1 - this._mix);
-    this.wetGainNode.gain.value = this._mix;
-    console.info(`Set dry/wet level to ${mix * 100}%`);
-  }
 
-  /**
-   * Set Impulse Response time length (second)
-   * @param {number} value
-   */
-  time(value) {
-    if (!this.inRange(value, 1, 50)) {
-      console.warn('Time length of inpulse response must be less than 50sec.');
-      return;
+    var request = new XMLHttpRequest(); // HTTP basic authentication
+
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
     }
-    this._time = value;
-    this.buildImpulse();
-    console.info(`Set inpulse response time length to ${value}sec.`);
-  }
 
-  /**
-   * Impulse response decay rate.
-   * @param {number} value
-   */
-  decay(value) {
-    if (!this.inRange(value, 0, 100)) {
-      console.warn('Inpulse Response decay level must be less than 100.');
-      return;
+    var fullPath = buildFullPath(config.baseURL, config.url);
+    request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true); // Set the request timeout in MS
+
+    request.timeout = config.timeout;
+
+    function onloadend() {
+      if (!request) {
+        return;
+      } // Prepare the response
+
+
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !responseType || responseType === 'text' || responseType === 'json' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+      settle(resolve, reject, response); // Clean up request
+
+      request = null;
     }
-    this._decay = value;
-    this.buildImpulse();
-    console.info(`Set inpulse response decay level to ${value}.`);
-  }
 
-  /**
-   * Impulse response delay time. (NOT deley effect)
-   * @param {number} value
-   */
-  delay(value) {
-    if (!this.inRange(value, 0, 100)) {
-      console.warn('Inpulse Response delay time must be less than 100.');
-      return;
-    }
-    this._delay = value;
-    this.buildImpulse();
-    console.info(`Set inpulse response delay time to ${value}sec.`);
-  }
+    if ('onloadend' in request) {
+      // Use onloadend if available
+      request.onloadend = onloadend;
+    } else {
+      // Listen for ready state to emulate onloadend
+      request.onreadystatechange = function handleLoad() {
+        if (!request || request.readyState !== 4) {
+          return;
+        } // The request errored out and we didn't get a response, this will be
+        // handled by onerror instead
+        // With one exception: request that using file: protocol, most browsers
+        // will return status as 0 even though it's a successful request
 
-  /**
-   * Reverse the impulse response.
-   * @param {boolean} reverse
-   */
-  reverse(reverse) {
-    this._reverse = reverse;
-    this.buildImpulse();
-    console.info(`Inpulse response is ${reverse ? '' : 'not '}reversed.`);
-  }
 
-  /**
-   * Filter type.
-   * @param {BiquadFilterNode|null} type
-   */
-  filterType(type) {
-    this.filterNode.type = this._filterType = type;
-    console.info(`Set filter type to ${type}`);
-  }
+        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+          return;
+        } // readystate handler is calling before onerror or ontimeout handlers,
+        // so we should call onloadend on the next 'tick'
 
-  /**
-   * Filter frequency.
-   * @param {number} freq
-   */
-  filterFreq(freq) {
-    if (!this.inRange(freq, 20, 5000)) {
-      console.warn('Filter frequrncy must be between 20 and 5000.');
-      return;
-    }
-    this._freq = freq;
-    this.filterNode.frequency.value = this._freq;
-    console.info(`Set filter frequency to ${freq}Hz.`);
-  }
 
-  /**
-   * Filter quality.
-   * @param {number} q
-   */
-  filterQ(q) {
-    if (!this.inRange(q, 0, 10)) {
-      console.warn('Filter quality value must be between 0 and 1.');
-      return;
-    }
-    this._q = q;
-    this.filterNode.Q.value = this._q;
-    console.info(`Set filter quality to ${q}.`);
-  }
+        setTimeout(onloadend);
+      };
+    } // Handle browser request cancellation (as opposed to a manual cancellation)
 
-  /**
-   * return true if in range, otherwise false
-   * @private
-   * @param {number} x Target value
-   * @param {number} min Minimum value
-   * @param {number} max Maximum value
-   * @return {bool}
-   */
-  inRange(x, min, max) {
-    return ((x - min) * (x - max) <= 0);
-  }
 
-  /**
-   * Utility function for building an impulse response
-   * from the module parameters.
-   * @private
-   */
-  buildImpulse() {
-    // インパルス応答生成ロジック
-    /** @type {number} サンプリングレート */
-    const rate = this.ctx.sampleRate;
-    /** @type {number} インパルス応答の演奏時間 */
-    const length = Math.max(rate * this._time, 1);
-    /** @type {number} インパルス応答が始まるまでの遅延時間 */
-    const delayDuration = rate * this._delay;
-    /** @type {AudioBuffer} インパルス応答バッファ（今の所ステレオのみ） */
-    const impulse = this.ctx.createBuffer(2, length, rate);
-    /** @type {Array<number>|ArrayBufferView} 左チャンネル */
-    const impulseL = new Float32Array(length);
-    /** @type {Array<number>|ArrayBufferView} 右チャンネル*/
-    const impulseR = new Float32Array(length);
-
-    for (let i = 0; i < length; i++) {
-      /** @type {number} */
-      let n = 0;
-
-      if (i < delayDuration) {
-        // Delay Effect
-        impulseL[i] = 0;
-        impulseR[i] = 0;
-        n = this._reverse ? length - (i - delayDuration) : i - delayDuration;
-      } else {
-        n = this._reverse ? length - i : i;
+    request.onabort = function handleAbort() {
+      if (!request) {
+        return;
       }
 
-      /** @type {number} 平方根を利用した減衰曲線 */
-      const pow = (1 - n / length) ** this._decay;
-      impulseL[i] = this.getNoise(pow);
-      impulseR[i] = this.getNoise(pow);
+      reject(createError('Request aborted', config, 'ECONNABORTED', request)); // Clean up request
+
+      request = null;
+    }; // Handle low level network errors
+
+
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config, null, request)); // Clean up request
+
+      request = null;
+    }; // Handle timeout
+
+
+    request.ontimeout = function handleTimeout() {
+      var timeoutErrorMessage = 'timeout of ' + config.timeout + 'ms exceeded';
+
+      if (config.timeoutErrorMessage) {
+        timeoutErrorMessage = config.timeoutErrorMessage;
+      }
+
+      reject(createError(timeoutErrorMessage, config, config.transitional && config.transitional.clarifyTimeoutError ? 'ETIMEDOUT' : 'ECONNABORTED', request)); // Clean up request
+
+      request = null;
+    }; // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+
+
+    if (utils.isStandardBrowserEnv()) {
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ? cookies.read(config.xsrfCookieName) : undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    } // Add headers to the request
+
+
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    } // Add withCredentials to request if needed
+
+
+    if (!utils.isUndefined(config.withCredentials)) {
+      request.withCredentials = !!config.withCredentials;
+    } // Add responseType to request if needed
+
+
+    if (responseType && responseType !== 'json') {
+      request.responseType = config.responseType;
+    } // Handle progress if needed
+
+
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    } // Not all browsers support upload events
+
+
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
     }
 
-    // インパルス応答のバッファに生成したWaveTableを代入
-    impulse.getChannelData(0).set(impulseL);
-    impulse.getChannelData(1).set(impulseR);
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
 
-    this.convolverNode.buffer = impulse;
+        request.abort();
+        reject(cancel); // Clean up request
+
+        request = null;
+      });
+    }
+
+    if (!requestData) {
+      requestData = null;
+    } // Send the request
+
+
+    request.send(requestData);
+  });
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/axios.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/axios.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
+
+var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
+
+var Axios = __webpack_require__(/*! ./core/Axios */ "./node_modules/axios/lib/core/Axios.js");
+
+var mergeConfig = __webpack_require__(/*! ./core/mergeConfig */ "./node_modules/axios/lib/core/mergeConfig.js");
+
+var defaults = __webpack_require__(/*! ./defaults */ "./node_modules/axios/lib/defaults.js");
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+
+
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context); // Copy axios.prototype to instance
+
+  utils.extend(instance, Axios.prototype, context); // Copy context to instance
+
+  utils.extend(instance, context);
+  return instance;
+} // Create the default instance to be exported
+
+
+var axios = createInstance(defaults); // Expose Axios class to allow class inheritance
+
+axios.Axios = Axios; // Factory for creating new instances
+
+axios.create = function create(instanceConfig) {
+  return createInstance(mergeConfig(axios.defaults, instanceConfig));
+}; // Expose Cancel & CancelToken
+
+
+axios.Cancel = __webpack_require__(/*! ./cancel/Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
+axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ "./node_modules/axios/lib/cancel/CancelToken.js");
+axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js"); // Expose all/spread
+
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+
+axios.spread = __webpack_require__(/*! ./helpers/spread */ "./node_modules/axios/lib/helpers/spread.js"); // Expose isAxiosError
+
+axios.isAxiosError = __webpack_require__(/*! ./helpers/isAxiosError */ "./node_modules/axios/lib/helpers/isAxiosError.js");
+module.exports = axios; // Allow use of default import syntax in TypeScript
+
+module.exports["default"] = axios;
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/Cancel.js":
+/*!*************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
+  \*************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+module.exports = Cancel;
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/CancelToken.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CancelToken.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var Cancel = __webpack_require__(/*! ./Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @class
+ * @param {Function} executor The executor function.
+ */
+
+
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.');
   }
-  /**
-   * Generate white noise
-   * @param {number} rate Attenuation rate
-   * @return {number}
-   * @private
-   */
-  getNoise(rate) {
-    // TODO: 他のカラードノイズを指定できるように
-    return (Math.random() * 2 - 1) * rate;
+
+  var resolvePromise;
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve;
+  });
+  var token = this;
+  executor(function cancel(message) {
+    if (token.reason) {
+      // Cancellation has already been requested
+      return;
+    }
+
+    token.reason = new Cancel(message);
+    resolvePromise(token.reason);
+  });
+}
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+
+
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason;
+  }
+};
+/**
+ * Returns an object that contains a new `CancelToken` and a function that, when called,
+ * cancels the `CancelToken`.
+ */
+
+
+CancelToken.source = function source() {
+  var cancel;
+  var token = new CancelToken(function executor(c) {
+    cancel = c;
+  });
+  return {
+    token: token,
+    cancel: cancel
+  };
+};
+
+module.exports = CancelToken;
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/isCancel.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/isCancel.js ***!
+  \***************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/Axios.js":
+/*!**********************************************!*\
+  !*** ./node_modules/axios/lib/core/Axios.js ***!
+  \**********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+var buildURL = __webpack_require__(/*! ../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
+
+var InterceptorManager = __webpack_require__(/*! ./InterceptorManager */ "./node_modules/axios/lib/core/InterceptorManager.js");
+
+var dispatchRequest = __webpack_require__(/*! ./dispatchRequest */ "./node_modules/axios/lib/core/dispatchRequest.js");
+
+var mergeConfig = __webpack_require__(/*! ./mergeConfig */ "./node_modules/axios/lib/core/mergeConfig.js");
+
+var validator = __webpack_require__(/*! ../helpers/validator */ "./node_modules/axios/lib/helpers/validator.js");
+
+var validators = validator.validators;
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ */
+
+function Axios(instanceConfig) {
+  this.defaults = instanceConfig;
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+
+
+Axios.prototype.request = function request(config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof config === 'string') {
+    config = arguments[1] || {};
+    config.url = arguments[0];
+  } else {
+    config = config || {};
+  }
+
+  config = mergeConfig(this.defaults, config); // Set config.method
+
+  if (config.method) {
+    config.method = config.method.toLowerCase();
+  } else if (this.defaults.method) {
+    config.method = this.defaults.method.toLowerCase();
+  } else {
+    config.method = 'get';
+  }
+
+  var transitional = config.transitional;
+
+  if (transitional !== undefined) {
+    validator.assertOptions(transitional, {
+      silentJSONParsing: validators.transitional(validators["boolean"], '1.0.0'),
+      forcedJSONParsing: validators.transitional(validators["boolean"], '1.0.0'),
+      clarifyTimeoutError: validators.transitional(validators["boolean"], '1.0.0')
+    }, false);
+  } // filter out skipped interceptors
+
+
+  var requestInterceptorChain = [];
+  var synchronousRequestInterceptors = true;
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
+      return;
+    }
+
+    synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+    requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+  var responseInterceptorChain = [];
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+  var promise;
+
+  if (!synchronousRequestInterceptors) {
+    var chain = [dispatchRequest, undefined];
+    Array.prototype.unshift.apply(chain, requestInterceptorChain);
+    chain = chain.concat(responseInterceptorChain);
+    promise = Promise.resolve(config);
+
+    while (chain.length) {
+      promise = promise.then(chain.shift(), chain.shift());
+    }
+
+    return promise;
+  }
+
+  var newConfig = config;
+
+  while (requestInterceptorChain.length) {
+    var onFulfilled = requestInterceptorChain.shift();
+    var onRejected = requestInterceptorChain.shift();
+
+    try {
+      newConfig = onFulfilled(newConfig);
+    } catch (error) {
+      onRejected(error);
+      break;
+    }
+  }
+
+  try {
+    promise = dispatchRequest(newConfig);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  while (responseInterceptorChain.length) {
+    promise = promise.then(responseInterceptorChain.shift(), responseInterceptorChain.shift());
+  }
+
+  return promise;
+};
+
+Axios.prototype.getUri = function getUri(config) {
+  config = mergeConfig(this.defaults, config);
+  return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
+}; // Provide aliases for supported request methods
+
+
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function (url, config) {
+    return this.request(mergeConfig(config || {}, {
+      method: method,
+      url: url,
+      data: (config || {}).data
+    }));
+  };
+});
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function (url, data, config) {
+    return this.request(mergeConfig(config || {}, {
+      method: method,
+      url: url,
+      data: data
+    }));
+  };
+});
+module.exports = Axios;
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/InterceptorManager.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/core/InterceptorManager.js ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+
+
+InterceptorManager.prototype.use = function use(fulfilled, rejected, options) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected,
+    synchronous: options ? options.synchronous : false,
+    runWhen: options ? options.runWhen : null
+  });
+  return this.handlers.length - 1;
+};
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+
+
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+
+
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/buildFullPath.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/buildFullPath.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var isAbsoluteURL = __webpack_require__(/*! ../helpers/isAbsoluteURL */ "./node_modules/axios/lib/helpers/isAbsoluteURL.js");
+
+var combineURLs = __webpack_require__(/*! ../helpers/combineURLs */ "./node_modules/axios/lib/helpers/combineURLs.js");
+/**
+ * Creates a new URL by combining the baseURL with the requestedURL,
+ * only when the requestedURL is not already an absolute URL.
+ * If the requestURL is absolute, this function returns the requestedURL untouched.
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} requestedURL Absolute or relative URL to combine
+ * @returns {string} The combined full path
+ */
+
+
+module.exports = function buildFullPath(baseURL, requestedURL) {
+  if (baseURL && !isAbsoluteURL(requestedURL)) {
+    return combineURLs(baseURL, requestedURL);
+  }
+
+  return requestedURL;
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/createError.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/core/createError.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var enhanceError = __webpack_require__(/*! ./enhanceError */ "./node_modules/axios/lib/core/enhanceError.js");
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+
+
+module.exports = function createError(message, config, code, request, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, request, response);
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/dispatchRequest.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/core/dispatchRequest.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+var transformData = __webpack_require__(/*! ./transformData */ "./node_modules/axios/lib/core/transformData.js");
+
+var isCancel = __webpack_require__(/*! ../cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
+
+var defaults = __webpack_require__(/*! ../defaults */ "./node_modules/axios/lib/defaults.js");
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+
+
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+}
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+
+
+module.exports = function dispatchRequest(config) {
+  throwIfCancellationRequested(config); // Ensure headers exist
+
+  config.headers = config.headers || {}; // Transform request data
+
+  config.data = transformData.call(config, config.data, config.headers, config.transformRequest); // Flatten headers
+
+  config.headers = utils.merge(config.headers.common || {}, config.headers[config.method] || {}, config.headers);
+  utils.forEach(['delete', 'get', 'head', 'post', 'put', 'patch', 'common'], function cleanHeaderConfig(method) {
+    delete config.headers[method];
+  });
+  var adapter = config.adapter || defaults.adapter;
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config); // Transform response data
+
+    response.data = transformData.call(config, response.data, response.headers, config.transformResponse);
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config); // Transform response data
+
+      if (reason && reason.response) {
+        reason.response.data = transformData.call(config, reason.response.data, reason.response.headers, config.transformResponse);
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/enhanceError.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/core/enhanceError.js ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+/**
+ * Update an Error with the specified config, error code, and response.
+ *
+ * @param {Error} error The error to update.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+
+module.exports = function enhanceError(error, config, code, request, response) {
+  error.config = config;
+
+  if (code) {
+    error.code = code;
+  }
+
+  error.request = request;
+  error.response = response;
+  error.isAxiosError = true;
+
+  error.toJSON = function toJSON() {
+    return {
+      // Standard
+      message: this.message,
+      name: this.name,
+      // Microsoft
+      description: this.description,
+      number: this.number,
+      // Mozilla
+      fileName: this.fileName,
+      lineNumber: this.lineNumber,
+      columnNumber: this.columnNumber,
+      stack: this.stack,
+      // Axios
+      config: this.config,
+      code: this.code
+    };
+  };
+
+  return error;
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/mergeConfig.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/core/mergeConfig.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+/**
+ * Config-specific merge-function which creates a new config-object
+ * by merging two configuration objects together.
+ *
+ * @param {Object} config1
+ * @param {Object} config2
+ * @returns {Object} New object resulting from merging config2 to config1
+ */
+
+
+module.exports = function mergeConfig(config1, config2) {
+  // eslint-disable-next-line no-param-reassign
+  config2 = config2 || {};
+  var config = {};
+  var valueFromConfig2Keys = ['url', 'method', 'data'];
+  var mergeDeepPropertiesKeys = ['headers', 'auth', 'proxy', 'params'];
+  var defaultToConfig2Keys = ['baseURL', 'transformRequest', 'transformResponse', 'paramsSerializer', 'timeout', 'timeoutMessage', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName', 'xsrfHeaderName', 'onUploadProgress', 'onDownloadProgress', 'decompress', 'maxContentLength', 'maxBodyLength', 'maxRedirects', 'transport', 'httpAgent', 'httpsAgent', 'cancelToken', 'socketPath', 'responseEncoding'];
+  var directMergeKeys = ['validateStatus'];
+
+  function getMergedValue(target, source) {
+    if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
+      return utils.merge(target, source);
+    } else if (utils.isPlainObject(source)) {
+      return utils.merge({}, source);
+    } else if (utils.isArray(source)) {
+      return source.slice();
+    }
+
+    return source;
+  }
+
+  function mergeDeepProperties(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(config1[prop], config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  }
+
+  utils.forEach(valueFromConfig2Keys, function valueFromConfig2(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(undefined, config2[prop]);
+    }
+  });
+  utils.forEach(mergeDeepPropertiesKeys, mergeDeepProperties);
+  utils.forEach(defaultToConfig2Keys, function defaultToConfig2(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(undefined, config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  });
+  utils.forEach(directMergeKeys, function merge(prop) {
+    if (prop in config2) {
+      config[prop] = getMergedValue(config1[prop], config2[prop]);
+    } else if (prop in config1) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  });
+  var axiosKeys = valueFromConfig2Keys.concat(mergeDeepPropertiesKeys).concat(defaultToConfig2Keys).concat(directMergeKeys);
+  var otherKeys = Object.keys(config1).concat(Object.keys(config2)).filter(function filterAxiosKeys(key) {
+    return axiosKeys.indexOf(key) === -1;
+  });
+  utils.forEach(otherKeys, mergeDeepProperties);
+  return config;
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/settle.js":
+/*!***********************************************!*\
+  !*** ./node_modules/axios/lib/core/settle.js ***!
+  \***********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var createError = __webpack_require__(/*! ./createError */ "./node_modules/axios/lib/core/createError.js");
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ */
+
+
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(createError('Request failed with status code ' + response.status, response.config, null, response.request, response));
   }
 };
 
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/transformData.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/transformData.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+var defaults = __webpack_require__(/*! ./../defaults */ "./node_modules/axios/lib/defaults.js");
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+
+
+module.exports = function transformData(data, headers, fns) {
+  var context = this || defaults;
+  /*eslint no-param-reassign:0*/
+
+  utils.forEach(fns, function transform(fn) {
+    data = fn.call(context, data, headers);
+  });
+  return data;
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/defaults.js":
+/*!********************************************!*\
+  !*** ./node_modules/axios/lib/defaults.js ***!
+  \********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
+
+var normalizeHeaderName = __webpack_require__(/*! ./helpers/normalizeHeaderName */ "./node_modules/axios/lib/helpers/normalizeHeaderName.js");
+
+var enhanceError = __webpack_require__(/*! ./core/enhanceError */ "./node_modules/axios/lib/core/enhanceError.js");
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(/*! ./adapters/xhr */ "./node_modules/axios/lib/adapters/xhr.js");
+  } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(/*! ./adapters/http */ "./node_modules/axios/lib/adapters/xhr.js");
+  }
+
+  return adapter;
+}
+
+function stringifySafely(rawValue, parser, encoder) {
+  if (utils.isString(rawValue)) {
+    try {
+      (parser || JSON.parse)(rawValue);
+      return utils.trim(rawValue);
+    } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
+    }
+  }
+
+  return (encoder || JSON.stringify)(rawValue);
+}
+
+var defaults = {
+  transitional: {
+    silentJSONParsing: true,
+    forcedJSONParsing: true,
+    clarifyTimeoutError: false
+  },
+  adapter: getDefaultAdapter(),
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Accept');
+    normalizeHeaderName(headers, 'Content-Type');
+
+    if (utils.isFormData(data) || utils.isArrayBuffer(data) || utils.isBuffer(data) || utils.isStream(data) || utils.isFile(data) || utils.isBlob(data)) {
+      return data;
+    }
+
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+
+    if (utils.isObject(data) || headers && headers['Content-Type'] === 'application/json') {
+      setContentTypeIfUnset(headers, 'application/json');
+      return stringifySafely(data);
+    }
+
+    return data;
+  }],
+  transformResponse: [function transformResponse(data) {
+    var transitional = this.transitional;
+    var silentJSONParsing = transitional && transitional.silentJSONParsing;
+    var forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+    var strictJSONParsing = !silentJSONParsing && this.responseType === 'json';
+
+    if (strictJSONParsing || forcedJSONParsing && utils.isString(data) && data.length) {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        if (strictJSONParsing) {
+          if (e.name === 'SyntaxError') {
+            throw enhanceError(e, this, 'E_JSON_PARSE');
+          }
+
+          throw e;
+        }
+      }
+    }
+
+    return data;
+  }],
+
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
+  timeout: 0,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+  maxContentLength: -1,
+  maxBodyLength: -1,
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+module.exports = defaults;
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/bind.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/bind.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+
+    return fn.apply(thisArg, args);
+  };
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/buildURL.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+function encode(val) {
+  return encodeURIComponent(val).replace(/%3A/gi, ':').replace(/%24/g, '$').replace(/%2C/gi, ',').replace(/%20/g, '+').replace(/%5B/gi, '[').replace(/%5D/gi, ']');
+}
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+
+
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      } else {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    var hashmarkIndex = url.indexOf('#');
+
+    if (hashmarkIndex !== -1) {
+      url = url.slice(0, hashmarkIndex);
+    }
+
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/combineURLs.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/combineURLs.js ***!
+  \*******************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return relativeURL ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '') : baseURL;
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/cookies.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = utils.isStandardBrowserEnv() ? // Standard browser envs support document.cookie
+function standardBrowserEnv() {
+  return {
+    write: function write(name, value, expires, path, domain, secure) {
+      var cookie = [];
+      cookie.push(name + '=' + encodeURIComponent(value));
+
+      if (utils.isNumber(expires)) {
+        cookie.push('expires=' + new Date(expires).toGMTString());
+      }
+
+      if (utils.isString(path)) {
+        cookie.push('path=' + path);
+      }
+
+      if (utils.isString(domain)) {
+        cookie.push('domain=' + domain);
+      }
+
+      if (secure === true) {
+        cookie.push('secure');
+      }
+
+      document.cookie = cookie.join('; ');
+    },
+    read: function read(name) {
+      var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+      return match ? decodeURIComponent(match[3]) : null;
+    },
+    remove: function remove(name) {
+      this.write(name, '', Date.now() - 86400000);
+    }
+  };
+}() : // Non standard browser env (web workers, react-native) lack needed support.
+function nonStandardBrowserEnv() {
+  return {
+    write: function write() {},
+    read: function read() {
+      return null;
+    },
+    remove: function remove() {}
+  };
+}();
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAbsoluteURL.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!
+  \*********************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAxiosError.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAxiosError.js ***!
+  \********************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+/**
+ * Determines whether the payload is an error thrown by Axios
+ *
+ * @param {*} payload The value to test
+ * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
+ */
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+module.exports = function isAxiosError(payload) {
+  return _typeof(payload) === 'object' && payload.isAxiosError === true;
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isURLSameOrigin.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isURLSameOrigin.js ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = utils.isStandardBrowserEnv() ? // Standard browser envs have full support of the APIs needed to test
+// whether the request URL is of the same origin as current location.
+function standardBrowserEnv() {
+  var msie = /(msie|trident)/i.test(navigator.userAgent);
+  var urlParsingNode = document.createElement('a');
+  var originURL;
+  /**
+  * Parse a URL to discover it's components
+  *
+  * @param {String} url The URL to be parsed
+  * @returns {Object}
+  */
+
+  function resolveURL(url) {
+    var href = url;
+
+    if (msie) {
+      // IE needs attribute set twice to normalize properties
+      urlParsingNode.setAttribute('href', href);
+      href = urlParsingNode.href;
+    }
+
+    urlParsingNode.setAttribute('href', href); // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+
+    return {
+      href: urlParsingNode.href,
+      protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+      host: urlParsingNode.host,
+      search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+      hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+      hostname: urlParsingNode.hostname,
+      port: urlParsingNode.port,
+      pathname: urlParsingNode.pathname.charAt(0) === '/' ? urlParsingNode.pathname : '/' + urlParsingNode.pathname
+    };
+  }
+
+  originURL = resolveURL(window.location.href);
+  /**
+  * Determine if a URL shares the same origin as the current location
+  *
+  * @param {String} requestURL The URL to test
+  * @returns {boolean} True if URL shares the same origin, otherwise false
+  */
+
+  return function isURLSameOrigin(requestURL) {
+    var parsed = utils.isString(requestURL) ? resolveURL(requestURL) : requestURL;
+    return parsed.protocol === originURL.protocol && parsed.host === originURL.host;
+  };
+}() : // Non standard browser envs (web workers, react-native) lack needed support.
+function nonStandardBrowserEnv() {
+  return function isURLSameOrigin() {
+    return true;
+  };
+}();
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/normalizeHeaderName.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/normalizeHeaderName.js ***!
+  \***************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/parseHeaders.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseHeaders.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js"); // Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+
+
+var ignoreDuplicateOf = ['age', 'authorization', 'content-length', 'content-type', 'etag', 'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since', 'last-modified', 'location', 'max-forwards', 'proxy-authorization', 'referer', 'retry-after', 'user-agent'];
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) {
+    return parsed;
+  }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    }
+  });
+  return parsed;
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/spread.js":
+/*!**************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/spread.js ***!
+  \**************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/validator.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/validator.js ***!
+  \*****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+var pkg = __webpack_require__(/*! ./../../package.json */ "./node_modules/axios/package.json");
+
+var validators = {}; // eslint-disable-next-line func-names
+
+['object', 'boolean', 'number', 'function', 'string', 'symbol'].forEach(function (type, i) {
+  validators[type] = function validator(thing) {
+    return _typeof(thing) === type || 'a' + (i < 1 ? 'n ' : ' ') + type;
+  };
+});
+var deprecatedWarnings = {};
+var currentVerArr = pkg.version.split('.');
+/**
+ * Compare package versions
+ * @param {string} version
+ * @param {string?} thanVersion
+ * @returns {boolean}
+ */
+
+function isOlderVersion(version, thanVersion) {
+  var pkgVersionArr = thanVersion ? thanVersion.split('.') : currentVerArr;
+  var destVer = version.split('.');
+
+  for (var i = 0; i < 3; i++) {
+    if (pkgVersionArr[i] > destVer[i]) {
+      return true;
+    } else if (pkgVersionArr[i] < destVer[i]) {
+      return false;
+    }
+  }
+
+  return false;
+}
+/**
+ * Transitional option validator
+ * @param {function|boolean?} validator
+ * @param {string?} version
+ * @param {string} message
+ * @returns {function}
+ */
+
+
+validators.transitional = function transitional(validator, version, message) {
+  var isDeprecated = version && isOlderVersion(version);
+
+  function formatMessage(opt, desc) {
+    return '[Axios v' + pkg.version + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+  } // eslint-disable-next-line func-names
+
+
+  return function (value, opt, opts) {
+    if (validator === false) {
+      throw new Error(formatMessage(opt, ' has been removed in ' + version));
+    }
+
+    if (isDeprecated && !deprecatedWarnings[opt]) {
+      deprecatedWarnings[opt] = true; // eslint-disable-next-line no-console
+
+      console.warn(formatMessage(opt, ' has been deprecated since v' + version + ' and will be removed in the near future'));
+    }
+
+    return validator ? validator(value, opt, opts) : true;
+  };
+};
+/**
+ * Assert object's properties type
+ * @param {object} options
+ * @param {object} schema
+ * @param {boolean?} allowUnknown
+ */
+
+
+function assertOptions(options, schema, allowUnknown) {
+  if (_typeof(options) !== 'object') {
+    throw new TypeError('options must be an object');
+  }
+
+  var keys = Object.keys(options);
+  var i = keys.length;
+
+  while (i-- > 0) {
+    var opt = keys[i];
+    var validator = schema[opt];
+
+    if (validator) {
+      var value = options[opt];
+      var result = value === undefined || validator(value, opt, options);
+
+      if (result !== true) {
+        throw new TypeError('option ' + opt + ' must be ' + result);
+      }
+
+      continue;
+    }
+
+    if (allowUnknown !== true) {
+      throw Error('Unknown option ' + opt);
+    }
+  }
+}
+
+module.exports = {
+  isOlderVersion: isOlderVersion,
+  assertOptions: assertOptions,
+  validators: validators
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/utils.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/utils.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js"); // utils is a library of generic helper functions non-specific to axios
+
+
+var toString = Object.prototype.toString;
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+
+
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+/**
+ * Determine if a value is a Buffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Buffer, otherwise false
+ */
+
+
+function isBuffer(val) {
+  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor) && typeof val.constructor.isBuffer === 'function' && val.constructor.isBuffer(val);
+}
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+
+
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+
+
+function isFormData(val) {
+  return typeof FormData !== 'undefined' && val instanceof FormData;
+}
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+
+
+function isArrayBufferView(val) {
+  var result;
+
+  if (typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = val && val.buffer && val.buffer instanceof ArrayBuffer;
+  }
+
+  return result;
+}
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+
+
+function isString(val) {
+  return typeof val === 'string';
+}
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+
+
+function isNumber(val) {
+  return typeof val === 'number';
+}
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+
+
+function isObject(val) {
+  return val !== null && _typeof(val) === 'object';
+}
+/**
+ * Determine if a value is a plain Object
+ *
+ * @param {Object} val The value to test
+ * @return {boolean} True if value is a plain Object, otherwise false
+ */
+
+
+function isPlainObject(val) {
+  if (toString.call(val) !== '[object Object]') {
+    return false;
+  }
+
+  var prototype = Object.getPrototypeOf(val);
+  return prototype === null || prototype === Object.prototype;
+}
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+
+
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+
+
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+
+
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+
+
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+
+
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+
+
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+
+
+function trim(str) {
+  return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+}
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ * nativescript
+ *  navigator.product -> 'NativeScript' or 'NS'
+ */
+
+
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && (navigator.product === 'ReactNative' || navigator.product === 'NativeScript' || navigator.product === 'NS')) {
+    return false;
+  }
+
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
+}
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+
+
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  } // Force an array if not already something iterable
+
+
+  if (_typeof(obj) !== 'object') {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+
+
+function merge() {
+  var result = {};
+
+  function assignValue(val, key) {
+    if (isPlainObject(result[key]) && isPlainObject(val)) {
+      result[key] = merge(result[key], val);
+    } else if (isPlainObject(val)) {
+      result[key] = merge({}, val);
+    } else if (isArray(val)) {
+      result[key] = val.slice();
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+
+  return result;
+}
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+
+
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+/**
+ * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
+ *
+ * @param {string} content with BOM
+ * @return {string} content value without BOM
+ */
+
+
+function stripBOM(content) {
+  if (content.charCodeAt(0) === 0xFEFF) {
+    content = content.slice(1);
+  }
+
+  return content;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isPlainObject: isPlainObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim,
+  stripBOM: stripBOM
+};
+
+/***/ }),
+
+/***/ "./node_modules/regenerator-runtime/runtime.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/regenerator-runtime/runtime.js ***!
+  \*****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var runtime = function (exports) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function define(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []); // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+    return generator;
+  }
+
+  exports.wrap = wrap; // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+
+  function tryCatch(fn, obj, arg) {
+    try {
+      return {
+        type: "normal",
+        arg: fn.call(obj, arg)
+      };
+    } catch (err) {
+      return {
+        type: "throw",
+        arg: err
+      };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed"; // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+
+  var ContinueSentinel = {}; // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+
+  function Generator() {}
+
+  function GeneratorFunction() {}
+
+  function GeneratorFunctionPrototype() {} // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+
+
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+
+  if (NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+  define(Gp, "constructor", GeneratorFunctionPrototype);
+  define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
+  GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"); // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function (method) {
+      define(prototype, method, function (arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+
+  exports.isGeneratorFunction = function (genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor ? ctor === GeneratorFunction || // For the native GeneratorFunction constructor, the best we can
+    // do is to check its .name property.
+    (ctor.displayName || ctor.name) === "GeneratorFunction" : false;
+  };
+
+  exports.mark = function (genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
+    }
+
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  }; // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+
+
+  exports.awrap = function (arg) {
+    return {
+      __await: arg
+    };
+  };
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+
+        if (value && _typeof(value) === "object" && hasOwn.call(value, "__await")) {
+          return PromiseImpl.resolve(value.__await).then(function (value) {
+            invoke("next", value, resolve, reject);
+          }, function (err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return PromiseImpl.resolve(value).then(function (unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration.
+          result.value = unwrapped;
+          resolve(result);
+        }, function (error) {
+          // If a rejected Promise was yielded, throw the rejection back
+          // into the async generator function so it can be handled there.
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function (resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise = // If enqueue has been called before, then we want to wait until
+      // all previous Promises have been resolved before calling invoke,
+      // so that results are always delivered in the correct order. If
+      // enqueue has not been called before, then it is important to
+      // call invoke immediately, without waiting on a callback to fire,
+      // so that the async generator function has the opportunity to do
+      // any necessary setup in a predictable way. This predictability
+      // is why the Promise constructor synchronously invokes its
+      // executor callback, and why async functions synchronously
+      // execute code before the first await. Since we implement simple
+      // async functions in terms of async generators, it is especially
+      // important to get this right, even though it requires care.
+      previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, // Avoid propagating failures to Promises returned by later
+      // invocations of the iterator.
+      callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+    } // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+
+
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  });
+  exports.AsyncIterator = AsyncIterator; // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+
+  exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    if (PromiseImpl === void 0) PromiseImpl = Promise;
+    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+    return exports.isGeneratorFunction(outerFn) ? iter // If outerFn is a generator, return the full iterator.
+    : iter.next().then(function (result) {
+      return result.done ? result.value : iter.next();
+    });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        } // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+
+
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+        var record = tryCatch(innerFn, self, context);
+
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done ? GenStateCompleted : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+        } else if (record.type === "throw") {
+          state = GenStateCompleted; // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  } // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+
+
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError("The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (!info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value; // Resume execution at the desired location (see delegateYield).
+
+      context.next = delegate.nextLoc; // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    } // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+
+
+    context.delegate = null;
+    return ContinueSentinel;
+  } // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+
+
+  defineIteratorMethods(Gp);
+  define(Gp, toStringTagSymbol, "Generator"); // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+
+  define(Gp, iteratorSymbol, function () {
+    return this;
+  });
+  define(Gp, "toString", function () {
+    return "[object Generator]";
+  });
+
+  function pushTryEntry(locs) {
+    var entry = {
+      tryLoc: locs[0]
+    };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{
+      tryLoc: "root"
+    }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  exports.keys = function (object) {
+    var keys = [];
+
+    for (var key in object) {
+      keys.push(key);
+    }
+
+    keys.reverse(); // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      } // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+
+
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1,
+            next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+          return next;
+        };
+
+        return next.next = next;
+      }
+    } // Return an iterator with no values.
+
+
+    return {
+      next: doneResult
+    };
+  }
+
+  exports.values = values;
+
+  function doneResult() {
+    return {
+      value: undefined,
+      done: true
+    };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+    reset: function reset(skipTempReset) {
+      this.prev = 0;
+      this.next = 0; // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+      this.method = "next";
+      this.arg = undefined;
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" && hasOwn.call(this, name) && !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+    stop: function stop() {
+      this.done = true;
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+    dispatchException: function dispatchException(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !!caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+    abrupt: function abrupt(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+
+        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry && (type === "break" || type === "continue") && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+    complete: function complete(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" || record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+    finish: function finish(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+    "catch": function _catch(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+
+          return thrown;
+        }
+      } // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+
+
+      throw new Error("illegal catch attempt");
+    },
+    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  }; // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+
+  return exports;
+}( // If this script is executing as a CommonJS module, use module.exports
+// as the regeneratorRuntime namespace. Otherwise create a new empty
+// object. Either way, the resulting object will be used to initialize
+// the regeneratorRuntime variable at the top of this file.
+( false ? 0 : _typeof(module)) === "object" ? module.exports : {});
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, in modern engines
+  // we can explicitly access globalThis. In older engines we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  if ((typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
+}
 
 /***/ }),
 
@@ -430,17 +2957,19 @@ class Reverb {
 /*!*********************!*\
   !*** ./src/meta.js ***!
   \*********************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 // This file is auto-generated by the build system.
-const Meta = {
+var Meta = {
   version: '0.3.4',
-  date: '2020-01-02T16:21:34.166Z'
+  date: '2021-09-07T00:48:20.531Z'
 };
-/* harmony default export */ __webpack_exports__["default"] = (Meta);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Meta);
 
 /***/ }),
 
@@ -448,22 +2977,33 @@ const Meta = {
 /*!*********************!*\
   !*** ./src/riff.js ***!
   \*********************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Riff; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Riff)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 /**
  * Riff Parser class
  * @private
  */
-class Riff {
+var Riff = /*#__PURE__*/function () {
   /**
    * @param {ByteArray} input input buffer.
    * @param {Object=} optParams option parameters.
    */
-  constructor(input, optParams = {}) {
+  function Riff(input) {
+    var optParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    _classCallCheck(this, Riff);
+
     /** @type {ByteArray} */
     this.input = input;
     /** @type {number} */
@@ -474,7 +3014,7 @@ class Riff {
     this.length = optParams.length || input.length - this.ip;
     /** @type {Array.<RiffChunk>} */
 
-    this.chunkList;
+    this.chunkList = [];
     /** @type {number} */
 
     this.offset = this.ip;
@@ -489,86 +3029,96 @@ class Riff {
    */
 
 
-  parse() {
-    /** @type {number} */
-    const length = this.length + this.offset;
-    this.chunkList = [];
+  _createClass(Riff, [{
+    key: "parse",
+    value: function parse() {
+      /** @type {number} */
+      var length = this.length + this.offset;
+      this.chunkList = [];
 
-    while (this.ip < length) {
-      this.parseChunk();
+      while (this.ip < length) {
+        this.parseChunk();
+      }
     }
-  }
-  /**
-   */
+    /**
+     */
 
+  }, {
+    key: "parseChunk",
+    value: function parseChunk() {
+      /** @type {ByteArray} */
+      var input = this.input;
+      /** @type {number} */
 
-  parseChunk() {
-    /** @type {ByteArray} */
-    const input = this.input;
-    /** @type {number} */
+      var ip = this.ip;
+      /** @type {number} */
 
-    let ip = this.ip;
-    /** @type {number} */
+      var size;
+      this.chunkList.push(new RiffChunk(String.fromCharCode(input[ip++], input[ip++], input[ip++], input[ip++]), size = this.bigEndian ? (input[ip++] << 24 | input[ip++] << 16 | input[ip++] << 8 | input[ip++]) >>> 0 : (input[ip++] | input[ip++] << 8 | input[ip++] << 16 | input[ip++] << 24) >>> 0, ip));
+      ip += size; // padding
 
-    let size;
-    this.chunkList.push(new RiffChunk(String.fromCharCode(input[ip++], input[ip++], input[ip++], input[ip++]), size = this.bigEndian ? (input[ip++] << 24 | input[ip++] << 16 | input[ip++] << 8 | input[ip++]) >>> 0 : (input[ip++] | input[ip++] << 8 | input[ip++] << 16 | input[ip++] << 24) >>> 0, ip));
-    ip += size; // padding
+      if (this.padding && (ip - this.offset & 1) === 1) {
+        ip++;
+      }
 
-    if (this.padding && (ip - this.offset & 1) === 1) {
-      ip++;
+      this.ip = ip;
     }
+    /**
+     * @param {number} index chunk index.
+     * @return {?RiffChunk}
+     */
 
-    this.ip = ip;
-  }
-  /**
-   * @param {number} index chunk index.
-   * @return {?RiffChunk}
-   */
+  }, {
+    key: "getChunk",
+    value: function getChunk(index) {
+      /** @type {RiffChunk} */
+      var chunk = this.chunkList[index];
 
+      if (chunk === void 0) {
+        return null;
+      }
 
-  getChunk(index) {
-    /** @type {RiffChunk} */
-    const chunk = this.chunkList[index];
-
-    if (chunk === void 0) {
-      return null;
+      return chunk;
     }
+    /**
+     * @return {number}
+     */
 
-    return chunk;
-  }
-  /**
-   * @return {number}
-   */
+  }, {
+    key: "getNumberOfChunks",
+    value: function getNumberOfChunks() {
+      return this.chunkList.length;
+    }
+  }]);
 
-
-  getNumberOfChunks() {
-    return this.chunkList.length;
-  }
-
-}
+  return Riff;
+}();
 /**
  * Riff Chunk Structure
  * @interface
  */
 
-class RiffChunk {
-  /**
-   * @param {string} type
-   * @param {number} size
-   * @param {number} offset
-   */
-  constructor(type, size, offset) {
-    /** @type {string} */
-    this.type = type;
-    /** @type {number} */
 
-    this.size = size;
-    /** @type {number} */
 
-    this.offset = offset;
-  }
 
-}
+var RiffChunk =
+/**
+ * @param {string} type
+ * @param {number} size
+ * @param {number} offset
+ */
+function RiffChunk(type, size, offset) {
+  _classCallCheck(this, RiffChunk);
+
+  /** @type {string} */
+  this.type = type;
+  /** @type {number} */
+
+  this.size = size;
+  /** @type {number} */
+
+  this.offset = offset;
+};
 
 /***/ }),
 
@@ -576,24 +3126,36 @@ class RiffChunk {
 /*!********************!*\
   !*** ./src/sf2.js ***!
   \********************/
-/*! exports provided: Parser, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Parser", function() { return Parser; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Parser": () => (/* binding */ Parser),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _riff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./riff.js */ "./src/riff.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 /**
  * SoundFont Parser Class
  */
 
-class Parser {
+var Parser = /*#__PURE__*/function () {
   /**
    * @param {ByteArray} input
    * @param {Object=} optParams
    */
-  constructor(input, optParams = {}) {
+  function Parser(input) {
+    var optParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    _classCallCheck(this, Parser);
+
     /** @type {ByteArray} */
     this.input = input;
     /** @type {(Object|undefined)} */
@@ -605,610 +3167,700 @@ class Parser {
 
     /** @type {Array.<Object>} */
 
-    this.presetHeader;
+    this.presetHeader = [];
     /** @type {Array.<Object>} */
 
-    this.presetZone;
+    this.presetZone = [];
     /** @type {Array.<Object>} */
 
-    this.presetZoneModulator;
+    this.presetZoneModulator = [];
     /** @type {Array.<Object>} */
 
-    this.presetZoneGenerator;
+    this.presetZoneGenerator = [];
     /** @type {Array.<Object>} */
 
-    this.instrument;
+    this.instrument = [];
     /** @type {Array.<Object>} */
 
-    this.instrumentZone;
+    this.instrumentZone = [];
     /** @type {Array.<Object>} */
 
-    this.instrumentZoneModulator;
+    this.instrumentZoneModulator = [];
     /** @type {Array.<Object>} */
 
-    this.instrumentZoneGenerator;
+    this.instrumentZoneGenerator = [];
     /** @type {Array.<Object>} */
 
-    this.sampleHeader;
+    this.sampleHeader = [];
     /**
      * @type {Array.<string>}
      * @const
      */
+    // eslint-disable-next-line no-sparse-arrays
 
-    this.GeneratorEnumeratorTable = ['startAddrsOffset', 'endAddrsOffset', 'startloopAddrsOffset', 'endloopAddrsOffset', 'startAddrsCoarseOffset', 'modLfoToPitch', 'vibLfoToPitch', 'modEnvToPitch', 'initialFilterFc', 'initialFilterQ', 'modLfoToFilterFc', 'modEnvToFilterFc', 'endAddrsCoarseOffset', 'modLfoToVolume',, // 14
-    'chorusEffectsSend', 'reverbEffectsSend', 'pan',,,, // 18,19,20
-    'delayModLFO', 'freqModLFO', 'delayVibLFO', 'freqVibLFO', 'delayModEnv', 'attackModEnv', 'holdModEnv', 'decayModEnv', 'sustainModEnv', 'releaseModEnv', 'keynumToModEnvHold', 'keynumToModEnvDecay', 'delayVolEnv', 'attackVolEnv', 'holdVolEnv', 'decayVolEnv', 'sustainVolEnv', 'releaseVolEnv', 'keynumToVolEnvHold', 'keynumToVolEnvDecay', 'instrument',, // 42
-    'keyRange', 'velRange', 'startloopAddrsCoarseOffset', 'keynum', 'velocity', 'initialAttenuation',, // 49
-    'endloopAddrsCoarseOffset', 'coarseTune', 'fineTune', 'sampleID', 'sampleModes',, // 55
-    'scaleTuning', 'exclusiveClass', 'overridingRootKey', // 59
+    this.GeneratorEnumeratorTable = [// 14
+      // 18,19,20
+      // 42
+      // 49
+      // 55
+    'startAddrsOffset', 'endAddrsOffset', 'startloopAddrsOffset', 'endloopAddrsOffset', 'startAddrsCoarseOffset', 'modLfoToPitch', 'vibLfoToPitch', 'modEnvToPitch', 'initialFilterFc', 'initialFilterQ', 'modLfoToFilterFc', 'modEnvToFilterFc', 'endAddrsCoarseOffset', 'modLfoToVolume',, 'chorusEffectsSend', 'reverbEffectsSend', 'pan',,,, 'delayModLFO', 'freqModLFO', 'delayVibLFO', 'freqVibLFO', 'delayModEnv', 'attackModEnv', 'holdModEnv', 'decayModEnv', 'sustainModEnv', 'releaseModEnv', 'keynumToModEnvHold', 'keynumToModEnvDecay', 'delayVolEnv', 'attackVolEnv', 'holdVolEnv', 'decayVolEnv', 'sustainVolEnv', 'releaseVolEnv', 'keynumToVolEnvHold', 'keynumToVolEnvDecay', 'instrument',, 'keyRange', 'velRange', 'startloopAddrsCoarseOffset', 'keynum', 'velocity', 'initialAttenuation',, 'endloopAddrsCoarseOffset', 'coarseTune', 'fineTune', 'sampleID', 'sampleModes',, 'scaleTuning', 'exclusiveClass', 'overridingRootKey', // 59
     'endOper'];
   }
   /** @export */
 
 
-  parse() {
-    /** @type {Riff} */
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption); // parse RIFF chunk
+  _createClass(Parser, [{
+    key: "parse",
+    value: function parse() {
+      /** @type {Riff} */
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption); // parse RIFF chunk
 
-    parser.parse();
+      parser.parse();
 
-    if (parser.chunkList.length !== 1) {
-      throw new Error('wrong chunk length');
-    }
-    /** @type {?RiffChunk} */
+      if (parser.chunkList.length !== 1) {
+        throw new Error('wrong chunk length');
+      }
+      /** @type {?RiffChunk} */
 
 
-    const chunk = parser.getChunk(0);
+      var chunk = parser.getChunk(0);
 
-    if (chunk === null) {
-      throw new Error('chunk not found');
-    }
-
-    this.parseRiffChunk(chunk); // console.log(this.sampleHeader);
-
-    this.input = null;
-  }
-  /**
-   * @param {RiffChunk} chunk
-   */
-
-
-  parseRiffChunk(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset; // check parse target
-
-    if (chunk.type !== 'RIFF') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    } // check signature
-
-    /** @type {string} */
-
-
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
-
-    if (signature !== 'sfbk') {
-      throw new Error('invalid signature:' + signature);
-    } // read structure
-
-    /** @type {Riff} */
-
-
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
-      'index': ip,
-      'length': chunk.size - 4
-    });
-    parser.parse();
-
-    if (parser.getNumberOfChunks() !== 3) {
-      throw new Error('invalid sfbk structure');
-    } // INFO-list
-
-
-    this.parseInfoList(
-    /** @type {!RiffChunk} */
-    parser.getChunk(0)); // sdta-list
-
-    this.parseSdtaList(
-    /** @type {!RiffChunk} */
-    parser.getChunk(1)); // pdta-list
-
-    this.parsePdtaList(
-    /** @type {!RiffChunk} */
-    parser.getChunk(2));
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseInfoList(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset; // check parse target
-
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    } // check signature
-
-    /** @type {string} */
-
-
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
-
-    if (signature !== 'INFO') {
-      throw new Error('invalid signature:' + signature);
-    } // read structure
-
-    /** @type {Riff} */
-
-
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
-      'index': ip,
-      'length': chunk.size - 4
-    });
-    parser.parse();
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseSdtaList(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset; // check parse target
-
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    } // check signature
-
-    /** @type {string} */
-
-
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
-
-    if (signature !== 'sdta') {
-      throw new Error('invalid signature:' + signature);
-    } // read structure
-
-    /** @type {Riff} */
-
-
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
-      'index': ip,
-      'length': chunk.size - 4
-    });
-    parser.parse();
-
-    if (parser.chunkList.length !== 1) {
-      throw new Error('TODO');
-    }
-
-    this.samplingData =
-    /** @type {{type: string, size: number, offset: number}} */
-    parser.getChunk(0);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePdtaList(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset; // check parse target
-
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    } // check signature
-
-    /** @type {string} */
-
-
-    const signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
-
-    if (signature !== 'pdta') {
-      throw new Error('invalid signature:' + signature);
-    } // read structure
-
-    /** @type {Riff} */
-
-
-    const parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
-      'index': ip,
-      'length': chunk.size - 4
-    });
-    parser.parse(); // check number of chunks
-
-    if (parser.getNumberOfChunks() !== 9) {
-      throw new Error('invalid pdta chunk');
-    }
-
-    this.parsePhdr(
-    /** @type {RiffChunk} */
-    parser.getChunk(0));
-    this.parsePbag(
-    /** @type {RiffChunk} */
-    parser.getChunk(1));
-    this.parsePmod(
-    /** @type {RiffChunk} */
-    parser.getChunk(2));
-    this.parsePgen(
-    /** @type {RiffChunk} */
-    parser.getChunk(3));
-    this.parseInst(
-    /** @type {RiffChunk} */
-    parser.getChunk(4));
-    this.parseIbag(
-    /** @type {RiffChunk} */
-    parser.getChunk(5));
-    this.parseImod(
-    /** @type {RiffChunk} */
-    parser.getChunk(6));
-    this.parseIgen(
-    /** @type {RiffChunk} */
-    parser.getChunk(7));
-    this.parseShdr(
-    /** @type {RiffChunk} */
-    parser.getChunk(8));
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePhdr(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const presetHeader = this.presetHeader = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size; // check parse target
-
-    if (chunk.type !== 'phdr') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      presetHeader.push({
-        presetName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
-        preset: data[ip++] | data[ip++] << 8,
-        bank: data[ip++] | data[ip++] << 8,
-        presetBagIndex: data[ip++] | data[ip++] << 8,
-        library: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0,
-        genre: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0,
-        morphology: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0
-      });
-    }
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePbag(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const presetZone = this.presetZone = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size; // check parse target
-
-    if (chunk.type !== 'pbag') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      presetZone.push({
-        presetGeneratorIndex: data[ip++] | data[ip++] << 8,
-        presetModulatorIndex: data[ip++] | data[ip++] << 8
-      });
-    }
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePmod(chunk) {
-    // check parse target
-    if (chunk.type !== 'pmod') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    this.presetZoneModulator = this.parseModulator(chunk);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parsePgen(chunk) {
-    // check parse target
-    if (chunk.type !== 'pgen') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    this.presetZoneGenerator = this.parseGenerator(chunk);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseInst(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const instrument = this.instrument = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size; // check parse target
-
-    if (chunk.type !== 'inst') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      instrument.push({
-        instrumentName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
-        instrumentBagIndex: data[ip++] | data[ip++] << 8
-      });
-    }
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseIbag(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const instrumentZone = this.instrumentZone = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size; // check parse target
-
-    if (chunk.type !== 'ibag') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      instrumentZone.push({
-        instrumentGeneratorIndex: data[ip++] | data[ip++] << 8,
-        instrumentModulatorIndex: data[ip++] | data[ip++] << 8
-      });
-    }
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseImod(chunk) {
-    // check parse target
-    if (chunk.type !== 'imod') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    this.instrumentZoneModulator = this.parseModulator(chunk);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseIgen(chunk) {
-    // check parse target
-    if (chunk.type !== 'igen') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    this.instrumentZoneGenerator = this.parseGenerator(chunk);
-  }
-
-  /**
-   * @param {RiffChunk} chunk
-   */
-  parseShdr(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
-
-    let ip = chunk.offset;
-    /** @type {Array.<Object>} */
-
-    const samples = this.sample = [];
-    /** @type {Array.<Object>} */
-
-    const sampleHeader = this.sampleHeader = [];
-    /** @type {number} */
-
-    const size = chunk.offset + chunk.size;
-    /** @type {string} */
-
-    let sampleName;
-    /** @type {number} */
-
-    let start;
-    /** @type {number} */
-
-    let end;
-    /** @type {number} */
-
-    let startLoop;
-    /** @type {number} */
-
-    let endLoop;
-    /** @type {number} */
-
-    let sampleRate;
-    /** @type {number} */
-
-    let originalPitch;
-    /** @type {number} */
-
-    let pitchCorrection;
-    /** @type {number} */
-
-    let sampleLink;
-    /** @type {number} */
-
-    let sampleType; // check parse target
-
-    if (chunk.type !== 'shdr') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
-    while (ip < size) {
-      sampleName = String.fromCharCode.apply(null, data.subarray(ip, ip += 20));
-      start = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      end = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      startLoop = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      endLoop = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      sampleRate = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
-      originalPitch = data[ip++];
-      pitchCorrection = data[ip++] << 24 >> 24;
-      sampleLink = data[ip++] | data[ip++] << 8;
-      sampleType = data[ip++] | data[ip++] << 8;
-      let sample = new Int16Array(new Uint8Array(data.subarray(this.samplingData.offset + start * 2, this.samplingData.offset + end * 2)).buffer);
-      startLoop -= start;
-      endLoop -= start;
-
-      if (sampleRate > 0) {
-        const adjust = this.adjustSampleData(sample, sampleRate);
-        sample = adjust.sample;
-        sampleRate *= adjust.multiply;
-        startLoop *= adjust.multiply;
-        endLoop *= adjust.multiply;
+      if (chunk === null) {
+        throw new Error('chunk not found');
       }
 
-      samples.push(sample);
-      sampleHeader.push({
-        sampleName: sampleName,
-        start: start,
-        end: end,
-        startLoop: startLoop,
-        endLoop: endLoop,
-        sampleRate: sampleRate,
-        originalPitch: originalPitch,
-        pitchCorrection: pitchCorrection,
-        sampleLink: sampleLink,
-        sampleType: sampleType
-      });
+      this.parseRiffChunk(chunk); // console.log(this.sampleHeader);
+
+      this.input = null;
     }
-  }
+    /**
+     * @param {RiffChunk} chunk
+     */
 
-  /**
-   * @param {Array} sample
-   * @param {number} sampleRate
-   * @return {object}
-   */
-  adjustSampleData(sample, sampleRate) {
-    /** @type {Int16Array} */
-    let newSample;
-    /** @type {number} */
+  }, {
+    key: "parseRiffChunk",
+    value: function parseRiffChunk(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
 
-    let i;
-    /** @type {number} */
+      var ip = chunk.offset; // check parse target
 
-    let il;
-    /** @type {number} */
+      if (chunk.type !== 'RIFF') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      } // check signature
 
-    let j;
-    /** @type {number} */
+      /** @type {string} */
 
-    let multiply = 1; // buffer
 
-    while (sampleRate < this.sampleRate) {
-      // AudioContextのサンプルレートに変更
-      newSample = new Int16Array(sample.length * 2);
+      var signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
 
-      for (i = j = 0, il = sample.length; i < il; ++i) {
-        newSample[j++] = sample[i];
-        newSample[j++] = sample[i];
+      if (signature !== 'sfbk') {
+        throw new Error('invalid signature:' + signature);
+      } // read structure
+
+      /** @type {Riff} */
+
+
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+        index: ip,
+        length: chunk.size - 4
+      });
+      parser.parse();
+
+      if (parser.getNumberOfChunks() !== 3) {
+        throw new Error('invalid sfbk structure');
+      } // INFO-list
+
+
+      this.parseInfoList(parser.getChunk(0)); // sdta-list
+
+      this.parseSdtaList(parser.getChunk(1)); // pdta-list
+
+      this.parsePdtaList(parser.getChunk(2));
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseInfoList",
+    value: function parseInfoList(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset; // check parse target
+
+      if (chunk.type !== 'LIST') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      } // check signature
+
+      /** @type {string} */
+
+
+      var signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
+
+      if (signature !== 'INFO') {
+        throw new Error('invalid signature:' + signature);
+      } // read structure
+
+      /** @type {Riff} */
+
+
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+        index: ip,
+        length: chunk.size - 4
+      });
+      parser.parse();
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseSdtaList",
+    value: function parseSdtaList(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset; // check parse target
+
+      if (chunk.type !== 'LIST') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      } // check signature
+
+      /** @type {string} */
+
+
+      var signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
+
+      if (signature !== 'sdta') {
+        throw new Error('invalid signature:' + signature);
+      } // read structure
+
+      /** @type {Riff} */
+
+
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+        index: ip,
+        length: chunk.size - 4
+      });
+      parser.parse();
+
+      if (parser.chunkList.length !== 1) {
+        throw new Error('TODO');
       }
 
-      sample = newSample;
-      multiply *= 2;
-      sampleRate *= 2;
+      this.samplingData = parser.getChunk(0);
     }
+    /**
+     * @param {RiffChunk} chunk
+     */
 
-    return {
-      sample: sample,
-      multiply: multiply
-    };
-  }
+  }, {
+    key: "parsePdtaList",
+    value: function parsePdtaList(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
 
-  /**
-   * @param {RiffChunk} chunk
-   * @return {Array.<Object>}
-   */
-  parseModulator(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
+      var ip = chunk.offset; // check parse target
 
-    let ip = chunk.offset;
-    /** @type {number} */
+      if (chunk.type !== 'LIST') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      } // check signature
 
-    const size = chunk.offset + chunk.size;
-    /** @type {number} */
+      /** @type {string} */
 
-    let code;
-    /** @type {string} */
 
-    let key;
-    /** @type {Array.<Object>} */
+      var signature = String.fromCharCode(data[ip++], data[ip++], data[ip++], data[ip++]);
 
-    const output = [];
+      if (signature !== 'pdta') {
+        throw new Error('invalid signature:' + signature);
+      } // read structure
 
-    while (ip < size) {
-      // Src  Oper
-      // TODO
-      ip += 2; // Dest Oper
+      /** @type {Riff} */
 
-      code = data[ip++] | data[ip++] << 8;
-      key = this.GeneratorEnumeratorTable[code];
 
-      if (key === void 0) {
-        // Amount
-        output.push({
-          type: key,
-          value: {
-            code: code,
-            amount: data[ip] | data[ip + 1] << 8 << 16 >> 16,
-            lo: data[ip++],
-            hi: data[ip++]
-          }
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+        index: ip,
+        length: chunk.size - 4
+      });
+      parser.parse(); // check number of chunks
+
+      if (parser.getNumberOfChunks() !== 9) {
+        throw new Error('invalid pdta chunk');
+      }
+
+      this.parsePhdr(parser.getChunk(0));
+      this.parsePbag(parser.getChunk(1));
+      this.parsePmod(parser.getChunk(2));
+      this.parsePgen(parser.getChunk(3));
+      this.parseInst(parser.getChunk(4));
+      this.parseIbag(parser.getChunk(5));
+      this.parseImod(parser.getChunk(6));
+      this.parseIgen(parser.getChunk(7));
+      this.parseShdr(parser.getChunk(8));
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parsePhdr",
+    value: function parsePhdr(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var presetHeader = this.presetHeader = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size; // check parse target
+
+      if (chunk.type !== 'phdr') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        presetHeader.push({
+          presetName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
+          preset: data[ip++] | data[ip++] << 8,
+          bank: data[ip++] | data[ip++] << 8,
+          presetBagIndex: data[ip++] | data[ip++] << 8,
+          library: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0,
+          genre: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0,
+          morphology: (data[ip++] | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0
         });
-      } else {
-        // Amount
+      }
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parsePbag",
+    value: function parsePbag(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var presetZone = this.presetZone = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size; // check parse target
+
+      if (chunk.type !== 'pbag') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        presetZone.push({
+          presetGeneratorIndex: data[ip++] | data[ip++] << 8,
+          presetModulatorIndex: data[ip++] | data[ip++] << 8
+        });
+      }
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parsePmod",
+    value: function parsePmod(chunk) {
+      // check parse target
+      if (chunk.type !== 'pmod') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      this.presetZoneModulator = this.parseModulator(chunk);
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parsePgen",
+    value: function parsePgen(chunk) {
+      // check parse target
+      if (chunk.type !== 'pgen') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      this.presetZoneGenerator = this.parseGenerator(chunk);
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseInst",
+    value: function parseInst(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var instrument = this.instrument = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size; // check parse target
+
+      if (chunk.type !== 'inst') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        instrument.push({
+          instrumentName: String.fromCharCode.apply(null, data.subarray(ip, ip += 20)),
+          instrumentBagIndex: data[ip++] | data[ip++] << 8
+        });
+      }
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseIbag",
+    value: function parseIbag(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var instrumentZone = this.instrumentZone = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size; // check parse target
+
+      if (chunk.type !== 'ibag') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        instrumentZone.push({
+          instrumentGeneratorIndex: data[ip++] | data[ip++] << 8,
+          instrumentModulatorIndex: data[ip++] | data[ip++] << 8
+        });
+      }
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseImod",
+    value: function parseImod(chunk) {
+      // check parse target
+      if (chunk.type !== 'imod') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      this.instrumentZoneModulator = this.parseModulator(chunk);
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseIgen",
+    value: function parseIgen(chunk) {
+      // check parse target
+      if (chunk.type !== 'igen') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      this.instrumentZoneGenerator = this.parseGenerator(chunk);
+    }
+    /**
+     * @param {RiffChunk} chunk
+     */
+
+  }, {
+    key: "parseShdr",
+    value: function parseShdr(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {Array.<Object>} */
+
+      var samples = this.sample = [];
+      /** @type {Array.<Object>} */
+
+      var sampleHeader = this.sampleHeader = [];
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size;
+      /** @type {string} */
+
+      var sampleName;
+      /** @type {number} */
+
+      var start;
+      /** @type {number} */
+
+      var end;
+      /** @type {number} */
+
+      var startLoop;
+      /** @type {number} */
+
+      var endLoop;
+      /** @type {number} */
+
+      var sampleRate;
+      /** @type {number} */
+
+      var originalPitch;
+      /** @type {number} */
+
+      var pitchCorrection;
+      /** @type {number} */
+
+      var sampleLink;
+      /** @type {number} */
+
+      var sampleType; // check parse target
+
+      if (chunk.type !== 'shdr') {
+        throw new Error('invalid chunk type:' + chunk.type);
+      }
+
+      while (ip < size) {
+        sampleName = String.fromCharCode.apply(null, data.subarray(ip, ip += 20));
+        start = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        end = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        startLoop = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        endLoop = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        sampleRate = (data[ip++] << 0 | data[ip++] << 8 | data[ip++] << 16 | data[ip++] << 24) >>> 0;
+        originalPitch = data[ip++];
+        pitchCorrection = data[ip++] << 24 >> 24;
+        sampleLink = data[ip++] | data[ip++] << 8;
+        sampleType = data[ip++] | data[ip++] << 8;
+        var sample = new Int16Array(new Uint8Array(data.subarray(this.samplingData.offset + start * 2, this.samplingData.offset + end * 2)).buffer);
+        startLoop -= start;
+        endLoop -= start;
+
+        if (sampleRate > 0) {
+          var adjust = this.adjustSampleData(sample, sampleRate);
+          sample = adjust.sample;
+          sampleRate *= adjust.multiply;
+          startLoop *= adjust.multiply;
+          endLoop *= adjust.multiply;
+        }
+
+        samples.push(sample);
+        sampleHeader.push({
+          sampleName: sampleName,
+          start: start,
+          end: end,
+          startLoop: startLoop,
+          endLoop: endLoop,
+          sampleRate: sampleRate,
+          originalPitch: originalPitch,
+          pitchCorrection: pitchCorrection,
+          sampleLink: sampleLink,
+          sampleType: sampleType
+        });
+      }
+    }
+    /**
+     * @param {Array} sample
+     * @param {number} sampleRate
+     * @return {object}
+     */
+
+  }, {
+    key: "adjustSampleData",
+    value: function adjustSampleData(sample, sampleRate) {
+      /** @type {Int16Array} */
+      var newSample;
+      /** @type {number} */
+
+      var i;
+      /** @type {number} */
+
+      var il;
+      /** @type {number} */
+
+      var j;
+      /** @type {number} */
+
+      var multiply = 1; // buffer
+
+      while (sampleRate < this.sampleRate) {
+        // AudioContextのサンプルレートに変更
+        newSample = new Int16Array(sample.length * 2);
+
+        for (i = j = 0, il = sample.length; i < il; ++i) {
+          newSample[j++] = sample[i];
+          newSample[j++] = sample[i];
+        }
+
+        sample = newSample;
+        multiply *= 2;
+        sampleRate *= 2;
+      }
+
+      return {
+        sample: sample,
+        multiply: multiply
+      };
+    }
+    /**
+     * @param {RiffChunk} chunk
+     * @return {Array.<Object>}
+     */
+
+  }, {
+    key: "parseModulator",
+    value: function parseModulator(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size;
+      /** @type {number} */
+
+      var code;
+      /** @type {string} */
+
+      var key;
+      /** @type {Array.<Object>} */
+
+      var output = [];
+
+      while (ip < size) {
+        // Src  Oper
+        // TODO
+        ip += 2; // Dest Oper
+
+        code = data[ip++] | data[ip++] << 8;
+        key = this.GeneratorEnumeratorTable[code];
+
+        if (key === void 0) {
+          // Amount
+          output.push({
+            type: key,
+            value: {
+              code: code,
+              amount: data[ip] | data[ip + 1] << 8 << 16 >> 16,
+              lo: data[ip++],
+              hi: data[ip++]
+            }
+          });
+        } else {
+          // Amount
+          switch (key) {
+            case 'keyRange':
+            /* FALLTHROUGH */
+
+            case 'velRange':
+            /* FALLTHROUGH */
+
+            case 'keynum':
+            /* FALLTHROUGH */
+
+            case 'velocity':
+              output.push({
+                type: key,
+                value: {
+                  lo: data[ip++],
+                  hi: data[ip++]
+                }
+              });
+              break;
+
+            default:
+              output.push({
+                type: key,
+                value: {
+                  amount: data[ip++] | data[ip++] << 8 << 16 >> 16
+                }
+              });
+              break;
+          }
+        } // AmtSrcOper
+        // TODO
+
+
+        ip += 2; // Trans Oper
+        // TODO
+
+        ip += 2;
+      }
+
+      return output;
+    }
+    /**
+     * @param {RiffChunk} chunk
+     * @return {Array.<Object>}
+     */
+
+  }, {
+    key: "parseGenerator",
+    value: function parseGenerator(chunk) {
+      /** @type {ByteArray} */
+      var data = this.input;
+      /** @type {number} */
+
+      var ip = chunk.offset;
+      /** @type {number} */
+
+      var size = chunk.offset + chunk.size;
+      /** @type {number} */
+
+      var code;
+      /** @type {string} */
+
+      var key;
+      /** @type {Array.<Object>} */
+
+      var output = [];
+
+      while (ip < size) {
+        code = data[ip++] | data[ip++] << 8;
+        key = this.GeneratorEnumeratorTable[code];
+
+        if (key === void 0) {
+          output.push({
+            type: key,
+            value: {
+              code: code,
+              amount: data[ip] | data[ip + 1] << 8 << 16 >> 16,
+              lo: data[ip++],
+              hi: data[ip++]
+            }
+          });
+          continue;
+        }
+
         switch (key) {
+          case 'keynum':
+          /* FALLTHROUGH */
+
           case 'keyRange':
           /* FALLTHROUGH */
 
           case 'velRange':
-          /* FALLTHROUGH */
-
-          case 'keynum':
           /* FALLTHROUGH */
 
           case 'velocity':
@@ -1230,336 +3882,270 @@ class Parser {
             });
             break;
         }
-      } // AmtSrcOper
-      // TODO
+      }
 
-
-      ip += 2; // Trans Oper
-      // TODO
-
-      ip += 2;
+      return output;
     }
+    /**
+     * @return {Array.<object>}
+     */
 
-    return output;
-  }
+  }, {
+    key: "createInstrument",
+    value: function createInstrument() {
+      /** @type {Array.<Object>} */
+      var instrument = this.instrument;
+      /** @type {Array.<Object>} */
 
-  /**
-   * @param {RiffChunk} chunk
-   * @return {Array.<Object>}
-   */
-  parseGenerator(chunk) {
-    /** @type {ByteArray} */
-    const data = this.input;
-    /** @type {number} */
+      var zone = this.instrumentZone;
+      /** @type {Array.<Object>} */
 
-    let ip = chunk.offset;
-    /** @type {number} */
+      var output = [];
+      /** @type {number} */
 
-    const size = chunk.offset + chunk.size;
-    /** @type {number} */
+      var bagIndex;
+      /** @type {number} */
 
-    let code;
-    /** @type {string} */
+      var bagIndexEnd;
+      /** @type {Array.<Object>} */
 
-    let key;
-    /** @type {Array.<Object>} */
+      var zoneInfo;
+      /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
 
-    const output = [];
+      var instrumentGenerator;
+      /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
 
-    while (ip < size) {
-      code = data[ip++] | data[ip++] << 8;
-      key = this.GeneratorEnumeratorTable[code];
+      var instrumentModulator;
+      /** @type {number} */
 
-      if (key === void 0) {
+      var i;
+      /** @type {number} */
+
+      var il;
+      /** @type {number} */
+
+      var j;
+      /** @type {number} */
+
+      var jl; // instrument -> instrument bag -> generator / modulator
+
+      for (i = 0, il = instrument.length; i < il; ++i) {
+        bagIndex = instrument[i].instrumentBagIndex;
+        bagIndexEnd = instrument[i + 1] ? instrument[i + 1].instrumentBagIndex : zone.length;
+        zoneInfo = []; // instrument bag
+
+        for (j = bagIndex, jl = bagIndexEnd; j < jl; ++j) {
+          instrumentGenerator = this.createInstrumentGenerator_(zone, j);
+          instrumentModulator = this.createInstrumentModulator_(zone, j);
+          zoneInfo.push({
+            generator: instrumentGenerator.generator,
+            generatorSequence: instrumentGenerator.generatorInfo,
+            modulator: instrumentModulator.modulator,
+            modulatorSequence: instrumentModulator.modulatorInfo
+          });
+        }
+
         output.push({
-          type: key,
-          value: {
-            code: code,
-            amount: data[ip] | data[ip + 1] << 8 << 16 >> 16,
-            lo: data[ip++],
-            hi: data[ip++]
-          }
+          name: instrument[i].instrumentName,
+          info: zoneInfo
         });
-        continue;
       }
 
-      switch (key) {
-        case 'keynum':
-        /* FALLTHROUGH */
+      return output;
+    }
+    /**
+     * @return {Array.<object>}
+     */
 
-        case 'keyRange':
-        /* FALLTHROUGH */
+  }, {
+    key: "createPreset",
+    value: function createPreset() {
+      /** @type {Array.<Object>} */
+      var preset = this.presetHeader;
+      /** @type {Array.<Object>} */
 
-        case 'velRange':
-        /* FALLTHROUGH */
+      var zone = this.presetZone;
+      /** @type {Array.<Object>} */
 
-        case 'velocity':
-          output.push({
-            type: key,
-            value: {
-              lo: data[ip++],
-              hi: data[ip++]
-            }
+      var output = [];
+      /** @type {number} */
+
+      var bagIndex;
+      /** @type {number} */
+
+      var bagIndexEnd;
+      /** @type {Array.<Object>} */
+
+      var zoneInfo;
+      /** @type {number} */
+
+      var instrument;
+      /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
+
+      var presetGenerator;
+      /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
+
+      var presetModulator;
+      /** @type {number} */
+
+      var i;
+      /** @type {number} */
+
+      var il;
+      /** @type {number} */
+
+      var j;
+      /** @type {number} */
+
+      var jl; // preset -> preset bag -> generator / modulator
+
+      for (i = 0, il = preset.length; i < il; ++i) {
+        bagIndex = preset[i].presetBagIndex;
+        bagIndexEnd = preset[i + 1] ? preset[i + 1].presetBagIndex : zone.length;
+        zoneInfo = []; // preset bag
+
+        for (j = bagIndex, jl = bagIndexEnd; j < jl; ++j) {
+          presetGenerator = this.createPresetGenerator_(zone, j);
+          presetModulator = this.createPresetModulator_(zone, j);
+          zoneInfo.push({
+            generator: presetGenerator.generator,
+            generatorSequence: presetGenerator.generatorInfo,
+            modulator: presetModulator.modulator,
+            modulatorSequence: presetModulator.modulatorInfo
           });
-          break;
+          instrument = presetGenerator.generator['instrument'] !== void 0 ? presetGenerator.generator['instrument'].amount : presetModulator.modulator['instrument'] !== void 0 ? presetModulator.modulator['instrument'].amount : null;
+        }
 
-        default:
-          output.push({
-            type: key,
-            value: {
-              amount: data[ip++] | data[ip++] << 8 << 16 >> 16
-            }
-          });
-          break;
-      }
-    }
-
-    return output;
-  }
-
-  /**
-   * @return {Array.<object>}
-   */
-  createInstrument() {
-    /** @type {Array.<Object>} */
-    const instrument = this.instrument;
-    /** @type {Array.<Object>} */
-
-    const zone = this.instrumentZone;
-    /** @type {Array.<Object>} */
-
-    const output = [];
-    /** @type {number} */
-
-    let bagIndex;
-    /** @type {number} */
-
-    let bagIndexEnd;
-    /** @type {Array.<Object>} */
-
-    let zoneInfo;
-    /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
-
-    let instrumentGenerator;
-    /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
-
-    let instrumentModulator;
-    /** @type {number} */
-
-    let i;
-    /** @type {number} */
-
-    let il;
-    /** @type {number} */
-
-    let j;
-    /** @type {number} */
-
-    let jl; // instrument -> instrument bag -> generator / modulator
-
-    for (i = 0, il = instrument.length; i < il; ++i) {
-      bagIndex = instrument[i].instrumentBagIndex;
-      bagIndexEnd = instrument[i + 1] ? instrument[i + 1].instrumentBagIndex : zone.length;
-      zoneInfo = []; // instrument bag
-
-      for (j = bagIndex, jl = bagIndexEnd; j < jl; ++j) {
-        instrumentGenerator = this.createInstrumentGenerator_(zone, j);
-        instrumentModulator = this.createInstrumentModulator_(zone, j);
-        zoneInfo.push({
-          generator: instrumentGenerator.generator,
-          generatorSequence: instrumentGenerator.generatorInfo,
-          modulator: instrumentModulator.modulator,
-          modulatorSequence: instrumentModulator.modulatorInfo
+        output.push({
+          name: preset[i].presetName,
+          info: zoneInfo,
+          header: preset[i],
+          instrument: instrument
         });
       }
 
-      output.push({
-        name: instrument[i].instrumentName,
-        info: zoneInfo
-      });
+      return output;
     }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} index
+     * @return {{generator: Object, generatorInfo: Array.<Object>}}
+     * @private
+     */
 
-    return output;
-  }
+  }, {
+    key: "createInstrumentGenerator_",
+    value: function createInstrumentGenerator_(zone, index) {
+      var modgen = this.createBagModGen_(zone, zone[index].instrumentGeneratorIndex, zone[index + 1] ? zone[index + 1].instrumentGeneratorIndex : this.instrumentZoneGenerator.length, this.instrumentZoneGenerator);
+      return {
+        generator: modgen.modgen,
+        generatorInfo: modgen.modgenInfo
+      };
+    }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} index
+     * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
+     * @private
+     */
 
-  /**
-   * @return {Array.<object>}
-   */
-  createPreset() {
-    /** @type {Array.<Object>} */
-    const preset = this.presetHeader;
-    /** @type {Array.<Object>} */
+  }, {
+    key: "createInstrumentModulator_",
+    value: function createInstrumentModulator_(zone, index) {
+      var modgen = this.createBagModGen_(zone, zone[index].presetModulatorIndex, zone[index + 1] ? zone[index + 1].instrumentModulatorIndex : this.instrumentZoneModulator.length, this.instrumentZoneModulator);
+      return {
+        modulator: modgen.modgen,
+        modulatorInfo: modgen.modgenInfo
+      };
+    }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} index
+     * @return {{generator: Object, generatorInfo: Array.<Object>}}
+     * @private
+     */
 
-    const zone = this.presetZone;
-    /** @type {Array.<Object>} */
+  }, {
+    key: "createPresetGenerator_",
+    value: function createPresetGenerator_(zone, index) {
+      var modgen = this.createBagModGen_(zone, zone[index].presetGeneratorIndex, zone[index + 1] ? zone[index + 1].presetGeneratorIndex : this.presetZoneGenerator.length, this.presetZoneGenerator);
+      return {
+        generator: modgen.modgen,
+        generatorInfo: modgen.modgenInfo
+      };
+    }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} index
+     * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
+     * @private
+     */
 
-    const output = [];
-    /** @type {number} */
+  }, {
+    key: "createPresetModulator_",
+    value: function createPresetModulator_(zone, index) {
+      /** @type {{modgen: Object, modgenInfo: Array.<Object>}} */
+      var modgen = this.createBagModGen_(zone, zone[index].presetModulatorIndex, zone[index + 1] ? zone[index + 1].presetModulatorIndex : this.presetZoneModulator.length, this.presetZoneModulator);
+      return {
+        modulator: modgen.modgen,
+        modulatorInfo: modgen.modgenInfo
+      };
+    }
+    /**
+     * @param {Array.<Object>} zone
+     * @param {number} indexStart
+     * @param {number} indexEnd
+     * @param {Array} zoneModGen
+     * @return {{modgen: Object, modgenInfo: Array.<Object>}}
+     * @private
+     */
 
-    let bagIndex;
-    /** @type {number} */
+  }, {
+    key: "createBagModGen_",
+    value: function createBagModGen_(zone, indexStart, indexEnd, zoneModGen) {
+      /** @type {Array.<Object>} */
+      var modgenInfo = [];
+      /** @type {Object} */
 
-    let bagIndexEnd;
-    /** @type {Array.<Object>} */
+      var modgen = {
+        unknown: [],
+        keyRange: {
+          hi: 127,
+          lo: 0
+        }
+      }; // TODO
 
-    let zoneInfo;
-    /** @type {number} */
+      /** @type {Object} */
 
-    let instrument;
-    /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
+      var info;
+      /** @type {number} */
 
-    let presetGenerator;
-    /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
+      var i;
+      /** @type {number} */
 
-    let presetModulator;
-    /** @type {number} */
+      var il;
 
-    let i;
-    /** @type {number} */
+      for (i = indexStart, il = indexEnd; i < il; ++i) {
+        info = zoneModGen[i];
+        modgenInfo.push(info);
 
-    let il;
-    /** @type {number} */
-
-    let j;
-    /** @type {number} */
-
-    let jl; // preset -> preset bag -> generator / modulator
-
-    for (i = 0, il = preset.length; i < il; ++i) {
-      bagIndex = preset[i].presetBagIndex;
-      bagIndexEnd = preset[i + 1] ? preset[i + 1].presetBagIndex : zone.length;
-      zoneInfo = []; // preset bag
-
-      for (j = bagIndex, jl = bagIndexEnd; j < jl; ++j) {
-        presetGenerator = this.createPresetGenerator_(zone, j);
-        presetModulator = this.createPresetModulator_(zone, j);
-        zoneInfo.push({
-          generator: presetGenerator.generator,
-          generatorSequence: presetGenerator.generatorInfo,
-          modulator: presetModulator.modulator,
-          modulatorSequence: presetModulator.modulatorInfo
-        });
-        instrument = presetGenerator.generator['instrument'] !== void 0 ? presetGenerator.generator['instrument'].amount : presetModulator.modulator['instrument'] !== void 0 ? presetModulator.modulator['instrument'].amount : null;
+        if (info.type === 'unknown') {
+          modgen.unknown.push(info.value);
+        } else {
+          modgen[info.type] = info.value;
+        }
       }
 
-      output.push({
-        name: preset[i].presetName,
-        info: zoneInfo,
-        header: preset[i],
-        instrument: instrument
-      });
+      return {
+        modgen: modgen,
+        modgenInfo: modgenInfo
+      };
     }
+  }]);
 
-    return output;
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{generator: Object, generatorInfo: Array.<Object>}}
-   * @private
-   */
-  createInstrumentGenerator_(zone, index) {
-    const modgen = this.createBagModGen_(zone, zone[index].instrumentGeneratorIndex, zone[index + 1] ? zone[index + 1].instrumentGeneratorIndex : this.instrumentZoneGenerator.length, this.instrumentZoneGenerator);
-    return {
-      generator: modgen.modgen,
-      generatorInfo: modgen.modgenInfo
-    };
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
-   * @private
-   */
-  createInstrumentModulator_(zone, index) {
-    const modgen = this.createBagModGen_(zone, zone[index].presetModulatorIndex, zone[index + 1] ? zone[index + 1].instrumentModulatorIndex : this.instrumentZoneModulator.length, this.instrumentZoneModulator);
-    return {
-      modulator: modgen.modgen,
-      modulatorInfo: modgen.modgenInfo
-    };
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{generator: Object, generatorInfo: Array.<Object>}}
-   * @private
-   */
-  createPresetGenerator_(zone, index) {
-    const modgen = this.createBagModGen_(zone, zone[index].presetGeneratorIndex, zone[index + 1] ? zone[index + 1].presetGeneratorIndex : this.presetZoneGenerator.length, this.presetZoneGenerator);
-    return {
-      generator: modgen.modgen,
-      generatorInfo: modgen.modgenInfo
-    };
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
-   * @private
-   */
-  createPresetModulator_(zone, index) {
-    /** @type {{modgen: Object, modgenInfo: Array.<Object>}} */
-    const modgen = this.createBagModGen_(zone, zone[index].presetModulatorIndex, zone[index + 1] ? zone[index + 1].presetModulatorIndex : this.presetZoneModulator.length, this.presetZoneModulator);
-    return {
-      modulator: modgen.modgen,
-      modulatorInfo: modgen.modgenInfo
-    };
-  }
-
-  /**
-   * @param {Array.<Object>} zone
-   * @param {number} indexStart
-   * @param {number} indexEnd
-   * @param {Array} zoneModGen
-   * @return {{modgen: Object, modgenInfo: Array.<Object>}}
-   * @private
-   */
-  createBagModGen_(zone, indexStart, indexEnd, zoneModGen) {
-    /** @type {Array.<Object>} */
-    const modgenInfo = [];
-    /** @type {Object} */
-
-    const modgen = {
-      'unknown': [],
-      'keyRange': {
-        hi: 127,
-        lo: 0
-      }
-    }; // TODO
-
-    /** @type {Object} */
-
-    let info;
-    /** @type {number} */
-
-    let i;
-    /** @type {number} */
-
-    let il;
-
-    for (i = indexStart, il = indexEnd; i < il; ++i) {
-      info = zoneModGen[i];
-      modgenInfo.push(info);
-
-      if (info.type === 'unknown') {
-        modgen.unknown.push(info.value);
-      } else {
-        modgen[info.type] = info.value;
-      }
-    }
-
-    return {
-      modgen: modgen,
-      modgenInfo: modgenInfo
-    };
-  }
-
-}
-/* harmony default export */ __webpack_exports__["default"] = (Parser);
+  return Parser;
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Parser);
 
 /***/ }),
 
@@ -1567,15 +4153,27 @@ class Parser {
 /*!*********************************!*\
   !*** ./src/sound_font_synth.js ***!
   \*********************************/
-/*! exports provided: Synthesizer, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Synthesizer", function() { return Synthesizer; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Synthesizer": () => (/* binding */ Synthesizer),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
 /* harmony import */ var _sound_font_synth_note__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sound_font_synth_note */ "./src/sound_font_synth_note.js");
 /* harmony import */ var _sf2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sf2 */ "./src/sf2.js");
-/* harmony import */ var _logue_reverb_src_reverb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @logue/reverb/src/reverb */ "./node_modules/@logue/reverb/src/reverb.js");
+/* harmony import */ var _logue_reverb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @logue/reverb */ "./node_modules/@logue/reverb/bin/reverb.min.js");
+/* harmony import */ var _logue_reverb__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_logue_reverb__WEBPACK_IMPORTED_MODULE_2__);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/* eslint-disable no-case-declarations */
 
 
 
@@ -1584,16 +4182,18 @@ __webpack_require__.r(__webpack_exports__);
  * @private
  */
 
-class Synthesizer {
+var Synthesizer = /*#__PURE__*/function () {
   /**
    * @param {Uint8Array} input
    */
-  constructor(input) {
+  function Synthesizer(input) {
+    _classCallCheck(this, Synthesizer);
+
     /** @type {number} */
-    let i;
+    var i;
     /** @type {number} */
 
-    let il;
+    var il;
     /** @type {Uint8Array} */
 
     this.input = input;
@@ -1701,7 +4301,7 @@ class Synthesizer {
     this.filter = [];
 
     for (i = 0; i < 16; ++i) {
-      this.reverb[i] = new _logue_reverb_src_reverb__WEBPACK_IMPORTED_MODULE_2__["default"](this.ctx, {
+      this.reverb[i] = new (_logue_reverb__WEBPACK_IMPORTED_MODULE_2___default())(this.ctx, {
         mix: 0.315
       }); // リバーブエフェクトのデフォルト値は40なので40/127の値をドライ／ウェット値となる
       // フィルタを定義
@@ -1709,8 +4309,8 @@ class Synthesizer {
       this.filter[i] = this.ctx.createBiquadFilter();
     }
 
-    this.observer = new IntersectionObserver((entries, object) => {
-      entries.forEach((entry, i) => {
+    this.observer = new IntersectionObserver(function (entries, object) {
+      entries.forEach(function (entry, i) {
         // 交差していない
         entry.target.dataset.isIntersecting = entry.isIntersecting;
       });
@@ -1721,1168 +4321,1239 @@ class Synthesizer {
    */
 
 
-  getAudioContext() {
-    /** @type {AudioContext} */
-    const ctx = new (window.AudioContext || window.webkitAudioContext)(); // for legacy browsers
+  _createClass(Synthesizer, [{
+    key: "getAudioContext",
+    value: function getAudioContext() {
+      /** @type {AudioContext} */
+      var ctx = new (window.AudioContext || window.webkitAudioContext)(); // for legacy browsers
 
-    ctx.createGain = ctx.createGain || ctx.createGainNode; // Defreeze AudioContext for iOS.
+      ctx.createGain = ctx.createGain || ctx.createGainNode; // Defreeze AudioContext for iOS.
 
-    const initAudioContext = () => {
-      document.removeEventListener('touchstart', initAudioContext); // wake up AudioContext
+      var initAudioContext = function initAudioContext() {
+        document.removeEventListener('touchstart', initAudioContext); // wake up AudioContext
 
-      const emptySource = ctx.createBufferSource();
-      emptySource.start();
-      emptySource.stop();
-    };
+        var emptySource = ctx.createBufferSource();
+        emptySource.start();
+        emptySource.stop();
+      };
 
-    document.addEventListener('touchstart', initAudioContext);
-    return ctx;
-  }
-  /**
-   * System Reset
-   * @param {string} mode
-   */
-
-
-  init(mode = 'GM') {
-    this.gainMaster.disconnect();
-    /** @type {number} */
-
-    let i;
-    this.parser = new _sf2__WEBPACK_IMPORTED_MODULE_1__["default"](this.input, {
-      sampleRate: this.ctx.sampleRate
-    });
-    this.bankSet = this.createAllInstruments();
-    this.isXG = false;
-    this.isGS = false;
-
-    if (mode == 'XG') {
-      this.isXG = true;
-    } else if (mode == 'GS') {
-      this.isGS = true;
+      document.addEventListener('touchstart', initAudioContext);
+      return ctx;
     }
+    /**
+     * System Reset
+     * @param {string} mode
+     */
 
-    for (i = 0; i < 16; ++i) {
-      this.programChange(i, 0x00);
-      this.volumeChange(i, 0x64);
-      this.panpotChange(i, 0x40);
-      this.pitchBend(i, 0x00, 0x40); // 8192
+  }, {
+    key: "init",
+    value: function init() {
+      var mode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'GM';
+      this.gainMaster.disconnect();
+      /** @type {number} */
 
-      this.pitchBendSensitivity(i, 2);
-      this.channelHold[i] = false;
-      this.channelExpression[i] = 127;
-      this.channelBank[i] = i === 9 ? 127 : 0;
-      this.attackTime(i, 64);
-      this.decayTime(i, 64);
-      this.sustinTime(i, 64);
-      this.releaseTime(i, 64);
-      this.harmonicContent(i, 64);
-      this.cutOffFrequency(i, 64);
-      this.reverbDepth(i, 40);
-      this.updateBankSelect(i);
-      this.updateProgramSelect(i);
-    }
+      var i;
+      this.parser = new _sf2__WEBPACK_IMPORTED_MODULE_1__["default"](this.input, {
+        sampleRate: this.ctx.sampleRate
+      });
+      this.bankSet = this.createAllInstruments();
+      this.isXG = false;
+      this.isGS = false;
 
-    this.setPercussionPart(9, true);
-
-    for (i = 0; i < 128; ++i) {
-      this.percussionVolume[i] = 127;
-    }
-
-    this.gainMaster.connect(this.ctx.destination);
-    /*
-    if (this.element) {
-      this.element.querySelector('.header div:before').innerText = mode + ' Mode';
-    }
-    */
-
-    this.element.dataset.mode = mode;
-  }
-  /**
-   */
-
-
-  close() {
-    this.ctx.close();
-  }
-  /**
-   * @param {Uint8Array} input
-   */
-
-
-  refreshInstruments(input) {
-    this.input = input;
-    this.parser = new _sf2__WEBPACK_IMPORTED_MODULE_1__["default"](input);
-    this.bankSet = this.createAllInstruments();
-  }
-  /** @return {Array.<Array.<Object>>} */
-
-
-  createAllInstruments() {
-    /** @type {SoundFont.Parser} */
-    const parser = this.parser;
-    parser.parse();
-    /** @type {Array} TODO */
-
-    const presets = parser.createPreset();
-    /** @type {Array} TODO */
-
-    const instruments = parser.createInstrument();
-    /** @type {Array} */
-
-    const banks = [];
-    /** @type {Array.<Array.<Object>>} */
-
-    let bank;
-    /** @type {number} */
-
-    let bankNumber;
-    /** @type {Object} TODO */
-
-    let preset;
-    /** @type {Object} */
-
-    let instrument;
-    /** @type {number} */
-
-    let presetNumber;
-    /** @type {number} */
-
-    let i;
-    /** @type {number} */
-
-    let il;
-    /** @type {number} */
-
-    let j;
-    /** @type {number} */
-
-    let jl;
-    /** @type {string} */
-
-    let presetName;
-    const programSet = [];
-
-    for (i = 0, il = presets.length; i < il; ++i) {
-      preset = presets[i];
-      presetNumber = preset.header.preset;
-      bankNumber = preset.header.bank;
-      presetName = preset.name.replace(/\0*$/, '');
-
-      if (typeof preset.instrument !== 'number') {
-        continue;
+      if (mode == 'XG') {
+        this.isXG = true;
+      } else if (mode == 'GS') {
+        this.isGS = true;
       }
 
-      instrument = instruments[preset.instrument];
+      for (i = 0; i < 16; ++i) {
+        this.programChange(i, 0x00);
+        this.volumeChange(i, 0x64);
+        this.panpotChange(i, 0x40);
+        this.pitchBend(i, 0x00, 0x40); // 8192
 
-      if (instrument.name.replace(/\0*$/, '') === 'EOI') {
-        continue;
-      } // select bank
-
-
-      if (banks[bankNumber] === void 0) {
-        banks[bankNumber] = [];
+        this.pitchBendSensitivity(i, 2);
+        this.channelHold[i] = false;
+        this.channelExpression[i] = 127;
+        this.channelBank[i] = i === 9 ? 127 : 0;
+        this.attackTime(i, 64);
+        this.decayTime(i, 64);
+        this.sustinTime(i, 64);
+        this.releaseTime(i, 64);
+        this.harmonicContent(i, 64);
+        this.cutOffFrequency(i, 64);
+        this.reverbDepth(i, 40);
+        this.updateBankSelect(i);
+        this.updateProgramSelect(i);
       }
 
-      bank = banks[bankNumber];
-      bank[presetNumber] = {};
-      bank[presetNumber].name = presetName;
+      this.setPercussionPart(9, true);
 
-      for (j = 0, jl = instrument.info.length; j < jl; ++j) {
-        this.createNoteInfo(parser, instrument.info[j], bank[presetNumber]);
+      for (i = 0; i < 128; ++i) {
+        this.percussionVolume[i] = 127;
       }
 
-      if (!programSet[bankNumber]) {
-        programSet[bankNumber] = {};
+      this.gainMaster.connect(this.ctx.destination);
+      /*
+      if (this.element) {
+        this.element.querySelector('.header div:before').innerText = mode + ' Mode';
       }
+      */
 
-      programSet[bankNumber][presetNumber] = presetName;
+      this.element.dataset.mode = mode;
     }
+    /**
+     */
 
-    this.programSet = programSet;
-    return banks;
-  }
-  /**
-   * @param {Parser} parser
-   * @param {*} info
-   * @param {*} preset
-   */
+  }, {
+    key: "close",
+    value: function close() {
+      this.ctx.close();
+    }
+    /**
+     * @param {Uint8Array} input
+     */
+
+  }, {
+    key: "refreshInstruments",
+    value: function refreshInstruments(input) {
+      this.input = input;
+      this.parser = new _sf2__WEBPACK_IMPORTED_MODULE_1__["default"](input);
+      this.bankSet = this.createAllInstruments();
+    }
+    /** @return {Array.<Array.<Object>>} */
+
+  }, {
+    key: "createAllInstruments",
+    value: function createAllInstruments() {
+      /** @type {SoundFont.Parser} */
+      var parser = this.parser;
+      parser.parse();
+      /** @type {Array} TODO */
+
+      var presets = parser.createPreset();
+      /** @type {Array} TODO */
+
+      var instruments = parser.createInstrument();
+      /** @type {Array} */
+
+      var banks = [];
+      /** @type {Array.<Array.<Object>>} */
+
+      var bank;
+      /** @type {number} */
+
+      var bankNumber;
+      /** @type {Object} TODO */
+
+      var preset;
+      /** @type {Object} */
+
+      var instrument;
+      /** @type {number} */
+
+      var presetNumber;
+      /** @type {number} */
+
+      var i;
+      /** @type {number} */
+
+      var il;
+      /** @type {number} */
+
+      var j;
+      /** @type {number} */
+
+      var jl;
+      /** @type {string} */
+
+      var presetName;
+      var programSet = [];
+
+      for (i = 0, il = presets.length; i < il; ++i) {
+        preset = presets[i];
+        presetNumber = preset.header.preset;
+        bankNumber = preset.header.bank;
+        presetName = preset.name.replace(/\0*$/, '');
+
+        if (typeof preset.instrument !== 'number') {
+          continue;
+        }
+
+        instrument = instruments[preset.instrument];
+
+        if (instrument.name.replace(/\0*$/, '') === 'EOI') {
+          continue;
+        } // select bank
 
 
-  createNoteInfo(parser, info, preset) {
-    /** @type {Generator} */
-    const generator = info.generator;
+        if (banks[bankNumber] === void 0) {
+          banks[bankNumber] = [];
+        }
 
-    if (generator.keyRange === void 0 || generator.sampleID === void 0) {
-      return;
-    } // console.log(generator);
+        bank = banks[bankNumber];
+        bank[presetNumber] = {};
+        bank[presetNumber].name = presetName;
 
-    /** @type {number} */
+        for (j = 0, jl = instrument.info.length; j < jl; ++j) {
+          this.createNoteInfo(parser, instrument.info[j], bank[presetNumber]);
+        }
+
+        if (!programSet[bankNumber]) {
+          programSet[bankNumber] = {};
+        }
+
+        programSet[bankNumber][presetNumber] = presetName;
+      }
+
+      this.programSet = programSet;
+      return banks;
+    }
+    /**
+     * @param {Parser} parser
+     * @param {*} info
+     * @param {*} preset
+     */
+
+  }, {
+    key: "createNoteInfo",
+    value: function createNoteInfo(parser, info, preset) {
+      /** @type {Generator} */
+      var generator = info.generator;
+
+      if (generator.keyRange === void 0 || generator.sampleID === void 0) {
+        return;
+      } // console.log(generator);
+
+      /** @type {number} */
 
 
-    const volDelay = this.getModGenAmount(generator, 'delayVolEnv', -12000);
-    /** @type {number} */
+      var volDelay = this.getModGenAmount(generator, 'delayVolEnv', -12000);
+      /** @type {number} */
 
-    const volAttack = this.getModGenAmount(generator, 'attackVolEnv', -12000);
-    /** @type {number} */
+      var volAttack = this.getModGenAmount(generator, 'attackVolEnv', -12000);
+      /** @type {number} */
 
-    const volHold = this.getModGenAmount(generator, 'holdVolEnv', -12000);
-    /** @type {number} */
+      var volHold = this.getModGenAmount(generator, 'holdVolEnv', -12000);
+      /** @type {number} */
 
-    const volDecay = this.getModGenAmount(generator, 'decayVolEnv', -12000);
-    /** @type {number} */
+      var volDecay = this.getModGenAmount(generator, 'decayVolEnv', -12000);
+      /** @type {number} */
 
-    const volSustain = this.getModGenAmount(generator, 'sustainVolEnv');
-    /** @type {number} */
+      var volSustain = this.getModGenAmount(generator, 'sustainVolEnv');
+      /** @type {number} */
 
-    const volRelease = this.getModGenAmount(generator, 'releaseVolEnv', -12000);
-    /** @type {number} */
+      var volRelease = this.getModGenAmount(generator, 'releaseVolEnv', -12000);
+      /** @type {number} */
 
-    const modDelay = this.getModGenAmount(generator, 'delayModEnv', -12000);
-    /** @type {number} */
+      var modDelay = this.getModGenAmount(generator, 'delayModEnv', -12000);
+      /** @type {number} */
 
-    const modAttack = this.getModGenAmount(generator, 'attackModEnv', -12000);
-    /** @type {number} */
+      var modAttack = this.getModGenAmount(generator, 'attackModEnv', -12000);
+      /** @type {number} */
 
-    const modHold = this.getModGenAmount(generator, 'holdModEnv', -12000);
-    /** @type {number} */
+      var modHold = this.getModGenAmount(generator, 'holdModEnv', -12000);
+      /** @type {number} */
 
-    const modDecay = this.getModGenAmount(generator, 'decayModEnv', -12000);
-    /** @type {number} */
+      var modDecay = this.getModGenAmount(generator, 'decayModEnv', -12000);
+      /** @type {number} */
 
-    const modSustain = this.getModGenAmount(generator, 'sustainModEnv');
-    /** @type {number} */
+      var modSustain = this.getModGenAmount(generator, 'sustainModEnv');
+      /** @type {number} */
 
-    const modRelease = this.getModGenAmount(generator, 'releaseModEnv', -12000);
-    /** @type {number} */
+      var modRelease = this.getModGenAmount(generator, 'releaseModEnv', -12000);
+      /** @type {number} */
 
-    const scale = this.getModGenAmount(generator, 'scaleTuning', 100) / 100;
-    /** @type {number} */
+      var scale = this.getModGenAmount(generator, 'scaleTuning', 100) / 100;
+      /** @type {number} */
 
-    const freqVibLFO = this.getModGenAmount(generator, 'freqVibLFO');
-    /** @type {number} */
+      var freqVibLFO = this.getModGenAmount(generator, 'freqVibLFO');
+      /** @type {number} */
 
-    const pan = this.getModGenAmount(generator, 'pan');
-    /** @type {number} */
+      var pan = this.getModGenAmount(generator, 'pan');
+      /** @type {number} */
 
-    const tune = this.getModGenAmount(generator, 'coarseTune') + this.getModGenAmount(generator, 'fineTune') / 100;
+      var tune = this.getModGenAmount(generator, 'coarseTune') + this.getModGenAmount(generator, 'fineTune') / 100;
 
-    for (let i = generator.keyRange.lo, il = generator.keyRange.hi; i <= il; ++i) {
-      if (preset[i]) {
-        continue;
+      for (var i = generator.keyRange.lo, il = generator.keyRange.hi; i <= il; ++i) {
+        if (preset[i]) {
+          continue;
+        }
+        /** @type {number} */
+
+
+        var sampleId = this.getModGenAmount(generator, 'sampleID');
+        /** @type {object} */
+
+        var sampleHeader = parser.sampleHeader[sampleId];
+        preset[i] = {
+          sample: parser.sample[sampleId],
+          sampleRate: sampleHeader.sampleRate,
+          sampleModes: this.getModGenAmount(generator, 'sampleModes'),
+          basePlaybackRate: Math.pow(1.0594630943592953, (i - this.getModGenAmount(generator, 'overridingRootKey', sampleHeader.originalPitch) + tune + sampleHeader.pitchCorrection / 100) * scale),
+          modEnvToPitch: this.getModGenAmount(generator, 'modEnvToPitch') / 100,
+          scaleTuning: scale,
+          start: this.getModGenAmount(generator, 'startAddrsCoarseOffset') * 32768 + this.getModGenAmount(generator, 'startAddrsOffset'),
+          end: this.getModGenAmount(generator, 'endAddrsCoarseOffset') * 32768 + this.getModGenAmount(generator, 'endAddrsOffset'),
+          loopStart: // (sampleHeader.startLoop - sampleHeader.start) +
+          sampleHeader.startLoop + this.getModGenAmount(generator, 'startloopAddrsCoarseOffset') * 32768 + this.getModGenAmount(generator, 'startloopAddrsOffset'),
+          loopEnd: // (sampleHeader.endLoop - sampleHeader.start) +
+          sampleHeader.endLoop + this.getModGenAmount(generator, 'endloopAddrsCoarseOffset') * 32768 + this.getModGenAmount(generator, 'endloopAddrsOffset'),
+          volDelay: Math.pow(2, volDelay / 1200),
+          volAttack: Math.pow(2, volAttack / 1200),
+          volHold: Math.pow(2, volHold / 1200) * Math.pow(2, (60 - i) * this.getModGenAmount(generator, 'keynumToVolEnvHold') / 1200),
+          volDecay: Math.pow(2, volDecay / 1200) * Math.pow(2, (60 - i) * this.getModGenAmount(generator, 'keynumToVolEnvDecay') / 1200),
+          volSustain: volSustain / 1000,
+          volRelease: Math.pow(2, volRelease / 1200),
+          modDelay: Math.pow(2, modDelay / 1200),
+          modAttack: Math.pow(2, modAttack / 1200),
+          modHold: Math.pow(2, modHold / 1200) * Math.pow(2, (60 - i) * this.getModGenAmount(generator, 'keynumToModEnvHold') / 1200),
+          modDecay: Math.pow(2, modDecay / 1200) * Math.pow(2, (60 - i) * this.getModGenAmount(generator, 'keynumToModEnvDecay') / 1200),
+          modSustain: modSustain / 1000,
+          modRelease: Math.pow(2, modRelease / 1200),
+          initialFilterFc: this.getModGenAmount(generator, 'initialFilterFc', 13500),
+          modEnvToFilterFc: this.getModGenAmount(generator, 'modEnvToFilterFc'),
+          initialFilterQ: this.getModGenAmount(generator, 'initialFilterQ'),
+          reverbEffectSend: this.getModGenAmount(generator, 'reverbEffectSend'),
+          initialAttenuation: this.getModGenAmount(generator, 'initialAttenuation'),
+          freqVibLFO: freqVibLFO ? Math.pow(2, freqVibLFO / 1200) * 8.176 : void 0,
+          pan: pan ? pan / 1200 : void 0
+        };
+      }
+    }
+    /**
+     * @param {Object} generator
+     * @param {string} enumeratorType
+     * @param {number=} optDefault
+     * @return {number}
+     */
+
+  }, {
+    key: "getModGenAmount",
+    value: function getModGenAmount(generator, enumeratorType) {
+      var optDefault = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+      return generator[enumeratorType] ? generator[enumeratorType].amount : optDefault;
+    }
+    /**
+     */
+
+  }, {
+    key: "start",
+    value: function start() {
+      this.connect();
+      this.bufSrc.start(0);
+      this.setMasterVolume(16383);
+    }
+    /**
+     * @param {number} volume
+     */
+
+  }, {
+    key: "setMasterVolume",
+    value: function setMasterVolume(volume) {
+      this.masterVolume = volume;
+      this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
+    }
+    /**
+     */
+
+  }, {
+    key: "connect",
+    value: function connect() {
+      this.bufSrc.connect(this.gainMaster);
+    }
+    /**
+     */
+
+  }, {
+    key: "disconnect",
+    value: function disconnect() {
+      this.bufSrc.disconnect(this.gainMaster);
+      this.bufSrc.buffer = null;
+    }
+    /**
+     * @return {HTMLDivElement}
+     */
+
+  }, {
+    key: "drawSynth",
+    value: function drawSynth() {
+      var _this = this;
+
+      /** @type {Document} */
+      var doc = window.document;
+      /** @type {HTMLDivElement} */
+
+      var wrapper = this.element = doc.createElement('div');
+      wrapper.className = 'synthesizer';
+      /** @type {HTMLDivElement} */
+
+      var instElem = doc.createElement('div');
+      instElem.className = 'instrument';
+      /** @type {Array} */
+
+      var items = ['mute', 'bank', 'program', 'volume', 'panpot', 'pitchBend', 'pitchBendSensitivity', 'keys'];
+      /** @type {string} */
+
+      var eventStart = 'ontouchstart' in window ? 'touchstart' : 'mousedown';
+      /** @type {string} */
+
+      var eventEnd = 'ontouchend' in window ? 'touchend' : 'mouseup';
+
+      for (var channel = 0; channel < 16; channel++) {
+        /** @type {HTMLDivElement} */
+        var channelElem = doc.createElement('div');
+        channelElem.className = 'channel';
+
+        for (var item in items) {
+          if ({}.hasOwnProperty.call(items, item)) {
+            /** @type {HTMLDivElement} */
+            var itemElem = doc.createElement('div');
+            itemElem.className = items[item];
+
+            switch (items[item]) {
+              case 'mute':
+                /** @type {HTMLDivElement|null} */
+                var checkboxElement = doc.createElement('div');
+                checkboxElement.className = 'form-check';
+                /** @type {HTMLInputElement|null} */
+
+                var checkbox = doc.createElement('input');
+                checkbox.setAttribute('type', 'checkbox');
+                checkbox.className = 'form-check-input';
+                checkbox.id = 'mute' + channel + 'ch';
+                checkbox.addEventListener('change', function (synth, channelElem) {
+                  return function () {
+                    synth.mute(channelElem, _this.checked);
+                  };
+                }(this, channel), false);
+                checkboxElement.appendChild(checkbox);
+                /** @type {HTMLLabelElement} */
+
+                var labelElem = doc.createElement('label');
+                labelElem.className = 'form-check-label';
+                labelElem.textContent = channel + 1;
+                labelElem.setAttribute('for', 'mute' + channel + 'ch');
+                checkboxElement.appendChild(labelElem);
+                itemElem.appendChild(checkboxElement);
+                break;
+
+              case 'bank':
+                // Bank select
+
+                /** @type {HTMLSelectElement} */
+                var bankSelect = doc.createElement('select');
+                bankSelect.className = 'form-select form-select-sm';
+                itemElem.appendChild(bankSelect);
+                /** @type {HTMLOptionElement} */
+
+                var option = doc.createElement('option');
+                bankSelect.appendChild(option);
+                bankSelect.addEventListener('change', function (synth, channelElem) {
+                  return function (event) {
+                    synth.bankChange(channelElem, event.target.value);
+                    synth.programChange(channelElem, synth.channelElemInstrument[channelElem]);
+                  };
+                }(this, channel), false);
+                bankSelect.selectedIndex = this.channelBank[item];
+                break;
+
+              case 'program':
+                // Program change
+
+                /** @type {HTMLSelectElement|null} */
+                var select = doc.createElement('select');
+                select.className = 'form-select form-select-sm';
+                itemElem.appendChild(select);
+                select.addEventListener('change', function (synth, channelElem) {
+                  return function (event) {
+                    synth.programChange(channelElem, event.target.value);
+                  };
+                }(this, channel), false);
+                select.selectedIndex = this.channelInstrument[item];
+                break;
+
+              case 'volume':
+                var volumeElem = document.createElement('var');
+                volumeElem.innerText = 100;
+                itemElem.appendChild(volumeElem);
+                break;
+
+              case 'pitchBendSensitivity':
+                var pitchSensElem = document.createElement('var');
+                pitchSensElem.innerText = 2;
+                itemElem.appendChild(pitchSensElem);
+                break;
+
+              case 'panpot':
+                /** @type {HTMLDivElement|null} */
+                var panpotOuter = doc.createElement('div');
+                panpotOuter.className = 'progress';
+                var panpot = doc.createElement('div'); // 緑色
+
+                panpot.className = 'progress-bar bg-success';
+                panpotOuter.appendChild(panpot);
+                itemElem.appendChild(panpotOuter);
+                break;
+
+              case 'pitchBend':
+                /** @type {HTMLDivElement|null} */
+                var pitchOuter = doc.createElement('div');
+                pitchOuter.className = 'progress';
+                var pitch = doc.createElement('div'); // 黄色
+
+                pitch.className = 'progress-bar bg-info';
+                pitchOuter.appendChild(pitch);
+                itemElem.appendChild(pitchOuter);
+                break;
+
+              case 'keys':
+                for (var key = 0; key < 127; key++) {
+                  /** @type {HTMLDivElement|null} */
+                  var keyElem = doc.createElement('div');
+                  /** @type {number} */
+
+                  var n = key % 12; // 白鍵と黒鍵の色分け
+
+                  keyElem.className = 'key ' + ([1, 3, 6, 8, 10].includes(n) ? 'semitone' : 'tone');
+                  itemElem.appendChild(keyElem); // イベント割当
+
+                  keyElem.addEventListener(eventStart, function (synth, channelElem, k) {
+                    return function (event) {
+                      event.preventDefault();
+                      synth.drag = true;
+                      synth.noteOn(channelElem, k, 127);
+                    };
+                  }(this, channel, key));
+                  keyElem.addEventListener('mouseover', function (synth, channelElem, k) {
+                    return function (event) {
+                      event.preventDefault();
+
+                      if (synth.drag) {
+                        synth.noteOn(channelElem, k, 127);
+                      }
+                    };
+                  }(this, channel, key));
+                  keyElem.addEventListener('mouseout', function (synth, channelElem, k) {
+                    return function (event) {
+                      event.preventDefault();
+                      synth.noteOff(channelElem, k, 0);
+                    };
+                  }(this, channel, key));
+                  keyElem.addEventListener(eventEnd, function (synth, channelElem, k) {
+                    return function (event) {
+                      event.preventDefault();
+                      synth.drag = false;
+                      synth.noteOff(channelElem, k, 0);
+                    };
+                  }(this, channel, key));
+                }
+
+                break;
+            }
+
+            channelElem.appendChild(itemElem);
+          }
+        }
+
+        instElem.appendChild(channelElem);
+        this.observer.observe(channelElem);
+      }
+
+      wrapper.appendChild(instElem);
+      return wrapper;
+    }
+    /**
+     * @param {number} channel
+     * @param {number} key
+     * @param {number} velocity
+     */
+
+  }, {
+    key: "updateSynthElement",
+    value: function updateSynthElement(channel, key, velocity) {
+      if (!this.element) {
+        return;
+      }
+      /** @type {HTMLDivElement} */
+
+
+      var channelElem = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
+
+      if (channelElem.dataset.isIntersecting) {
+        /** @type {HTMLDivElement} */
+        var keyElem = channelElem.querySelector('.key:nth-child(' + (key + 1) + ')');
+
+        if (velocity === 0) {
+          if (keyElem.classList.contains('note-on')) {
+            keyElem.classList.remove('note-on');
+          }
+
+          keyElem.style.opacity = 1;
+        } else {
+          keyElem.classList.add('note-on');
+          keyElem.style.opacity = (velocity / 127).toFixed(2);
+        }
+      }
+    }
+    /**
+     * バンクセレクタの選択ボックスの処理
+     * @param {number} channel
+     */
+
+  }, {
+    key: "updateBankSelect",
+    value: function updateBankSelect(channel) {
+      if (!this.element) {
+        return;
+      }
+      /** @type {HTMLElement} */
+
+
+      var bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
+
+      while (bankElement.firstChild) {
+        bankElement.removeChild(bankElement.firstChild);
+      }
+
+      for (var bankNo in this.programSet) {
+        if ({}.hasOwnProperty.call(this.programSet, bankNo)) {
+          var option = document.createElement('option');
+          option.value = bankNo;
+          option.textContent = ('000' + parseInt(bankNo)).slice(-3);
+          bankElement.appendChild(option);
+        }
+      }
+    }
+    /**
+     * プログラムチェンジの選択ボックスの処理
+     * @param {number} channel
+     */
+
+  }, {
+    key: "updateProgramSelect",
+    value: function updateProgramSelect(channel) {
+      if (!this.element) {
+        return;
       }
       /** @type {number} */
 
 
-      const sampleId = this.getModGenAmount(generator, 'sampleID');
-      /** @type {object} */
+      var bankIndex = this.channelBank[channel];
+      /** @type {HTMLElement} */
 
-      const sampleHeader = parser.sampleHeader[sampleId];
-      preset[i] = {
-        'sample': parser.sample[sampleId],
-        'sampleRate': sampleHeader.sampleRate,
-        'sampleModes': this.getModGenAmount(generator, 'sampleModes'),
-        'basePlaybackRate': 1.0594630943592953 // Math.pow(2, 1 / 12)
-        ** ((i - this.getModGenAmount(generator, 'overridingRootKey', sampleHeader.originalPitch) + tune + sampleHeader.pitchCorrection / 100) * scale),
-        'modEnvToPitch': this.getModGenAmount(generator, 'modEnvToPitch') / 100,
-        'scaleTuning': scale,
-        'start': this.getModGenAmount(generator, 'startAddrsCoarseOffset') * 32768 + this.getModGenAmount(generator, 'startAddrsOffset'),
-        'end': this.getModGenAmount(generator, 'endAddrsCoarseOffset') * 32768 + this.getModGenAmount(generator, 'endAddrsOffset'),
-        'loopStart': // (sampleHeader.startLoop - sampleHeader.start) +
-        sampleHeader.startLoop + this.getModGenAmount(generator, 'startloopAddrsCoarseOffset') * 32768 + this.getModGenAmount(generator, 'startloopAddrsOffset'),
-        'loopEnd': // (sampleHeader.endLoop - sampleHeader.start) +
-        sampleHeader.endLoop + this.getModGenAmount(generator, 'endloopAddrsCoarseOffset') * 32768 + this.getModGenAmount(generator, 'endloopAddrsOffset'),
-        'volDelay': 2 ** (volDelay / 1200),
-        'volAttack': 2 ** (volAttack / 1200),
-        'volHold': 2 ** (volHold / 1200) * 2 ** ((60 - i) * this.getModGenAmount(generator, 'keynumToVolEnvHold') / 1200),
-        'volDecay': 2 ** (volDecay / 1200) * 2 ** ((60 - i) * this.getModGenAmount(generator, 'keynumToVolEnvDecay') / 1200),
-        'volSustain': volSustain / 1000,
-        'volRelease': 2 ** (volRelease / 1200),
-        'modDelay': 2 ** (modDelay / 1200),
-        'modAttack': 2 ** (modAttack / 1200),
-        'modHold': 2 ** (modHold / 1200) * 2 ** ((60 - i) * this.getModGenAmount(generator, 'keynumToModEnvHold') / 1200),
-        'modDecay': 2 ** (modDecay / 1200) * 2 ** ((60 - i) * this.getModGenAmount(generator, 'keynumToModEnvDecay') / 1200),
-        'modSustain': modSustain / 1000,
-        'modRelease': 2 ** (modRelease / 1200),
-        'initialFilterFc': this.getModGenAmount(generator, 'initialFilterFc', 13500),
-        'modEnvToFilterFc': this.getModGenAmount(generator, 'modEnvToFilterFc'),
-        'initialFilterQ': this.getModGenAmount(generator, 'initialFilterQ'),
-        'reverbEffectSend': this.getModGenAmount(generator, 'reverbEffectSend'),
-        'initialAttenuation': this.getModGenAmount(generator, 'initialAttenuation'),
-        'freqVibLFO': freqVibLFO ? 2 ** (freqVibLFO / 1200) * 8.176 : void 0,
-        'pan': pan ? pan / 1200 : void 0
-      };
-    }
-  }
+      var bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
+      /** @type {HTMLElement} */
 
-  /**
-   * @param {Object} generator
-   * @param {string} enumeratorType
-   * @param {number=} optDefault
-   * @return {number}
-   */
-  getModGenAmount(generator, enumeratorType, optDefault = null) {
-    return generator[enumeratorType] ? generator[enumeratorType].amount : optDefault;
-  }
-  /**
-   */
+      var programElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .program > select');
+      bankElement.value = this.channelBank[channel];
 
+      while (programElement.firstChild) {
+        programElement.removeChild(programElement.firstChild);
+      }
 
-  start() {
-    this.connect();
-    this.bufSrc.start(0);
-    this.setMasterVolume(16383);
-  }
-  /**
-   * @param {number} volume
-   */
+      for (var programNo in this.programSet[bankIndex]) {
+        if ({}.hasOwnProperty.call(this.programSet[bankIndex], programNo)) {
+          // TODO: 存在しないプログラムの場合、現状では空白になってしまう
+          var option = document.createElement('option');
+          option.value = programNo;
+          option.textContent = ('000' + (parseInt(programNo) + 1)).slice(-3) + ':' + this.programSet[bankIndex][programNo];
 
-
-  setMasterVolume(volume) {
-    this.masterVolume = volume;
-    this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
-  }
-  /**
-   */
-
-
-  connect() {
-    this.bufSrc.connect(this.gainMaster);
-  }
-  /**
-   */
-
-
-  disconnect() {
-    this.bufSrc.disconnect(this.gainMaster);
-    this.bufSrc.buffer = null;
-  }
-  /**
-   * @return {HTMLDivElement}
-   */
-
-
-  drawSynth() {
-    /** @type {Document} */
-    const doc = window.document;
-    /** @type {HTMLDivElement} */
-
-    const wrapper = this.element = doc.createElement('div');
-    wrapper.className = 'synthesizer';
-    /** @type {HTMLDivElement} */
-
-    const instElem = doc.createElement('div');
-    instElem.className = 'instrument';
-    /** @type {Array} */
-
-    const items = ['mute', 'bank', 'program', 'volume', 'panpot', 'pitchBend', 'pitchBendSensitivity', 'keys'];
-    /** @type {string} */
-
-    const eventStart = 'ontouchstart' in window ? 'touchstart' : 'mousedown';
-    /** @type {string} */
-
-    const eventEnd = 'ontouchend' in window ? 'touchend' : 'mouseup';
-
-    for (let channel = 0; channel < 16; channel++) {
-      /** @type {HTMLDivElement} */
-      const channelElem = doc.createElement('div');
-      channelElem.className = 'channel';
-
-      for (const item in items) {
-        if ({}.hasOwnProperty.call(items, item)) {
-          /** @type {HTMLDivElement} */
-          const itemElem = doc.createElement('div');
-          itemElem.className = items[item];
-
-          switch (items[item]) {
-            case 'mute':
-              /** @type {HTMLDivElement|null} */
-              const checkboxElement = doc.createElement('div');
-              checkboxElement.className = 'custom-control custom-checkbox custom-control-inline';
-              /** @type {HTMLInputElement|null} */
-
-              const checkbox = doc.createElement('input');
-              checkbox.setAttribute('type', 'checkbox');
-              checkbox.className = 'custom-control-input';
-              checkbox.id = 'mute' + channel + 'ch';
-              checkbox.addEventListener('change', ((synth, channelElem) => {
-                return () => {
-                  synth.mute(channelElem, this.checked);
-                };
-              })(this, channel), false);
-              checkboxElement.appendChild(checkbox);
-              /** @type {HTMLLabelElement} */
-
-              const labelElem = doc.createElement('label');
-              labelElem.className = 'custom-control-label';
-              labelElem.textContent = channel + 1;
-              labelElem.setAttribute('for', 'mute' + channel + 'ch');
-              checkboxElement.appendChild(labelElem);
-              itemElem.appendChild(checkboxElement);
-              break;
-
-            case 'bank':
-              // Bank select
-
-              /** @type {HTMLSelectElement} */
-              const bankSelect = doc.createElement('select');
-              bankSelect.className = 'form-control form-control-sm';
-              itemElem.appendChild(bankSelect);
-              /** @type {HTMLOptionElement} */
-
-              const option = doc.createElement('option');
-              bankSelect.appendChild(option);
-              bankSelect.addEventListener('change', ((synth, channelElem) => {
-                return event => {
-                  synth.bankChange(channelElem, event.target.value);
-                  synth.programChange(channelElem, synth.channelElemInstrument[channelElem]);
-                };
-              })(this, channel), false);
-              bankSelect.selectedIndex = this.channelBank[item];
-              break;
-
-            case 'program':
-              // Program change
-
-              /** @type {HTMLSelectElement|null} */
-              const select = doc.createElement('select');
-              select.className = 'form-control form-control-sm';
-              itemElem.appendChild(select);
-              select.addEventListener('change', ((synth, channelElem) => {
-                return event => {
-                  synth.programChange(channelElem, event.target.value);
-                };
-              })(this, channel), false);
-              select.selectedIndex = this.channelInstrument[item];
-              break;
-
-            case 'volume':
-              const volumeElem = document.createElement('var');
-              volumeElem.innerText = 100;
-              itemElem.appendChild(volumeElem);
-              break;
-
-            case 'pitchBendSensitivity':
-              const pitchSensElem = document.createElement('var');
-              pitchSensElem.innerText = 2;
-              itemElem.appendChild(pitchSensElem);
-              break;
-
-            case 'panpot':
-              /** @type {HTMLMeterElement|null} */
-              const panpot = doc.createElement('meter');
-              panpot.min = 1;
-              panpot.max = 127;
-              panpot.value = 64;
-              panpot.optimum = 64;
-              panpot.low = 63;
-              panpot.high = 65;
-              itemElem.appendChild(panpot);
-              break;
-
-            case 'pitchBend':
-              /** @type {HTMLMeterElement|null} */
-              const pitch = doc.createElement('meter');
-              pitch.min = -8192;
-              pitch.max = 8192;
-              pitch.low = -1;
-              pitch.high = 1;
-              pitch.optimum = 0;
-              pitch.value = 0;
-              itemElem.appendChild(pitch);
-              break;
-
-            case 'keys':
-              for (let key = 0; key < 127; key++) {
-                /** @type {HTMLDivElement|null} */
-                const keyElem = doc.createElement('div');
-                /** @type {number} */
-
-                const n = key % 12; // 白鍵と黒鍵の色分け
-
-                keyElem.className = 'key ' + ([1, 3, 6, 8, 10].includes(n) ? 'semitone' : 'tone');
-                itemElem.appendChild(keyElem); // イベント割当
-
-                keyElem.addEventListener(eventStart, ((synth, channelElem, k) => {
-                  return event => {
-                    event.preventDefault();
-                    synth.drag = true;
-                    synth.noteOn(channelElem, k, 127);
-                  };
-                })(this, channel, key));
-                keyElem.addEventListener('mouseover', ((synth, channelElem, k) => {
-                  return event => {
-                    event.preventDefault();
-
-                    if (synth.drag) {
-                      synth.noteOn(channelElem, k, 127);
-                    }
-                  };
-                })(this, channel, key));
-                keyElem.addEventListener('mouseout', ((synth, channelElem, k) => {
-                  return event => {
-                    event.preventDefault();
-                    synth.noteOff(channelElem, k, 0);
-                  };
-                })(this, channel, key));
-                keyElem.addEventListener(eventEnd, ((synth, channelElem, k) => {
-                  return event => {
-                    event.preventDefault();
-                    synth.drag = false;
-                    synth.noteOff(channelElem, k, 0);
-                  };
-                })(this, channel, key));
-              }
-
-              break;
+          if (programNo === this.channelInstrument[channel]) {
+            option.selected = 'selected';
           }
 
-          channelElem.appendChild(itemElem);
+          programElement.appendChild(option);
         }
       }
-
-      instElem.appendChild(channelElem);
-      this.observer.observe(channelElem);
     }
+    /**
+     * ノートオン
+     * @param {number} channel NoteOn するチャンネル.
+     * @param {number} key NoteOn するキー.
+     * @param {number} velocity 強さ.
+     */
 
-    wrapper.appendChild(instElem);
-    return wrapper;
-  }
-  /**
-   * @param {number} channel
-   * @param {number} key
-   * @param {number} velocity
-   */
+  }, {
+    key: "noteOn",
+    value: function noteOn(channel, key, velocity) {
+      /** @type {number} */
+      var bankIndex = this.channelBank[channel];
+      /** @type {Object} */
 
+      var bank = _typeof(this.bankSet[bankIndex]) === 'object' ? this.bankSet[bankIndex] : this.bankSet[0];
+      /** @type {Object} */
 
-  updateSynthElement(channel, key, velocity) {
-    if (!this.element) {
-      return;
-    }
-    /** @type {HTMLDivElement} */
+      var instrument;
 
-
-    const channelElem = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
-
-    if (channelElem.dataset.isIntersecting) {
-      /** @type {HTMLDivElement} */
-      const keyElem = channelElem.querySelector('.key:nth-child(' + (key + 1) + ')');
-
-      if (velocity === 0) {
-        if (keyElem.classList.contains('note-on')) {
-          keyElem.classList.remove('note-on');
-        }
-
-        keyElem.style.opacity = 1;
+      if (_typeof(bank[this.channelInstrument[channel]]) === 'object') {
+        // 音色が存在する場合
+        instrument = bank[this.channelInstrument[channel]];
+      } else if (this.percussionPart[channel]) {
+        // パーカッションバンクが選択されている場合で音色が存在しない場合Standard Kitを選択
+        instrument = this.bankSet[this.isXG ? 127 : 128][0];
       } else {
-        keyElem.classList.add('note-on');
-        keyElem.style.opacity = (velocity / 127).toFixed(2);
+        // 通常バンクが選択されている状態で音色が存在しない場合バンク0を選択
+        instrument = this.bankSet[0][this.channelInstrument[channel]];
       }
-    }
-  }
-  /**
-   * バンクセレクタの選択ボックスの処理
-   * @param {number} channel
-   */
 
-
-  updateBankSelect(channel) {
-    if (!this.element) {
-      return;
-    }
-    /** @type {HTMLElement} */
-
-
-    const bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
-
-    while (bankElement.firstChild) bankElement.removeChild(bankElement.firstChild);
-
-    for (const bankNo in this.programSet) {
-      if ({}.hasOwnProperty.call(this.programSet, bankNo)) {
-        const option = document.createElement('option');
-        option.value = bankNo;
-        option.textContent = ('000' + parseInt(bankNo)).slice(-3);
-        bankElement.appendChild(option);
+      if (instrument[key] === void 0) {
+        // TODO
+        console.warn('instrument not found: bank=%s instrument=%s channel=%s key=%s', bankIndex, this.channelInstrument[channel], channel, key);
+        return;
       }
-    }
-  }
-  /**
-   * プログラムチェンジの選択ボックスの処理
-   * @param {number} channel
-   */
+      /** @type {Object} */
 
 
-  updateProgramSelect(channel) {
-    if (!this.element) {
-      return;
-    }
-    /** @type {number} */
+      var instrumentKey = instrument[key];
+      /** @type {number} */
 
+      var panpot = this.channelPanpot[channel] === 0 ? Math.random() * 127 | 0 : this.channelPanpot[channel] - 64;
+      panpot /= panpot < 0 ? 64 : 63; // create note information
 
-    const bankIndex = this.channelBank[channel];
-    /** @type {HTMLElement} */
+      instrumentKey['channel'] = channel;
+      instrumentKey['key'] = key;
+      instrumentKey['velocity'] = velocity;
+      instrumentKey['panpot'] = panpot;
+      instrumentKey['volume'] = this.channelVolume[channel] / 127;
+      instrumentKey['pitchBend'] = this.channelPitchBend[channel] - 8192;
+      instrumentKey['expression'] = this.channelExpression[channel];
+      instrumentKey['pitchBendSensitivity'] = Math.round(this.channelPitchBendSensitivity[channel]);
+      instrumentKey['mute'] = this.channelMute[channel];
+      instrumentKey['releaseTime'] = this.channelRelease[channel];
+      instrumentKey['cutOffFrequency'] = this.cutOffFrequency[channel];
+      instrumentKey['harmonicContent'] = this.harmonicContent[channel];
+      instrumentKey['reverb'] = this.reverb[channel]; // percussion
 
-    const bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
-    /** @type {HTMLElement} */
-
-    const programElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .program > select');
-    bankElement.value = this.channelBank[channel];
-
-    while (programElement.firstChild) programElement.removeChild(programElement.firstChild);
-
-    for (const programNo in this.programSet[bankIndex]) {
-      if ({}.hasOwnProperty.call(this.programSet[bankIndex], programNo)) {
-        // TODO: 存在しないプログラムの場合、現状では空白になってしまう
-        const option = document.createElement('option');
-        option.value = programNo;
-        option.textContent = ('000' + (parseInt(programNo) + 1)).slice(-3) + ':' + this.programSet[bankIndex][programNo];
-
-        if (programNo === this.channelInstrument[channel]) {
-          option.selected = 'selected';
+      if (bankIndex > 125) {
+        if (key === 42 || key === 44) {
+          // 42: Closed Hi-Hat
+          // 44: Pedal Hi-Hat
+          // 46: Open Hi-Hat
+          this.noteOff(channel, 46, 0);
         }
 
-        programElement.appendChild(option);
-      }
-    }
-  }
-  /**
-   * @param {number} channel NoteOn するチャンネル.
-   * @param {number} key NoteOn するキー.
-   * @param {number} velocity 強さ.
-   */
-
-
-  noteOn(channel, key, velocity) {
-    /** @type {number} */
-    const bankIndex = this.channelBank[channel];
-    /** @type {Object} */
-
-    const bank = typeof this.bankSet[bankIndex] === 'object' ? this.bankSet[bankIndex] : this.bankSet[0];
-    /** @type {Object} */
-
-    let instrument;
-
-    if (typeof bank[this.channelInstrument[channel]] === 'object') {
-      // 音色が存在する場合
-      instrument = bank[this.channelInstrument[channel]];
-    } else if (this.percussionPart[channel] == true) {
-      // パーカッションバンクが選択されている場合で音色が存在しない場合Standard Kitを選択
-      instrument = this.bankSet[this.isXG ? 127 : 128][0];
-    } else {
-      // 通常バンクが選択されている状態で音色が存在しない場合バンク0を選択
-      instrument = this.bankSet[0][this.channelInstrument[channel]];
-    }
-
-    if (instrument[key] === void 0) {
-      // TODO
-      console.warn('instrument not found: bank=%s instrument=%s channel=%s key=%s', bankIndex, this.channelInstrument[channel], channel, key);
-      return;
-    }
-    /** @type {Object} */
-
-
-    const instrumentKey = instrument[key];
-    /** @type {number} */
-
-    let panpot = this.channelPanpot[channel] === 0 ? Math.random() * 127 | 0 : this.channelPanpot[channel] - 64;
-    panpot /= panpot < 0 ? 64 : 63; // create note information
-
-    instrumentKey['channel'] = channel;
-    instrumentKey['key'] = key;
-    instrumentKey['velocity'] = velocity;
-    instrumentKey['panpot'] = panpot;
-    instrumentKey['volume'] = this.channelVolume[channel] / 127;
-    instrumentKey['pitchBend'] = this.channelPitchBend[channel] - 8192;
-    instrumentKey['expression'] = this.channelExpression[channel];
-    instrumentKey['pitchBendSensitivity'] = Math.round(this.channelPitchBendSensitivity[channel]);
-    instrumentKey['mute'] = this.channelMute[channel];
-    instrumentKey['releaseTime'] = this.channelRelease[channel];
-    instrumentKey['cutOffFrequency'] = this.cutOffFrequency[channel];
-    instrumentKey['harmonicContent'] = this.harmonicContent[channel];
-    instrumentKey['reverb'] = this.reverb[channel]; // percussion
-
-    if (bankIndex > 125) {
-      if (key === 42 || key === 44) {
-        // 42: Closed Hi-Hat
-        // 44: Pedal Hi-Hat
-        // 46: Open Hi-Hat
-        this.noteOff(channel, 46, 0);
-      }
-
-      if (key === 80) {
-        // 80: Mute Triangle
-        // 81: Open Triangle
-        this.noteOff(channel, 81, 0);
-      }
-
-      instrument['volume'] *= this.percussionVolume[key] / 127;
-    } // note on
-
-    /** @type {SynthesizerNote} */
-
-
-    const note = new _sound_font_synth_note__WEBPACK_IMPORTED_MODULE_0__["default"](this.ctx, this.gainMaster, instrumentKey);
-    note.noteOn();
-    this.currentNoteOn[channel].push(note);
-    this.updateSynthElement(channel, key, velocity);
-  }
-  /**
-   * @param {number} channel NoteOff するチャンネル.
-   * @param {number} key NoteOff するキー.
-   * @param {number} velocity 強さ.
-   */
-
-
-  noteOff(channel, key, velocity) {
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-
-    let il;
-    /** @type {Array.<SynthesizerNote>} */
-
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {SynthesizerNote} */
-
-    let note;
-    /** @type {boolean} */
-
-    const hold = this.channelHold[channel];
-
-    for (i = 0, il = currentNoteOn.length; i < il; ++i) {
-      note = currentNoteOn[i];
-
-      if (note.key === key) {
-        note.noteOff(); // hold している時は NoteOff にはするがリリースはしない
-
-        if (!hold) {
-          note.release();
-          currentNoteOn.splice(i, 1);
-          --i;
-          --il;
+        if (key === 80) {
+          // 80: Mute Triangle
+          // 81: Open Triangle
+          this.noteOff(channel, 81, 0);
         }
-      }
+
+        instrument['volume'] *= this.percussionVolume[key] / 127;
+      } // note on
+
+      /** @type {SynthesizerNote} */
+
+
+      var note = new _sound_font_synth_note__WEBPACK_IMPORTED_MODULE_0__["default"](this.ctx, this.gainMaster, instrumentKey);
+      note.noteOn();
+      this.currentNoteOn[channel].push(note);
+      this.updateSynthElement(channel, key, velocity);
     }
+    /**
+     * ノートオフ
+     * @param {number} channel NoteOff するチャンネル.
+     * @param {number} key NoteOff するキー.
+     * @param {number} velocity 強さ.
+     */
 
-    this.updateSynthElement(channel, key, 0);
-  }
-  /**
-   * @param {number} channel ホールドするチャンネル
-   * @param {number} value 値
-   */
+  }, {
+    key: "noteOff",
+    value: function noteOff(channel, key, velocity) {
+      /** @type {number} */
+      var i;
+      /** @type {number} */
 
+      var il;
+      /** @type {Array.<SynthesizerNote>} */
 
-  hold(channel, value) {
-    /** @type {Array.<SynthesizerNote>} */
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {boolean} */
+      var currentNoteOn = this.currentNoteOn[channel];
+      /** @type {SynthesizerNote} */
 
-    const hold = this.channelHold[channel] = !(value < 64);
-    /** @type {SynthesizerNote} */
+      var note;
+      /** @type {boolean} */
 
-    let note;
-    /** @type {number} */
+      var hold = this.channelHold[channel];
 
-    let i;
-    /** @type {number} */
-
-    let il;
-
-    if (!hold) {
       for (i = 0, il = currentNoteOn.length; i < il; ++i) {
         note = currentNoteOn[i];
 
-        if (note.isNoteOff()) {
-          note.release();
-          currentNoteOn.splice(i, 1);
-          --i;
-          --il;
+        if (note.key === key) {
+          note.noteOff(); // hold している時は NoteOff にはするがリリースはしない
+
+          if (!hold) {
+            note.release();
+            currentNoteOn.splice(i, 1);
+            --i;
+            --il;
+          }
+        }
+      }
+
+      this.updateSynthElement(channel, key, 0);
+    }
+    /**
+     * ホールド（ダンパーペダル）
+     * @param {number} channel ホールドするチャンネル
+     * @param {number} value 値
+     */
+
+  }, {
+    key: "hold",
+    value: function hold(channel, value) {
+      /** @type {Array.<SynthesizerNote>} */
+      var currentNoteOn = this.currentNoteOn[channel];
+      /** @type {boolean} 0以外はonである。 */
+
+      var hold = this.channelHold[channel] = !(value < 64);
+      /** @type {SynthesizerNote} */
+
+      var note;
+      /** @type {number} */
+
+      var i;
+      /** @type {number} */
+
+      var il;
+
+      if (!hold) {
+        for (i = 0, il = currentNoteOn.length; i < il; ++i) {
+          note = currentNoteOn[i];
+
+          if (note.isNoteOff()) {
+            note.release();
+            currentNoteOn.splice(i, 1);
+            --i;
+            --il;
+          }
+        }
+      }
+
+      if (this.element) {
+        /** @type {HTMLDivElement} */
+        var channelElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
+
+        if (this.channelHold[channel]) {
+          channelElement.classList.add('hold');
+        } else {
+          channelElement.classList.remove('hold');
         }
       }
     }
+    /**
+     * バンクセレクトMSB（GS音源/GM Level2用）
+     * @param {number} channel チャンネルのバンクセレクトMSB
+     * @param {number} value 値
+     */
 
-    if (this.element) {
-      /** @type {HTMLDivElement} */
-      const channelElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
+  }, {
+    key: "bankSelectMsb",
+    value: function bankSelectMsb(channel, value) {
+      if (this.isXG) {
+        // 念の為バンクを0にリセット
+        this.channelBank[channel] = 0; // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
 
-      if (this.channelHold[channel]) {
-        channelElement.classList.add('hold');
+        if (value === 64) {
+          // Bank Select MSB #64 (Voice Type: SFX)
+          this.channelBank[channel] = 125;
+          this.percussionPart[channel] = true;
+        } else if (value === 126 || value === 127) {
+          // Bank Select MSB #126 (Voice Type: Drum)
+          // Bank Select MSB #127 (Voice Type: Drum)
+          this.channelBank[channel] = value;
+          this.percussionPart[channel] = true;
+        }
+      } else if (this.isGS) {
+        // GS音源
+        // ※チャンネル10のバンク・セレクト命令は無視する。
+        this.channelBank[channel] = channel === 9 ? 128 : value;
+        this.percussionPart[channel] = value === 128;
       } else {
-        channelElement.classList.remove('hold');
+        // GM音源モードのときはバンク・セレクトを無視
+        return;
+      }
+
+      this.updateBankSelect(channel);
+    }
+    /**
+     * バンクセレクトLSB（XG音源）
+     * @param {number} channel チャンネルのバンクセレクトLSB
+     * @param {number} value 値
+     */
+
+  }, {
+    key: "bankSelectLsb",
+    value: function bankSelectLsb(channel, value) {
+      // XG音源以外は処理しない
+      if (!this.isXG || this.percussionPart[channel] === true) {
+        return;
+      } // 125より値が大きい場合、パーカッションとして処理
+
+
+      this.percussionPart[channel] = value >= 125;
+      this.channelBank[channel] = value;
+      this.updateBankSelect(channel);
+    }
+    /**
+     * プログラムチェンジ
+     * @param {number} channel 音色を変更するチャンネル.
+     * @param {number} instrument 音色番号.
+     */
+
+  }, {
+    key: "programChange",
+    value: function programChange(channel, instrument) {
+      this.channelInstrument[channel] = instrument;
+      this.bankChange(channel, this.channelBank[channel]);
+
+      if (this.element) {
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .program > select').value = instrument;
       }
     }
-  }
-  /**
-   * @param {number} channel チャンネルのバンクセレクトMSB
-   * @param {number} value 値
-   */
+    /**
+     * バンクセレクト
+     * @param {number} channel 音色を変更するチャンネル.
+     * @param {number} bank バンク・セレクト.
+     */
 
-
-  bankSelectMsb(channel, value) {
-    if (this.isXG) {
-      // 念の為バンクを0にリセット
-      this.channelBank[channel] = 0; // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
-
-      if (value === 64) {
-        // Bank Select MSB #64 (Voice Type: SFX)
-        this.channelBank[channel] = 125;
-        this.percussionPart[channel] = true;
-      } else if (value === 126 || value === 127) {
-        // Bank Select MSB #126 (Voice Type: Drum)
-        // Bank Select MSB #127 (Voice Type: Drum)
-        this.channelBank[channel] = value;
-        this.percussionPart[channel] = true;
-      }
-    } else if (this.isGS) {
-      // GS音源
-      // ※チャンネル10のバンク・セレクト命令は無視する。
-      this.channelBank[channel] = channel === 9 ? 128 : value;
-      this.percussionPart[channel] = value === 128;
-    } else {
-      // GM音源モードのときはバンク・セレクトを無視
-      return;
-    }
-
-    this.updateBankSelect(channel);
-  }
-  /**
-   * @param {number} channel チャンネルのバンクセレクトLSB
-   * @param {number} value 値
-   */
-
-
-  bankSelectLsb(channel, value) {
-    // XG音源以外は処理しない
-    if (!this.isXG || this.percussionPart[channel] === true) {
-      return;
-    } // 125より値が大きい場合、パーカッションとして処理
-
-
-    this.percussionPart[channel] = value >= 125;
-    this.channelBank[channel] = value;
-    this.updateBankSelect(channel);
-  }
-  /**
-   * @param {number} channel 音色を変更するチャンネル.
-   * @param {number} instrument 音色番号.
-   */
-
-
-  programChange(channel, instrument) {
-    this.channelInstrument[channel] = instrument;
-    this.bankChange(channel, this.channelBank[channel]);
-
-    if (this.element) {
-      this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .program > select').value = instrument;
-    }
-  }
-  /**
-   * @param {number} channel 音色を変更するチャンネル.
-   * @param {number} bank バンク・セレクト.
-   */
-
-
-  bankChange(channel, bank) {
-    if (typeof this.bankSet[bank] === 'object') {
-      // バンクが存在するとき
-      this.channelBank[channel] = bank;
-    } else {
-      // バンクが存在しないとき
-      if (this.percussionPart[channel]) {
-        // パーカッション
-        this.channelBank[channel] = !this.isXG ? 128 : 127;
+  }, {
+    key: "bankChange",
+    value: function bankChange(channel, bank) {
+      if (_typeof(this.bankSet[bank]) === 'object') {
+        // バンクが存在するとき
+        this.channelBank[channel] = bank;
       } else {
-        // 存在しない場合0を選択
-        this.channelBank[channel] = 0;
+        // バンクが存在しないとき
+        if (this.percussionPart[channel]) {
+          // パーカッション
+          this.channelBank[channel] = !this.isXG ? 128 : 127;
+        } else {
+          // 存在しない場合0を選択
+          this.channelBank[channel] = 0;
+        }
+      } // TODO: 厳密にはMIDI音源はプログラムチェンジがあったときに、バンク・セレクトの値が反映されるのでこの実装は正しくない。
+
+
+      this.updateProgramSelect(channel);
+
+      if (this.element) {
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .bank > select').value = bank;
       }
-    } // TODO: 厳密にはMIDI音源はプログラムチェンジがあったときにバンク・セレクトが反映される。
-
-
-    this.updateProgramSelect(channel);
-
-    if (this.element) {
-      this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .bank > select').value = bank;
     }
-  }
-  /**
-   * @param {number} channel 音量を変更するチャンネル.
-   * @param {number} volume 音量(0-127).
-   */
+    /**
+     * ボリューム
+     * @param {number} channel 音量を変更するチャンネル.
+     * @param {number} volume 音量(0-127).
+     */
 
+  }, {
+    key: "volumeChange",
+    value: function volumeChange(channel, volume) {
+      if (this.element) {
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume var').innerText = volume;
+      }
 
-  volumeChange(channel, volume) {
-    if (this.element) {
-      this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume var').innerText = volume;
+      this.channelVolume[channel] = volume;
     }
+    /**
+     * エクスプレッション
+     * @param {number} channel 音量を変更するチャンネル.
+     * @param {number} expression 音量(0-127).
+     */
 
-    this.channelVolume[channel] = volume;
-  }
-  /**
-   * @param {number} channel 音量を変更するチャンネル.
-   * @param {number} expression 音量(0-127).
-   */
+  }, {
+    key: "expression",
+    value: function expression(channel, _expression) {
+      /** @type {number} */
+      var i;
+      /** @type {number} */
 
+      var il;
+      /** @type {Array.<SynthesizerNote>} */
 
-  expression(channel, expression) {
-    /** @type {number} */
-    let i;
-    /** @type {number} */
+      var currentNoteOn = this.currentNoteOn[channel];
 
-    let il;
-    /** @type {Array.<SynthesizerNote>} */
-
-    const currentNoteOn = this.currentNoteOn[channel];
-
-    for (i = 0, il = currentNoteOn.length; i < il; ++i) {
-      currentNoteOn[i].updateExpression(expression);
-    }
-
-    this.channelExpression[channel] = expression;
-  }
-  /**
-   * @param {number} channel panpot を変更するチャンネル.
-   * @param {number} panpot panpot(0-127).
-   */
-
-
-  panpotChange(channel, panpot) {
-    if (this.element) {
-      this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .panpot > meter').value = panpot;
-    }
-
-    this.channelPanpot[channel] = panpot;
-  }
-  /**
-   * @param {number} channel panpot を変更するチャンネル.
-   * @param {number} lowerByte
-   * @param {number} higherByte
-   */
-
-
-  pitchBend(channel, lowerByte, higherByte) {
-    /** @type {number} */
-    const bend = lowerByte & 0x7f | (higherByte & 0x7f) << 7;
-    /** @type {number} */
-
-    let i;
-    /** @type {number} */
-
-    let il;
-    /** @type {Array.<SoundFont.SynthesizerNote>} */
-
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {number} */
-
-    const calculated = bend - 8192;
-
-    if (this.element) {
-      this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBend > meter').value = calculated;
-    }
-
-    for (i = 0, il = currentNoteOn.length; i < il; ++i) {
-      currentNoteOn[i].updatePitchBend(calculated);
-    }
-
-    this.channelPitchBend[channel] = bend;
-  }
-  /**
-   * @param {number} channel pitch bend sensitivity を変更するチャンネル.
-   * @param {number} sensitivity
-   */
-
-
-  pitchBendSensitivity(channel, sensitivity) {
-    if (this.element) {
-      document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBendSensitivity > var').innerText = sensitivity;
-    }
-
-    this.channelPitchBendSensitivity[channel] = sensitivity;
-  }
-  /**
-   * @param {number} channel
-   * @param {number} attackTime
-   */
-
-
-  attackTime(channel, attackTime) {
-    this.channelAttack[channel] = attackTime;
-  }
-  /**
-   * @param {number} channel
-   * @param {number} decayTime
-   */
-
-
-  decayTime(channel, decayTime) {
-    this.channelDecay[channel] = decayTime;
-  }
-  /**
-   * @param {number} channel
-   * @param {number} sustinTime
-   */
-
-
-  sustinTime(channel, sustinTime) {
-    this.channelSustin[channel] = sustinTime;
-  }
-  /**
-   * @param {number} channel
-   * @param {number} releaseTime
-   */
-
-
-  releaseTime(channel, releaseTime) {
-    this.channelRelease[channel] = releaseTime;
-  }
-  /**
-   * @param {number} channel
-   * @param {number} value
-   */
-
-
-  harmonicContent(channel, value) {
-    this.channelHarmonicContent[channel] = value;
-  }
-  /**
-   * @param {number} channel
-   * @param {number} value
-   */
-
-
-  cutOffFrequency(channel, value) {
-    this.channelCutOffFrequency[channel] = value;
-  }
-  /**
-   * リバーブエフェクト
-   * @param {number} channel
-   * @param {number} depth
-   */
-
-
-  reverbDepth(channel, depth) {
-    // リバーブ深度は、ドライ／ウェット比とする。
-    this.reverb[channel].mix(depth / 127);
-  }
-  /**
-   * モデュレーター
-   * @param {number} channel
-   * @param {number} depth
-   */
-
-
-  modulationDepth(channel, depth) {} // TODO: LFOの反映量
-  // this.filter[channel].mix(depth / 127);
-
-  /**
-   * @param {number} channel pitch bend sensitivity を取得するチャンネル.
-   * @return {number}
-   */
-
-
-  getPitchBendSensitivity(channel) {
-    return this.channelPitchBendSensitivity[channel];
-  }
-  /**
-   * @param {number} key
-   * @param {number} volume
-   */
-
-
-  drumInstrumentLevel(key, volume) {
-    this.percussionVolume[key] = volume;
-  }
-  /**
-   * @param {number} channel NoteOff するチャンネル.
-   */
-
-
-  allNoteOff(channel) {
-    /** @type {Array.<SynthesizerNote>} */
-    const currentNoteOn = this.currentNoteOn[channel]; // ホールドを解除
-
-    this.hold(channel, 0); // 再生中の音をすべて止める
-
-    while (currentNoteOn.length > 0) {
-      this.noteOff(channel, currentNoteOn[0].key, 0);
-    }
-  }
-  /**
-   * @param {number} channel 音を消すチャンネル.
-   */
-
-
-  allSoundOff(channel) {
-    /** @type {Array.<SynthesizerNote>} */
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {SynthesizerNote} */
-
-    let note;
-
-    while (currentNoteOn.length > 0) {
-      note = currentNoteOn.shift();
-      this.noteOff(channel, note.key, 0);
-      note.release();
-      note.disconnect();
-    } // ホールドを解除
-
-
-    this.hold(channel, 0);
-  }
-  /**
-   * @param {number} channel リセットするチャンネル
-   */
-
-
-  resetAllControl(channel) {
-    this.allNoteOff(channel);
-    this.expression(channel, 127);
-    this.pitchBend(channel, 0x00, 0x40);
-  }
-  /**
-   * @param {number} channel ミュートの設定を変更するチャンネル.
-   * @param {boolean} mute ミュートにするなら true.
-   */
-
-
-  mute(channel, mute) {
-    /** @type {Array.<SynthesizerNote>} */
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {number} */
-
-    let i;
-    /** @type {number} */
-
-    let il;
-    this.channelMute[channel] = mute;
-
-    if (mute) {
       for (i = 0, il = currentNoteOn.length; i < il; ++i) {
-        currentNoteOn[i].disconnect();
+        currentNoteOn[i].updateExpression(_expression);
       }
-    } else {
+
+      this.channelExpression[channel] = _expression;
+    }
+    /**
+     * パンポット
+     * @param {number} channel panpot を変更するチャンネル.
+     * @param {number} panpot panpot(0-127).
+     */
+
+  }, {
+    key: "panpotChange",
+    value: function panpotChange(channel, panpot) {
+      if (this.element) {
+        var dom = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .panpot .progress-bar');
+        var percentage = panpot / 127 * 100;
+        dom.style.width = "".concat(percentage, "%");
+
+        if (panpot < 63) {
+          dom.className = 'progress-bar bg-warning';
+        } else if (panpot > 65) {
+          dom.className = 'progress-bar bg-danger';
+        } else {
+          dom.className = 'progress-bar bg-success';
+        }
+      }
+
+      this.channelPanpot[channel] = panpot;
+    }
+    /**
+     * @param {number} channel panpot を変更するチャンネル.
+     * @param {number} lowerByte
+     * @param {number} higherByte
+     */
+
+  }, {
+    key: "pitchBend",
+    value: function pitchBend(channel, lowerByte, higherByte) {
+      /** @type {number} */
+      var bend = lowerByte & 0x7f | (higherByte & 0x7f) << 7;
+      /** @type {number} */
+
+      var i;
+      /** @type {number} */
+
+      var il;
+      /** @type {Array.<SoundFont.SynthesizerNote>} */
+
+      var currentNoteOn = this.currentNoteOn[channel];
+      /** @type {number} */
+
+      var calculated = bend - 8192;
+
+      if (this.element) {
+        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBend .progress-bar').style.width = "".concat(bend / 16384 * 100, "%");
+      }
+
       for (i = 0, il = currentNoteOn.length; i < il; ++i) {
-        currentNoteOn[i].connect();
+        currentNoteOn[i].updatePitchBend(calculated);
+      }
+
+      this.channelPitchBend[channel] = bend;
+    }
+    /**
+     * @param {number} channel pitch bend sensitivity を変更するチャンネル.
+     * @param {number} sensitivity
+     */
+
+  }, {
+    key: "pitchBendSensitivity",
+    value: function pitchBendSensitivity(channel, sensitivity) {
+      if (this.element) {
+        document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBendSensitivity > var').innerText = sensitivity;
+      }
+
+      this.channelPitchBendSensitivity[channel] = sensitivity;
+    }
+    /**
+     * @param {number} channel
+     * @param {number} attackTime
+     */
+
+  }, {
+    key: "attackTime",
+    value: function attackTime(channel, _attackTime) {
+      this.channelAttack[channel] = _attackTime;
+    }
+    /**
+     * @param {number} channel
+     * @param {number} decayTime
+     */
+
+  }, {
+    key: "decayTime",
+    value: function decayTime(channel, _decayTime) {
+      this.channelDecay[channel] = _decayTime;
+    }
+    /**
+     * @param {number} channel
+     * @param {number} sustinTime
+     */
+
+  }, {
+    key: "sustinTime",
+    value: function sustinTime(channel, _sustinTime) {
+      this.channelSustin[channel] = _sustinTime;
+    }
+    /**
+     * @param {number} channel
+     * @param {number} releaseTime
+     */
+
+  }, {
+    key: "releaseTime",
+    value: function releaseTime(channel, _releaseTime) {
+      this.channelRelease[channel] = _releaseTime;
+    }
+    /**
+     * @param {number} channel
+     * @param {number} value
+     */
+
+  }, {
+    key: "harmonicContent",
+    value: function harmonicContent(channel, value) {
+      this.channelHarmonicContent[channel] = value;
+    }
+    /**
+     * @param {number} channel
+     * @param {number} value
+     */
+
+  }, {
+    key: "cutOffFrequency",
+    value: function cutOffFrequency(channel, value) {
+      this.channelCutOffFrequency[channel] = value;
+    }
+    /**
+     * リバーブエフェクト
+     * @param {number} channel
+     * @param {number} depth
+     */
+
+  }, {
+    key: "reverbDepth",
+    value: function reverbDepth(channel, depth) {
+      // リバーブ深度は、ドライ／ウェット比とする。
+      this.reverb[channel].mix(depth / 127);
+    }
+    /**
+     * モデュレーター
+     * @param {number} channel
+     * @param {number} depth
+     */
+
+  }, {
+    key: "modulationDepth",
+    value: function modulationDepth(channel, depth) {// TODO: LFOの反映量
+      // this.filter[channel].mix(depth / 127);
+    }
+    /**
+     * @param {number} channel pitch bend sensitivity を取得するチャンネル.
+     * @return {number}
+     */
+
+  }, {
+    key: "getPitchBendSensitivity",
+    value: function getPitchBendSensitivity(channel) {
+      return this.channelPitchBendSensitivity[channel];
+    }
+    /**
+     * @param {number} key
+     * @param {number} volume
+     */
+
+  }, {
+    key: "drumInstrumentLevel",
+    value: function drumInstrumentLevel(key, volume) {
+      this.percussionVolume[key] = volume;
+    }
+    /**
+     * @param {number} channel NoteOff するチャンネル.
+     */
+
+  }, {
+    key: "allNoteOff",
+    value: function allNoteOff(channel) {
+      /** @type {Array.<SynthesizerNote>} */
+      var currentNoteOn = this.currentNoteOn[channel]; // ホールドを解除
+
+      this.hold(channel, 0); // 再生中の音をすべて止める
+
+      while (currentNoteOn.length > 0) {
+        this.noteOff(channel, currentNoteOn[0].key, 0);
       }
     }
-  }
-  /**
-   * @param {number} channel TODO:ドラムパートとしてセットするチャンネル
-   * @param {boolean} sw ドラムか通常かのスイッチ
-   */
+    /**
+     * @param {number} channel 音を消すチャンネル.
+     */
+
+  }, {
+    key: "allSoundOff",
+    value: function allSoundOff(channel) {
+      /** @type {Array.<SynthesizerNote>} */
+      var currentNoteOn = this.currentNoteOn[channel];
+      /** @type {SynthesizerNote} */
+
+      var note;
+
+      while (currentNoteOn.length > 0) {
+        note = currentNoteOn.shift();
+        this.noteOff(channel, note.key, 0);
+        note.release();
+        note.disconnect();
+      } // ホールドを解除
 
 
-  setPercussionPart(channel, sw) {
-    if (!this.isXG) {
-      this.channelBank[channel] = 128;
-    } else {
-      this.channelBank[channel] = 127;
+      this.hold(channel, 0);
     }
+    /**
+     * @param {number} channel リセットするチャンネル
+     */
 
-    this.percussionPart[channel] = sw;
-  }
+  }, {
+    key: "resetAllControl",
+    value: function resetAllControl(channel) {
+      this.allNoteOff(channel);
+      this.expression(channel, 127);
+      this.pitchBend(channel, 0x00, 0x40);
+    }
+    /**
+     * @param {number} channel ミュートの設定を変更するチャンネル.
+     * @param {boolean} mute ミュートにするなら true.
+     */
 
-}
-/* harmony default export */ __webpack_exports__["default"] = (Synthesizer);
+  }, {
+    key: "mute",
+    value: function mute(channel, _mute) {
+      /** @type {Array.<SynthesizerNote>} */
+      var currentNoteOn = this.currentNoteOn[channel];
+      /** @type {number} */
+
+      var i;
+      /** @type {number} */
+
+      var il;
+      this.channelMute[channel] = _mute;
+
+      if (_mute) {
+        for (i = 0, il = currentNoteOn.length; i < il; ++i) {
+          currentNoteOn[i].disconnect();
+        }
+      } else {
+        for (i = 0, il = currentNoteOn.length; i < il; ++i) {
+          currentNoteOn[i].connect();
+        }
+      }
+    }
+    /**
+     * @param {number} channel TODO:ドラムパートとしてセットするチャンネル
+     * @param {boolean} sw ドラムか通常かのスイッチ
+     */
+
+  }, {
+    key: "setPercussionPart",
+    value: function setPercussionPart(channel, sw) {
+      if (!this.isXG) {
+        this.channelBank[channel] = 128;
+      } else {
+        this.channelBank[channel] = 127;
+      }
+
+      this.percussionPart[channel] = sw;
+    }
+  }]);
+
+  return Synthesizer;
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Synthesizer);
 
 /***/ }),
 
@@ -2890,17 +5561,25 @@ class Synthesizer {
 /*!**************************************!*\
   !*** ./src/sound_font_synth_note.js ***!
   \**************************************/
-/*! exports provided: SynthesizerNote, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SynthesizerNote", function() { return SynthesizerNote; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "SynthesizerNote": () => (/* binding */ SynthesizerNote),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 /**
  * SynthesizerNote Class
  * @private
  */
-class SynthesizerNote {
+var SynthesizerNote = /*#__PURE__*/function () {
   /**
    * @param {AudioContext} ctx
    * @param {AudioNode} destination
@@ -2915,7 +5594,9 @@ class SynthesizerNote {
    *   panpot: number
    * }} instrument
    */
-  constructor(ctx, destination, instrument) {
+  function SynthesizerNote(ctx, destination, instrument) {
+    _classCallCheck(this, SynthesizerNote);
+
     /** @type {AudioContext} */
     this.ctx = ctx;
     /** @type {AudioNode} */
@@ -3000,7 +5681,7 @@ class SynthesizerNote {
 
     /** @type {AudioBuffer} */
 
-    this.audioBuffer;
+    this.audioBuffer = null;
     /** @type {AudioBufferSourceNode} */
 
     this.bufferSource = ctx.createBufferSource();
@@ -3024,368 +5705,500 @@ class SynthesizerNote {
    */
 
 
-  noteOn() {
-    /** @type {AudioContext} */
-    const ctx = this.ctx;
-    /** @type {{
-     *   channel: number,
-     *   key: number,
-     *   sample: Uint8Array,
-     *   basePlaybackRate: number,
-     *   loopStart: number,
-     *   loopEnd: number,
-     *   volume: number,
-     *   panpot: number
-     * }} */
+  _createClass(SynthesizerNote, [{
+    key: "noteOn",
+    value: function noteOn() {
+      /** @type {AudioContext} */
+      var ctx = this.ctx;
+      /** @type {{
+       *   channel: number,
+       *   key: number,
+       *   sample: Uint8Array,
+       *   basePlaybackRate: number,
+       *   loopStart: number,
+       *   loopEnd: number,
+       *   volume: number,
+       *   panpot: number
+       * }} */
 
-    const instrument = this.instrument; // console.log(instrument);
+      var instrument = this.instrument; // console.log(instrument);
 
-    /** @type {number} */
+      /** @type {number} */
 
-    const now = this.ctx.currentTime || 0;
-    /** @type {number} */
+      var now = this.ctx.currentTime || 0;
+      /** @type {number} */
 
-    const volDelay = now + instrument['volDelay'];
-    /** @type {number} */
+      var volDelay = now + instrument['volDelay'];
+      /** @type {number} */
 
-    const modDelay = now + instrument['modDelay'];
-    /** @type {number} */
+      var modDelay = now + instrument['modDelay'];
+      /** @type {number} */
 
-    const volAttack = volDelay + instrument['volAttack'];
-    /** @type {number} */
+      var volAttack = volDelay + instrument['volAttack'];
+      /** @type {number} */
 
-    const modAttack = volDelay + instrument['modAttack'];
-    /** @type {number} */
+      var modAttack = volDelay + instrument['modAttack'];
+      /** @type {number} */
 
-    const volHold = volAttack + instrument['volHold'];
-    /** @type {number} */
+      var volHold = volAttack + instrument['volHold'];
+      /** @type {number} */
 
-    const modHold = modAttack + instrument['modHold'];
-    /** @type {number} */
+      var modHold = modAttack + instrument['modHold'];
+      /** @type {number} */
 
-    const volDecay = volHold + instrument['volDecay'];
-    /** @type {number} */
+      var volDecay = volHold + instrument['volDecay'];
+      /** @type {number} */
 
-    const modDecay = modHold + instrument['modDecay'];
-    /** @type {number} */
+      var modDecay = modHold + instrument['modDecay'];
+      /** @type {number} */
 
-    const loopStart = instrument['loopStart'] / this.sampleRate;
-    /** @type {number} */
+      var loopStart = instrument['loopStart'] / this.sampleRate;
+      /** @type {number} */
 
-    const loopEnd = instrument['loopEnd'] / this.sampleRate;
-    /** @type {number} */
+      var loopEnd = instrument['loopEnd'] / this.sampleRate;
+      /** @type {number} */
 
-    const startTime = instrument['start'] / this.sampleRate; // TODO: ドラムパートのPanが変化した場合、その計算をしなければならない
-    // http://cpansearch.perl.org/src/PJB/MIDI-SoundFont-1.08/doc/sfspec21.html#8.4.6
+      var startTime = instrument['start'] / this.sampleRate; // TODO: ドラムパートのPanが変化した場合、その計算をしなければならない
+      // http://cpansearch.perl.org/src/PJB/MIDI-SoundFont-1.08/doc/sfspec21.html#8.4.6
 
-    /** @type {number} */
+      /** @type {number} */
 
-    const pan = instrument['pan'] !== void 0 ? instrument['pan'] : this.panpot;
-    const sample = this.buffer.subarray(0, this.buffer.length + instrument['end']);
-    /** @type {AudioBuffer} */
+      var pan = instrument['pan'] !== void 0 ? instrument['pan'] : this.panpot;
+      var sample = this.buffer.subarray(0, this.buffer.length + instrument['end']);
+      /** @type {AudioBuffer} */
 
-    const buffer = this.audioBuffer = ctx.createBuffer(1, sample.length, this.sampleRate);
-    /** @type {Float32Array} */
+      var buffer = this.audioBuffer = ctx.createBuffer(1, sample.length, this.sampleRate);
+      /** @type {Float32Array} */
 
-    const channelData = buffer.getChannelData(0);
-    channelData.set(sample); // buffer source
+      var channelData = buffer.getChannelData(0);
+      channelData.set(sample); // buffer source
 
-    /** @type {AudioBufferSourceNode} */
+      /** @type {AudioBufferSourceNode} */
 
-    const bufferSource = this.bufferSource;
-    bufferSource.buffer = buffer;
-    bufferSource.loop = instrument['sampleModes'] | 0 || 0;
-    bufferSource.loopStart = loopStart;
-    bufferSource.loopEnd = loopEnd;
-    this.updatePitchBend(this.pitchBend); // Output
+      var bufferSource = this.bufferSource;
+      bufferSource.buffer = buffer;
+      bufferSource.loop = instrument['sampleModes'] | 0 || 0;
+      bufferSource.loopStart = loopStart;
+      bufferSource.loopEnd = loopEnd;
+      this.updatePitchBend(this.pitchBend); // Output
 
-    /** @type {GainNode} */
+      /** @type {GainNode} */
 
-    const output = this.outputGainNode; // expression
+      var output = this.outputGainNode; // expression
 
-    this.expressionGainNode.gain.value = this.expression / 127; // panpot
+      this.expressionGainNode.gain.value = this.expression / 127; // panpot
 
-    /** @type {StereoPannerNode} */
+      /** @type {StereoPannerNode} */
 
-    const panner = this.panner;
-    panner.panningModel = 'equalpower'; // panner.distanceModel = 'inverse';
+      var panner = this.panner;
+      panner.panningModel = 'equalpower'; // panner.distanceModel = 'inverse';
 
-    panner.setPosition(Math.sin(pan * Math.PI / 2), 0, Math.cos(pan * Math.PI / 2)); // ---------------------------------------------------------------------------
-    // Delay, Attack, Hold, Decay, Sustain
-    // ---------------------------------------------------------------------------
+      panner.setPosition(Math.sin(pan * Math.PI / 2), 0, Math.cos(pan * Math.PI / 2)); // ---------------------------------------------------------------------------
+      // Delay, Attack, Hold, Decay, Sustain
+      // ---------------------------------------------------------------------------
 
-    /** @type {number} */
+      /** @type {number} */
 
-    let volume = this.volume * (this.velocity / 127) * (1 - instrument['initialAttenuation'] / 1000);
+      var volume = this.volume * (this.velocity / 127) * (1 - instrument['initialAttenuation'] / 1000);
 
-    if (volume < 0) {
-      volume = 0;
-    } // volume envelope
+      if (volume < 0) {
+        volume = 0;
+      } // volume envelope
 
-    /** @type {AudioNode} */
+      /** @type {AudioNode} */
 
 
-    const outputGain = output.gain;
-    outputGain.setValueAtTime(0, now);
-    outputGain.setValueAtTime(0, volDelay);
-    outputGain.setTargetAtTime(volume, volDelay, instrument['volAttack']);
-    outputGain.setValueAtTime(volume, volHold);
-    outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay); // modulation envelope
-
-    /** @type {number} */
-
-    const baseFreq = this.amountToFreq(instrument['initialFilterFc']);
-    /** @type {number} */
+      var outputGain = output.gain;
+      outputGain.setValueAtTime(0, now);
+      outputGain.setValueAtTime(0, volDelay);
+      outputGain.setTargetAtTime(volume, volDelay, instrument['volAttack']);
+      outputGain.setValueAtTime(volume, volHold);
+      outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay); // modulation envelope
 
-    const peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
-    /** @type {number} */
+      /** @type {number} */
 
-    const sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
-    /** @type {BiquadFilterNode} */
+      var baseFreq = this.amountToFreq(instrument['initialFilterFc']);
+      /** @type {number} */
 
-    const modulator = this.modulator;
-    modulator.Q.setValueAtTime(10 ** (instrument['initialFilterQ'] / 200), now);
-    modulator.frequency.value = baseFreq;
-    modulator.type = 'lowpass';
-    modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
-    modulator.frequency.setValueAtTime(baseFreq, now);
-    modulator.frequency.setValueAtTime(baseFreq, modDelay);
-    modulator.frequency.setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)); // For FireFox fix
+      var peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
+      /** @type {number} */
 
-    modulator.frequency.setValueAtTime(peekFreq, modHold);
-    modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay); // connect
+      var sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
+      /** @type {BiquadFilterNode} */
 
-    bufferSource.connect(modulator);
-    modulator.connect(panner);
-    panner.connect(this.expressionGainNode);
-    this.expressionGainNode.connect(output);
+      var modulator = this.modulator;
+      modulator.Q.setValueAtTime(Math.pow(10, instrument['initialFilterQ'] / 200), now);
+      modulator.frequency.value = baseFreq;
+      modulator.type = 'lowpass';
+      modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
+      modulator.frequency.setValueAtTime(baseFreq, now);
+      modulator.frequency.setValueAtTime(baseFreq, modDelay);
+      modulator.frequency.setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)); // For FireFox fix
 
-    if (!instrument['mute']) {
-      this.connect();
-    } // fire
-
-
-    bufferSource.start(0, startTime);
-  }
-  /**
-   * @param {number} val
-   * @return {number}
-   */
-
-
-  amountToFreq(val) {
-    return 2 ** ((val - 6900) / 1200) * 440;
-  }
-  /**
-   */
-
-
-  noteOff() {
-    this.noteOffState = true;
-  }
-  /**
-   * @return {boolean}
-   */
-
-
-  isNoteOff() {
-    return this.noteOffState;
-  }
-  /**
-   * @return {void}
-   */
-
-
-  release() {
-    /** @type {{
-     *   channel: number,
-     *   key: number,
-     *   sample: Uint8Array,
-     *   basePlaybackRate: number,
-     *   loopStart: number,
-     *   loopEnd: number,
-     *   volume: number,
-     *   panpot: number
-     * }} */
-    const instrument = this.instrument;
-    /** @type {AudioBufferSourceNode} */
-
-    const bufferSource = this.bufferSource;
-    /** @type {GainNode} */
-
-    const output = this.outputGainNode;
-    /** @type {number} */
-
-    const now = this.ctx.currentTime;
-    const release = instrument['releaseTime'] - 64; // ---------------------------------------------------------------------------
-    // volume release time
-    // ---------------------------------------------------------------------------
-
-    /** @type {number} */
-
-    const volEndTimeTmp = instrument['volRelease'] * output.gain.value;
-    /** @type {number} */
-
-    const volEndTime = now + volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63)); // var volEndTime = now + instrument['volRelease'] * (1 - instrument['volSustain']);
-    // ---------------------------------------------------------------------------
-    // modulation release time
-    // ---------------------------------------------------------------------------
-
-    /** @type {BiquadFilterNode} */
-
-    const modulator = this.modulator;
-    /** @type {number} */
-
-    const baseFreq = this.amountToFreq(instrument['initialFilterFc']);
-    /** @type {number} */
-
-    const peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
-    /** @type {number} */
-
-    const modEndTime = now + instrument['modRelease'] * (baseFreq === peekFreq ? 1 : (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq)); // var modEndTime = now + instrument['modRelease'] * (1 - instrument['modSustain']);
-
-    if (!this.audioBuffer) {
-      return;
-    } // ---------------------------------------------------------------------------
-    // Release
-    // ---------------------------------------------------------------------------
-
-
-    switch (instrument['sampleModes']) {
-      case 0:
-        // ループしない
-        bufferSource.loop = false;
-        bufferSource.disconnect();
-        bufferSource.buffer = null;
-        break;
-
-      case 1:
-        // ループさせる
-        output.gain.cancelScheduledValues(0);
-        output.gain.setValueAtTime(output.gain.value, now);
-        output.gain.linearRampToValueAtTime(0, volEndTime);
-        modulator.frequency.cancelScheduledValues(0);
-        modulator.frequency.setValueAtTime(modulator.frequency.value, now);
-        modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
-        bufferSource.playbackRate.cancelScheduledValues(0);
-        bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
-        bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
-        bufferSource.stop(volEndTime);
-        break;
-
-      case 2:
-        // 未定義
-        console.error('detect unused sampleModes');
-        break;
-
-      case 3:
-        // ノートオフまでループさせる
-        output.gain.cancelScheduledValues(0);
-        output.gain.setValueAtTime(output.gain.value, now);
-        output.gain.linearRampToValueAtTime(0, volEndTime);
-        modulator.frequency.cancelScheduledValues(0);
-        modulator.frequency.setValueAtTime(modulator.frequency.value, now);
-        modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
-        bufferSource.playbackRate.cancelScheduledValues(0);
-        bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
-        bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
-
-      default:
-        bufferSource.loop = false;
-        break;
+      modulator.frequency.setValueAtTime(peekFreq, modHold);
+      modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay); // connect
+
+      bufferSource.connect(modulator);
+      modulator.connect(panner);
+      panner.connect(this.expressionGainNode);
+      this.expressionGainNode.connect(output);
+
+      if (!instrument['mute']) {
+        this.connect();
+      } // fire
+
+
+      bufferSource.start(0, startTime);
     }
-  }
-  /**
-   */
+    /**
+     * @param {number} val
+     * @return {number}
+     */
+
+  }, {
+    key: "amountToFreq",
+    value: function amountToFreq(val) {
+      return Math.pow(2, (val - 6900) / 1200) * 440;
+    }
+    /**
+     */
+
+  }, {
+    key: "noteOff",
+    value: function noteOff() {
+      this.noteOffState = true;
+    }
+    /**
+     * @return {boolean}
+     */
+
+  }, {
+    key: "isNoteOff",
+    value: function isNoteOff() {
+      return this.noteOffState;
+    }
+    /**
+     * @return {void}
+     */
+
+  }, {
+    key: "release",
+    value: function release() {
+      /** @type {{
+       *   channel: number,
+       *   key: number,
+       *   sample: Uint8Array,
+       *   basePlaybackRate: number,
+       *   loopStart: number,
+       *   loopEnd: number,
+       *   volume: number,
+       *   panpot: number
+       * }} */
+      var instrument = this.instrument;
+      /** @type {AudioBufferSourceNode} */
+
+      var bufferSource = this.bufferSource;
+      /** @type {GainNode} */
+
+      var output = this.outputGainNode;
+      /** @type {number} */
+
+      var now = this.ctx.currentTime;
+      var release = instrument['releaseTime'] - 64; // ---------------------------------------------------------------------------
+      // volume release time
+      // ---------------------------------------------------------------------------
+
+      /** @type {number} */
+
+      var volEndTimeTmp = instrument['volRelease'] * output.gain.value;
+      /** @type {number} */
+
+      var volEndTime = now + volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63)); // var volEndTime = now + instrument['volRelease'] * (1 - instrument['volSustain']);
+      // ---------------------------------------------------------------------------
+      // modulation release time
+      // ---------------------------------------------------------------------------
+
+      /** @type {BiquadFilterNode} */
+
+      var modulator = this.modulator;
+      /** @type {number} */
+
+      var baseFreq = this.amountToFreq(instrument['initialFilterFc']);
+      /** @type {number} */
+
+      var peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
+      /** @type {number} */
+
+      var modEndTime = now + instrument['modRelease'] * (baseFreq === peekFreq ? 1 : (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq)); // var modEndTime = now + instrument['modRelease'] * (1 - instrument['modSustain']);
+
+      if (!this.audioBuffer) {
+        return;
+      } // ---------------------------------------------------------------------------
+      // Release
+      // ---------------------------------------------------------------------------
 
 
-  connect() {
-    this.reverb.connect(this.outputGainNode).connect(this.destination);
-  }
-  /**
-   */
+      switch (instrument['sampleModes']) {
+        case 0:
+          // ループしない
+          bufferSource.loop = false;
+          bufferSource.disconnect();
+          bufferSource.buffer = null;
+          break;
 
+        case 1:
+          // ループさせる
+          output.gain.cancelScheduledValues(0);
+          output.gain.setValueAtTime(output.gain.value, now);
+          output.gain.linearRampToValueAtTime(0, volEndTime);
+          modulator.frequency.cancelScheduledValues(0);
+          modulator.frequency.setValueAtTime(modulator.frequency.value, now);
+          modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
+          bufferSource.playbackRate.cancelScheduledValues(0);
+          bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
+          bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
+          bufferSource.stop(volEndTime);
+          break;
 
-  disconnect() {
-    this.outputGainNode.disconnect(0);
-  }
-  /**
-   */
+        case 2:
+          // 未定義
+          console.error('detect unused sampleModes');
+          break;
 
+        case 3:
+          // ノートオフまでループさせる
+          output.gain.cancelScheduledValues(0);
+          output.gain.setValueAtTime(output.gain.value, now);
+          output.gain.linearRampToValueAtTime(0, volEndTime);
+          modulator.frequency.cancelScheduledValues(0);
+          modulator.frequency.setValueAtTime(modulator.frequency.value, now);
+          modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
+          bufferSource.playbackRate.cancelScheduledValues(0);
+          bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
+          bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
+          bufferSource.loop = false;
+          break;
 
-  schedulePlaybackRate() {
-    const playbackRate = this.bufferSource.playbackRate;
-    /** @type {number} */
+        default:
+          bufferSource.loop = false;
+      }
+    }
+    /**
+     */
 
-    const computed = this.computedPlaybackRate;
-    /** @type {number} */
+  }, {
+    key: "connect",
+    value: function connect() {
+      this.reverb.connect(this.outputGainNode).connect(this.destination);
+    }
+    /**
+     */
 
-    const start = this.startTime;
-    /** @type {Object} */
+  }, {
+    key: "disconnect",
+    value: function disconnect() {
+      this.outputGainNode.disconnect(0);
+    }
+    /**
+     */
 
-    const instrument = this.instrument;
-    /** @type {number} */
+  }, {
+    key: "schedulePlaybackRate",
+    value: function schedulePlaybackRate() {
+      var playbackRate = this.bufferSource.playbackRate;
+      /** @type {number} */
 
-    const modAttack = start + instrument['modAttack'];
-    /** @type {number} */
+      var computed = this.computedPlaybackRate;
+      /** @type {number} */
 
-    const modDecay = modAttack + instrument['modDecay'];
-    /** @type {number} */
+      var start = this.startTime;
+      /** @type {Object} */
 
-    const peekPitch = computed * 1.0594630943592953 // Math.pow(2, 1 / 12)
-    ** (this.modEnvToPitch * this.instrument['scaleTuning']);
-    playbackRate.cancelScheduledValues(0);
-    playbackRate.setValueAtTime(computed, start);
-    playbackRate.linearRampToValueAtTime(peekPitch, modAttack);
-    playbackRate.linearRampToValueAtTime(computed + (peekPitch - computed) * (1 - instrument['modSustain']), modDecay);
-  }
-  /**
-   * @param {number} expression
-   */
+      var instrument = this.instrument;
+      /** @type {number} */
 
+      var modAttack = start + instrument['modAttack'];
+      /** @type {number} */
 
-  updateExpression(expression) {
-    this.expressionGainNode.gain.value = (this.expression = expression) / 127;
-  }
-  /**
-   * @param {number} pitchBend
-   */
+      var modDecay = modAttack + instrument['modDecay'];
+      /** @type {number} */
 
+      var peekPitch = computed * Math.pow(1.0594630943592953, this.modEnvToPitch * this.instrument['scaleTuning']);
+      playbackRate.cancelScheduledValues(0);
+      playbackRate.setValueAtTime(computed, start);
+      playbackRate.linearRampToValueAtTime(peekPitch, modAttack);
+      playbackRate.linearRampToValueAtTime(computed + (peekPitch - computed) * (1 - instrument['modSustain']), modDecay);
+    }
+    /**
+     * @param {number} expression
+     */
 
-  updatePitchBend(pitchBend) {
-    this.computedPlaybackRate = this.playbackRate * 1.0594630943592953 // Math.pow(2, 1 / 12)
-    ** (pitchBend / (pitchBend < 0 ? 8192 : 8191) * this.pitchBendSensitivity * this.instrument['scaleTuning']);
-    this.schedulePlaybackRate();
-  }
+  }, {
+    key: "updateExpression",
+    value: function updateExpression(expression) {
+      this.expressionGainNode.gain.value = (this.expression = expression) / 127;
+    }
+    /**
+     * @param {number} pitchBend
+     */
 
-}
-/* harmony default export */ __webpack_exports__["default"] = (SynthesizerNote);
+  }, {
+    key: "updatePitchBend",
+    value: function updatePitchBend(pitchBend) {
+      this.computedPlaybackRate = this.playbackRate * Math.pow(1.0594630943592953, pitchBend / (pitchBend < 0 ? 8192 : 8191) * this.pitchBendSensitivity * this.instrument['scaleTuning']);
+      this.schedulePlaybackRate();
+    }
+  }]);
+
+  return SynthesizerNote;
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SynthesizerNote);
 
 /***/ }),
 
-/***/ "./src/wml.js":
+/***/ "./node_modules/axios/package.json":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/package.json ***!
+  \*****************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"Promise based HTTP client for the browser and node.js","main":"index.js","scripts":{"test":"grunt test","start":"node ./sandbox/server.js","build":"NODE_ENV=production grunt build","preversion":"npm test","version":"npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json","postversion":"git push && git push --tags","examples":"node ./examples/server.js","coveralls":"cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js","fix":"eslint --fix lib/**/*.js"},"repository":{"type":"git","url":"https://github.com/axios/axios.git"},"keywords":["xhr","http","ajax","promise","node"],"author":"Matt Zabriskie","license":"MIT","bugs":{"url":"https://github.com/axios/axios/issues"},"homepage":"https://axios-http.com","devDependencies":{"coveralls":"^3.0.0","es6-promise":"^4.2.4","grunt":"^1.3.0","grunt-banner":"^0.6.0","grunt-cli":"^1.2.0","grunt-contrib-clean":"^1.1.0","grunt-contrib-watch":"^1.0.0","grunt-eslint":"^23.0.0","grunt-karma":"^4.0.0","grunt-mocha-test":"^0.13.3","grunt-ts":"^6.0.0-beta.19","grunt-webpack":"^4.0.2","istanbul-instrumenter-loader":"^1.0.0","jasmine-core":"^2.4.1","karma":"^6.3.2","karma-chrome-launcher":"^3.1.0","karma-firefox-launcher":"^2.1.0","karma-jasmine":"^1.1.1","karma-jasmine-ajax":"^0.1.13","karma-safari-launcher":"^1.0.0","karma-sauce-launcher":"^4.3.6","karma-sinon":"^1.0.5","karma-sourcemap-loader":"^0.3.8","karma-webpack":"^4.0.2","load-grunt-tasks":"^3.5.2","minimist":"^1.2.0","mocha":"^8.2.1","sinon":"^4.5.0","terser-webpack-plugin":"^4.2.3","typescript":"^4.0.5","url-search-params":"^0.10.0","webpack":"^4.44.2","webpack-dev-server":"^3.11.0"},"browser":{"./lib/adapters/http.js":"./lib/adapters/xhr.js"},"jsdelivr":"dist/axios.min.js","unpkg":"dist/axios.min.js","typings":"./index.d.ts","dependencies":{"follow-redirects":"^1.14.0"},"bundlesize":[{"path":"./dist/axios.min.js","threshold":"5kB"}]}');
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
 /*!********************!*\
   !*** ./src/wml.js ***!
   \********************/
-/*! exports provided: WebMidiLink, default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WebMidiLink", function() { return WebMidiLink; });
-/* harmony import */ var _meta_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./meta.js */ "./src/meta.js");
-/* harmony import */ var _sound_font_synth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sound_font_synth */ "./src/sound_font_synth.js");
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "WebMidiLink": () => (/* binding */ WebMidiLink),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var regenerator_runtime_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! regenerator-runtime/runtime */ "./node_modules/regenerator-runtime/runtime.js");
+/* harmony import */ var regenerator_runtime_runtime__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(regenerator_runtime_runtime__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _meta_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./meta.js */ "./src/meta.js");
+/* harmony import */ var _sound_font_synth__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sound_font_synth */ "./src/sound_font_synth.js");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/* eslint-disable no-case-declarations */
+
+
 
 
 /**
  * WebMidiLink Class
  */
 
-class WebMidiLink {
+var WebMidiLink = /*#__PURE__*/function () {
   /**
    * @param {object} option
    */
-  constructor(option = {}) {
+  function WebMidiLink() {
+    var option = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, WebMidiLink);
+
     /** @type {Array.<number>} */
     this.NrpnMsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** @type {Array.<number>} */
@@ -3402,17 +6215,13 @@ class WebMidiLink {
     this.ready = false;
     /** @type {Synthesizer} */
 
-    this.synth;
+    this.synth = null;
     /** @type {function(ArrayBuffer)} */
 
-    this.loadCallback = () => {};
+    this.loadCallback = null;
     /** @type {Function} */
 
-
     this.messageHandler = this.onmessage.bind(this);
-    /** @type {XMLHttpRequest} */
-
-    this.xhr;
     /** @type {boolean} */
 
     this.rpnMode = true;
@@ -3430,690 +6239,791 @@ class WebMidiLink {
     this.placeholder = option.placeholder !== void 0 ? document.getElementById(option.placeholder) : window.document.body;
     /** @type {Window} */
 
-    this.opener;
+    this.opener = null;
     /** @type {number} */
 
-    this.version = _meta_js__WEBPACK_IMPORTED_MODULE_0__["default"].version;
+    this.version = _meta_js__WEBPACK_IMPORTED_MODULE_2__["default"].version;
     /** @type {string} */
 
-    this.build = _meta_js__WEBPACK_IMPORTED_MODULE_0__["default"].date; // eslint-disable-next-line space-before-function-paren
-
-    window.addEventListener('DOMContentLoaded', function () {
-      this.ready = true;
-    }.bind(this), false);
-  }
-
-  /**
-   * @param {string} url
-   * @export
-   */
-  setup(url) {
-    /** @type {Window} */
-    const w = window;
-
-    if (!this.ready) {
-      w.addEventListener('DOMContentLoaded', function onload() {
-        w.removeEventListener('DOMContentLoaded', onload, false);
-        this.load(url);
-      }.bind(this), false);
-    } else {
-      this.load(url);
-    }
-
-    if (w.opener) {
-      this.opener = w.opener;
-    } else if (w.parent !== w) {
-      this.opener = w.parent;
-    }
+    this.build = _meta_js__WEBPACK_IMPORTED_MODULE_2__["default"].date;
   }
   /**
-   * @param {string} url
-   * @export
+   * DOMContentLoadedが発生するのを待機する（確実にJavaScriptが実行されるようにする）
    */
 
 
-  load(url) {
-    /** @type {Window} */
-    const opener = window.opener ? window.opener : window.parent;
-    /** @type {HtmlDIVElement} */
-
-    const loading = this.placeholder.appendChild(document.createElement('div'));
-    /** @type {HTMLStrongElement} */
-
-    const loadingText = loading.appendChild(document.createElement('p'));
-    /** @type {HTMLDivElement} */
-
-    const progress = loading.appendChild(document.createElement('div'));
-    progress.className = 'progress';
-    /** @type {HTMLDivElement} */
-
-    const progressBar = progress.appendChild(document.createElement('div'));
-    progressBar.className = 'progress-bar';
-    progressBar.role = 'progressbar';
-    /** @type {WebMidiLink} */
-
-    const self = this;
-    opener.postMessage('link,progress', '*');
-    loading.className = 'alert alert-warning';
-    loadingText.innerText = 'Now Loading...';
-    const promise = new Promise(resolve => {
-      if (this.option.cache && window.caches) {
-        // キャッシュが利用可能な場合
-        loadingText.className = 'ml-1';
-        loading.className = 'd-flex';
-        window.caches.open('wml').then(cache => {
-          cache.match(url).then(response => response.arrayBuffer()).then(stream => resolve(stream)).catch(() => {
-            console.info('Fetch from server.');
-            fetch(url).then(response => {
-              if (!response.ok) {
-                throw new Error('Network response was not ok.');
-              }
-              /** @type {number} */
-
-
-              const total = response.headers.get('content-length') | 0;
-              loadingText.innerText += ` (${total}bytes)`;
-              /** @type {Response} レスポンスのストリーム */
-
-              const copy = response.clone();
-              cache.put(url, response);
-              return copy.arrayBuffer();
-            }).then(stream => resolve(stream)) // .catch((e) => {
-            // console.error(e);
-            // alert('There has been a problem with your fetch operation: ' + e.message);
-            //  )}
-            ;
-          });
-        });
-      } else {
-        // キャッシュが使えない場合
-        console.info('This server/client does not cache function.'); // 結合処理
-
-        const concatenation = segments => {
-          let sumLength = 0;
-
-          for (let i = 0; i < segments.length; ++i) {
-            sumLength += segments[i].byteLength;
-          }
-
-          const whole = new Uint8Array(sumLength);
-          let pos = 0;
-
-          for (let i = 0; i < segments.length; ++i) {
-            whole.set(new Uint8Array(segments[i]), pos);
-            pos += segments[i].byteLength;
-          }
-
-          return whole.buffer;
-        };
-
-        fetch(url).then(res => {
-          // 全体サイズ
-          const total = res.headers.get('content-length');
-          progress.max = total; // body の reader を取得する
-
-          const reader = res.body.getReader();
-          let chunk = 0;
-          const buffer = [];
-
-          const processResult = result => {
-            // done が true なら最後の chunk
-            if (result.done) {
-              const stream = concatenation(buffer);
-              resolve(stream);
-              return;
-            } // chunk の長さの蓄積を total で割れば進捗が分かる
-
-
-            chunk += result.value.length;
-            buffer.push(result.value); // 進捗を更新
-
-            const percentage = Math.round(chunk / total * 100);
-            progressBar.style.width = percentage + '%';
-            progressBar.innerText = percentage + ' %';
-            opener.postMessage('link,progress,' + chunk + ',' + total, '*'); // 再帰する
-
-            return reader.read().then(processResult);
-          };
-
-          reader.read().then(processResult);
-        }).catch(e => alert('There has been a problem with your fetch operation: ' + e.message));
-      }
-    }).then(stream => {
-      console.info('ready');
-      loadingText.innerText = 'Parsing SoundFont...';
-      self.onload(stream);
-      loadingText.innerText = '';
-
-      if (typeof self.loadCallback === 'function') {
-        self.loadCallback(stream);
-      }
-
-      opener.postMessage('link,ready', '*');
-    });
-  }
-  /**
-   * @param {ArrayBuffer} response
-   */
-
-
-  onload(response) {
-    /** @type {Uint8Array} */
-    const input = new Uint8Array(response);
-    this.loadSoundFont(input);
-  }
-  /**
-   * @param {Uint8Array} input
-   */
-
-
-  loadSoundFont(input) {
-    /** @type {Window} */
-    const w = window;
-
-    if (!this.synth) {
-      // 子要素を全削除
-      //while (this.placeholder.firstChild) {
-      //  this.placeholder.removeChild(this.placeholder.firstChild);
-      //}
-
-      /** @type {Synthesizer} */
-      const synth = this.synth = new _sound_font_synth__WEBPACK_IMPORTED_MODULE_1__["default"](input);
-
-      if (this.option.drawSynth) {
-        this.placeholder.appendChild(synth.drawSynth());
-      } else {
-        const readyElem = document.createElement('strong');
-        readyElem.innerText = 'Ready.';
-        this.placeholder.appendChild(readyElem);
-      }
-
-      synth.init();
-      synth.start();
-      w.addEventListener('message', this.messageHandler, false);
-    } else {
-      this.synth.refreshInstruments(input);
-    } // link ready
-
-
-    w.postMessage('link,ready', '*');
-  }
-
-  /**
-   * @param {Event} ev
-   */
-  onmessage(ev) {
-    /** @type {Array} */
-    const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
-    /** @type {string} */
-
-    const type = msg !== [] ? msg.shift() : '';
-    /** @type {Window} */
-
-    const opener = window.opener ? window.opener : window.parent;
-    /** @type {string} */
-
-    let command;
-
-    switch (type) {
-      case 'midi':
-        this.processMidiMessage(msg.map(hex => {
-          return parseInt(hex, 16);
-        }));
-        break;
-
-      case 'link':
-        if (opener === void 0) {
-          return;
-        }
-
-        command = msg.shift();
-
-        switch (command) {
-          case 'reqpatch':
-            // TODO: dummy data
-            opener.postMessage('link,patch', '*');
-            break;
-
-          case 'setpatch':
-          case 'ready':
-            opener.postMessage('link,ready', '*'); // TODO: NOP
-
-            break;
-
-          case 'progress':
-            opener.postMessage('link,progress', '*');
-            break;
-
-          default:
-            console.error('unknown link message:', command);
-            break;
-        }
-
-        break;
-
-      default: // console.error('unknown message type');
-
-    }
-  }
-
-  /**
-   * @param {function(ArrayBuffer)} callback
-   * @export
-   */
-  setLoadCallback(callback) {
-    this.loadCallback = callback;
-  }
-
-  /**
-   * @param {Array.<number>} message
-   */
-  processMidiMessage(message) {
-    /** @type {number} */
-    const channel = message[0] & 0x0f;
-    /** @type {Synthesizer} */
-
-    const synth = this.synth;
-
-    switch (message[0] & 0xf0) {
-      case 0x80:
-        // NoteOff: 8n kk vv
-        synth.noteOff(channel, message[1], message[2]);
-        break;
-
-      case 0x90:
-        // NoteOn: 9n kk vv
-        if (message[2] > 0) {
-          synth.noteOn(channel, message[1], message[2]);
-        } else {
-          synth.noteOff(channel, message[1], 0);
-        }
-
-        break;
-
-      case 0xB0:
-        // Control Change: Bn cc dd
-
-        /** @type {number} */
-        const value = message[2];
-
-        switch (message[1]) {
-          case 0x00:
-            // Bank Select MSB: Bn 00 dd
-            synth.bankSelectMsb(channel, value);
-            break;
-
-          case 0x01:
-            // Modulation Depth
-            synth.modulationDepth(channel, value);
-            break;
-
-          case 0x05:
-            // Portament Time
-            break;
-
-          case 0x06:
-            // Data Entry(MSB): Bn 06 dd
-            if (this.rpnMode) {
-              // RPN
-              switch (this.RpnMsb[channel]) {
-                case 0:
-                  switch (this.RpnLsb[channel]) {
-                    case 0:
-                      // Pitch Bend Sensitivity
-                      synth.pitchBendSensitivity(channel, value);
-                      break;
-
-                    case 1:
-                      // console.log("fine");
-                      break;
-
-                    case 2:
-                      // console.log("coarse");
-                      break;
-
-                    default:
-                      // console.log("default");
-                      break;
-                  }
-
+  _createClass(WebMidiLink, [{
+    key: "waitForReadystate",
+    value: function () {
+      var _waitForReadystate = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!(document.readyState === 'interactive')) {
+                  _context.next = 2;
                   break;
-
-                default:
-                  // console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
-                  break;
-              }
-            } else {
-              // NRPN
-              switch (this.NrpnMsb[channel]) {
-                case 26:
-                  // Drum Instrument Level
-                  synth.drumInstrumentLevel(this.NrpnLsb[channel], value);
-                  break;
-
-                default:
-                  // console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
-                  break;
-              }
-            }
-
-            break;
-
-          case 0x26:
-            // Data Entry(LSB): Bn 26 dd
-            if (this.rpnMode) {
-              // RPN
-              switch (this.RpnMsb[channel]) {
-                case 0:
-                  switch (this.RpnLsb[channel]) {
-                    case 0:
-                      // Pitch Bend Sensitivity
-                      synth.pitchBendSensitivity(channel, synth.getPitchBendSensitivity(channel) + value / 100);
-                      break;
-
-                    case 1:
-                      // console.log("fine");
-                      break;
-
-                    case 2:
-                      // console.log("coarse");
-                      break;
-                  }
-
-                  break;
-              }
-            } // NRPN で LSB が必要なものは今のところない
-
-
-            break;
-
-          case 0x07:
-            // Volume Change: Bn 07 dd
-            synth.volumeChange(channel, value);
-            break;
-
-          case 0x0A:
-            // Panpot Change: Bn 0A dd
-            synth.panpotChange(channel, value);
-            break;
-
-          case 0x78:
-            // All Sound Off: Bn 78 00
-            synth.allSoundOff(channel);
-            break;
-
-          case 0x79:
-            // Reset All Control: Bn 79 00
-            synth.resetAllControl(channel);
-            break;
-
-          case 0x20:
-            // BankSelect LSB: Bn 00 dd
-            synth.bankSelectLsb(channel, value);
-            break;
-
-          case 0x47:
-            // Harmonic Content
-            synth.harmonicContent(channel, value);
-            break;
-
-          case 0x60:
-            //
-            // console.log(60);
-            break;
-
-          case 0x61:
-            //
-            // console.log(61);
-            break;
-
-          case 0x62:
-            // NRPN LSB
-            this.rpnMode = false;
-            this.NrpnLsb[channel] = value;
-            break;
-
-          case 0x63:
-            // NRPN MSB
-            this.rpnMode = false;
-            this.NrpnMsb[channel] = value;
-            break;
-
-          case 0x64:
-            // RPN LSB
-            this.rpnMode = true;
-            this.RpnLsb[channel] = value;
-            break;
-
-          case 0x65:
-            // RPN MSB
-            this.rpnMode = true;
-            this.RpnMsb[channel] = value;
-            break;
-
-          case 0x40:
-            // Hold
-            synth.hold(channel, value);
-            break;
-
-          case 0x0b:
-            // Expression
-            synth.expression(channel, value);
-            break;
-
-          case 0x48:
-            // DecayTyme
-            synth.decayTime(channel, value);
-            break;
-
-          case 0x49:
-            // ReleaseTime
-            synth.releaseTime(channel, value);
-            break;
-
-          case 0x4A:
-            // Attack time
-            synth.attackTime(channel, value);
-            break;
-
-          case 0x4B:
-            // Brightness
-            synth.cutOffFrequency(channel, value);
-            break;
-
-          case 0x5B:
-            // Effect1 Depth（Reverb Send Level）
-            synth.reverbDepth(channel, value);
-            break;
-
-          default:
-            // not supported
-            break;
-        }
-
-        break;
-
-      case 0xC0:
-        // Program Change: Cn pp
-        synth.programChange(channel, message[1]);
-        break;
-
-      case 0xE0:
-        // Pitch Bend
-        synth.pitchBend(channel, message[1], message[2]);
-        break;
-
-      case 0xf0:
-        // System Exclusive Message
-        //   F0
-        //   [2]<vendor ID>
-        //   [3]<device ID>
-        //   [4]<sub ID 1>
-        //   [5]<sub ID 2>
-        //   [6]<size of parameter key>
-        //   [7]<size of parameter value>
-        //   [8]<MSB>
-        //   [9]<LSB>
-        //   [10]<data>
-        //   [11]<checksum> [IGNORE]
-        //   F7 EOX [IGNORE]
-
-        /** @type {number} Vendor ID (Roland=0x41 / YAMAHA=0x43 / Non Realtime=0x7E / Realtime=0x7F) */
-        const vendor = message[2];
-        /** @type {number} Device ID (GM extended=0x10 / ポケミク=0x79 / Any=0x7F) */
-
-        const device = message[3];
-        /** @type {number} Sub ID 1 (Model ID: GM=0x09 / GS=0x42 / XG=0x4C) */
-
-        const subId1 = message[4];
-        /** @type {number} Sub ID 2 */
-
-        const subId2 = message[5]; // Gneral MIDI
-        // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
-
-        if (vendor === 0x7e && device === 0x09) {
-          // Non Realtime
-          switch (subId1) {
-            case 0x01:
-              // GM System On
-              synth.init('GM');
-              break;
-
-            case 0x02: // GM System Off
-            // Ignore
-
-            case 0x03:
-              // GM2 System On
-              synth.init('GM2');
-              break;
-          }
-        } else if (vendor === 0x7f) {} // Realtime
-        // Through
-        // http://www.amei.or.jp/report/report4.html
-
-
-        if (vendor === 0x41) {
-          console.log('GS:', this.dumpMessage(message)); // GS
-          // http://lib.roland.co.jp/support/jp/manuals/res/1809974/SC-88VL_j.pdf
-          // F0 42 10 42 12 40 [part] [key] [value] [checksum] F7
-          // TODO
-
-          switch (message[8]) {
-            case 0x04:
-              // GS Master Volume: F0 41 10 42 12 40 00 04 [value] [checksum] F7
-              synth.setMasterVolume(message[9] << 7);
-              break;
-
-            case 0x7F:
-              // GS Reset: F0 41 10 42 12 40 00 7F 00 [checksum] F7
-              synth.init('GS');
-              console.info('GS Reset');
-              break;
-
-            case 0x15:
-              // GS Dram part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
-              // Notice: [sum] is ignroe in this program.
-              const part = message[7] - 0x0F;
-              const map = message[8];
-
-              if (part === 0) {
-                // 10 Ch.
-                if (map !== 0x00) {
-                  synth.setPercussionPart(9, true);
-                } else {
-                  synth.setPercussionPart(9, false);
                 }
-              } else if (part >= 10) {
-                // 1~9 Ch.
-                if (map !== 0x00) {
-                  synth.setPercussionPart(part - 1, true);
-                } else {
-                  synth.setPercussionPart(part - 1, false);
+
+                return _context.abrupt("return");
+
+              case 2:
+                _context.next = 4;
+                return new Promise(function (resolve) {
+                  var cb = function cb() {
+                    // ブラウザのアニメーション実行
+                    window.requestAnimationFrame(resolve); // 登録したイベントの解除
+
+                    // 登録したイベントの解除
+                    window.removeEventListener('DOMContentLoaded', cb);
+                  }; // レンダリング完了時に、ブラウザのアニメーションを実行する関数を登録
+
+
+                  // レンダリング完了時に、ブラウザのアニメーションを実行する関数を登録
+                  window.addEventListener('DOMContentLoaded', cb);
+                });
+
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+
+      function waitForReadystate() {
+        return _waitForReadystate.apply(this, arguments);
+      }
+
+      return waitForReadystate;
+    }()
+    /**
+     * @param {string} url
+     * @export
+     */
+
+  }, {
+    key: "setup",
+    value: function () {
+      var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url) {
+        var w;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return this.waitForReadystate();
+
+              case 2:
+                console.log('setup');
+                /** @type {Window} */
+
+                w = window;
+
+                if (w.opener) {
+                  this.opener = w.opener;
+                } else if (w.parent !== w) {
+                  this.opener = w.parent;
+                }
+
+                this.load(url);
+
+              case 6:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function setup(_x) {
+        return _setup.apply(this, arguments);
+      }
+
+      return setup;
+    }()
+    /**
+     * @param {string} url
+     * @export
+     */
+
+  }, {
+    key: "load",
+    value: function () {
+      var _load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(url) {
+        var opener, alert, message, progressOuter, progress, getContent, stream, cacheStorage, input;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                /** @type {Window} */
+                opener = window.opener ? window.opener : window.parent;
+                opener.postMessage('link,progress', '*');
+                /** @type {HtmlDIVElement} */
+
+                alert = document.createElement('div');
+                alert.className = 'alert alert-warning';
+                /** @type {HTMLParagraphElement} */
+
+                message = document.createElement('p');
+                message.innerText = 'Now Loading...';
+                /** @type {HTMLDivElement} */
+
+                progressOuter = document.createElement('div');
+                progressOuter.className = 'progress';
+                /** @type {HTMLDivElement} */
+
+                progress = document.createElement('div');
+                progress.className = 'progress-bar';
+                progressOuter.appendChild(progress);
+                alert.appendChild(message);
+                alert.appendChild(progressOuter);
+                this.placeholder.appendChild(alert);
+                console.log('dom');
+                /**
+                 * データを取得.
+                 * @return {axios.Response}
+                 */
+
+                getContent = function getContent() {
+                  console.info('Load from server.');
+                  return axios__WEBPACK_IMPORTED_MODULE_1___default().get(url, {
+                    headers: {
+                      Accept: 'audio/x-soundfont'
+                    },
+                    responseType: 'arraybuffer'
+                  }, {
+                    onDownloadProgress: function onDownloadProgress(progressEvent) {
+                      var total = parseFloat(progressEvent.currentTarget.responseHeaders['Content-Length']);
+                      var current = progressEvent.currentTarget.response.length;
+                      var percentCompleted = Math.floor(current / total * 100);
+                      message.innerText = "Now Loading... (".concat(current, "/").concat(total, ")");
+                      progress.style.width = percentCompleted + '%';
+                      progress.innerText = percentCompleted + ' %';
+                      opener.postMessage('link,progress,' + current + ',' + total, '*');
+                    }
+                  });
+                };
+                /** @type {Response} */
+
+
+                stream = null;
+
+                if (!(this.option.cache && window.caches)) {
+                  _context3.next = 34;
+                  break;
+                }
+
+                console.info('load from cache.'); // キャッシュが利用可能な場合
+
+                _context3.next = 21;
+                return caches.open('wml');
+
+              case 21:
+                cacheStorage = _context3.sent;
+                _context3.next = 24;
+                return cacheStorage.match(url);
+
+              case 24:
+                stream = _context3.sent;
+
+                if (stream) {
+                  _context3.next = 31;
+                  break;
+                }
+
+                _context3.next = 28;
+                return getContent();
+
+              case 28:
+                stream = _context3.sent;
+                _context3.next = 32;
+                break;
+
+              case 31:
+                console.info('load from cache.');
+
+              case 32:
+                _context3.next = 38;
+                break;
+
+              case 34:
+                // キャッシュが使えない場合
+                console.info('This server/client does not cache function.');
+                _context3.next = 37;
+                return getContent();
+
+              case 37:
+                stream = _context3.sent;
+
+              case 38:
+                if (!stream.error) {
+                  _context3.next = 43;
+                  break;
+                }
+
+                alert.className = 'alert alert-danger';
+                message.innerText = 'An error occurred when downloading a SoundFont.';
+                this.placeholder.removeChild(progress);
+                throw Error(stream.error);
+
+              case 43:
+                alert.className = 'alert alert-info';
+                message.innerText = 'Initializing...';
+                progress.style.width = '100%';
+                progress.className = 'progress-bar progress-bar-striped progress-bar-animated'; // window.requestAnimationFrame(1);
+
+                console.info('ready');
+                input = new Uint8Array(stream.data);
+                this.loadSoundFont(input);
+                this.placeholder.removeChild(alert);
+                opener.postMessage('link,ready', '*');
+
+              case 52:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function load(_x2) {
+        return _load.apply(this, arguments);
+      }
+
+      return load;
+    }()
+    /**
+     * @param {Uint8Array} input
+     */
+
+  }, {
+    key: "loadSoundFont",
+    value: function loadSoundFont(input) {
+      /** @type {Window} */
+      var w = window;
+
+      if (!this.synth) {
+        /** @type {Synthesizer} */
+        var synth = this.synth = new _sound_font_synth__WEBPACK_IMPORTED_MODULE_3__["default"](input);
+
+        if (this.option.drawSynth) {
+          this.placeholder.appendChild(synth.drawSynth());
+        } else {
+          var readyElem = document.createElement('strong');
+          readyElem.innerText = 'Ready.';
+          this.placeholder.appendChild(readyElem);
+        }
+
+        synth.init();
+        synth.start();
+        w.addEventListener('message', this.messageHandler, false);
+      } else {
+        this.synth.refreshInstruments(input);
+      } // link ready
+
+
+      w.postMessage('link,ready', '*');
+    }
+    /**
+     * @param {Event} ev
+     */
+
+  }, {
+    key: "onmessage",
+    value: function onmessage(ev) {
+      /** @type {Array} */
+      var msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
+      /** @type {string} */
+
+      var type = msg !== [] ? msg.shift() : '';
+      /** @type {Window} */
+
+      var opener = window.opener ? window.opener : window.parent;
+      /** @type {string} */
+
+      var command;
+
+      switch (type) {
+        case 'midi':
+          this.processMidiMessage(msg.map(function (hex) {
+            return parseInt(hex, 16);
+          }));
+          break;
+
+        case 'link':
+          if (opener === void 0) {
+            return;
+          }
+
+          command = msg.shift();
+
+          switch (command) {
+            case 'reqpatch':
+              // TODO: dummy data
+              opener.postMessage('link,patch', '*');
+              break;
+
+            case 'setpatch':
+            case 'ready':
+              opener.postMessage('link,ready', '*'); // TODO: NOP
+
+              break;
+
+            case 'progress':
+              opener.postMessage('link,progress', '*');
+              break;
+
+            default:
+              console.error('unknown link message:', command);
+              break;
+          }
+
+          break;
+
+        default: // console.error('unknown message type');
+
+      }
+    }
+    /**
+     * @param {function(ArrayBuffer)} callback
+     * @export
+     */
+
+  }, {
+    key: "setLoadCallback",
+    value: function setLoadCallback(callback) {
+      this.loadCallback = callback;
+    }
+    /**
+     * @param {Array.<number>} message
+     */
+
+  }, {
+    key: "processMidiMessage",
+    value: function processMidiMessage(message) {
+      /** @type {number} */
+      var channel = message[0] & 0x0f;
+      /** @type {Synthesizer} */
+
+      var synth = this.synth;
+
+      switch (message[0] & 0xf0) {
+        case 0x80:
+          // NoteOff: 8n kk vv
+          synth.noteOff(channel, message[1], message[2]);
+          break;
+
+        case 0x90:
+          // NoteOn: 9n kk vv
+          if (message[2] > 0) {
+            synth.noteOn(channel, message[1], message[2]);
+          } else {
+            synth.noteOff(channel, message[1], 0);
+          }
+
+          break;
+
+        case 0xb0:
+          // Control Change: Bn cc dd
+
+          /** @type {number} */
+          var value = message[2];
+
+          switch (message[1]) {
+            case 0x00:
+              // Bank Select MSB: Bn 00 dd
+              synth.bankSelectMsb(channel, value);
+              break;
+
+            case 0x01:
+              // Modulation Depth
+              synth.modulationDepth(channel, value);
+              break;
+
+            case 0x05:
+              // Portament Time
+              break;
+
+            case 0x06:
+              // Data Entry(MSB): Bn 06 dd
+              if (this.rpnMode) {
+                // RPN
+                switch (this.RpnMsb[channel]) {
+                  case 0:
+                    switch (this.RpnLsb[channel]) {
+                      case 0:
+                        // Pitch Bend Sensitivity
+                        synth.pitchBendSensitivity(channel, value);
+                        break;
+
+                      case 1:
+                        // console.log("fine");
+                        break;
+
+                      case 2:
+                        // console.log("coarse");
+                        break;
+
+                      default:
+                        // console.log("default");
+                        break;
+                    }
+
+                    break;
+
+                  default:
+                    // console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
+                    break;
                 }
               } else {
-                // 11~16 Ch.
-                if (map !== 0x00) {
-                  synth.setPercussionPart(part, true);
-                } else {
-                  synth.setPercussionPart(part, false);
+                // NRPN
+                switch (this.NrpnMsb[channel]) {
+                  case 26:
+                    // Drum Instrument Level
+                    synth.drumInstrumentLevel(this.NrpnLsb[channel], value);
+                    break;
+
+                  default:
+                    // console.log("default:", this.RpnMsb[channel], this.RpnLsb[channel]);
+                    break;
                 }
               }
 
               break;
-          }
-        } else if (vendor == 0x43) {
-          console.log('XG:', this.dumpMessage(message)); // XG
 
-          if (subId2 === 0x08) {
-            // XG Dram Part: F0 43 10 4C 08 [partNum] 07 [map] F7
-            // but there is no file to use much this parameter...
-            if (message[7] !== 0x00) {
-              // [map]
-              synth.setPercussionPart(message[6], true);
-            } else {
-              synth.setPercussionPart(message[6], false);
-            } // console.log(message);
+            case 0x26:
+              // Data Entry(LSB): Bn 26 dd
+              if (this.rpnMode) {
+                // RPN
+                switch (this.RpnMsb[channel]) {
+                  case 0:
+                    switch (this.RpnLsb[channel]) {
+                      case 0:
+                        // Pitch Bend Sensitivity
+                        synth.pitchBendSensitivity(channel, synth.getPitchBendSensitivity(channel) + value / 100);
+                        break;
 
-          }
+                      case 1:
+                        // console.log("fine");
+                        break;
 
-          switch (message[7]) {
-            case 0x04:
-              // XG Master Volume: F0 43 10 4C 00 00 04 [value] F7
-              synth.setMasterVolume((message[8] << 7) * 2); // console.log(message[8] << 7);
+                      case 2:
+                        // console.log("coarse");
+                        break;
+                    }
+
+                    break;
+                }
+              } // NRPN で LSB が必要なものは今のところない
+
 
               break;
 
-            case 0x7E:
-              // XG Reset: F0 43 10 4C 00 00 7E 00 F7
-              synth.init('XG');
-              console.info('XG Reset');
+            case 0x07:
+              // Volume Change: Bn 07 dd
+              synth.volumeChange(channel, value);
+              break;
+
+            case 0x0a:
+              // Panpot Change: Bn 0A dd
+              synth.panpotChange(channel, value);
+              break;
+
+            case 0x78:
+              // All Sound Off: Bn 78 00
+              synth.allSoundOff(channel);
+              break;
+
+            case 0x79:
+              // Reset All Control: Bn 79 00
+              synth.resetAllControl(channel);
+              break;
+
+            case 0x20:
+              // BankSelect LSB: Bn 00 dd
+              synth.bankSelectLsb(channel, value);
+              break;
+
+            case 0x47:
+              // Harmonic Content
+              synth.harmonicContent(channel, value);
+              break;
+
+            case 0x60:
+              //
+              // console.log(60);
+              break;
+
+            case 0x61:
+              //
+              // console.log(61);
+              break;
+
+            case 0x62:
+              // NRPN LSB
+              this.rpnMode = false;
+              this.NrpnLsb[channel] = value;
+              break;
+
+            case 0x63:
+              // NRPN MSB
+              this.rpnMode = false;
+              this.NrpnMsb[channel] = value;
+              break;
+
+            case 0x64:
+              // RPN LSB
+              this.rpnMode = true;
+              this.RpnLsb[channel] = value;
+              break;
+
+            case 0x65:
+              // RPN MSB
+              this.rpnMode = true;
+              this.RpnMsb[channel] = value;
+              break;
+
+            case 0x40:
+              // Hold
+              synth.hold(channel, value);
+              break;
+
+            case 0x0b:
+              // Expression
+              synth.expression(channel, value);
+              break;
+
+            case 0x48:
+              // DecayTyme
+              synth.decayTime(channel, value);
+              break;
+
+            case 0x49:
+              // ReleaseTime
+              synth.releaseTime(channel, value);
+              break;
+
+            case 0x4a:
+              // Attack time
+              synth.attackTime(channel, value);
+              break;
+
+            case 0x4b:
+              // Brightness
+              synth.cutOffFrequency(channel, value);
+              break;
+
+            case 0x5b:
+              // Effect1 Depth（Reverb Send Level）
+              synth.reverbDepth(channel, value);
+              break;
+
+            default:
+              // not supported
               break;
           }
-        }
 
-        switch (device) {
-          case 0x04:
-            // device control
-            // sub ID 2
-            switch (subId2) {
+          break;
+
+        case 0xc0:
+          // Program Change: Cn pp
+          synth.programChange(channel, message[1]);
+          break;
+
+        case 0xe0:
+          // Pitch Bend
+          synth.pitchBend(channel, message[1], message[2]);
+          break;
+
+        case 0xf0:
+          // System Exclusive Message
+          //   F0
+          //   [2]<vendor ID>
+          //   [3]<device ID>
+          //   [4]<sub ID 1>
+          //   [5]<sub ID 2>
+          //   [6]<size of parameter key>
+          //   [7]<size of parameter value>
+          //   [8]<MSB>
+          //   [9]<LSB>
+          //   [10]<data>
+          //   [11]<checksum> [IGNORE]
+          //   F7 EOX [IGNORE]
+
+          /** @type {number} Vendor ID (Roland=0x41 / YAMAHA=0x43 / Non Realtime=0x7E / Realtime=0x7F) */
+          var vendor = message[2];
+          /** @type {number} Device ID (GM extended=0x10 / ポケミク=0x79 / Any=0x7F) */
+
+          var device = message[3];
+          /** @type {number} Sub ID 1 (Model ID: GM=0x09 / GS=0x42 / XG=0x4C) */
+
+          var subId1 = message[4];
+          /** @type {number} Sub ID 2 */
+
+          var subId2 = message[5]; // Gneral MIDI
+          // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
+
+          if (vendor === 0x7e && device === 0x09) {
+            // Non Realtime
+            switch (subId1) {
               case 0x01:
-                // master volume: F0 7F 7F 04 01 [value] [value] F7
-                synth.setMasterVolume(message[5] + (message[6] << 7));
+                // GM System On
+                synth.init('GM');
+                break;
+
+              case 0x02:
+                // GM System Off
+                // Ignore
+                break;
+
+              case 0x03:
+                // GM2 System On
+                synth.init('GM2');
                 break;
             }
+          } else if (vendor === 0x7f) {// Realtime
+            // Through
+          } // http://www.amei.or.jp/report/report4.html
 
-            break;
+
+          if (vendor === 0x41) {
+            console.log('GS:', this.dumpMessage(message)); // GS
+            // http://lib.roland.co.jp/support/jp/manuals/res/1809974/SC-88VL_j.pdf
+            // F0 42 10 42 12 40 [part] [key] [value] [checksum] F7
+            // TODO
+
+            switch (message[8]) {
+              case 0x04:
+                // GS Master Volume: F0 41 10 42 12 40 00 04 [value] [checksum] F7
+                synth.setMasterVolume(message[9] << 7);
+                break;
+
+              case 0x7f:
+                // GS Reset: F0 41 10 42 12 40 00 7F 00 [checksum] F7
+                synth.init('GS');
+                console.info('GS Reset');
+                break;
+
+              case 0x15:
+                // GS Dram part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
+                // Notice: [sum] is ignroe in this program.
+                var part = message[7] - 0x0f;
+                var map = message[8];
+
+                if (part === 0) {
+                  // 10 Ch.
+                  if (map !== 0x00) {
+                    synth.setPercussionPart(9, true);
+                  } else {
+                    synth.setPercussionPart(9, false);
+                  }
+                } else if (part >= 10) {
+                  // 1~9 Ch.
+                  if (map !== 0x00) {
+                    synth.setPercussionPart(part - 1, true);
+                  } else {
+                    synth.setPercussionPart(part - 1, false);
+                  }
+                } else {
+                  // 11~16 Ch.
+                  if (map !== 0x00) {
+                    synth.setPercussionPart(part, true);
+                  } else {
+                    synth.setPercussionPart(part, false);
+                  }
+                }
+
+            }
+          } else if (vendor == 0x43) {
+            console.log('XG:', this.dumpMessage(message)); // XG
+
+            if (subId2 === 0x08) {
+              // XG Dram Part: F0 43 10 4C 08 [partNum] 07 [map] F7
+              // but there is no file to use much this parameter...
+              if (message[7] !== 0x00) {
+                // [map]
+                synth.setPercussionPart(message[6], true);
+              } else {
+                synth.setPercussionPart(message[6], false);
+              } // console.log(message);
+
+            }
+
+            switch (message[7]) {
+              case 0x04:
+                // XG Master Volume: F0 43 10 4C 00 00 04 [value] F7
+                synth.setMasterVolume((message[8] << 7) * 2); // console.log(message[8] << 7);
+
+                break;
+
+              case 0x7e:
+                // XG Reset: F0 43 10 4C 00 00 7E 00 F7
+                synth.init('XG');
+                console.info('XG Reset');
+                break;
+            }
+          }
+
+          switch (device) {
+            case 0x04:
+              // device control
+              // sub ID 2
+              switch (subId2) {
+                case 0x01:
+                  // master volume: F0 7F 7F 04 01 [value] [value] F7
+                  synth.setMasterVolume(message[5] + (message[6] << 7));
+                  break;
+              }
+
+              break;
+          }
+
+          break;
+
+        default:
+          // not supported
+          synth.setPercussionPart(9, true);
+          break;
+      }
+    }
+    /**
+     * Dump System Exclusive Message
+     * @private
+     * @param {Array} message
+     * @return {string}
+     */
+
+  }, {
+    key: "dumpMessage",
+    value: function dumpMessage(message) {
+      var ret = [];
+
+      var _iterator = _createForOfIteratorHelper(message),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var msg = _step.value;
+          ret.push(msg.toString(16).toUpperCase());
         }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
 
-        break;
-
-      default:
-        // not supported
-        synth.setPercussionPart(9, true);
-        break;
+      return ret.join(' ');
     }
-  }
+  }]);
 
-  /**
-   * Dump System Exclusive Message
-   * @private
-   * @param {Array} message
-   */
-  dumpMessage(message) {
-    const ret = [];
+  return WebMidiLink;
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WebMidiLink);
+})();
 
-    for (const msg of message) {
-      ret.push(msg.toString(16).toUpperCase());
-    }
-
-    return ret.join(' ');
-  }
-
-}
-/* harmony default export */ __webpack_exports__["default"] = (WebMidiLink);
-
-/***/ })
-
-/******/ });
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
 });
 //# sourceMappingURL=sf2.synth.js.map

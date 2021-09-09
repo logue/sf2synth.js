@@ -83,7 +83,7 @@ export class SynthesizerNote {
     // ---------------------------------------------------------------------------
 
     /** @type {AudioBuffer} */
-    this.audioBuffer;
+    this.audioBuffer = null;
     /** @type {AudioBufferSourceNode} */
     this.bufferSource = ctx.createBufferSource();
     /** @type {StereoPannerNode} */
@@ -144,9 +144,16 @@ export class SynthesizerNote {
     /** @type {number} */
     const pan = instrument['pan'] !== void 0 ? instrument['pan'] : this.panpot;
 
-    const sample = this.buffer.subarray(0, this.buffer.length + instrument['end']);
+    const sample = this.buffer.subarray(
+      0,
+      this.buffer.length + instrument['end']
+    );
     /** @type {AudioBuffer} */
-    const buffer = this.audioBuffer = ctx.createBuffer(1, sample.length, this.sampleRate);
+    const buffer = (this.audioBuffer = ctx.createBuffer(
+      1,
+      sample.length,
+      this.sampleRate
+    ));
     /** @type {Float32Array} */
     const channelData = buffer.getChannelData(0);
     channelData.set(sample);
@@ -173,9 +180,9 @@ export class SynthesizerNote {
     panner.panningModel = 'equalpower';
     // panner.distanceModel = 'inverse';
     panner.setPosition(
-      Math.sin(pan * Math.PI / 2),
+      Math.sin((pan * Math.PI) / 2),
       0,
-      Math.cos(pan * Math.PI / 2),
+      Math.cos((pan * Math.PI) / 2)
     );
 
     // ---------------------------------------------------------------------------
@@ -183,7 +190,10 @@ export class SynthesizerNote {
     // ---------------------------------------------------------------------------
 
     /** @type {number} */
-    let volume = this.volume * (this.velocity / 127) * (1 - instrument['initialAttenuation'] / 1000);
+    let volume =
+      this.volume *
+      (this.velocity / 127) *
+      (1 - instrument['initialAttenuation'] / 1000);
     if (volume < 0) {
       volume = 0;
     }
@@ -195,25 +205,39 @@ export class SynthesizerNote {
     outputGain.setValueAtTime(0, volDelay);
     outputGain.setTargetAtTime(volume, volDelay, instrument['volAttack']);
     outputGain.setValueAtTime(volume, volHold);
-    outputGain.linearRampToValueAtTime(volume * (1 - instrument['volSustain']), volDecay);
+    outputGain.linearRampToValueAtTime(
+      volume * (1 - instrument['volSustain']),
+      volDecay
+    );
 
     // modulation envelope
     /** @type {number} */
     const baseFreq = this.amountToFreq(instrument['initialFilterFc']);
     /** @type {number} */
-    const peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
+    const peekFreq = this.amountToFreq(
+      instrument['initialFilterFc'] + instrument['modEnvToFilterFc']
+    );
     /** @type {number} */
-    const sustainFreq = baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
+    const sustainFreq =
+      baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
 
     /** @type {BiquadFilterNode} */
     const modulator = this.modulator;
     modulator.Q.setValueAtTime(10 ** (instrument['initialFilterQ'] / 200), now);
     modulator.frequency.value = baseFreq;
     modulator.type = 'lowpass';
-    modulator.frequency.setTargetAtTime(baseFreq / 127, this.ctx.currentTime, 0.5);
+    modulator.frequency.setTargetAtTime(
+      baseFreq / 127,
+      this.ctx.currentTime,
+      0.5
+    );
     modulator.frequency.setValueAtTime(baseFreq, now);
     modulator.frequency.setValueAtTime(baseFreq, modDelay);
-    modulator.frequency.setTargetAtTime(peekFreq, modDelay, parseFloat(instrument['modAttack'] + 1)); // For FireFox fix
+    modulator.frequency.setTargetAtTime(
+      peekFreq,
+      modDelay,
+      parseFloat(instrument['modAttack'] + 1)
+    ); // For FireFox fix
     modulator.frequency.setValueAtTime(peekFreq, modHold);
     modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
 
@@ -282,7 +306,8 @@ export class SynthesizerNote {
     /** @type {number} */
     const volEndTimeTmp = instrument['volRelease'] * output.gain.value;
     /** @type {number} */
-    const volEndTime = now + (volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63)));
+    const volEndTime =
+      now + volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63));
     // var volEndTime = now + instrument['volRelease'] * (1 - instrument['volSustain']);
 
     // ---------------------------------------------------------------------------
@@ -293,14 +318,16 @@ export class SynthesizerNote {
     /** @type {number} */
     const baseFreq = this.amountToFreq(instrument['initialFilterFc']);
     /** @type {number} */
-    const peekFreq = this.amountToFreq(instrument['initialFilterFc'] + instrument['modEnvToFilterFc']);
+    const peekFreq = this.amountToFreq(
+      instrument['initialFilterFc'] + instrument['modEnvToFilterFc']
+    );
     /** @type {number} */
-    const modEndTime = now + instrument['modRelease'] *
-      (
-        baseFreq === peekFreq ?
-          1 :
-          (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq)
-      );
+    const modEndTime =
+      now +
+      instrument['modRelease'] *
+        (baseFreq === peekFreq
+          ? 1
+          : (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq));
     // var modEndTime = now + instrument['modRelease'] * (1 - instrument['modSustain']);
 
     if (!this.audioBuffer) {
@@ -329,8 +356,14 @@ export class SynthesizerNote {
         modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
 
         bufferSource.playbackRate.cancelScheduledValues(0);
-        bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
-        bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
+        bufferSource.playbackRate.setValueAtTime(
+          bufferSource.playbackRate.value,
+          now
+        );
+        bufferSource.playbackRate.linearRampToValueAtTime(
+          this.computedPlaybackRate,
+          modEndTime
+        );
 
         bufferSource.stop(volEndTime);
         break;
@@ -349,11 +382,18 @@ export class SynthesizerNote {
         modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
 
         bufferSource.playbackRate.cancelScheduledValues(0);
-        bufferSource.playbackRate.setValueAtTime(bufferSource.playbackRate.value, now);
-        bufferSource.playbackRate.linearRampToValueAtTime(this.computedPlaybackRate, modEndTime);
-      default:
+        bufferSource.playbackRate.setValueAtTime(
+          bufferSource.playbackRate.value,
+          now
+        );
+        bufferSource.playbackRate.linearRampToValueAtTime(
+          this.computedPlaybackRate,
+          modEndTime
+        );
         bufferSource.loop = false;
         break;
+      default:
+        bufferSource.loop = false;
     }
   }
 
@@ -383,15 +423,18 @@ export class SynthesizerNote {
     /** @type {number} */
     const modDecay = modAttack + instrument['modDecay'];
     /** @type {number} */
-    const peekPitch = computed *
-      1.0594630943592953 // Math.pow(2, 1 / 12)
-      **
-      (this.modEnvToPitch * this.instrument['scaleTuning']);
+    const peekPitch =
+      computed *
+      1.0594630943592953 ** // Math.pow(2, 1 / 12)
+        (this.modEnvToPitch * this.instrument['scaleTuning']);
 
     playbackRate.cancelScheduledValues(0);
     playbackRate.setValueAtTime(computed, start);
     playbackRate.linearRampToValueAtTime(peekPitch, modAttack);
-    playbackRate.linearRampToValueAtTime(computed + (peekPitch - computed) * (1 - instrument['modSustain']), modDecay);
+    playbackRate.linearRampToValueAtTime(
+      computed + (peekPitch - computed) * (1 - instrument['modSustain']),
+      modDecay
+    );
   }
 
   /**
@@ -405,12 +448,12 @@ export class SynthesizerNote {
    * @param {number} pitchBend
    */
   updatePitchBend(pitchBend) {
-    this.computedPlaybackRate = this.playbackRate * (
-      1.0594630943592953 // Math.pow(2, 1 / 12)
-      **
-      ((pitchBend / (pitchBend < 0 ? 8192 : 8191)) *
-        this.pitchBendSensitivity *
-        this.instrument['scaleTuning']));
+    this.computedPlaybackRate =
+      this.playbackRate *
+      1.0594630943592953 ** // Math.pow(2, 1 / 12)
+        ((pitchBend / (pitchBend < 0 ? 8192 : 8191)) *
+          this.pitchBendSensitivity *
+          this.instrument['scaleTuning']);
     this.schedulePlaybackRate();
   }
 }

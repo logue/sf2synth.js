@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
   <meta charset="utf-8" />
@@ -21,29 +21,22 @@
 
 <body>
   <div class="container-fluid">
-    <header class="d-flex justify-content-between align-items-end">
+    <header>
       <h1 class="h2">SoundFont:<span id="soundfont"></span></h1>
-      <p class="text-right">
-        By
-        <a href="https://logue.be/" target="_blank">Logue</a> /
-        <small>Last Modified: <span id="build"></span></small>
+      <p class="text-end">
+        <a href="https://logue.dev/" target="_blank">Logue</a> /
+        <small class="text-muted">Last Modified: <span id="build"></span></small>
       </p>
     </header>
     <main>
-      <div id="message" class="alert alert-warning">Loading...</div>
       <div class="d-flex justify-content-between align-items-center">
-        <!--div class="custom-control custom-checkbox custom-control-inline">
-          <input type="checkbox" class="custom-control-input" id="velocity" />
-          <label class="custom-control-label" for="velocity">Display Velocity</label>
-        </div-->
-        <div class="custom-file form-control-sm ml-3">
-          <input type="file" class="custom-file-input" id="file" accept="audio/x-soundfont">
-          <label class="custom-file-label" for="file">Load SoundFont2 file
-            <small class="d-none d-sm-inline">(drag and drop here *.sf2 file to change sound font)</small>
+        <div>
+          <label class="form-label" for="file">Load SoundFont2 file
+            <small class="text-muted d-none d-sm-inline">(drag and drop here *.sf2 file to change sound font)</small>
           </label>
+          <input type="file" class="form-control" id="file" accept="audio/x-soundfont">
         </div>
       </div>
-      <hr />
       <div id="placeholder"></div>
     </main>
   </div>
@@ -79,22 +72,7 @@
       reader.onload = function (e) {
         var data = new Uint8Array(e.target.result);
         wml.loadSoundFont(data);
-        document.getElementById('soundfont').innerText = file.name;
-        message.style.display = 'none';
       };
-
-      reader.onloadstart = function (e) {
-        message.style.display = 'block';
-      };
-
-      reader.onprogress = function (e) {
-        if (e.lengthComputable) {
-          let percentLoaded = Math.round((e.loaded / e.total) * 10000);
-          message.innerHTML = '<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="' +
-            percentLoaded + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + percentLoaded + '%;">' +
-            percentLoaded + ' %</div></div>';
-        }
-      }
     }
 
     // local file
