@@ -4,10 +4,10 @@
   "version": "0.3.5",
   "description": "SoundFont2 Synthesizer",
   "scripts": {
-    "watch": "webpack serve  --mode development --color",
     "dev": "webpack --mode development",
     "prod": "webpack --mode production",
-    "start": "webpack-dev-server --color --mode development",
+    "serve": "webpack-dev-server --color --mode development",
+    "lint": "eslint ./src",
     "fix": "eslint --fix ./src"
   },
   "main": "bin/sf2.synth.min.js",
@@ -50,23 +50,23 @@
   "devDependencies": {
     "@babel/cli": "^7.15.4",
     "@babel/core": "^7.15.5",
-    "@babel/preset-env": "^7.15.4",
+    "@babel/preset-env": "^7.15.6",
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^9.0.1",
     "core-js": "^3.17.3",
     "css-loader": "^6.2.0",
+    "css-minimizer-webpack-plugin": "^3.0.2",
     "eslint": "^7.32.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
     "mini-css-extract-plugin": "^2.2.2",
-    "node-sass": "^6.0.1",
-    "optimize-css-assets-webpack-plugin": "^6.0.1",
+    "prettier": "^2.4.0",
+    "sass": "^1.39.2",
     "sass-loader": "^12.1.0",
-    "terser-webpack-plugin": "^5.2.3",
+    "terser-webpack-plugin": "^5.2.4",
     "webpack": "^5.52.0",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^4.1.1"
+    "webpack-dev-server": "^4.2.0"
   },
   "dependencies": {
     "@logue/reverb": "^0.4.2",

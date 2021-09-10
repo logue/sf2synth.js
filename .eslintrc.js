@@ -6,11 +6,10 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'google','eslint-config-prettier'],
+  extends: ['eslint:recommended', 'google', 'prettier'],
   parserOptions: {
     ecmaVersion: 2020,
     parser: 'babel-eslint',
     sourceType: 'module',
   },
-  plugins: ['prettier'],
 };

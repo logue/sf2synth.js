@@ -2,22 +2,17 @@
 @import '~bootstrap/scss/functions';
 @import '~bootstrap/scss/variables';
 @import '~bootstrap/scss/mixins';
-@import '~bootstrap/scss/utilities';
+
 // Layout & components
 @import '~bootstrap/scss/root';
 @import '~bootstrap/scss/reboot';
-@import '~bootstrap/scss/type';
 @import '~bootstrap/scss/containers';
-@import '~bootstrap/scss/grid';
 @import '~bootstrap/scss/forms';
-@import '~bootstrap/scss/buttons';
 @import '~bootstrap/scss/alert';
 @import '~bootstrap/scss/progress';
 
-// Helpers
-@import '~bootstrap/scss/helpers';
-
 // Utilities
+@import '~bootstrap/scss/utilities';
 @import '~bootstrap/scss/utilities/api';
 
 .synthesizer {
@@ -32,7 +27,7 @@
     .channel {
       display: flex;
       align-items: center;
-      margin: 0.25rem auto;
+      padding: 0.1rem;
       justify-content: space-between;
 
       @include media-breakpoint-down(md) {
@@ -50,12 +45,13 @@
 
       .bank,
       .bank select {
-        width: 5rem;
+        width: 4.5rem;
       }
 
       .program,
       .program select {
-        width: 13rem;
+        min-width: 9rem;
+        width: 14rem;
         @include media-breakpoint-down(md) {
           width: 10rem;
         }
@@ -73,10 +69,10 @@
       .pitchBend {
         min-width: 6em;
         align-self: center;
+        padding: 0.1rem;
         @include media-breakpoint-down(xl) {
           min-width: 4rem;
         }
-
         @include media-breakpoint-down(lg) {
           min-width: 3rem;
         }
@@ -86,6 +82,26 @@
         @include media-breakpoint-down(sm) {
           min-width: 3rem;
         }
+      }
+      .panpot .progress .progress-bar {
+        background-color: $teal;
+        &.left {
+          background-color: $cyan;
+        }
+        &.right {
+          background-color: $orange;
+        }
+      }
+      .pitchBend .progress .progress-bar {
+        background-color: $pink;
+        /*
+        &.low {
+          background-color: $indigo;
+        }
+        &.high {
+          background-color: $purple;
+        }
+        */
       }
 
       .pitchBendSensitivity {
@@ -125,7 +141,6 @@
             width: 10px;
             height: 100%;
             border-left: 1px solid $gray-500;
-            /* 500 */
             box-sizing: border-box;
 
             &:first-child {

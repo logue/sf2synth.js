@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const pjson = require('./package.json');
@@ -19,6 +19,23 @@ module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
   const banner = `${pjson.name} v${pjson.version} | ${pjson.author.name} / ${pjson.contributors[0].name} | license: ${pjson.license} | build: ${build}`;
 
+  const plugins = [
+    new webpack.BannerPlugin({
+      banner: banner,
+    }),
+    new MiniCssExtractPlugin({
+      // ファイル名を設定します
+      filename: !isProduction ? '[name].css' : '[name].min.css',
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: 'bin/sf2.synth.js', to: '../docs' },
+        { from: 'bin/sf2.synth.js.map', to: '../docs' },
+        { from: 'bin/wml.css', to: '../docs' },
+      ],
+    }),
+  ];
+
   if (env.production) {
     fs.writeFileSync(
       path.resolve(path.join(__dirname, 'src/meta.js')),
@@ -29,26 +46,16 @@ const Meta = {
 };
 export default Meta;`
     );
+  } else {
+    plugins.push(new webpack.HotModuleReplacementPlugin());
   }
 
   return {
     mode: env,
     target: ['web'],
-    devtool: !isProduction ? 'source-map' : false,
-    devServer: {
-      static: {
-        directory: path.join(__dirname, 'docs'),
-      },
-      client: {
-        overlay: true,
-      },
-      hot: true,
-      port: 8080,
-    },
     entry: {
       'sf2.synth': './src/wml.js',
       'sf2.parser': './src/sf2.js',
-      // eslint-disable-next-line quote-props
       wml: './src/wml.scss',
     },
     output: {
@@ -63,6 +70,8 @@ export default Meta;`
       minimize: isProduction,
       minimizer: [
         new TerserPlugin({
+          test: /\.js(\?.*)?$/i,
+          extractComments: true,
           terserOptions: {
             ecma: 2020,
             compress: { drop_console: true },
@@ -72,27 +81,7 @@ export default Meta;`
             },
           },
         }),
-        new OptimizeCSSAssetsPlugin({
-          /*
-          cssProcessorPluginOptions: {
-            preset: ['advanced',
-              {
-                autoprefixer: {
-                  // autoprefixerによる vendor prefix の追加を行う
-                  add: true,
-                  // サポートするブラウザVersionの指定
-                  browsers: ["last 2 versions", "ie >= 11", "Android >= 4"]
-                },
-                // ライセンスも含めて、コメントを全て削除する
-                discardComments: { removeAll: true },
-                // CSSの定義のソートを行う
-                cssDeclarationSorter : { order: 'smacss' }
-              }
-            ],
-          },
-          canPrint: true
-          */
-        }),
+        new CssMinimizerPlugin(),
       ],
       splitChunks: {
         minSize: 0,
@@ -101,54 +90,21 @@ export default Meta;`
     },
     module: {
       rules: [
+        // 拡張子 .js の場合
         {
-          // 拡張子 .js の場合
-          test: /\.js$/,
-          use: [
-            {
-              // Babel を利用する
-              loader: 'babel-loader',
-              // Babel のオプションを指定する
-              options: {
-                presets: [
-                  // プリセットを指定することで、ES2020 を ES5 に変換
-                  '@babel/preset-env',
-                ],
-              },
+          test: /\.m?js$/,
+          exclude: /(node_modules|bower_components)/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
             },
-          ],
+          },
         },
         // Sassファイルの読み込みとコンパイル
         {
-          test: /\.scss$/, // 対象となるファイルの拡張子
-          use: [
-            // CSSファイルを書き出すオプションを有効にする
-            {
-              loader: MiniCssExtractPlugin.loader,
-            },
-            // CSSをバンドルするための機能
-            {
-              loader: 'css-loader',
-              options: {
-                // オプションでCSS内のurl()メソッドの取り込みを禁止する
-                url: false,
-                // ソースマップの利用有無
-                sourceMap: false,
-
-                // 0 => no loaders (default);
-                // 1 => postcss-loader;
-                // 2 => postcss-loader, sass-loader
-                importLoaders: 2,
-              },
-            },
-            {
-              loader: 'sass-loader',
-              options: {
-                // ソースマップの利用有無
-                sourceMap: false,
-              },
-            },
-          ],
+          test: /\.s[ac]ss$/i,
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
         },
       ],
     },
@@ -156,21 +112,16 @@ export default Meta;`
       modules: [`${__dirname}/src`, 'node_modules'],
       extensions: ['.js', '.scss'],
     },
-    plugins: [
-      new webpack.BannerPlugin({
-        banner: banner,
-      }),
-      new MiniCssExtractPlugin({
-        // ファイル名を設定します
-        filename: !isProduction ? '[name].css' : '[name].min.css',
-      }),
-      new CopyPlugin({
-        patterns: [
-          { from: 'bin/sf2.synth.js', to: '../docs' },
-          { from: 'bin/sf2.synth.js.map', to: '../docs' },
-          { from: 'bin/wml.css', to: '../docs' },
-        ],
-      }),
-    ],
+    plugins: plugins,
+    devtool: !isProduction ? 'source-map' : false,
+    devServer: {
+      static: {
+        directory: path.join(__dirname, 'docs'),
+      },
+      client: {
+        overlay: true,
+      },
+      port: 8080,
+    },
   };
 };

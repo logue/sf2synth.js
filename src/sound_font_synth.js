@@ -188,7 +188,13 @@ export class Synthesizer {
     this.filter = [];
 
     for (i = 0; i < 16; ++i) {
-      this.reverb[i] = new Reverb(this.ctx, { mix: 0.315 }); // リバーブエフェクトのデフォルト値は40なので40/127の値をドライ／ウェット値となる
+      this.reverb[i] = new Reverb(this.ctx, {
+        // ノイズはブラウンノイズとする。
+        noise: 2,
+        // リバーブエフェクトのデフォルト値は40なので40/127の値をドライ／ウェット値となる
+        mix: 0.315,
+        time: 1.1,
+      });
       // フィルタを定義
       this.filter[i] = this.ctx.createBiquadFilter();
     }
@@ -256,7 +262,7 @@ export class Synthesizer {
       this.pitchBend(i, 0x00, 0x40); // 8192
       this.pitchBendSensitivity(i, 2);
       this.channelHold[i] = false;
-      this.channelExpression[i] = 127;
+      this.expression[i] = 127;
       this.channelBank[i] = i === 9 ? 127 : 0;
       this.attackTime(i, 64);
       this.decayTime(i, 64);
@@ -590,172 +596,161 @@ export class Synthesizer {
       const channelElem = doc.createElement('div');
       channelElem.className = 'channel';
       for (const item in items) {
-        if ({}.hasOwnProperty.call(items, item)) {
-          /** @type {HTMLDivElement} */
-          const itemElem = doc.createElement('div');
-          itemElem.className = items[item];
-
-          switch (items[item]) {
-            case 'mute':
-              /** @type {HTMLDivElement|null} */
-              const checkboxElement = doc.createElement('div');
-              checkboxElement.className = 'form-check';
-              /** @type {HTMLInputElement|null} */
-              const checkbox = doc.createElement('input');
-              checkbox.setAttribute('type', 'checkbox');
-              checkbox.className = 'form-check-input';
-              checkbox.id = 'mute' + channel + 'ch';
-              checkbox.addEventListener(
-                'change',
-                ((synth, channelElem) => {
-                  return () => {
-                    synth.mute(channelElem, this.checked);
-                  };
-                })(this, channel),
-                false
-              );
-              checkboxElement.appendChild(checkbox);
-              /** @type {HTMLLabelElement} */
-              const labelElem = doc.createElement('label');
-              labelElem.className = 'form-check-label';
-              labelElem.textContent = channel + 1;
-              labelElem.setAttribute('for', 'mute' + channel + 'ch');
-              checkboxElement.appendChild(labelElem);
-              itemElem.appendChild(checkboxElement);
-              break;
-            case 'bank':
-              // Bank select
-              /** @type {HTMLSelectElement} */
-              const bankSelect = doc.createElement('select');
-              bankSelect.className = 'form-select form-select-sm';
-              itemElem.appendChild(bankSelect);
-              /** @type {HTMLOptionElement} */
-              const option = doc.createElement('option');
-              bankSelect.appendChild(option);
-
-              bankSelect.addEventListener(
-                'change',
-                ((synth, channelElem) => {
-                  return (event) => {
-                    synth.bankChange(channelElem, event.target.value);
-                    synth.programChange(
-                      channelElem,
-                      synth.channelElemInstrument[channelElem]
-                    );
-                  };
-                })(this, channel),
-                false
-              );
-
-              bankSelect.selectedIndex = this.channelBank[item];
-              break;
-            case 'program':
-              // Program change
-              /** @type {HTMLSelectElement|null} */
-              const select = doc.createElement('select');
-              select.className = 'form-select form-select-sm';
-
-              itemElem.appendChild(select);
-
-              select.addEventListener(
-                'change',
-                ((synth, channelElem) => {
-                  return (event) => {
-                    synth.programChange(channelElem, event.target.value);
-                  };
-                })(this, channel),
-                false
-              );
-
-              select.selectedIndex = this.channelInstrument[item];
-              break;
-            case 'volume':
-              const volumeElem = document.createElement('var');
-              volumeElem.innerText = 100;
-              itemElem.appendChild(volumeElem);
-              break;
-            case 'pitchBendSensitivity':
-              const pitchSensElem = document.createElement('var');
-              pitchSensElem.innerText = 2;
-              itemElem.appendChild(pitchSensElem);
-              break;
-            case 'panpot':
-              /** @type {HTMLDivElement|null} */
-              const panpotOuter = doc.createElement('div');
-              panpotOuter.className = 'progress';
-              const panpot = doc.createElement('div');
-              // 緑色
-              panpot.className = 'progress-bar bg-success';
-              panpotOuter.appendChild(panpot);
-              itemElem.appendChild(panpotOuter);
-              break;
-            case 'pitchBend':
-              /** @type {HTMLDivElement|null} */
-              const pitchOuter = doc.createElement('div');
-              pitchOuter.className = 'progress';
-              const pitch = doc.createElement('div');
-              // 黄色
-              pitch.className = 'progress-bar bg-info';
-              pitchOuter.appendChild(pitch);
-              itemElem.appendChild(pitchOuter);
-              break;
-            case 'keys':
-              for (let key = 0; key < 127; key++) {
-                /** @type {HTMLDivElement|null} */
-                const keyElem = doc.createElement('div');
-                /** @type {number} */
-                const n = key % 12;
-                // 白鍵と黒鍵の色分け
-                keyElem.className =
-                  'key ' + ([1, 3, 6, 8, 10].includes(n) ? 'semitone' : 'tone');
-                itemElem.appendChild(keyElem);
-
-                // イベント割当
-                keyElem.addEventListener(
-                  eventStart,
-                  ((synth, channelElem, k) => {
-                    return (event) => {
-                      event.preventDefault();
-                      synth.drag = true;
-                      synth.noteOn(channelElem, k, 127);
-                    };
-                  })(this, channel, key)
-                );
-                keyElem.addEventListener(
-                  'mouseover',
-                  ((synth, channelElem, k) => {
-                    return (event) => {
-                      event.preventDefault();
-                      if (synth.drag) {
-                        synth.noteOn(channelElem, k, 127);
-                      }
-                    };
-                  })(this, channel, key)
-                );
-                keyElem.addEventListener(
-                  'mouseout',
-                  ((synth, channelElem, k) => {
-                    return (event) => {
-                      event.preventDefault();
-                      synth.noteOff(channelElem, k, 0);
-                    };
-                  })(this, channel, key)
-                );
-                keyElem.addEventListener(
-                  eventEnd,
-                  ((synth, channelElem, k) => {
-                    return (event) => {
-                      event.preventDefault();
-                      synth.drag = false;
-                      synth.noteOff(channelElem, k, 0);
-                    };
-                  })(this, channel, key)
-                );
-              }
-              break;
-          }
-          channelElem.appendChild(itemElem);
+        if (!{}.hasOwnProperty.call(items, item)) {
+          continue;
         }
+        /** @type {HTMLDivElement} */
+        const itemElem = doc.createElement('div');
+        itemElem.className = items[item];
+
+        switch (items[item]) {
+          case 'mute':
+            /** @type {HTMLDivElement|null} */
+            const checkboxElement = doc.createElement('div');
+            checkboxElement.className = 'form-check';
+            /** @type {HTMLInputElement|null} */
+            const checkbox = doc.createElement('input');
+            checkbox.setAttribute('type', 'checkbox');
+            checkbox.className = 'form-check-input';
+            checkbox.id = 'mute' + channel + 'ch';
+            checkbox.value = channel;
+            checkbox.addEventListener(
+              'input',
+              (event) => {
+                this.mute(channel, event.target.checked);
+              },
+              false
+            );
+            checkboxElement.appendChild(checkbox);
+            /** @type {HTMLLabelElement} */
+            const labelElem = doc.createElement('label');
+            labelElem.className = 'form-check-label';
+            labelElem.textContent = channel + 1;
+            labelElem.setAttribute('for', 'mute' + channel + 'ch');
+            checkboxElement.appendChild(labelElem);
+            itemElem.appendChild(checkboxElement);
+            break;
+          case 'bank':
+            // Bank select
+            /** @type {HTMLSelectElement} */
+            const bankSelect = doc.createElement('select');
+            bankSelect.className = 'form-select form-select-sm';
+            itemElem.appendChild(bankSelect);
+            /** @type {HTMLOptionElement} */
+            const option = doc.createElement('option');
+            bankSelect.appendChild(option);
+
+            bankSelect.addEventListener(
+              'change',
+              ((synth, ch) => (event) => {
+                synth.bankChange(ch, event.target.value);
+                synth.programChange(
+                  ch,
+                  synth.channelElemInstrument[channelElem]
+                );
+              })(this, channel),
+              false
+            );
+
+            bankSelect.selectedIndex = this.channelBank[item];
+            break;
+          case 'program':
+            // Program change
+            /** @type {HTMLSelectElement|null} */
+            const select = doc.createElement('select');
+            select.className = 'form-select form-select-sm';
+
+            itemElem.appendChild(select);
+
+            select.addEventListener(
+              'change',
+              ((synth, ch) => (event) => {
+                synth.programChange(ch, event.target.value);
+              })(this, channel),
+              false
+            );
+
+            select.selectedIndex = this.channelInstrument[item];
+            break;
+          case 'volume':
+            const volumeElem = document.createElement('var');
+            volumeElem.innerText = 100;
+            itemElem.appendChild(volumeElem);
+            break;
+          case 'pitchBendSensitivity':
+            const pitchSensElem = document.createElement('var');
+            pitchSensElem.innerText = 2;
+            itemElem.appendChild(pitchSensElem);
+            break;
+          case 'panpot':
+            /** @type {HTMLDivElement|null} */
+            const panpotOuter = doc.createElement('div');
+            panpotOuter.className = 'progress';
+            const panpot = doc.createElement('div');
+            // 緑色
+            panpot.className = 'progress-bar';
+            panpotOuter.appendChild(panpot);
+            itemElem.appendChild(panpotOuter);
+            break;
+          case 'pitchBend':
+            /** @type {HTMLDivElement|null} */
+            const pitchOuter = doc.createElement('div');
+            pitchOuter.className = 'progress';
+            const pitch = doc.createElement('div');
+            // 黄色
+            pitch.className = 'progress-bar';
+            pitchOuter.appendChild(pitch);
+            itemElem.appendChild(pitchOuter);
+            break;
+          case 'keys':
+            // 鍵盤の描画
+            for (let key = 0; key < 127; key++) {
+              /** @type {HTMLDivElement|null} */
+              const keyElem = doc.createElement('div');
+              /** @type {number} */
+              const n = key % 12;
+              // 白鍵と黒鍵の色分け
+              keyElem.className =
+                'key ' + ([1, 3, 6, 8, 10].includes(n) ? 'semitone' : 'tone');
+              itemElem.appendChild(keyElem);
+
+              // イベント割当
+              keyElem.addEventListener(
+                eventStart,
+                ((synth, ch, k) => (event) => {
+                  event.preventDefault();
+                  synth.drag = true;
+                  synth.noteOn(ch, k, 127);
+                })(this, channel, key)
+              );
+              keyElem.addEventListener(
+                'mouseover',
+                ((synth, ch, k) => (event) => {
+                  event.preventDefault();
+                  if (synth.drag) {
+                    synth.noteOn(ch, k, 127);
+                  }
+                })(this, channel, key)
+              );
+              keyElem.addEventListener(
+                'mouseout',
+                ((synth, ch, k) => (event) => {
+                  event.preventDefault();
+                  synth.noteOff(ch, k, 0);
+                })(this, channel, key)
+              );
+              keyElem.addEventListener(
+                eventEnd,
+                ((synth, ch, k) => (event) => {
+                  event.preventDefault();
+                  synth.drag = false;
+                  synth.noteOff(ch, k, 0);
+                })(this, channel, key)
+              );
+            }
+            break;
+        }
+        channelElem.appendChild(itemElem);
       }
       instElem.appendChild(channelElem);
       this.observer.observe(channelElem);
@@ -847,19 +842,20 @@ export class Synthesizer {
       programElement.removeChild(programElement.firstChild);
 
     for (const programNo in this.programSet[bankIndex]) {
-      if ({}.hasOwnProperty.call(this.programSet[bankIndex], programNo)) {
-        // TODO: 存在しないプログラムの場合、現状では空白になってしまう
-        const option = document.createElement('option');
-        option.value = programNo;
-        option.textContent =
-          ('000' + (parseInt(programNo) + 1)).slice(-3) +
-          ':' +
-          this.programSet[bankIndex][programNo];
-        if (programNo === this.channelInstrument[channel]) {
-          option.selected = 'selected';
-        }
-        programElement.appendChild(option);
+      if (!{}.hasOwnProperty.call(this.programSet[bankIndex], programNo)) {
+        continue;
       }
+      // TODO: 存在しないプログラムの場合、現状では空白になってしまう
+      const option = document.createElement('option');
+      option.value = programNo;
+      option.textContent =
+        ('000' + (parseInt(programNo) + 1)).slice(-3) +
+        ':' +
+        this.programSet[bankIndex][programNo];
+      if (programNo === this.channelInstrument[channel]) {
+        option.selected = 'selected';
+      }
+      programElement.appendChild(option);
     }
   }
 
@@ -1179,11 +1175,11 @@ export class Synthesizer {
       const percentage = (panpot / 127) * 100;
       dom.style.width = `${percentage}%`;
       if (panpot < 63) {
-        dom.className = 'progress-bar bg-warning';
+        dom.className = 'progress-bar left';
       } else if (panpot > 65) {
-        dom.className = 'progress-bar bg-danger';
+        dom.className = 'progress-bar right';
       } else {
-        dom.className = 'progress-bar bg-success';
+        dom.className = 'progress-bar';
       }
     }
 
@@ -1191,7 +1187,8 @@ export class Synthesizer {
   }
 
   /**
-   * @param {number} channel panpot を変更するチャンネル.
+   * ピッチベンド
+   * @param {number} channel ピッチベンドを変更するチャンネル.
    * @param {number} lowerByte
    * @param {number} higherByte
    */
@@ -1208,11 +1205,19 @@ export class Synthesizer {
     const calculated = bend - 8192;
 
     if (this.element) {
-      this.element.querySelector(
+      const dom = this.element.querySelector(
         '.instrument > .channel:nth-child(' +
           (channel + 1) +
           ') > .pitchBend .progress-bar'
-      ).style.width = `${(bend / 16384) * 100}%`;
+      );
+      dom.style.width = `${Math.floor((bend / 16384) * 100)}%`;
+      if (calculated < 0) {
+        dom.className = 'progress-bar low';
+      } else if (calculated > 0) {
+        dom.className = 'progress-bar high';
+      } else {
+        dom.className = 'progress-bar';
+      }
     }
 
     for (i = 0, il = currentNoteOn.length; i < il; ++i) {
@@ -1367,6 +1372,7 @@ export class Synthesizer {
   }
 
   /**
+   * ミュート
    * @param {number} channel ミュートの設定を変更するチャンネル.
    * @param {boolean} mute ミュートにするなら true.
    */
@@ -1392,6 +1398,7 @@ export class Synthesizer {
   }
 
   /**
+   * パーカッションチャネルにする
    * @param {number} channel TODO:ドラムパートとしてセットするチャンネル
    * @param {boolean} sw ドラムか通常かのスイッチ
    */

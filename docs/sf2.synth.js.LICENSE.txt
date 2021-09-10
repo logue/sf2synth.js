@@ -86,7 +86,7 @@
 
 /*! @logue/reverb */
 
-/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-09T11:46:22.605Z */
+/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-10T11:16:58.607Z */
 
 /*! For license information please see reverb.min.js.LICENSE.txt */
 
