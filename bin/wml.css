@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-10T11:16:58.607Z */
+/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-15T11:09:45.339Z */
 /*!*******************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/wml.scss ***!
   \*******************************************************************************************************/
@@ -6052,11 +6052,78 @@ textarea.form-control-lg {
 .synthesizer .instrument > :nth-child(2n) {
   background-color: #f8f9fa;
 }
-.synthesizer .instrument .channel {
+.synthesizer .instrument .channel,
+.synthesizer .instrument .header {
   display: flex;
+  justify-content: space-between;
+}
+.synthesizer .instrument .header {
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+.synthesizer .instrument .header .keys {
+  display: flex;
+  justify-content: space-between;
+}
+.synthesizer .instrument .header .keys code {
+  display: block;
+}
+.synthesizer .instrument .channel {
   align-items: center;
   padding: 0.1rem;
-  justify-content: space-between;
+}
+.synthesizer .instrument .channel .mute {
+  width: 3rem;
+}
+.synthesizer .instrument .channel .bank {
+  width: 4.5rem;
+}
+.synthesizer .instrument .channel .program {
+  width: 14rem;
+}
+@media (max-width: 991.98px) {
+  .synthesizer .instrument .channel .program {
+    width: 10rem;
+  }
+}
+@media (max-width: 767.98px) {
+  .synthesizer .instrument .channel .program {
+    width: 8rem;
+  }
+}
+.synthesizer .instrument .channel .volume,
+.synthesizer .instrument .channel .expression,
+.synthesizer .instrument .channel .reverbDepth,
+.synthesizer .instrument .channel .pitchBendSensitivity {
+  width: 2rem;
+}
+.synthesizer .instrument .channel .panpot,
+.synthesizer .instrument .channel .pitchBend {
+  width: 6em;
+}
+@media (max-width: 1199.98px) {
+  .synthesizer .instrument .channel .panpot,
+.synthesizer .instrument .channel .pitchBend {
+    width: 4rem;
+  }
+}
+@media (max-width: 991.98px) {
+  .synthesizer .instrument .channel .panpot,
+.synthesizer .instrument .channel .pitchBend {
+    width: 3rem;
+  }
+}
+@media (max-width: 767.98px) {
+  .synthesizer .instrument .channel .panpot,
+.synthesizer .instrument .channel .pitchBend {
+    width: 4rem;
+  }
+}
+@media (max-width: 575.98px) {
+  .synthesizer .instrument .channel .panpot,
+.synthesizer .instrument .channel .pitchBend {
+    width: 2rem;
+  }
 }
 @media (max-width: 767.98px) {
   .synthesizer .instrument .channel {
@@ -6065,62 +6132,6 @@ textarea.form-control-lg {
 }
 .synthesizer .instrument .channel.hold {
   color: #dc3545;
-}
-.synthesizer .instrument .channel .mute {
-  margin-right: 0;
-  min-width: 3rem;
-}
-.synthesizer .instrument .channel .bank,
-.synthesizer .instrument .channel .bank select {
-  width: 4.5rem;
-}
-.synthesizer .instrument .channel .program,
-.synthesizer .instrument .channel .program select {
-  min-width: 9rem;
-  width: 14rem;
-}
-@media (max-width: 767.98px) {
-  .synthesizer .instrument .channel .program,
-.synthesizer .instrument .channel .program select {
-    width: 10rem;
-  }
-}
-.synthesizer .instrument .channel .volume {
-  min-width: 2rem;
-  margin-right: 0.25rem;
-  font-size: 0.75rem;
-  align-self: center;
-  text-align: right;
-}
-.synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
-  min-width: 6em;
-  align-self: center;
-  padding: 0.1rem;
-}
-@media (max-width: 1199.98px) {
-  .synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
-    min-width: 4rem;
-  }
-}
-@media (max-width: 991.98px) {
-  .synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
-    min-width: 3rem;
-  }
-}
-@media (max-width: 767.98px) {
-  .synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
-    min-width: 4rem;
-  }
-}
-@media (max-width: 575.98px) {
-  .synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
-    min-width: 3rem;
-  }
 }
 .synthesizer .instrument .channel .panpot .progress .progress-bar {
   background-color: #20c997;
@@ -6132,21 +6143,26 @@ textarea.form-control-lg {
   background-color: #fd7e14;
 }
 .synthesizer .instrument .channel .pitchBend .progress .progress-bar {
-  background-color: #d63384;
-  /*
-  &.low {
-    background-color: $indigo;
-  }
-  &.high {
-    background-color: $purple;
-  }
-  */
+  background-color: #6f42c1;
 }
+.synthesizer .instrument .channel .pitchBend .progress .progress-bar.low {
+  background-color: #d63384;
+}
+.synthesizer .instrument .channel .pitchBend .progress .progress-bar.high {
+  background-color: #d63384;
+}
+.synthesizer .instrument .channel .volume,
+.synthesizer .instrument .channel .expression,
+.synthesizer .instrument .channel .reverbDepth,
 .synthesizer .instrument .channel .pitchBendSensitivity {
-  min-width: 1.5rem;
+  margin-right: 0.25rem;
   font-size: 0.75rem;
-  align-self: center;
   text-align: right;
+}
+.synthesizer .instrument .channel .panpot,
+.synthesizer .instrument .channel .pitchBend {
+  align-self: center;
+  padding: 0.1rem;
 }
 .synthesizer .instrument .channel .keys {
   overflow: hidden;

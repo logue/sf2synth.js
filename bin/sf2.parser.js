@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-10T11:16:58.607Z */
+/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-15T11:09:45.339Z */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1269,7 +1269,7 @@ var Parser = /*#__PURE__*/function () {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("e8057c4f65e9f20a2150")
+/******/ 		__webpack_require__.h = () => ("51d455a4c6cf930d709b")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

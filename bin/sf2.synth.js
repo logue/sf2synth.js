@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-10T11:16:58.607Z */
+/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-15T11:09:45.339Z */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -12,14 +12,387 @@
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/@logue/reverb/bin/reverb.min.js":
-/*!******************************************************!*\
-  !*** ./node_modules/@logue/reverb/bin/reverb.min.js ***!
-  \******************************************************/
-/***/ (function(module) {
+/***/ "./node_modules/@logue/reverb/dist/Meta.js":
+/*!*************************************************!*\
+  !*** ./node_modules/@logue/reverb/dist/Meta.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports) => {
 
-/*! For license information please see reverb.min.js.LICENSE.txt */
-!function(e,t){ true?module.exports=t():0}("undefined"!=typeof self?self:this,(function(){return(()=>{"use strict";var e={35:(e,t)=>{Object.defineProperty(t,"__esModule",{value:!0});t.default={version:"0.4.2",date:"2021-07-04T08:13:17.775Z"}},804:(e,t)=>{Object.defineProperty(t,"__esModule",{value:!0}),t.NoiseType=void 0,function(e){e[e.WHITE=0]="WHITE",e[e.PINK=1]="PINK",e[e.BROWN=2]="BROWN"}(t.NoiseType||(t.NoiseType={}))},850:function(e,t,i){var s=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0});const o=s(i(35)),n=i(804);class r{version;build;ctx;wetGainNode;dryGainNode;filterNode;convolverNode;outputNode;_options;isConnected;constructor(e,t){this.version=o.default.version,this.build=o.default.date,this.ctx=e,this._options={...h,...t},this.wetGainNode=this.ctx.createGain(),this.dryGainNode=this.ctx.createGain(),this.filterNode=this.ctx.createBiquadFilter(),this.convolverNode=this.ctx.createConvolver(),this.outputNode=this.ctx.createGain(),this.isConnected=!1,this.buildImpulse()}connect(e){return this.convolverNode.connect(this.filterNode),this.filterNode.connect(this.wetGainNode),e.connect(this.convolverNode),e.connect(this.dryGainNode).connect(this.outputNode),e.connect(this.wetGainNode).connect(this.outputNode),this.isConnected=!0,this.outputNode}disconnect(e){return this.isConnected&&(this.convolverNode.disconnect(this.filterNode),this.filterNode.disconnect(this.wetGainNode)),this.isConnected=!1,e}mix(e){if(!this.inRange(e,0,1))throw new RangeError("Reverb.js: Dry/Wet ratio must be between 0 to 1.");this._options.mix=e,this.dryGainNode.gain.value=1-this._options.mix,this.wetGainNode.gain.value=this._options.mix}time(e){if(!this.inRange(e,1,50))throw new RangeError("Reverb.js: Time length of inpulse response must be less than 50sec.");this._options.time=e,this.buildImpulse()}decay(e){if(!this.inRange(e,0,100))throw new RangeError("Reverb.js: Inpulse Response decay level must be less than 100.");this._options.decay=e,this.buildImpulse()}delay(e){if(!this.inRange(e,0,100))throw new RangeError("Reverb.js: Inpulse Response delay time must be less than 100.");this._options.delay=e,this.buildImpulse()}reverse(e){this._options.reverse=e,this.buildImpulse()}filterType(e){this.filterNode.type=this._options.filterType=e}filterFreq(e){if(!this.inRange(e,20,5e3))throw new RangeError("Reverb.js: Filter frequrncy must be between 20 and 5000.");this._options.filterFreq=e,this.filterNode.frequency.value=this._options.filterFreq}filterQ(e){if(!this.inRange(e,0,10))throw new RangeError("Reverb.js: Filter quality value must be between 0 and 10.");this._options.filterQ=e,this.filterNode.Q.value=this._options.filterQ}setNoise(e){this._options.noise=e,this.buildImpulse()}inRange(e,t,i){return(e-t)*(e-i)<=0}buildImpulse(){const e=this.ctx.sampleRate,t=Math.max(e*this._options.time,1),i=e*this._options.delay,s=this.ctx.createBuffer(2,t,e),o=new Float32Array(t),h=new Float32Array(t),a=[0,0,0,0,0,0,0];for(let e=0;e<t;e++){let s=0;switch(e<i?(o[e]=0,h[e]=0,s=this._options.reverse?t-(e-i):e-i):s=this._options.reverse?t-e:e,this._options.noise){default:case n.NoiseType.WHITE:o[e]=r.whiteNoise(),h[e]=r.whiteNoise();break;case n.NoiseType.PINK:a[0]=.99886*a[0]+.0555179*r.whiteNoise(),a[1]=.99332*a[1]+.0750759*r.whiteNoise(),a[2]=.969*a[2]+.153852*r.whiteNoise(),a[3]=.8665*a[3]+.3104856*r.whiteNoise(),a[4]=.55*a[4]+.5329522*r.whiteNoise(),a[5]=-.7616*a[5]-.016898*r.whiteNoise(),o[e]=a[0]+a[1]+a[2]+a[3]+a[4]+a[5]+a[6]+.5362*r.whiteNoise(),h[e]=a[0]+a[1]+a[2]+a[3]+a[4]+a[5]+a[6]+.5362*r.whiteNoise(),o[e]*=.11,h[e]*=.11,a[6]=.115926*r.whiteNoise();break;case n.NoiseType.BROWN:o[e]=(a[0]+.02*r.whiteNoise())/1.02,a[0]=o[e],h[e]=(a[1]+.02*r.whiteNoise())/1.02,a[1]=h[e],o[e]*=3.5,h[e]*=3.5}o[e]*=(1-s/t)**this._options.decay,h[e]*=(1-s/t)**this._options.decay}s.getChannelData(0).set(o),s.getChannelData(1).set(h),this.convolverNode.buffer=s}static whiteNoise(){return 2*Math.random()-1}}t.default=r;const h={noise:1,decay:5,delay:0,reverse:!1,time:3,filterType:"lowpass",filterFreq:2200,filterQ:1,mix:.5}}},t={};return function i(s){var o=t[s];if(void 0!==o)return o.exports;var n=t[s]={exports:{}};return e[s].call(n.exports,n,n.exports,i),n.exports}(850)})()}));
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// This file is auto-generated by the build system.
+const meta = {
+    version: '0.4.5',
+    date: '2021-09-14T12:05:57.656Z',
+};
+exports["default"] = meta;
+//# sourceMappingURL=Meta.js.map
+
+/***/ }),
+
+/***/ "./node_modules/@logue/reverb/dist/NoiseType.js":
+/*!******************************************************!*\
+  !*** ./node_modules/@logue/reverb/dist/NoiseType.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NoiseType = void 0;
+/** Impulse response noise generation algorithm  */
+var NoiseType;
+(function (NoiseType) {
+    NoiseType[NoiseType["WHITE"] = 0] = "WHITE";
+    NoiseType[NoiseType["PINK"] = 1] = "PINK";
+    NoiseType[NoiseType["BROWN"] = 2] = "BROWN";
+    // BLUE,
+})(NoiseType = exports.NoiseType || (exports.NoiseType = {}));
+//# sourceMappingURL=NoiseType.js.map
+
+/***/ }),
+
+/***/ "./node_modules/@logue/reverb/dist/Reverb.js":
+/*!***************************************************!*\
+  !*** ./node_modules/@logue/reverb/dist/Reverb.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const Meta_1 = __importDefault(__webpack_require__(/*! ./Meta */ "./node_modules/@logue/reverb/dist/Meta.js"));
+const NoiseType_1 = __webpack_require__(/*! ./NoiseType */ "./node_modules/@logue/reverb/dist/NoiseType.js");
+/**
+ * JS reverb effect class
+ *
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2019-2021 Masashi Yoshikawa <https://logue.dev/> All rights reserved.
+ * @license   MIT
+ * @see       {@link https://github.com/logue/Reverb.js}
+ *            {@link https://github.com/web-audio-components/simple-reverb}
+ */
+class Reverb {
+    /** Version strings */
+    version;
+    /** Build date */
+    build;
+    /** AudioContext */
+    ctx;
+    /** Wet Level (Reverberated node) */
+    wetGainNode;
+    /** Dry Level (Original sound node) */
+    dryGainNode;
+    /** Impulse response filter */
+    filterNode;
+    /** Convolution node for applying impulse response */
+    convolverNode;
+    /** Output nodse */
+    outputNode;
+    /** Option */
+    _options;
+    /** Connected flag */
+    isConnected;
+    /**
+     * constructor
+     * @param ctx Root AudioContext
+     * @param options Configure
+     */
+    constructor(ctx, options) {
+        // バージョン情報など
+        this.version = Meta_1.default.version;
+        this.build = Meta_1.default.date;
+        // マスターのAudioContextを取得
+        this.ctx = ctx;
+        // デフォルト値をマージ
+        this._options = { ...optionDefaults, ...options };
+        // 初期化
+        this.wetGainNode = this.ctx.createGain();
+        this.dryGainNode = this.ctx.createGain();
+        this.filterNode = this.ctx.createBiquadFilter();
+        this.convolverNode = this.ctx.createConvolver();
+        this.outputNode = this.ctx.createGain();
+        // 接続済みフラグを落とす
+        this.isConnected = false;
+        // インパルス応答を生成
+        this.buildImpulse();
+        // トライ／ウェットノードの量を調整
+        this.mix(this._options.mix);
+    }
+    /**
+     * Connect the node for the reverb effect to the original sound node.
+     * @param sourceNode Input source node
+     */
+    connect(sourceNode) {
+        if (this.isConnected && this._options.once) {
+            // 接続済みだった場合、フラグを落としてそのまま出力ノードを返す
+            this.isConnected = false;
+            return this.outputNode;
+        }
+        // 畳み込みノードをウェットレベルに接続
+        this.convolverNode.connect(this.filterNode);
+        // フィルタノードをウェットレベルに接続
+        this.filterNode.connect(this.wetGainNode);
+        // 入力ノードを畳み込みノードに接続
+        sourceNode.connect(this.convolverNode);
+        // ドライレベルを出力ノードに接続
+        sourceNode.connect(this.dryGainNode).connect(this.outputNode);
+        // ウェットレベルを出力ノードに接続
+        sourceNode.connect(this.wetGainNode).connect(this.outputNode);
+        // 接続済みフラグを立てる
+        this.isConnected = true;
+        return this.outputNode;
+    }
+    /**
+     * Disconnect the reverb node
+     * @param sourceNode Input source node
+     */
+    disconnect(sourceNode) {
+        // 初期状態ではノードがつながっていないためエラーになる
+        if (this.isConnected) {
+            // 畳み込みノードをウェットレベルから切断
+            this.convolverNode.disconnect(this.filterNode);
+            // フィルタノードをウェットレベルから切断
+            this.filterNode.disconnect(this.wetGainNode);
+        }
+        // 接続済みフラグを解除
+        this.isConnected = false;
+        // そのままノードを返す（他のAPIに似せるため）
+        return sourceNode;
+    }
+    /**
+     * Dry/Wet ratio
+     * @param mix
+     */
+    mix(mix) {
+        if (!this.inRange(mix, 0, 1)) {
+            throw new RangeError('Reverb.js: Dry/Wet ratio must be between 0 to 1.');
+        }
+        this._options.mix = mix;
+        this.dryGainNode.gain.value = 1 - this._options.mix;
+        this.wetGainNode.gain.value = this._options.mix;
+        console.debug(`Reverb.js: Set dry/wet ratio to ${mix * 100}%`);
+    }
+    /**
+     * Set Impulse Response time length (second)
+     * @param value
+     */
+    time(value) {
+        if (!this.inRange(value, 1, 50)) {
+            throw new RangeError('Reverb.js: Time length of inpulse response must be less than 50sec.');
+        }
+        this._options.time = value;
+        this.buildImpulse();
+        console.info(`Reverb.js: Set inpulse response time length to ${value}sec.`);
+    }
+    /**
+     * Impulse response decay rate.
+     * @param value
+     */
+    decay(value) {
+        if (!this.inRange(value, 0, 100)) {
+            throw new RangeError('Reverb.js: Inpulse Response decay level must be less than 100.');
+        }
+        this._options.decay = value;
+        this.buildImpulse();
+        console.debug(`Reverb.js: Set inpulse response decay level to ${value}.`);
+    }
+    /**
+     * Delay before reverberation starts
+     * @param value time[ms]
+     */
+    delay(value) {
+        if (!this.inRange(value, 0, 100)) {
+            throw new RangeError('Reverb.js: Inpulse Response delay time must be less than 100.');
+        }
+        this._options.delay = value;
+        this.buildImpulse();
+        console.debug(`Reverb.js: Set inpulse response delay time to ${value}sec.`);
+    }
+    /**
+     * Reverse the impulse response.
+     * @param reverse
+     */
+    reverse(reverse) {
+        this._options.reverse = reverse;
+        this.buildImpulse();
+        console.debug(`Reverb.js: Inpulse response is ${reverse ? '' : 'not '}reversed.`);
+    }
+    /**
+     * Filter for impulse response
+     * @param type
+     */
+    filterType(type) {
+        this.filterNode.type = this._options.filterType = type;
+        console.debug(`Set filter type to ${type}`);
+    }
+    /**
+     * Filter frequency applied to impulse response
+     * @param freq
+     */
+    filterFreq(freq) {
+        if (!this.inRange(freq, 20, 5000)) {
+            throw new RangeError('Reverb.js: Filter frequrncy must be between 20 and 5000.');
+        }
+        this._options.filterFreq = freq;
+        this.filterNode.frequency.value = this._options.filterFreq;
+        console.debug(`Set filter frequency to ${freq}Hz.`);
+    }
+    /**
+     * Filter quality.
+     * @param q
+     */
+    filterQ(q) {
+        if (!this.inRange(q, 0, 10)) {
+            throw new RangeError('Reverb.js: Filter quality value must be between 0 and 10.');
+        }
+        this._options.filterQ = q;
+        this.filterNode.Q.value = this._options.filterQ;
+        console.debug(`Set filter quality to ${q}.`);
+    }
+    /**
+     * Inpulse Response Noise algorithm.
+     * @param type
+     */
+    setNoise(type) {
+        this._options.noise = type;
+        this.buildImpulse();
+        console.debug(`Set Noise type to ${type}.`);
+    }
+    /**
+     * return true if in range, otherwise false
+     * @private
+     * @param x Target value
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return
+     */
+    inRange(x, min, max) {
+        return (x - min) * (x - max) <= 0;
+    }
+    /**
+     * Utility function for building an impulse response
+     * from the module parameters.
+     * @private
+     */
+    buildImpulse() {
+        // インパルス応答生成ロジック
+        /** サンプリングレート */
+        const rate = this.ctx.sampleRate;
+        /** インパルス応答の演奏時間 */
+        const duration = Math.max(rate * this._options.time, 1);
+        /** インパルス応答が始まるまでの遅延時間 */
+        const delayDuration = rate * this._options.delay;
+        /** インパルス応答バッファ（今の所ステレオのみ） */
+        const impulse = this.ctx.createBuffer(2, duration, rate);
+        /** 左チャンネル */
+        const impulseL = new Float32Array(duration);
+        /** 右チャンネル*/
+        const impulseR = new Float32Array(duration);
+        /** 一時計算用 */
+        const b = [0, 0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < duration; i++) {
+            /** @type {number} 減衰率 */
+            let n = 0;
+            if (i < delayDuration) {
+                // Delay Effect
+                impulseL[i] = 0;
+                impulseR[i] = 0;
+                n = this._options.reverse
+                    ? duration - (i - delayDuration)
+                    : i - delayDuration;
+            }
+            else {
+                n = this._options.reverse ? duration - i : i;
+            }
+            switch (this._options.noise) {
+                case NoiseType_1.NoiseType.PINK:
+                    // ピンクノイズ生成処理
+                    // http://noisehack.com/generate-noise-web-audio-api/
+                    b[0] = 0.99886 * b[0] + Reverb.whiteNoise() * 0.0555179;
+                    b[1] = 0.99332 * b[1] + Reverb.whiteNoise() * 0.0750759;
+                    b[2] = 0.969 * b[2] + Reverb.whiteNoise() * 0.153852;
+                    b[3] = 0.8665 * b[3] + Reverb.whiteNoise() * 0.3104856;
+                    b[4] = 0.55 * b[4] + Reverb.whiteNoise() * 0.5329522;
+                    b[5] = -0.7616 * b[5] - Reverb.whiteNoise() * 0.016898;
+                    impulseL[i] =
+                        b[0] +
+                            b[1] +
+                            b[2] +
+                            b[3] +
+                            b[4] +
+                            b[5] +
+                            b[6] +
+                            Reverb.whiteNoise() * 0.5362;
+                    impulseR[i] =
+                        b[0] +
+                            b[1] +
+                            b[2] +
+                            b[3] +
+                            b[4] +
+                            b[5] +
+                            b[6] +
+                            Reverb.whiteNoise() * 0.5362;
+                    // ゲイン補償処理
+                    impulseL[i] *= 0.11;
+                    impulseR[i] *= 0.11;
+                    b[6] = Reverb.whiteNoise() * 0.115926;
+                    break;
+                case NoiseType_1.NoiseType.BROWN:
+                    // ブラウンノイズ生成処理
+                    impulseL[i] = (b[0] + 0.02 * Reverb.whiteNoise()) / 1.02;
+                    b[0] = impulseL[i];
+                    impulseR[i] = (b[1] + 0.02 * Reverb.whiteNoise()) / 1.02;
+                    b[1] = impulseR[i];
+                    // ゲイン補償処理
+                    impulseL[i] *= 3.5;
+                    impulseR[i] *= 3.5;
+                    break;
+                case NoiseType_1.NoiseType.WHITE:
+                default:
+                    // White Noise
+                    impulseL[i] = Reverb.whiteNoise();
+                    impulseR[i] = Reverb.whiteNoise();
+                    break;
+            }
+            // 音を減衰させる
+            impulseL[i] *= (1 - n / duration) ** this._options.decay;
+            impulseR[i] *= (1 - n / duration) ** this._options.decay;
+        }
+        // インパルス応答のバッファに生成したWaveTableを代入
+        impulse.getChannelData(0).set(impulseL);
+        impulse.getChannelData(1).set(impulseR);
+        this.convolverNode.buffer = impulse;
+    }
+    /**
+     * Generate white noise
+     */
+    static whiteNoise() {
+        // TODO: この乱数は本当に偏り無いのだろうか？
+        return Math.random() * 2 - 1;
+    }
+}
+exports["default"] = Reverb;
+/**
+ * デフォルト値
+ */
+const optionDefaults = {
+    noise: NoiseType_1.NoiseType.WHITE,
+    decay: 2,
+    delay: 0,
+    reverse: false,
+    time: 2,
+    filterType: 'lowpass',
+    filterFreq: 2200,
+    filterQ: 1,
+    mix: 0.5,
+    once: false,
+};
+//# sourceMappingURL=Reverb.js.map
 
 /***/ }),
 
@@ -3285,8 +3658,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sound_font_synth_note__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sound_font_synth_note */ "./src/sound_font_synth_note.js");
 /* harmony import */ var _sf2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sf2 */ "./src/sf2.js");
-/* harmony import */ var _logue_reverb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @logue/reverb */ "./node_modules/@logue/reverb/bin/reverb.min.js");
+/* harmony import */ var _logue_reverb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @logue/reverb */ "./node_modules/@logue/reverb/dist/Reverb.js");
 /* harmony import */ var _logue_reverb__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_logue_reverb__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _logue_reverb_dist_NoiseType__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @logue/reverb/dist/NoiseType */ "./node_modules/@logue/reverb/dist/NoiseType.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3296,6 +3670,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /* eslint-disable no-case-declarations */
+
 
 
 
@@ -3425,21 +3800,26 @@ var Synthesizer = /*#__PURE__*/function () {
     for (i = 0; i < 16; ++i) {
       this.reverb[i] = new (_logue_reverb__WEBPACK_IMPORTED_MODULE_2___default())(this.ctx, {
         // ノイズはブラウンノイズとする。
-        noise: 2,
-        // リバーブエフェクトのデフォルト値は40なので40/127の値をドライ／ウェット値となる
-        mix: 0.315,
-        time: 1.1
+        time: 1.1,
+        noise: _logue_reverb_dist_NoiseType__WEBPACK_IMPORTED_MODULE_3__.NoiseType.BROWN,
+        once: false
       }); // フィルタを定義
 
       this.filter[i] = this.ctx.createBiquadFilter();
     }
+    /** 表示項目 */
 
-    this.observer = new IntersectionObserver(function (entries, object) {
-      entries.forEach(function (entry, i) {
-        // 交差していない
-        entry.target.dataset.isIntersecting = entry.isIntersecting;
+
+    this.items = []; // 交差していない
+
+    this.intersection = new IntersectionObserver(function (entries) {
+      return entries.forEach(function (entry) {
+        return entry.target.dataset.isIntersecting = entry.isIntersecting;
       });
     }, {});
+    /** @type {function} タイマーのスレッド */
+
+    this.timer = null;
   }
   /**
    * @return {AudioContext}
@@ -3516,14 +3896,14 @@ var Synthesizer = /*#__PURE__*/function () {
 
       for (i = 0; i < 128; ++i) {
         this.percussionVolume[i] = 127;
-      }
+      } // this.setMasterVolume(8192);
+
 
       this.gainMaster.connect(this.ctx.destination);
-      /*
+
       if (this.element) {
-        this.element.querySelector('.header div:before').innerText = mode + ' Mode';
+        this.element.querySelector('.header .keys div').innerText = mode + ' Mode';
       }
-      */
 
       this.element.dataset.mode = mode;
     }
@@ -3777,7 +4157,8 @@ var Synthesizer = /*#__PURE__*/function () {
     key: "setMasterVolume",
     value: function setMasterVolume(volume) {
       this.masterVolume = volume;
-      this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
+      console.log('master volume:', volume);
+      this.gainMaster.gain.value = this.baseVolume * (volume / 16384); // console.log('master volume:', this.gainMaster.gain.value);
     }
     /**
      */
@@ -3817,7 +4198,7 @@ var Synthesizer = /*#__PURE__*/function () {
       instElem.className = 'instrument';
       /** @type {Array} */
 
-      var items = ['mute', 'bank', 'program', 'volume', 'panpot', 'pitchBend', 'pitchBendSensitivity', 'keys'];
+      this.items = ['mute', 'bank', 'program', 'volume', 'expression', 'panpot', 'pitchBend', 'pitchBendSensitivity', 'reverbDepth', 'keys'];
       /** @type {string} */
 
       var eventStart = 'ontouchstart' in window ? 'touchstart' : 'mousedown';
@@ -3828,19 +4209,24 @@ var Synthesizer = /*#__PURE__*/function () {
       var _loop = function _loop(channel) {
         /** @type {HTMLDivElement} */
         var channelElem = doc.createElement('div');
-        channelElem.className = 'channel';
+        channelElem.className = 'channel'; // ホールドを無効化する処理
 
-        for (var item in items) {
-          if (!{}.hasOwnProperty.call(items, item)) {
+        channelElem.addEventListener(eventStart, function () {
+          _this.hold(channel, 0);
+        });
+
+        for (var _item2 in _this.items) {
+          if (!{}.hasOwnProperty.call(_this.items, _item2)) {
             continue;
           }
           /** @type {HTMLDivElement} */
 
 
-          var itemElem = doc.createElement('div');
-          itemElem.className = items[item];
+          var _itemElem = doc.createElement('div');
 
-          switch (items[item]) {
+          _itemElem.className = _this.items[_item2];
+
+          switch (_this.items[_item2]) {
             case 'mute':
               /** @type {HTMLDivElement|null} */
               var checkboxElement = doc.createElement('div');
@@ -3863,7 +4249,9 @@ var Synthesizer = /*#__PURE__*/function () {
               labelElem.textContent = channel + 1;
               labelElem.setAttribute('for', 'mute' + channel + 'ch');
               checkboxElement.appendChild(labelElem);
-              itemElem.appendChild(checkboxElement);
+
+              _itemElem.appendChild(checkboxElement);
+
               break;
 
             case 'bank':
@@ -3872,8 +4260,10 @@ var Synthesizer = /*#__PURE__*/function () {
               /** @type {HTMLSelectElement} */
               var bankSelect = doc.createElement('select');
               bankSelect.className = 'form-select form-select-sm';
-              itemElem.appendChild(bankSelect);
+
+              _itemElem.appendChild(bankSelect);
               /** @type {HTMLOptionElement} */
+
 
               var option = doc.createElement('option');
               bankSelect.appendChild(option);
@@ -3883,7 +4273,7 @@ var Synthesizer = /*#__PURE__*/function () {
                   synth.programChange(ch, synth.channelElemInstrument[channelElem]);
                 };
               }(_this, channel), false);
-              bankSelect.selectedIndex = _this.channelBank[item];
+              bankSelect.selectedIndex = _this.channelBank[_item2];
               break;
 
             case 'program':
@@ -3892,25 +4282,47 @@ var Synthesizer = /*#__PURE__*/function () {
               /** @type {HTMLSelectElement|null} */
               var select = doc.createElement('select');
               select.className = 'form-select form-select-sm';
-              itemElem.appendChild(select);
+
+              _itemElem.appendChild(select);
+
               select.addEventListener('change', function (synth, ch) {
                 return function (event) {
                   synth.programChange(ch, event.target.value);
                 };
               }(_this, channel), false);
-              select.selectedIndex = _this.channelInstrument[item];
+              select.selectedIndex = _this.channelInstrument[_item2];
               break;
 
             case 'volume':
               var volumeElem = document.createElement('var');
               volumeElem.innerText = 100;
-              itemElem.appendChild(volumeElem);
+
+              _itemElem.appendChild(volumeElem);
+
+              break;
+
+            case 'expression':
+              var expressionElem = document.createElement('var');
+              expressionElem.innerText = 127;
+
+              _itemElem.appendChild(expressionElem);
+
               break;
 
             case 'pitchBendSensitivity':
               var pitchSensElem = document.createElement('var');
               pitchSensElem.innerText = 2;
-              itemElem.appendChild(pitchSensElem);
+
+              _itemElem.appendChild(pitchSensElem);
+
+              break;
+
+            case 'reverbDepth':
+              var reverbDepthElem = document.createElement('var');
+              reverbDepthElem.innerText = 40;
+
+              _itemElem.appendChild(reverbDepthElem);
+
               break;
 
             case 'panpot':
@@ -3921,7 +4333,9 @@ var Synthesizer = /*#__PURE__*/function () {
 
               panpot.className = 'progress-bar';
               panpotOuter.appendChild(panpot);
-              itemElem.appendChild(panpotOuter);
+
+              _itemElem.appendChild(panpotOuter);
+
               break;
 
             case 'pitchBend':
@@ -3932,7 +4346,9 @@ var Synthesizer = /*#__PURE__*/function () {
 
               pitch.className = 'progress-bar';
               pitchOuter.appendChild(pitch);
-              itemElem.appendChild(pitchOuter);
+
+              _itemElem.appendChild(pitchOuter);
+
               break;
 
             case 'keys':
@@ -3945,7 +4361,9 @@ var Synthesizer = /*#__PURE__*/function () {
                 var n = key % 12; // 白鍵と黒鍵の色分け
 
                 keyElem.className = 'key ' + ([1, 3, 6, 8, 10].includes(n) ? 'semitone' : 'tone');
-                itemElem.appendChild(keyElem); // イベント割当
+
+                _itemElem.appendChild(keyElem); // イベント割当
+
 
                 keyElem.addEventListener(eventStart, function (synth, ch, k) {
                   return function (event) {
@@ -3981,19 +4399,53 @@ var Synthesizer = /*#__PURE__*/function () {
               break;
           }
 
-          channelElem.appendChild(itemElem);
+          channelElem.appendChild(_itemElem);
         }
 
         instElem.appendChild(channelElem);
 
-        _this.observer.observe(channelElem);
+        _this.intersection.observe(channelElem);
       };
 
       for (var channel = 0; channel < 16; channel++) {
         _loop(channel);
+      } // ヘッダー行の描画
+
+
+      var itemName = ['Ch.', 'Bank', 'Program', 'Vol.', 'Exp.', 'Panpot', 'Pitch', '', 'Rev.', ''];
+      var headerElem = doc.createElement('div');
+      headerElem.className = 'header';
+
+      for (var item in this.items) {
+        if (!{}.hasOwnProperty.call(this.items, item)) {
+          continue;
+        }
+
+        var itemElem = doc.createElement('div');
+        itemElem.className = this.items[item];
+        itemElem.textContent = itemName[item];
+
+        if (this.items[item] === 'keys') {
+          itemElem.appendChild(document.createElement('code'));
+          itemElem.appendChild(document.createElement('div'));
+        }
+
+        headerElem.appendChild(itemElem);
       }
 
-      wrapper.appendChild(instElem);
+      instElem.prepend(headerElem);
+      wrapper.appendChild(instElem); // ヘッダー行のリサイズ
+
+      var ro = new ResizeObserver(function (entries) {
+        for (var _item in _this.items) {
+          if (!{}.hasOwnProperty.call(_this.items, _item)) {
+            continue;
+          }
+
+          wrapper.querySelector(".header .".concat(_this.items[_item])).style.width = wrapper.querySelector(".channel .".concat(_this.items[_item])).offsetWidth + 'px';
+        }
+      });
+      ro.observe(wrapper);
       return wrapper;
     }
     /**
@@ -4011,11 +4463,11 @@ var Synthesizer = /*#__PURE__*/function () {
       /** @type {HTMLDivElement} */
 
 
-      var channelElem = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
+      var channelElem = this.element.querySelectorAll(".instrument > .channel")[channel];
 
       if (channelElem.dataset.isIntersecting) {
         /** @type {HTMLDivElement} */
-        var keyElem = channelElem.querySelector('.key:nth-child(' + (key + 1) + ')');
+        var keyElem = channelElem.querySelector(".key:nth-child(".concat(key + 1, ")"));
 
         if (velocity === 0) {
           if (keyElem.classList.contains('note-on')) {
@@ -4024,7 +4476,8 @@ var Synthesizer = /*#__PURE__*/function () {
 
           keyElem.style.opacity = 1;
         } else {
-          keyElem.classList.add('note-on');
+          keyElem.classList.add('note-on'); // ベロシティに応じて透過度を調整
+
           keyElem.style.opacity = (velocity / 127).toFixed(2);
         }
       }
@@ -4043,7 +4496,7 @@ var Synthesizer = /*#__PURE__*/function () {
       /** @type {HTMLElement} */
 
 
-      var bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
+      var bankElement = this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.bank > select');
 
       while (bankElement.firstChild) {
         bankElement.removeChild(bankElement.firstChild);
@@ -4069,16 +4522,17 @@ var Synthesizer = /*#__PURE__*/function () {
       if (!this.element) {
         return;
       }
-      /** @type {number} */
 
+      var dom = this.element.querySelectorAll(".instrument > .channel")[channel];
+      /** @type {number} */
 
       var bankIndex = this.channelBank[channel];
       /** @type {HTMLElement} */
 
-      var bankElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select');
+      var bankElement = dom.querySelector('.bank > select');
       /** @type {HTMLElement} */
 
-      var programElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .program > select');
+      var programElement = dom.querySelector('.program > select');
       bankElement.value = this.channelBank[channel];
 
       while (programElement.firstChild) {
@@ -4093,7 +4547,7 @@ var Synthesizer = /*#__PURE__*/function () {
 
         var option = document.createElement('option');
         option.value = programNo;
-        option.textContent = ('000' + (parseInt(programNo) + 1)).slice(-3) + ':' + this.programSet[bankIndex][programNo];
+        option.textContent = "".concat(('000' + (parseInt(programNo) + 1)).slice(-3), ":").concat(this.programSet[bankIndex][programNo]);
 
         if (programNo === this.channelInstrument[channel]) {
           option.selected = 'selected';
@@ -4240,7 +4694,7 @@ var Synthesizer = /*#__PURE__*/function () {
       var currentNoteOn = this.currentNoteOn[channel];
       /** @type {boolean} 0以外はonである。 */
 
-      var hold = this.channelHold[channel] = !(value < 64);
+      var hold = this.channelHold[channel] = value > 64;
       /** @type {SynthesizerNote} */
 
       var note;
@@ -4266,11 +4720,15 @@ var Synthesizer = /*#__PURE__*/function () {
 
       if (this.element) {
         /** @type {HTMLDivElement} */
-        var channelElement = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ')');
+        var channelElement = this.element.querySelectorAll(".instrument > .channel")[channel];
+
+        if (!channelElement) {
+          return;
+        }
 
         if (this.channelHold[channel]) {
           channelElement.classList.add('hold');
-        } else {
+        } else if (channelElement.classList.contains('hold')) {
           channelElement.classList.remove('hold');
         }
       }
@@ -4342,7 +4800,7 @@ var Synthesizer = /*#__PURE__*/function () {
       this.bankChange(channel, this.channelBank[channel]);
 
       if (this.element) {
-        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') .program > select').value = instrument;
+        this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.program > select').value = instrument;
       }
     }
     /**
@@ -4372,7 +4830,7 @@ var Synthesizer = /*#__PURE__*/function () {
       this.updateProgramSelect(channel);
 
       if (this.element) {
-        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .bank > select').value = bank;
+        this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.bank > select').value = bank;
       }
     }
     /**
@@ -4385,7 +4843,7 @@ var Synthesizer = /*#__PURE__*/function () {
     key: "volumeChange",
     value: function volumeChange(channel, volume) {
       if (this.element) {
-        this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume var').innerText = volume;
+        this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.volume var').innerText = volume;
       }
 
       this.channelVolume[channel] = volume;
@@ -4412,6 +4870,10 @@ var Synthesizer = /*#__PURE__*/function () {
         currentNoteOn[i].updateExpression(_expression);
       }
 
+      if (this.element) {
+        this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.expression var').innerText = _expression;
+      }
+
       this.channelExpression[channel] = _expression;
     }
     /**
@@ -4424,7 +4886,7 @@ var Synthesizer = /*#__PURE__*/function () {
     key: "panpotChange",
     value: function panpotChange(channel, panpot) {
       if (this.element) {
-        var dom = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .panpot .progress-bar');
+        var dom = this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.panpot .progress-bar');
         var percentage = panpot / 127 * 100;
         dom.style.width = "".concat(percentage, "%");
 
@@ -4465,7 +4927,7 @@ var Synthesizer = /*#__PURE__*/function () {
       var calculated = bend - 8192;
 
       if (this.element) {
-        var dom = this.element.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBend .progress-bar');
+        var dom = this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.pitchBend .progress-bar');
         dom.style.width = "".concat(Math.floor(bend / 16384 * 100), "%");
 
         if (calculated < 0) {
@@ -4492,7 +4954,7 @@ var Synthesizer = /*#__PURE__*/function () {
     key: "pitchBendSensitivity",
     value: function pitchBendSensitivity(channel, sensitivity) {
       if (this.element) {
-        document.querySelector('.instrument > .channel:nth-child(' + (channel + 1) + ') > .pitchBendSensitivity > var').innerText = sensitivity;
+        this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.pitchBendSensitivity > var').innerText = sensitivity;
       }
 
       this.channelPitchBendSensitivity[channel] = sensitivity;
@@ -4568,6 +5030,10 @@ var Synthesizer = /*#__PURE__*/function () {
     value: function reverbDepth(channel, depth) {
       // リバーブ深度は、ドライ／ウェット比とする。
       this.reverb[channel].mix(depth / 127);
+
+      if (this.element) {
+        this.element.querySelectorAll(".instrument > .channel")[channel].querySelector('.reverbDepth var').innerText = depth;
+      }
     }
     /**
      * モデュレーター
@@ -4695,6 +5161,24 @@ var Synthesizer = /*#__PURE__*/function () {
       }
 
       this.percussionPart[channel] = sw;
+    }
+    /**
+     * MIDI音源のメッセージ欄に送られるsysExを解析
+     * @param {array} message
+     */
+
+  }, {
+    key: "processMidiMessage",
+    value: function processMidiMessage(message) {
+      clearTimeout(this.timer);
+      var dom = this.element.querySelector('.header .keys code');
+      dom.innerText = message.map(function (e) {
+        return String.fromCharCode(e);
+      }).join(''); // 2秒後に削除
+
+      this.timer = setTimeout(function () {
+        dom.innerText = '';
+      }, 10000);
     }
   }]);
 
@@ -5406,11 +5890,11 @@ var WebMidiLink = /*#__PURE__*/function () {
   }, {
     key: "load",
     value: function () {
-      var _load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(url) {
-        var opener, alert, message, progressOuter, progress, getContent, stream, cacheStorage, input;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      var _load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(url) {
+        var opener, alert, message, progressOuter, progress, downloadProgressHandler, getContent, stream, cacheStorage, input;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 /** @type {Window} */
                 opener = window.opener ? window.opener : window.parent;
@@ -5437,110 +5921,162 @@ var WebMidiLink = /*#__PURE__*/function () {
                 this.placeholder.appendChild(alert);
                 console.log('dom');
                 /**
+                 * ダウンロード中のハンドラ
+                 * @param {axios.progressEvent} progressEvent
+                 */
+
+                downloadProgressHandler = function downloadProgressHandler(progressEvent) {
+                  var total = parseFloat(progressEvent.currentTarget.responseHeaders['Content-Length']);
+                  var current = progressEvent.currentTarget.response.length;
+                  var percentCompleted = Math.floor(current / total * 100);
+                  message.innerText = "Now Loading... (".concat(current, "/").concat(total, ")");
+                  progress.style.width = percentCompleted + '%';
+                  progress.innerText = percentCompleted + ' %';
+                  opener.postMessage('link,progress,' + current + ',' + total, '*');
+                  requestAnimationFrame(downloadProgressHandler);
+                };
+                /**
                  * データを取得.
                  * @return {axios.Response}
                  */
 
-                getContent = function getContent() {
-                  console.info('Load from server.');
-                  return axios__WEBPACK_IMPORTED_MODULE_1___default().get(url, {
-                    headers: {
-                      Accept: 'audio/x-soundfont'
-                    },
-                    responseType: 'arraybuffer'
-                  }, {
-                    onDownloadProgress: function onDownloadProgress(progressEvent) {
-                      var total = parseFloat(progressEvent.currentTarget.responseHeaders['Content-Length']);
-                      var current = progressEvent.currentTarget.response.length;
-                      var percentCompleted = Math.floor(current / total * 100);
-                      message.innerText = "Now Loading... (".concat(current, "/").concat(total, ")");
-                      progress.style.width = percentCompleted + '%';
-                      progress.innerText = percentCompleted + ' %';
-                      opener.postMessage('link,progress,' + current + ',' + total, '*');
-                    }
-                  });
-                };
+
+                getContent = /*#__PURE__*/function () {
+                  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+                    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                      while (1) {
+                        switch (_context3.prev = _context3.next) {
+                          case 0:
+                            console.info('Load from server.');
+                            _context3.prev = 1;
+                            _context3.next = 4;
+                            return axios__WEBPACK_IMPORTED_MODULE_1___default().get(url, {
+                              headers: {
+                                Accept: 'audio/x-soundfont',
+                                'Access-Control-Allow-Origin': '*'
+                              },
+                              responseType: 'arraybuffer'
+                            }, {
+                              onDownloadProgress: downloadProgressHandler
+                            });
+
+                          case 4:
+                            return _context3.abrupt("return", _context3.sent);
+
+                          case 7:
+                            _context3.prev = 7;
+                            _context3.t0 = _context3["catch"](1);
+                            alert.className = 'alert alert-danger';
+                            progressOuter.style.display = 'none';
+                            message.innerText = "Error! HTTP Status: ".concat(_context3.t0.response.status, " ").concat(_context3.t0.response.statusText);
+                            return _context3.abrupt("return");
+
+                          case 13:
+                          case "end":
+                            return _context3.stop();
+                        }
+                      }
+                    }, _callee3, null, [[1, 7]]);
+                  }));
+
+                  return function getContent() {
+                    return _ref.apply(this, arguments);
+                  };
+                }();
                 /** @type {Response} */
 
 
                 stream = null;
 
                 if (!(this.option.cache && window.caches)) {
-                  _context3.next = 34;
+                  _context4.next = 35;
                   break;
                 }
 
                 console.info('load from cache.'); // キャッシュが利用可能な場合
 
-                _context3.next = 21;
+                _context4.next = 22;
                 return caches.open('wml');
 
-              case 21:
-                cacheStorage = _context3.sent;
-                _context3.next = 24;
+              case 22:
+                cacheStorage = _context4.sent;
+                _context4.next = 25;
                 return cacheStorage.match(url);
 
-              case 24:
-                stream = _context3.sent;
+              case 25:
+                stream = _context4.sent;
 
                 if (stream) {
-                  _context3.next = 31;
+                  _context4.next = 32;
                   break;
                 }
 
-                _context3.next = 28;
+                _context4.next = 29;
                 return getContent();
 
-              case 28:
-                stream = _context3.sent;
-                _context3.next = 32;
+              case 29:
+                stream = _context4.sent;
+                _context4.next = 33;
                 break;
-
-              case 31:
-                console.info('load from cache.');
 
               case 32:
-                _context3.next = 38;
+                console.info('load from cache.');
+
+              case 33:
+                _context4.next = 39;
                 break;
 
-              case 34:
+              case 35:
                 // キャッシュが使えない場合
                 console.info('This server/client does not cache function.');
-                _context3.next = 37;
+                _context4.next = 38;
                 return getContent();
 
-              case 37:
-                stream = _context3.sent;
-
               case 38:
-                if (!stream.error) {
-                  _context3.next = 43;
+                stream = _context4.sent;
+
+              case 39:
+                console.log(stream);
+                alert.className = 'alert alert-info';
+                message.innerText = 'Initializing...';
+                progress.style.width = '100%';
+                progress.className = 'progress-bar progress-bar-striped progress-bar-animated';
+
+                if (!(stream.error || !stream)) {
+                  _context4.next = 49;
                   break;
                 }
 
                 alert.className = 'alert alert-danger';
                 message.innerText = 'An error occurred when downloading a SoundFont.';
-                this.placeholder.removeChild(progress);
+                progressOuter.style.display = 'none';
                 throw Error(stream.error);
 
-              case 43:
-                alert.className = 'alert alert-info';
-                message.innerText = 'Initializing...';
-                progress.style.width = '100%';
-                progress.className = 'progress-bar progress-bar-striped progress-bar-animated'; // window.requestAnimationFrame(1);
-
+              case 49:
+                // window.requestAnimationFrame(1);
                 console.info('ready');
-                input = new Uint8Array(stream.data);
+                input = new Uint8Array(stream.data); // try {
+
                 this.loadSoundFont(input);
+                /*
+                } catch(e) {
+                  alert.className = 'alert alert-warning';
+                  progressOuter.style.display = 'none';
+                  message.innerText =
+                    'An error occurred while parsing SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
+                  return;
+                }
+                */
+
                 this.placeholder.removeChild(alert);
                 opener.postMessage('link,ready', '*');
 
-              case 52:
+              case 54:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
       function load(_x2) {
@@ -5562,6 +6098,7 @@ var WebMidiLink = /*#__PURE__*/function () {
       if (!this.synth) {
         /** @type {Synthesizer} */
         var synth = this.synth = new _sound_font_synth__WEBPACK_IMPORTED_MODULE_3__["default"](input);
+        console.log(synth);
 
         if (this.option.drawSynth) {
           this.placeholder.appendChild(synth.drawSynth());
@@ -5895,7 +6432,7 @@ var WebMidiLink = /*#__PURE__*/function () {
         case 0xf0:
           // System Exclusive Message
           //   F0
-          //   [2]<vendor ID>
+          //   [2]<vendor ID> http://www.amei.or.jp/report/report4.html
           //   [3]<device ID>
           //   [4]<sub ID 1>
           //   [5]<sub ID 2>
@@ -5915,13 +6452,12 @@ var WebMidiLink = /*#__PURE__*/function () {
           /** @type {number} Sub ID 1 (Model ID: GM=0x09 / GS=0x42 / XG=0x4C) */
 
           var subId1 = message[4];
-          /** @type {number} Sub ID 2 */
-
-          var subId2 = message[5]; // Gneral MIDI
-          // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
 
           if (vendor === 0x7e && device === 0x09) {
-            // Non Realtime
+            // Gneral MIDI
+            // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
+            console.log('GM:', this.dumpMessage(message)); // Non Realtime
+
             switch (subId1) {
               case 0x01:
                 // GM System On
@@ -5937,21 +6473,42 @@ var WebMidiLink = /*#__PURE__*/function () {
                 // GM2 System On
                 synth.init('GM2');
                 break;
+
+              default:
+                console.log('GM:', this.dumpMessage(message));
             }
-          } else if (vendor === 0x7f) {// Realtime
-            // Through
-          } // http://www.amei.or.jp/report/report4.html
-
-
-          if (vendor === 0x41) {
-            console.log('GS:', this.dumpMessage(message)); // GS
+          } else if (vendor === 0x7f) {
+            // Realtime
+            if (message[5] === 0x01) {
+              // master volume: F0 7F 7F 04 01 [value] [value] F7
+              synth.setMasterVolume(message[6] + (message[7] << 7));
+            } else {
+              console.log('realtime:', this.dumpMessage(message));
+            }
+          } else if (vendor === 0x41) {
+            // GS
             // http://lib.roland.co.jp/support/jp/manuals/res/1809974/SC-88VL_j.pdf
             // F0 42 10 42 12 40 [part] [key] [value] [checksum] F7
             // TODO
-
             switch (message[8]) {
+              case 0x00:
+                // TEXT INSERT FOR SC (ASCI code)
+                // http://kurizill.g1.xrea.com/memorandum/midi2.htm
+                // F0 41 10 45 12 10 00 00 [...value] [checksum] F7
+                // ex. F0 41 10 45 12 10 00 00 48 65 6C 6C 6F 21 F7 = Hello
+                console.log('GS message:', this.dumpMessage(message));
+                var msg = message.splice(8); // Remove F7
+
+                msg.pop(); // Remove Checksum
+
+                msg.pop();
+                synth.processMidiMessage(msg);
+                break;
+
               case 0x04:
-                // GS Master Volume: F0 41 10 42 12 40 00 04 [value] [checksum] F7
+                // GS Master Volume:
+                // F0 41 10 42 12 40 00 04 [value] [checksum] F7
+                // console.log('GS Volume:', this.dumpMessage(message));
                 synth.setMasterVolume(message[9] << 7);
                 break;
 
@@ -5990,49 +6547,98 @@ var WebMidiLink = /*#__PURE__*/function () {
                   }
                 }
 
+                break;
+
+              case 0x19:
+                // VOLUME ON/OFF (PART LEVEL)
+                // F0 41 10 42 12 40 1[part no] 19 [value] [checksum] F7
+                break;
+
+              case 0x30:
+                // Reverb Effect
+                console.log('GS Reverb:', this.dumpMessage(message));
+                break;
+
+              case 0x38:
+                // Chorus Effect
+                console.log('GS Chorus:', this.dumpMessage(message));
+                break;
+
+              case 0x45:
+                // Bitmap icon 16x16 ?
+                console.log('GS Bitmap:', this.dumpMessage(message));
+                break;
+
+              default:
+                console.log('GS:', this.dumpMessage(message));
             }
           } else if (vendor == 0x43) {
-            console.log('XG:', this.dumpMessage(message)); // XG
-
-            if (subId2 === 0x08) {
-              // XG Dram Part: F0 43 10 4C 08 [partNum] 07 [map] F7
-              // but there is no file to use much this parameter...
-              if (message[7] !== 0x00) {
-                // [map]
-                synth.setPercussionPart(message[6], true);
-              } else {
-                synth.setPercussionPart(message[6], false);
-              } // console.log(message);
-
+            // YAMAHA XG
+            // https://jp.yamaha.com/files/download/other_assets/9/321739/read_aoyama.pdf
+            // https://jp.yamaha.com/files/download/other_assets/1/316861/MU100J1.pdf
+            if (message[2] !== 0x43 && message[3] === 0x43) {
+              // delete checksum
+              message.splice(1, 1); // console.log('message:', this.dumpMessage(message));
             }
 
-            switch (message[7]) {
+            switch (message[5]) {
+              case 0x00:
+                // XG Reset:
+                // F0 43 1n 4C 00 00 7E 00 F7
+                // console.log('message:', this.dumpMessage(message));
+                if (message[7] === 0x7e) {
+                  synth.init('XG');
+                  console.info('XG Reset');
+                }
+
+                break;
+
+              case 0x02:
+                // Effect
+                // F0 43 10 4C 02 01 [type] [value] F7
+                // type
+                // 02: Reverb
+                // 40: Variation
+                // 5B: Part to apply variation effect
+                console.log('XG Effect:', this.dumpMessage(message));
+                break;
+
               case 0x04:
-                // XG Master Volume: F0 43 10 4C 00 00 04 [value] F7
-                synth.setMasterVolume((message[8] << 7) * 2); // console.log(message[8] << 7);
-
+                // XG Master Volume:
+                // F0 43 1n 4C 00 00 04 [value] F7
+                synth.setMasterVolume(message[9] * 64);
                 break;
 
-              case 0x7e:
-                // XG Reset: F0 43 10 4C 00 00 7E 00 F7
-                synth.init('XG');
-                console.info('XG Reset');
+              case 0x06:
+                // Text:
+                // F0 43 1n 4C 06 00 00 [text] F7
+                // ex. F0 43 1n 4C 06 00 00 48 65 6C 6C 6F 21 F7 = Hello
+                var _msg = message.splice(8); // Remove F7
+
+
+                _msg.pop();
+
+                synth.processMidiMessage(_msg);
                 break;
+
+              case 0x07:
+                // Bitmap Window
+                // F0 43 10 4C 07 00 00 [bitmap] F7
+                // 音源のアイコン描画領域に描画する16x16のビットマップ画像。
+                // 7bitごとに上から描画するが仕様がややこしいので処理しない
+                console.log('XG Bitmap:', this.dumpMessage(message));
+                break;
+
+              case 0x08:
+                // XG Dram Part:
+                // F0 43 10 4C 08 [partNum] 07 [map] F7
+                // ※厳密には[map]は1以上の値が入るが、本プログラムでは一律パーカッションパートとして処理をする。
+                synth.setPercussionPart(message[6], message[8] !== 0x00);
+                break;
+
+              default:
+                console.log('XG:', this.dumpMessage(message));
             }
-          }
-
-          switch (device) {
-            case 0x04:
-              // device control
-              // sub ID 2
-              switch (subId2) {
-                case 0x01:
-                  // master volume: F0 7F 7F 04 01 [value] [value] F7
-                  synth.setMasterVolume(message[5] + (message[6] << 7));
-                  break;
-              }
-
-              break;
           }
 
           break;
@@ -6948,7 +7554,7 @@ module.exports = JSON.parse('{"name":"axios","version":"0.21.4","description":"P
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("e8057c4f65e9f20a2150")
+/******/ 		__webpack_require__.h = () => ("51d455a4c6cf930d709b")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

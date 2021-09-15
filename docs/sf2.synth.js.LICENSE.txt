@@ -36,6 +36,10 @@
 
 /*! ./InterceptorManager */
 
+/*! ./Meta */
+
+/*! ./NoiseType */
+
 /*! ./adapters/xhr */
 
 /*! ./cancel/Cancel */
@@ -86,9 +90,9 @@
 
 /*! @logue/reverb */
 
-/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-10T11:16:58.607Z */
+/*! @logue/reverb/dist/NoiseType */
 
-/*! For license information please see reverb.min.js.LICENSE.txt */
+/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-15T11:09:45.339Z */
 
 /*! axios */
 
@@ -155,12 +159,20 @@
   \************************************************/
 
 /*!*************************************************!*\
+  !*** ./node_modules/@logue/reverb/dist/Meta.js ***!
+  \*************************************************/
+
+/*!*************************************************!*\
   !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
   \*************************************************/
 
 /*!**************************************************!*\
   !*** ./node_modules/axios/lib/helpers/spread.js ***!
   \**************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/@logue/reverb/dist/Reverb.js ***!
+  \***************************************************/
 
 /*!***************************************************!*\
   !*** ./node_modules/axios/lib/cancel/isCancel.js ***!
@@ -195,7 +207,7 @@
   \*****************************************************/
 
 /*!******************************************************!*\
-  !*** ./node_modules/@logue/reverb/bin/reverb.min.js ***!
+  !*** ./node_modules/@logue/reverb/dist/NoiseType.js ***!
   \******************************************************/
 
 /*!******************************************************!*\
@@ -241,3 +253,13 @@
 /*!***************************************************************!*\
   !*** ./node_modules/axios/lib/helpers/normalizeHeaderName.js ***!
   \***************************************************************/
+
+/**
+ * JS reverb effect class
+ *
+ * @author    Logue <logue@hotmail.co.jp>
+ * @copyright 2019-2021 Masashi Yoshikawa <https://logue.dev/> All rights reserved.
+ * @license   MIT
+ * @see       {@link https://github.com/logue/Reverb.js}
+ *            {@link https://github.com/web-audio-components/simple-reverb}
+ */

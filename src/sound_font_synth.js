@@ -2,6 +2,7 @@
 import SynthesizerNote from './sound_font_synth_note';
 import Parser from './sf2';
 import Reverb from '@logue/reverb';
+import { NoiseType } from '@logue/reverb/dist/NoiseType';
 
 /**
  * Synthesizer Class
@@ -190,21 +191,29 @@ export class Synthesizer {
     for (i = 0; i < 16; ++i) {
       this.reverb[i] = new Reverb(this.ctx, {
         // ノイズはブラウンノイズとする。
-        noise: 2,
-        // リバーブエフェクトのデフォルト値は40なので40/127の値をドライ／ウェット値となる
-        mix: 0.315,
         time: 1.1,
+        noise: NoiseType.BROWN,
+        once: false,
       });
       // フィルタを定義
       this.filter[i] = this.ctx.createBiquadFilter();
     }
 
-    this.observer = new IntersectionObserver((entries, object) => {
-      entries.forEach((entry, i) => {
-        // 交差していない
-        entry.target.dataset.isIntersecting = entry.isIntersecting;
-      });
-    }, {});
+    /** 表示項目 */
+    this.items = [];
+
+    // 交差していない
+    this.intersection = new IntersectionObserver(
+      (entries) =>
+        entries.forEach(
+          (entry) =>
+            (entry.target.dataset.isIntersecting = entry.isIntersecting)
+        ),
+      {}
+    );
+
+    /** @type {function} タイマーのスレッド */
+    this.timer = null;
   }
 
   /**
@@ -281,13 +290,14 @@ export class Synthesizer {
       this.percussionVolume[i] = 127;
     }
 
+    // this.setMasterVolume(8192);
+
     this.gainMaster.connect(this.ctx.destination);
 
-    /*
     if (this.element) {
-      this.element.querySelector('.header div:before').innerText = mode + ' Mode';
+      this.element.querySelector('.header .keys div').innerText =
+        mode + ' Mode';
     }
-    */
 
     this.element.dataset.mode = mode;
   }
@@ -547,7 +557,9 @@ export class Synthesizer {
    */
   setMasterVolume(volume) {
     this.masterVolume = volume;
+    console.log('master volume:', volume);
     this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
+    // console.log('master volume:', this.gainMaster.gain.value);
   }
 
   /**
@@ -576,14 +588,16 @@ export class Synthesizer {
     const instElem = doc.createElement('div');
     instElem.className = 'instrument';
     /** @type {Array} */
-    const items = [
+    this.items = [
       'mute',
       'bank',
       'program',
       'volume',
+      'expression',
       'panpot',
       'pitchBend',
       'pitchBendSensitivity',
+      'reverbDepth',
       'keys',
     ];
     /** @type {string} */
@@ -595,15 +609,19 @@ export class Synthesizer {
       /** @type {HTMLDivElement} */
       const channelElem = doc.createElement('div');
       channelElem.className = 'channel';
-      for (const item in items) {
-        if (!{}.hasOwnProperty.call(items, item)) {
+      // ホールドを無効化する処理
+      channelElem.addEventListener(eventStart, () => {
+        this.hold(channel, 0);
+      });
+      for (const item in this.items) {
+        if (!{}.hasOwnProperty.call(this.items, item)) {
           continue;
         }
         /** @type {HTMLDivElement} */
         const itemElem = doc.createElement('div');
-        itemElem.className = items[item];
+        itemElem.className = this.items[item];
 
-        switch (items[item]) {
+        switch (this.items[item]) {
           case 'mute':
             /** @type {HTMLDivElement|null} */
             const checkboxElement = doc.createElement('div');
@@ -677,10 +695,20 @@ export class Synthesizer {
             volumeElem.innerText = 100;
             itemElem.appendChild(volumeElem);
             break;
+          case 'expression':
+            const expressionElem = document.createElement('var');
+            expressionElem.innerText = 127;
+            itemElem.appendChild(expressionElem);
+            break;
           case 'pitchBendSensitivity':
             const pitchSensElem = document.createElement('var');
             pitchSensElem.innerText = 2;
             itemElem.appendChild(pitchSensElem);
+            break;
+          case 'reverbDepth':
+            const reverbDepthElem = document.createElement('var');
+            reverbDepthElem.innerText = 40;
+            itemElem.appendChild(reverbDepthElem);
             break;
           case 'panpot':
             /** @type {HTMLDivElement|null} */
@@ -753,9 +781,52 @@ export class Synthesizer {
         channelElem.appendChild(itemElem);
       }
       instElem.appendChild(channelElem);
-      this.observer.observe(channelElem);
+      this.intersection.observe(channelElem);
     }
+    // ヘッダー行の描画
+    const itemName = [
+      'Ch.',
+      'Bank',
+      'Program',
+      'Vol.',
+      'Exp.',
+      'Panpot',
+      'Pitch',
+      '',
+      'Rev.',
+      '',
+    ];
+    const headerElem = doc.createElement('div');
+    headerElem.className = 'header';
+    for (const item in this.items) {
+      if (!{}.hasOwnProperty.call(this.items, item)) {
+        continue;
+      }
+      const itemElem = doc.createElement('div');
+      itemElem.className = this.items[item];
+      itemElem.textContent = itemName[item];
+      if (this.items[item] === 'keys') {
+        itemElem.appendChild(document.createElement('code'));
+        itemElem.appendChild(document.createElement('div'));
+      }
+      headerElem.appendChild(itemElem);
+    }
+    instElem.prepend(headerElem);
     wrapper.appendChild(instElem);
+
+    // ヘッダー行のリサイズ
+    const ro = new ResizeObserver((entries) => {
+      for (const item in this.items) {
+        if (!{}.hasOwnProperty.call(this.items, item)) {
+          continue;
+        }
+        wrapper.querySelector(`.header .${this.items[item]}`).style.width =
+          wrapper.querySelector(`.channel .${this.items[item]}`).offsetWidth +
+          'px';
+      }
+    });
+    ro.observe(wrapper);
+
     return wrapper;
   }
 
@@ -769,15 +840,13 @@ export class Synthesizer {
       return;
     }
     /** @type {HTMLDivElement} */
-    const channelElem = this.element.querySelector(
-      '.instrument > .channel:nth-child(' + (channel + 1) + ')'
-    );
+    const channelElem = this.element.querySelectorAll(`.instrument > .channel`)[
+      channel
+    ];
 
     if (channelElem.dataset.isIntersecting) {
       /** @type {HTMLDivElement} */
-      const keyElem = channelElem.querySelector(
-        '.key:nth-child(' + (key + 1) + ')'
-      );
+      const keyElem = channelElem.querySelector(`.key:nth-child(${key + 1})`);
       if (velocity === 0) {
         if (keyElem.classList.contains('note-on')) {
           keyElem.classList.remove('note-on');
@@ -785,6 +854,7 @@ export class Synthesizer {
         keyElem.style.opacity = 1;
       } else {
         keyElem.classList.add('note-on');
+        // ベロシティに応じて透過度を調整
         keyElem.style.opacity = (velocity / 127).toFixed(2);
       }
     }
@@ -799,9 +869,9 @@ export class Synthesizer {
       return;
     }
     /** @type {HTMLElement} */
-    const bankElement = this.element.querySelector(
-      '.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select'
-    );
+    const bankElement = this.element
+      .querySelectorAll(`.instrument > .channel`)
+      [channel].querySelector('.bank > select');
 
     while (bankElement.firstChild)
       bankElement.removeChild(bankElement.firstChild);
@@ -824,18 +894,15 @@ export class Synthesizer {
     if (!this.element) {
       return;
     }
+    const dom = this.element.querySelectorAll(`.instrument > .channel`)[
+      channel
+    ];
     /** @type {number} */
     const bankIndex = this.channelBank[channel];
     /** @type {HTMLElement} */
-    const bankElement = this.element.querySelector(
-      '.instrument > .channel:nth-child(' + (channel + 1) + ') .bank > select'
-    );
+    const bankElement = dom.querySelector('.bank > select');
     /** @type {HTMLElement} */
-    const programElement = this.element.querySelector(
-      '.instrument > .channel:nth-child(' +
-        (channel + 1) +
-        ') .program > select'
-    );
+    const programElement = dom.querySelector('.program > select');
 
     bankElement.value = this.channelBank[channel];
     while (programElement.firstChild)
@@ -848,10 +915,9 @@ export class Synthesizer {
       // TODO: 存在しないプログラムの場合、現状では空白になってしまう
       const option = document.createElement('option');
       option.value = programNo;
-      option.textContent =
-        ('000' + (parseInt(programNo) + 1)).slice(-3) +
-        ':' +
-        this.programSet[bankIndex][programNo];
+      option.textContent = `${('000' + (parseInt(programNo) + 1)).slice(-3)}:${
+        this.programSet[bankIndex][programNo]
+      }`;
       if (programNo === this.channelInstrument[channel]) {
         option.selected = 'selected';
       }
@@ -992,7 +1058,7 @@ export class Synthesizer {
     /** @type {Array.<SynthesizerNote>} */
     const currentNoteOn = this.currentNoteOn[channel];
     /** @type {boolean} 0以外はonである。 */
-    const hold = (this.channelHold[channel] = !(value < 64));
+    const hold = (this.channelHold[channel] = value > 64);
     /** @type {SynthesizerNote} */
     let note;
     /** @type {number} */
@@ -1014,12 +1080,15 @@ export class Synthesizer {
 
     if (this.element) {
       /** @type {HTMLDivElement} */
-      const channelElement = this.element.querySelector(
-        '.instrument > .channel:nth-child(' + (channel + 1) + ')'
-      );
+      const channelElement = this.element.querySelectorAll(
+        `.instrument > .channel`
+      )[channel];
+      if (!channelElement) {
+        return;
+      }
       if (this.channelHold[channel]) {
         channelElement.classList.add('hold');
-      } else {
+      } else if (channelElement.classList.contains('hold')) {
         channelElement.classList.remove('hold');
       }
     }
@@ -1085,11 +1154,9 @@ export class Synthesizer {
 
     this.bankChange(channel, this.channelBank[channel]);
     if (this.element) {
-      this.element.querySelector(
-        '.instrument > .channel:nth-child(' +
-          (channel + 1) +
-          ') .program > select'
-      ).value = instrument;
+      this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.program > select').value = instrument;
     }
   }
 
@@ -1117,11 +1184,9 @@ export class Synthesizer {
     this.updateProgramSelect(channel);
 
     if (this.element) {
-      this.element.querySelector(
-        '.instrument > .channel:nth-child(' +
-          (channel + 1) +
-          ') > .bank > select'
-      ).value = bank;
+      this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.bank > select').value = bank;
     }
   }
 
@@ -1132,9 +1197,9 @@ export class Synthesizer {
    */
   volumeChange(channel, volume) {
     if (this.element) {
-      this.element.querySelector(
-        '.instrument > .channel:nth-child(' + (channel + 1) + ') > .volume var'
-      ).innerText = volume;
+      this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.volume var').innerText = volume;
     }
 
     this.channelVolume[channel] = volume;
@@ -1157,6 +1222,12 @@ export class Synthesizer {
       currentNoteOn[i].updateExpression(expression);
     }
 
+    if (this.element) {
+      this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.expression var').innerText = expression;
+    }
+
     this.channelExpression[channel] = expression;
   }
 
@@ -1167,11 +1238,9 @@ export class Synthesizer {
    */
   panpotChange(channel, panpot) {
     if (this.element) {
-      const dom = this.element.querySelector(
-        '.instrument > .channel:nth-child(' +
-          (channel + 1) +
-          ') > .panpot .progress-bar'
-      );
+      const dom = this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.panpot .progress-bar');
       const percentage = (panpot / 127) * 100;
       dom.style.width = `${percentage}%`;
       if (panpot < 63) {
@@ -1205,11 +1274,9 @@ export class Synthesizer {
     const calculated = bend - 8192;
 
     if (this.element) {
-      const dom = this.element.querySelector(
-        '.instrument > .channel:nth-child(' +
-          (channel + 1) +
-          ') > .pitchBend .progress-bar'
-      );
+      const dom = this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.pitchBend .progress-bar');
       dom.style.width = `${Math.floor((bend / 16384) * 100)}%`;
       if (calculated < 0) {
         dom.className = 'progress-bar low';
@@ -1233,11 +1300,10 @@ export class Synthesizer {
    */
   pitchBendSensitivity(channel, sensitivity) {
     if (this.element) {
-      document.querySelector(
-        '.instrument > .channel:nth-child(' +
-          (channel + 1) +
-          ') > .pitchBendSensitivity > var'
-      ).innerText = sensitivity;
+      this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.pitchBendSensitivity > var').innerText =
+        sensitivity;
     }
     this.channelPitchBendSensitivity[channel] = sensitivity;
   }
@@ -1298,6 +1364,12 @@ export class Synthesizer {
   reverbDepth(channel, depth) {
     // リバーブ深度は、ドライ／ウェット比とする。
     this.reverb[channel].mix(depth / 127);
+
+    if (this.element) {
+      this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.reverbDepth var').innerText = depth;
+    }
   }
 
   /**
@@ -1409,6 +1481,21 @@ export class Synthesizer {
       this.channelBank[channel] = 127;
     }
     this.percussionPart[channel] = sw;
+  }
+
+  /**
+   * MIDI音源のメッセージ欄に送られるsysExを解析
+   * @param {array} message
+   */
+  processMidiMessage(message) {
+    clearTimeout(this.timer);
+    const dom = this.element.querySelector('.header .keys code');
+    dom.innerText = message.map((e) => String.fromCharCode(e)).join('');
+
+    // 2秒後に削除
+    this.timer = setTimeout(() => {
+      dom.innerText = '';
+    }, 10000);
   }
 }
 

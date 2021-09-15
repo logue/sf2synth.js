@@ -24,11 +24,68 @@
       background-color: $gray-100;
     }
 
-    .channel {
+    .channel,
+    .header {
       display: flex;
+      justify-content: space-between;
+    }
+    .header {
+      font-size: 0.75rem;
+      font-weight: bold;
+      .keys {
+        code {
+          display: block;
+        }
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+
+    .channel {
       align-items: center;
       padding: 0.1rem;
-      justify-content: space-between;
+
+      .mute {
+        width: 3rem;
+      }
+
+      .bank {
+        width: 4.5rem;
+      }
+
+      .program {
+        width: 14rem;
+        @include media-breakpoint-down(lg) {
+          width: 10rem;
+        }
+        @include media-breakpoint-down(md) {
+          width: 8rem;
+        }
+      }
+
+      .volume,
+      .expression,
+      .reverbDepth,
+      .pitchBendSensitivity {
+        width: 2rem;
+      }
+
+      .panpot,
+      .pitchBend {
+        width: 6em;
+        @include media-breakpoint-down(xl) {
+          width: 4rem;
+        }
+        @include media-breakpoint-down(lg) {
+          width: 3rem;
+        }
+        @include media-breakpoint-down(md) {
+          width: 4rem;
+        }
+        @include media-breakpoint-down(sm) {
+          width: 2rem;
+        }
+      }
 
       @include media-breakpoint-down(md) {
         flex-wrap: wrap;
@@ -36,52 +93,6 @@
 
       &.hold {
         color: $danger;
-      }
-
-      .mute {
-        margin-right: 0;
-        min-width: 3rem;
-      }
-
-      .bank,
-      .bank select {
-        width: 4.5rem;
-      }
-
-      .program,
-      .program select {
-        min-width: 9rem;
-        width: 14rem;
-        @include media-breakpoint-down(md) {
-          width: 10rem;
-        }
-      }
-
-      .volume {
-        min-width: 2rem;
-        margin-right: 0.25rem;
-        font-size: 0.75rem;
-        align-self: center;
-        text-align: right;
-      }
-
-      .panpot,
-      .pitchBend {
-        min-width: 6em;
-        align-self: center;
-        padding: 0.1rem;
-        @include media-breakpoint-down(xl) {
-          min-width: 4rem;
-        }
-        @include media-breakpoint-down(lg) {
-          min-width: 3rem;
-        }
-        @include media-breakpoint-down(md) {
-          min-width: 4rem;
-        }
-        @include media-breakpoint-down(sm) {
-          min-width: 3rem;
-        }
       }
       .panpot .progress .progress-bar {
         background-color: $teal;
@@ -93,22 +104,28 @@
         }
       }
       .pitchBend .progress .progress-bar {
-        background-color: $pink;
-        /*
+        background-color: $purple;
         &.low {
-          background-color: $indigo;
+          background-color: $pink;
         }
         &.high {
-          background-color: $purple;
+          background-color: $pink;
         }
-        */
       }
 
+      .volume,
+      .expression,
+      .reverbDepth,
       .pitchBendSensitivity {
-        min-width: 1.5rem;
+        margin-right: 0.25rem;
         font-size: 0.75rem;
-        align-self: center;
         text-align: right;
+      }
+
+      .panpot,
+      .pitchBend {
+        align-self: center;
+        padding: 0.1rem;
       }
 
       .keys {

@@ -123,33 +123,49 @@ export class WebMidiLink {
     console.log('dom');
 
     /**
+     * ダウンロード中のハンドラ
+     * @param {axios.progressEvent} progressEvent
+     */
+    const downloadProgressHandler = (progressEvent) => {
+      const total = parseFloat(
+        progressEvent.currentTarget.responseHeaders['Content-Length']
+      );
+      const current = progressEvent.currentTarget.response.length;
+      const percentCompleted = Math.floor((current / total) * 100);
+      message.innerText = `Now Loading... (${current}/${total})`;
+      progress.style.width = percentCompleted + '%';
+      progress.innerText = percentCompleted + ' %';
+      opener.postMessage('link,progress,' + current + ',' + total, '*');
+      requestAnimationFrame(downloadProgressHandler);
+    };
+
+    /**
      * データを取得.
      * @return {axios.Response}
      */
-    const getContent = () => {
+    const getContent = async () => {
       console.info('Load from server.');
-      return axios.get(
-        url,
-        {
-          headers: {
-            Accept: 'audio/x-soundfont',
+
+      try {
+        return await axios.get(
+          url,
+          {
+            headers: {
+              Accept: 'audio/x-soundfont',
+              'Access-Control-Allow-Origin': '*',
+            },
+            responseType: 'arraybuffer',
           },
-          responseType: 'arraybuffer',
-        },
-        {
-          onDownloadProgress: (progressEvent) => {
-            const total = parseFloat(
-              progressEvent.currentTarget.responseHeaders['Content-Length']
-            );
-            const current = progressEvent.currentTarget.response.length;
-            const percentCompleted = Math.floor((current / total) * 100);
-            message.innerText = `Now Loading... (${current}/${total})`;
-            progress.style.width = percentCompleted + '%';
-            progress.innerText = percentCompleted + ' %';
-            opener.postMessage('link,progress,' + current + ',' + total, '*');
-          },
-        }
-      );
+          {
+            onDownloadProgress: downloadProgressHandler,
+          }
+        );
+      } catch (e) {
+        alert.className = 'alert alert-danger';
+        progressOuter.style.display = 'none';
+        message.innerText = `Error! HTTP Status: ${e.response.status} ${e.response.statusText}`;
+        return;
+      }
     };
 
     /** @type {Response} */
@@ -173,22 +189,35 @@ export class WebMidiLink {
       stream = await getContent();
     }
 
-    if (stream.error) {
-      alert.className = 'alert alert-danger';
-      message.innerText = 'An error occurred when downloading a SoundFont.';
-      this.placeholder.removeChild(progress);
-      throw Error(stream.error);
-    }
+    console.log(stream);
 
     alert.className = 'alert alert-info';
     message.innerText = 'Initializing...';
     progress.style.width = '100%';
     progress.className =
       'progress-bar progress-bar-striped progress-bar-animated';
+
+    if (stream.error || !stream) {
+      alert.className = 'alert alert-danger';
+      message.innerText = 'An error occurred when downloading a SoundFont.';
+      progressOuter.style.display = 'none';
+      throw Error(stream.error);
+    }
+
     // window.requestAnimationFrame(1);
     console.info('ready');
     const input = new Uint8Array(stream.data);
+    // try {
     this.loadSoundFont(input);
+    /*
+  } catch(e) {
+      alert.className = 'alert alert-warning';
+      progressOuter.style.display = 'none';
+      message.innerText =
+        'An error occurred while parsing SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
+      return;
+    }
+    */
     this.placeholder.removeChild(alert);
     opener.postMessage('link,ready', '*');
   }
@@ -203,6 +232,7 @@ export class WebMidiLink {
     if (!this.synth) {
       /** @type {Synthesizer} */
       const synth = (this.synth = new Synthesizer(input));
+      console.log(synth);
       if (this.option.drawSynth) {
         this.placeholder.appendChild(synth.drawSynth());
       } else {
@@ -443,7 +473,7 @@ export class WebMidiLink {
         break;
       case 0xf0: // System Exclusive Message
         //   F0
-        //   [2]<vendor ID>
+        //   [2]<vendor ID> http://www.amei.or.jp/report/report4.html
         //   [3]<device ID>
         //   [4]<sub ID 1>
         //   [5]<sub ID 2>
@@ -461,13 +491,11 @@ export class WebMidiLink {
         const device = message[3];
         /** @type {number} Sub ID 1 (Model ID: GM=0x09 / GS=0x42 / XG=0x4C) */
         const subId1 = message[4];
-        /** @type {number} Sub ID 2 */
-        const subId2 = message[5];
-
-        // Gneral MIDI
-        // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
 
         if (vendor === 0x7e && device === 0x09) {
+          // Gneral MIDI
+          // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
+          console.log('GM:', this.dumpMessage(message));
           // Non Realtime
           switch (subId1) {
             case 0x01:
@@ -482,22 +510,41 @@ export class WebMidiLink {
               // GM2 System On
               synth.init('GM2');
               break;
+            default:
+              console.log('GM:', this.dumpMessage(message));
           }
         } else if (vendor === 0x7f) {
           // Realtime
-          // Through
-        }
-
-        // http://www.amei.or.jp/report/report4.html
-        if (vendor === 0x41) {
-          console.log('GS:', this.dumpMessage(message));
+          if (message[5] === 0x01) {
+            // master volume: F0 7F 7F 04 01 [value] [value] F7
+            synth.setMasterVolume(message[6] + (message[7] << 7));
+          } else {
+            console.log('realtime:', this.dumpMessage(message));
+          }
+        } else if (vendor === 0x41) {
           // GS
           // http://lib.roland.co.jp/support/jp/manuals/res/1809974/SC-88VL_j.pdf
           // F0 42 10 42 12 40 [part] [key] [value] [checksum] F7
           // TODO
           switch (message[8]) {
+            case 0x00:
+              // TEXT INSERT FOR SC (ASCI code)
+              // http://kurizill.g1.xrea.com/memorandum/midi2.htm
+              // F0 41 10 45 12 10 00 00 [...value] [checksum] F7
+              // ex. F0 41 10 45 12 10 00 00 48 65 6C 6C 6F 21 F7 = Hello
+              console.log('GS message:', this.dumpMessage(message));
+              const msg = message.splice(8);
+              // Remove F7
+              msg.pop();
+              // Remove Checksum
+              msg.pop();
+
+              synth.processMidiMessage(msg);
+              break;
             case 0x04:
-              // GS Master Volume: F0 41 10 42 12 40 00 04 [value] [checksum] F7
+              // GS Master Volume:
+              // F0 41 10 42 12 40 00 04 [value] [checksum] F7
+              // console.log('GS Volume:', this.dumpMessage(message));
               synth.setMasterVolume(message[9] << 7);
               break;
             case 0x7f:
@@ -533,46 +580,88 @@ export class WebMidiLink {
                   synth.setPercussionPart(part, false);
                 }
               }
+              break;
+            case 0x19:
+              // VOLUME ON/OFF (PART LEVEL)
+              // F0 41 10 42 12 40 1[part no] 19 [value] [checksum] F7
+              break;
+            case 0x30:
+              // Reverb Effect
+              console.log('GS Reverb:', this.dumpMessage(message));
+              break;
+            case 0x38:
+              // Chorus Effect
+              console.log('GS Chorus:', this.dumpMessage(message));
+              break;
+            case 0x45:
+              // Bitmap icon 16x16 ?
+              console.log('GS Bitmap:', this.dumpMessage(message));
+              break;
+            default:
+              console.log('GS:', this.dumpMessage(message));
           }
         } else if (vendor == 0x43) {
-          console.log('XG:', this.dumpMessage(message));
-          // XG
-          if (subId2 === 0x08) {
-            // XG Dram Part: F0 43 10 4C 08 [partNum] 07 [map] F7
-            // but there is no file to use much this parameter...
-            if (message[7] !== 0x00) {
-              // [map]
-              synth.setPercussionPart(message[6], true);
-            } else {
-              synth.setPercussionPart(message[6], false);
-            }
-            // console.log(message);
+          // YAMAHA XG
+          // https://jp.yamaha.com/files/download/other_assets/9/321739/read_aoyama.pdf
+          // https://jp.yamaha.com/files/download/other_assets/1/316861/MU100J1.pdf
+
+          if (message[2] !== 0x43 && message[3] === 0x43) {
+            // delete checksum
+            message.splice(1, 1);
+            // console.log('message:', this.dumpMessage(message));
           }
-          switch (message[7]) {
+
+          switch (message[5]) {
+            case 0x00:
+              // XG Reset:
+              // F0 43 1n 4C 00 00 7E 00 F7
+              // console.log('message:', this.dumpMessage(message));
+              if (message[7] === 0x7e) {
+                synth.init('XG');
+                console.info('XG Reset');
+              }
+              break;
+            case 0x02:
+              // Effect
+              // F0 43 10 4C 02 01 [type] [value] F7
+              // type
+              // 02: Reverb
+              // 40: Variation
+              // 5B: Part to apply variation effect
+              console.log('XG Effect:', this.dumpMessage(message));
+              break;
             case 0x04:
-              // XG Master Volume: F0 43 10 4C 00 00 04 [value] F7
-              synth.setMasterVolume((message[8] << 7) * 2);
-              // console.log(message[8] << 7);
+              // XG Master Volume:
+              // F0 43 1n 4C 00 00 04 [value] F7
+              synth.setMasterVolume(message[9] * 64);
               break;
-            case 0x7e:
-              // XG Reset: F0 43 10 4C 00 00 7E 00 F7
-              synth.init('XG');
-              console.info('XG Reset');
+            case 0x06:
+              // Text:
+              // F0 43 1n 4C 06 00 00 [text] F7
+              // ex. F0 43 1n 4C 06 00 00 48 65 6C 6C 6F 21 F7 = Hello
+              const msg = message.splice(8);
+              // Remove F7
+              msg.pop();
+              synth.processMidiMessage(msg);
               break;
+            case 0x07:
+              // Bitmap Window
+              // F0 43 10 4C 07 00 00 [bitmap] F7
+              // 音源のアイコン描画領域に描画する16x16のビットマップ画像。
+              // 7bitごとに上から描画するが仕様がややこしいので処理しない
+              console.log('XG Bitmap:', this.dumpMessage(message));
+              break;
+            case 0x08:
+              // XG Dram Part:
+              // F0 43 10 4C 08 [partNum] 07 [map] F7
+              // ※厳密には[map]は1以上の値が入るが、本プログラムでは一律パーカッションパートとして処理をする。
+              synth.setPercussionPart(message[6], message[8] !== 0x00);
+              break;
+
+            default:
+              console.log('XG:', this.dumpMessage(message));
           }
         }
-
-        switch (device) {
-          case 0x04: // device control
-            // sub ID 2
-            switch (subId2) {
-              case 0x01: // master volume: F0 7F 7F 04 01 [value] [value] F7
-                synth.setMasterVolume(message[5] + (message[6] << 7));
-                break;
-            }
-            break;
-        }
-
         break;
       default:
         // not supported
