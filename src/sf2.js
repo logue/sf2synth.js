@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 import Riff from './riff.js';
 
 /**
@@ -34,74 +35,136 @@ export class Parser {
     this.instrumentZoneGenerator = [];
     /** @type {Array.<Object>} */
     this.sampleHeader = [];
+    /** @type {Array.<string>} */
+    this.GeneratorEnumeratorTable = Object.keys(this.getGeneratorTable());
+  }
 
-    /**
-     * @type {Array.<string>}
-     * @const
-     */
-    // eslint-disable-next-line no-sparse-arrays
-    this.GeneratorEnumeratorTable = [
-      'startAddrsOffset',
-      'endAddrsOffset',
-      'startloopAddrsOffset',
-      'endloopAddrsOffset',
-      'startAddrsCoarseOffset',
-      'modLfoToPitch',
-      'vibLfoToPitch',
-      'modEnvToPitch',
-      'initialFilterFc',
-      'initialFilterQ',
-      'modLfoToFilterFc',
-      'modEnvToFilterFc',
-      'endAddrsCoarseOffset',
-      'modLfoToVolume', // 14
-      ,
-      'chorusEffectsSend',
-      'reverbEffectsSend',
-      'pan', // 18,19,20
-      ,
-      ,
-      ,
-      'delayModLFO',
-      'freqModLFO',
-      'delayVibLFO',
-      'freqVibLFO',
-      'delayModEnv',
-      'attackModEnv',
-      'holdModEnv',
-      'decayModEnv',
-      'sustainModEnv',
-      'releaseModEnv',
-      'keynumToModEnvHold',
-      'keynumToModEnvDecay',
-      'delayVolEnv',
-      'attackVolEnv',
-      'holdVolEnv',
-      'decayVolEnv',
-      'sustainVolEnv',
-      'releaseVolEnv',
-      'keynumToVolEnvHold',
-      'keynumToVolEnvDecay',
-      'instrument', // 42
-      ,
-      'keyRange',
-      'velRange',
-      'startloopAddrsCoarseOffset',
-      'keynum',
-      'velocity',
-      'initialAttenuation', // 49
-      ,
-      'endloopAddrsCoarseOffset',
-      'coarseTune',
-      'fineTune',
-      'sampleID',
-      'sampleModes', // 55
-      ,
-      'scaleTuning',
-      'exclusiveClass',
-      'overridingRootKey', // 59
-      'endOper',
-    ];
+  /** @return {Object} ジェネレータとデフォルト値 */
+  static getGeneratorTable() {
+    return Object.freeze({
+      /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
+      startAddrsOffset: 0,
+      /** @type {number} サンプルヘッダの音声波形データ終了位置に加算されるオフセット(下位16bit） */
+      endAddrsOffset: 0,
+      /** @type {number} サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(下位16bit） */
+      startloopAddrsOffset: 0,
+      /** @type {number} サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(下位16bit） */
+      endloopAddrsOffset: 0,
+      /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(上位16bit） */
+      startAddrsCoarseOffset: 0,
+      /** @type {number} LFOによるピッチの揺れ幅 */
+      modLfoToPitch: 0,
+      /** @type {number} モジュレーションホイール用LFOからピッチに対しての影響量 */
+      vibLfoToPitch: 0,
+      /** @type {number} フィルタ・ピッチ用エンベロープからピッチに対しての影響量 */
+      modEnvToPitch: 0,
+      /** @type {number} フィルタのカットオフ周波数 */
+      initialFilterFc: 13500,
+      /** @type {number} フィルターのQ値(レゾナンス) */
+      initialFilterQ: 0,
+      /** @type {number} LFOによるフィルターカットオフ周波数の揺れ幅 */
+      modLfoToFilterFc: 0,
+      /** @type {number} フィルタ・ピッチ用エンベロープからフィルターカットオフに対しての影響量 */
+      modEnvToFilterFc: 0,
+      /** @type {number} サンプルヘッダの音声波形データ終了位置に加算されるオフセット(上位16bit） */
+      endAddrsCoarseOffset: 0,
+      /** @type {number} LFOによるボリュームの揺れ幅 */
+      modLfoToVolume: 0,
+      /** @type {undefined} 未使用1 */
+      unused1: undefined, // 14
+      /** @type {number} コーラスエフェクトのセンドレベル */
+      chorusEffectsSend: 0,
+      /** @type {number} リバーブエフェクトのセンドレベル */
+      reverbEffectsSend: 0,
+      /** @type {number} パンの位置 */
+      pan: 0,
+      /** @type {undefined} 未使用2 */
+      unused2: undefined,
+      /** @type {undefined} 未使用3 */
+      unused3: undefined,
+      /** @type {undefined} 未使用4 */
+      unused4: undefined,
+      /** @type {number} LFOの揺れが始まるまでの時間 */
+      delayModLFO: -12000,
+      /** @type {number}LFOの揺れの周期  */
+      freqModLFO: 0,
+      /** @type {number} ホイールの揺れが始まるまでの時間 */
+      delayVibLFO: -12000,
+      /** @type {number} ホイールの揺れの周期 */
+      freqVibLFO: 0,
+      /** @type {number} フィルタ・ピッチ用エンベロープのディレイ(アタックが始まるまでの時間) */
+      delayModEnv: -12000,
+      /** @type {number} フィルタ・ピッチ用エンベロープのアタック時間 */
+      attackModEnv: -12000,
+      /** @type {number} フィルタ・ピッチ用エンベロープのホールド時間(アタックが終わってからディケイが始まるまでの時間） */
+      holdModEnv: -12000,
+      /** @type {number} フィルタ・ピッチ用エンベロープのディケイ時間 */
+      decayModEnv: -12000,
+      /** @type {number} フィルタ・ピッチ用エンベロープのサステイン量 */
+      sustainModEnv: 0,
+      /** @type {number} フィルタ・ピッチ用エンベロープのリリース時間 */
+      releaseModEnv: -12000,
+      /** @type {number} キー(ノートNo)によるフィルタ・ピッチ用エンベロープのホールド時間への影響 */
+      keynumToModEnvHold: 0,
+      /** @type {number} キー(ノートNo)によるフィルタ・ピッチ用エンベロープのディケイ時間への影響 */
+      keynumToModEnvDecay: 0,
+      /** @type {number} アンプ用エンベロープのディレイ(アタックが始まるまでの時間) */
+      delayVolEnv: -12000,
+      /** @type {number} アンプ用エンベロープのアタック時間 */
+      attackVolEnv: -12000,
+      /** @type {number} アンプ用エンベロープのホールド時間(アタックが終わってからディケイが始まるまでの時間） */
+      holdVolEnv: -12000,
+      /** @type {number} アンプ用エンベロープのディケイ時間 */
+      decayVolEnv: -12000,
+      /** @type {number} アンプ用エンベロープのサステイン量 */
+      sustainVolEnv: 0,
+      /** @type {number} アンプ用エンベロープのリリース時間 */
+      releaseVolEnv: -12000,
+      /** @type {number} キー(ノートNo)によるアンプ用エンベロープのホールド時間への影響 */
+      keynumToVolEnvHold: 0,
+      /** @type {number} キー(ノートNo)によるアンプ用エンベロープのディケイ時間への影響 */
+      keynumToVolEnvDecay: 0,
+      /** @type {number} 割り当てるインストルメント(楽器) */
+      instrument: null,
+      /** @type {undefined} 予約済み1 */
+      reserved1: undefined, // 42
+      /** @type {number} マッピングするキー(ノートNo)の範囲 */
+      keyRange: null,
+      /** @type {number} マッピングするベロシティの範囲 */
+      velRange: null,
+      /** @type {number} サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(上位16bit） */
+      startloopAddrsCoarseOffset: 0,
+      /** @type {number} どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
+      keynum: null,
+      /** @type {number} どのベロシティでも強制的に指定したベロシティに変更する */
+      velocity: null,
+      /** @type {number} 調整する音量 */
+      initialAttenuation: 0,
+      /** @type {undefined} 予約済み2 */
+      reserved2: undefined, // 49
+      /** @type {number} サンプルヘッダの音声波形データループ終了位置に加算されるオフセット(上位16bit） */
+      endloopAddrsCoarseOffset: 0,
+      /** @type {number} 半音単位での音程の調整 */
+      coarseTune: 0,
+      /** @type {number} cent単位での音程の調整 */
+      fineTune: 0,
+      /** @type {number} 割り当てるサンプル(音声波形) */
+      sampleID: null,
+      /** @type {number} サンプル(音声波形)をループさせるか等のフラグ */
+      sampleModes: 0,
+      /** @type {undefined} 予約済み3 */
+      reserved3: undefined, // 55
+      /** @type {number} キー(ノートNo)が+1されるごとに音程を何centあげるかの音階情報 */
+      scaleTuning: 100,
+      /** @type {number} 同時に音を鳴らさないようにするための排他ID(ハイハットのOpen、Close等に使用) */
+      exclusiveClass: null,
+      /** @type {number} サンプル(音声波形)の音程の上書き情報 */
+      overridingRootKey: null,
+      /** @type {undefined} 未使用5 */
+      unuded5: undefined, // 59
+      /** @type {undefined} 最後を示すオペレータ */
+      endOper: undefined,
+    });
   }
 
   /** @export */
