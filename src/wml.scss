@@ -41,7 +41,7 @@
       }
     }
 
-    .channel {
+    > .channel {
       align-items: center;
       padding: 0.1rem;
 
@@ -219,53 +219,53 @@
         }
       }
       // Note on highlight color.
-      &:nth-child(1) .key.note-on {
-        background-color: #e53636;
-      }
       &:nth-child(2) .key.note-on {
-        background-color: #e57636;
+        background-color: #ff1744;
       }
       &:nth-child(3) .key.note-on {
-        background-color: #e5ba3b;
+        background-color: #f50057;
       }
       &:nth-child(4) .key.note-on {
-        background-color: #d5e84c;
+        background-color: #d500f9;
       }
       &:nth-child(5) .key.note-on {
-        background-color: #8de536;
+        background-color: #651fff;
       }
       &:nth-child(6) .key.note-on {
-        background-color: #51d83c;
+        background-color: #3d5afe;
       }
       &:nth-child(7) .key.note-on {
-        background-color: #35dd5f;
+        background-color: #2979ff;
       }
       &:nth-child(8) .key.note-on {
-        background-color: #33d697;
+        background-color: #00b0ff;
       }
       &:nth-child(9) .key.note-on {
-        background-color: #30cccc;
+        background-color: #00e5ff;
       }
       &:nth-child(10) .key.note-on {
-        background-color: #40aae8;
+        background-color: #1de9b6;
       }
       &:nth-child(11) .key.note-on {
-        background-color: #5d80ea;
+        background-color: #00e676;
       }
       &:nth-child(12) .key.note-on {
-        background-color: #796aed;
+        background-color: #76ff03;
       }
       &:nth-child(13) .key.note-on {
-        background-color: #a056ea;
+        background-color: #c6ff00;
       }
       &:nth-child(14) .key.note-on {
-        background-color: #cf44e5;
+        background-color: #ffea00;
       }
       &:nth-child(15) .key.note-on {
-        background-color: #e536b9;
+        background-color: #ffc400;
       }
       &:nth-child(16) .key.note-on {
-        background-color: #e53679;
+        background-color: #ff9100;
+      }
+      &:nth-child(17) .key.note-on {
+        background-color: #ff3d00;
       }
     }
   }
