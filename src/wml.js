@@ -316,6 +316,7 @@ export class WebMidiLink {
     /** @type {Synthesizer} */
     const synth = this.synth;
 
+    // http://amei.or.jp/midistandardcommittee/MIDI1.0.pdf
     switch (message[0] & 0xf0) {
       case 0x80: // NoteOff: 8n kk vv
         synth.noteOff(channel, message[1], message[2]);
@@ -472,32 +473,32 @@ export class WebMidiLink {
         synth.pitchBend(channel, message[1], message[2]);
         break;
       case 0xf0: // System Exclusive Message
-        //   F0
-        //   [2]<vendor ID> http://www.amei.or.jp/report/report4.html
-        //   [3]<device ID>
-        //   [4]<sub ID 1>
-        //   [5]<sub ID 2>
-        //   [6]<size of parameter key>
-        //   [7]<size of parameter value>
-        //   [8]<MSB>
-        //   [9]<LSB>
-        //   [10]<data>
-        //   [11]<checksum> [IGNORE]
-        //   F7 EOX [IGNORE]
+        // [1] F0
+        // [2] <vendor ID> http://www.amei.or.jp/report/report4.html
+        // [3] <device ID>
+        // [4] <sub ID 1>
+        // [5] <sub ID 2>
+        // [6] <size of parameter key>
+        // [7] <size of parameter value>
+        // [8] <MSB>
+        // [9] <LSB>
+        // [10] <data>
+        // [11] <checksum> [IGNORE]
+        // [12] F7 EOX [IGNORE]
 
         /** @type {number} Vendor ID (Roland=0x41 / YAMAHA=0x43 / Non Realtime=0x7E / Realtime=0x7F) */
         const vendor = message[2];
         /** @type {number} Device ID (GM extended=0x10 / ポケミク=0x79 / Any=0x7F) */
         const device = message[3];
         /** @type {number} Sub ID 1 (Model ID: GM=0x09 / GS=0x42 / XG=0x4C) */
-        const subId1 = message[4];
+        const model = message[4];
 
         if (vendor === 0x7e && device === 0x09) {
           // Gneral MIDI
           // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
           console.log('GM:', this.dumpMessage(message));
           // Non Realtime
-          switch (subId1) {
+          switch (model) {
             case 0x01:
               // GM System On
               synth.init('GM');
@@ -515,48 +516,51 @@ export class WebMidiLink {
           }
         } else if (vendor === 0x7f) {
           // Realtime
-          if (message[5] === 0x01) {
+          if (message[4] === 1) {
             // master volume: F0 7F 7F 04 01 [value] [value] F7
-            synth.setMasterVolume(message[6] + (message[7] << 7));
+            synth.setMasterVolume(message[5] + (message[6] << 7));
           } else {
             console.log('realtime:', this.dumpMessage(message));
           }
         } else if (vendor === 0x41) {
           // GS
           // http://lib.roland.co.jp/support/jp/manuals/res/1809974/SC-88VL_j.pdf
-          // F0 42 10 42 12 40 [part] [key] [value] [checksum] F7
+          // F0 41 10 42 12 40 [part] [key] [value] [checksum] F7
+          const part = message[7] - 0x0f;
           // TODO
           switch (message[8]) {
             case 0x00:
               // TEXT INSERT FOR SC (ASCI code)
               // http://kurizill.g1.xrea.com/memorandum/midi2.htm
-              // F0 41 10 45 12 10 00 00 [...value] [checksum] F7
-              // ex. F0 41 10 45 12 10 00 00 48 65 6C 6C 6F 21 F7 = Hello
-              console.log('GS message:', this.dumpMessage(message));
-              const msg = message.splice(8);
-              // Remove F7
-              msg.pop();
-              // Remove Checksum
-              msg.pop();
+              // F0 41 10 45 12 10 [page] 00 [...value] [checksum] F7
+              // ex. F0 41 10 45 12 10 00 00 [48 65 6C 6C 6F] 21 F7 = Hello
 
-              synth.processMidiMessage(msg);
+              // device IDの値は0x45固定だがその判定処理は省略
+
+              if (message[7] === 0x00) {
+                // ページが0x00の場合、LCDに表示するメッセージとする
+                const msg = message.splice(8);
+                // Remove F7
+                msg.pop();
+                // Remove Checksum
+                msg.pop();
+                synth.processMidiMessage(msg);
+              } else {
+                // GS音源のLCDの16x16のビットマップ画像
+                console.log('GS Bitmap message:', this.dumpMessage(message));
+              }
               break;
             case 0x04:
               // GS Master Volume:
               // F0 41 10 42 12 40 00 04 [value] [checksum] F7
               // console.log('GS Volume:', this.dumpMessage(message));
-              synth.setMasterVolume(message[9] << 7);
+              synth.setMasterVolume(message[9] * 64);
               break;
-            case 0x7f:
-              // GS Reset: F0 41 10 42 12 40 00 7F 00 [checksum] F7
-              synth.init('GS');
-              console.info('GS Reset');
-              break;
+
             case 0x15:
               // GS Dram part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
               // Notice: [sum] is ignroe in this program.
 
-              const part = message[7] - 0x0f;
               const map = message[8];
               if (part === 0) {
                 // 10 Ch.
@@ -584,6 +588,7 @@ export class WebMidiLink {
             case 0x19:
               // VOLUME ON/OFF (PART LEVEL)
               // F0 41 10 42 12 40 1[part no] 19 [value] [checksum] F7
+              console.log('GS Volume On/Off: ', part, message[9]);
               break;
             case 0x30:
               // Reverb Effect
@@ -596,6 +601,11 @@ export class WebMidiLink {
             case 0x45:
               // Bitmap icon 16x16 ?
               console.log('GS Bitmap:', this.dumpMessage(message));
+              break;
+            case 0x7f:
+              // GS Reset: F0 41 10 42 12 40 00 7F 00 [checksum] F7
+              synth.init('GS');
+              console.info('GS Reset');
               break;
             default:
               console.log('GS:', this.dumpMessage(message));
