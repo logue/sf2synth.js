@@ -144,6 +144,9 @@ export class SynthesizerNote {
     /** @type {number} */
     const pan = instrument['pan'] !== void 0 ? instrument['pan'] : this.panpot;
 
+    /** @type {number} modulation */
+    const modulation = instrument['modulation'];
+
     const sample = this.buffer.subarray(
       0,
       this.buffer.length + instrument['end']
@@ -162,7 +165,7 @@ export class SynthesizerNote {
     /** @type {AudioBufferSourceNode} */
     const bufferSource = this.bufferSource;
     bufferSource.buffer = buffer;
-    bufferSource.loop = instrument['sampleModes'] | 0 || 0;
+    bufferSource.loop = instrument['sampleModes'] || 0;
     bufferSource.loopStart = loopStart;
     bufferSource.loopEnd = loopEnd;
     this.updatePitchBend(this.pitchBend);
@@ -212,11 +215,10 @@ export class SynthesizerNote {
 
     // modulation envelope
     /** @type {number} */
-    const baseFreq = this.amountToFreq(instrument['initialFilterFc']);
+    const baseFreq = instrument['initialFilterFc'];
     /** @type {number} */
-    const peekFreq = this.amountToFreq(
-      instrument['initialFilterFc'] + instrument['modEnvToFilterFc']
-    );
+    const peekFreq =
+      instrument['initialFilterFc'] + instrument['modEnvToFilterFc'];
     /** @type {number} */
     const sustainFreq =
       baseFreq + (peekFreq - baseFreq) * (1 - instrument['modSustain']);
@@ -236,8 +238,8 @@ export class SynthesizerNote {
     modulator.frequency.setTargetAtTime(
       peekFreq,
       modDelay,
-      parseFloat(instrument['modAttack'] + 1)
-    ); // For FireFox fix
+      parseFloat(instrument['modAttack'] + 1) // For FireFox fix
+    );
     modulator.frequency.setValueAtTime(peekFreq, modHold);
     modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
 
@@ -251,6 +253,30 @@ export class SynthesizerNote {
     if (!instrument['mute']) {
       this.connect();
     }
+
+    /*
+    // Modulation Depth
+    // TODO: 途中からビブラードをかけたときに反映されない
+    if (instrument['sampleModes'] !== 0) {
+      // console.log('modulation on');
+
+      // Create the instance of GainNode
+      const depth = ctx.createGain(); // for LFO
+      const lfo = ctx.createOscillator();
+
+      // OscillatorNode (LFO) -> GainNode (Depth) -> frequency (AudioParam)
+      lfo.connect(depth);
+      depth.connect(modulator);
+
+      // Set parameters for LFO
+      lfo.type = 'sine';
+      depth.gain.value = modulation;
+      lfo.frequency.value = instrument['freqVibLFO'];
+
+      // Effector (Vibrato) ON
+      lfo.start(0);
+    }
+    */
 
     // fire
     bufferSource.start(0, startTime);
@@ -316,11 +342,10 @@ export class SynthesizerNote {
     /** @type {BiquadFilterNode} */
     const modulator = this.modulator;
     /** @type {number} */
-    const baseFreq = this.amountToFreq(instrument['initialFilterFc']);
+    const baseFreq = instrument['initialFilterFc'];
     /** @type {number} */
-    const peekFreq = this.amountToFreq(
-      instrument['initialFilterFc'] + instrument['modEnvToFilterFc']
-    );
+    const peekFreq =
+      instrument['initialFilterFc'] + instrument['modEnvToFilterFc'];
     /** @type {number} */
     const modEndTime =
       now +
@@ -391,9 +416,11 @@ export class SynthesizerNote {
           modEndTime
         );
         bufferSource.loop = false;
+        bufferSource.buffer = null;
         break;
       default:
         bufferSource.loop = false;
+        bufferSource.buffer = null;
     }
   }
 

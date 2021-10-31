@@ -40,7 +40,7 @@ export class Parser {
   }
 
   /** @return {Object} ジェネレータとデフォルト値 */
-  static getGeneratorTable() {
+  getGeneratorTable() {
     return Object.freeze({
       /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
       startAddrsOffset: 0,
@@ -730,6 +730,7 @@ export class Parser {
             output.push({
               type: key,
               value: {
+                amount: null,
                 lo: data[ip++],
                 hi: data[ip++],
               },
@@ -803,6 +804,7 @@ export class Parser {
           output.push({
             type: key,
             value: {
+              amount: null,
               lo: data[ip++],
               hi: data[ip++],
             },
@@ -1053,6 +1055,7 @@ export class Parser {
     const modgen = {
       unknown: [],
       keyRange: {
+        amount: null,
         hi: 127,
         lo: 0,
       },

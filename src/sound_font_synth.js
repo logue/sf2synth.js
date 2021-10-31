@@ -185,7 +185,10 @@ export class Synthesizer {
     /** @type {Array.<Reverb>}リバーブエフェクト（チャンネル毎に用意する） */
     this.reverb = [];
 
-    /** @type {Array.<BiquadFilterNode>} フィルタ（ビブラートなど） */
+    /** @type {Array.<number>} モジュレーション（ビブラート） */
+    this.modulation = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    /** @type {Array.<BiquadFilterNode>} フィルタ */
     this.filter = [];
 
     for (i = 0; i < 16; ++i) {
@@ -194,6 +197,7 @@ export class Synthesizer {
         time: 1.1,
         noise: NoiseType.BROWN,
         once: false,
+        filterType: 'lowpass',
       });
       // フィルタを定義
       this.filter[i] = this.ctx.createBiquadFilter();
@@ -247,6 +251,8 @@ export class Synthesizer {
   init(mode = 'GM') {
     this.gainMaster.disconnect();
 
+    console.log('Reset Type:', mode);
+
     /** @type {number} */
     let i;
 
@@ -270,9 +276,9 @@ export class Synthesizer {
       this.panpotChange(i, 0x40);
       this.pitchBend(i, 0x00, 0x40); // 8192
       this.pitchBendSensitivity(i, 2);
-      this.channelHold[i] = false;
+      this.hold(i, 0);
       this.expression[i] = 127;
-      this.channelBank[i] = i === 9 ? 127 : 0;
+      this.bankSelectMsb(i, i === 9 ? 127 : 0);
       this.attackTime(i, 64);
       this.decayTime(i, 64);
       this.sustinTime(i, 64);
@@ -280,6 +286,7 @@ export class Synthesizer {
       this.harmonicContent(i, 64);
       this.cutOffFrequency(i, 64);
       this.reverbDepth(i, 40);
+      this.modulationDepth(i, 0);
       this.updateBankSelect(i);
       this.updateProgramSelect(i);
     }
@@ -397,44 +404,48 @@ export class Synthesizer {
     /** @type {Generator} */
     const generator = info.generator;
 
-    if (generator.keyRange === void 0 || generator.sampleID === void 0) {
+    // console.log(generator);
+
+    if (!generator.keyRange || !generator.sampleID) {
       return;
     }
     // console.log(generator);
-    /** @type {number} */
-    const volDelay = this.getModGenAmount(generator, 'delayVolEnv', -12000);
-    /** @type {number} */
-    const volAttack = this.getModGenAmount(generator, 'attackVolEnv', -12000);
-    /** @type {number} */
-    const volHold = this.getModGenAmount(generator, 'holdVolEnv', -12000);
-    /** @type {number} */
-    const volDecay = this.getModGenAmount(generator, 'decayVolEnv', -12000);
-    /** @type {number} */
+
+    // デフォルト値
+    // https://www.utsbox.com/?p=2390
+
+    /** @type {number} 33: delayVolEnv*/
+    const volDelay = this.getModGenAmount(generator, 'delayVolEnv');
+    /** @type {number} 34: attackVolEnv */
+    const volAttack = this.getModGenAmount(generator, 'attackVolEnv');
+    /** @type {number} 35: holdVolEnv */
+    const volHold = this.getModGenAmount(generator, 'holdVolEnv');
+    /** @type {number} 36: decayVolEnv*/
+    const volDecay = this.getModGenAmount(generator, 'decayVolEnv');
+    /** @type {number} 37: sustainVolEnv */
     const volSustain = this.getModGenAmount(generator, 'sustainVolEnv');
-    /** @type {number} */
-    const volRelease = this.getModGenAmount(generator, 'releaseVolEnv', -12000);
-    /** @type {number} */
-    const modDelay = this.getModGenAmount(generator, 'delayModEnv', -12000);
-    /** @type {number} */
-    const modAttack = this.getModGenAmount(generator, 'attackModEnv', -12000);
-    /** @type {number} */
-    const modHold = this.getModGenAmount(generator, 'holdModEnv', -12000);
-    /** @type {number} */
-    const modDecay = this.getModGenAmount(generator, 'decayModEnv', -12000);
-    /** @type {number} */
+    /** @type {number} 38: releaseVolEnv */
+    const volRelease = this.getModGenAmount(generator, 'releaseVolEnv');
+    /** @type {number} 25: delayModEnv*/
+    const modDelay = this.getModGenAmount(generator, 'delayModEnv');
+    /** @type {number} 26: attackModEnv*/
+    const modAttack = this.getModGenAmount(generator, 'attackModEnv');
+    /** @type {number} 27: holdModEnv */
+    const modHold = this.getModGenAmount(generator, 'holdModEnv');
+    /** @type {number} 28: decayModEnv */
+    const modDecay = this.getModGenAmount(generator, 'decayModEnv');
+    /** @type {number} 29: sustainModEnv */
     const modSustain = this.getModGenAmount(generator, 'sustainModEnv');
-    /** @type {number} */
-    const modRelease = this.getModGenAmount(generator, 'releaseModEnv', -12000);
-    /** @type {number} */
-    const scale = this.getModGenAmount(generator, 'scaleTuning', 100) / 100;
-    /** @type {number} */
-    const freqVibLFO = this.getModGenAmount(generator, 'freqVibLFO');
-    /** @type {number} */
-    const pan = this.getModGenAmount(generator, 'pan');
+    /** @type {number} 30: releaseModEnv */
+    const modRelease = this.getModGenAmount(generator, 'releaseModEnv');
+    /** @type {number} 56: scaleTuning */
+    const scale = this.getModGenAmount(generator, 'scaleTuning') / 100;
     /** @type {number} */
     const tune =
       this.getModGenAmount(generator, 'coarseTune') +
       this.getModGenAmount(generator, 'fineTune') / 100;
+
+    const sampleModes = this.getModGenAmount(generator, 'sampleModes');
 
     for (
       let i = generator.keyRange.lo, il = generator.keyRange.hi;
@@ -451,7 +462,8 @@ export class Synthesizer {
       preset[i] = {
         sample: parser.sample[sampleId],
         sampleRate: sampleHeader.sampleRate,
-        sampleModes: this.getModGenAmount(generator, 'sampleModes'),
+        // 54
+        sampleModes: sampleModes,
         basePlaybackRate:
           1.0594630943592953 ** // Math.pow(2, 1 / 12)
           ((i -
@@ -514,20 +526,23 @@ export class Synthesizer {
               1200),
         modSustain: modSustain / 1000,
         modRelease: 2 ** (modRelease / 1200),
-        initialFilterFc: this.getModGenAmount(
-          generator,
-          'initialFilterFc',
-          13500
-        ),
-        modEnvToFilterFc: this.getModGenAmount(generator, 'modEnvToFilterFc'),
-        initialFilterQ: this.getModGenAmount(generator, 'initialFilterQ'),
-        reverbEffectSend: this.getModGenAmount(generator, 'reverbEffectSend'),
-        initialAttenuation: this.getModGenAmount(
-          generator,
-          'initialAttenuation'
-        ),
-        freqVibLFO: freqVibLFO ? 2 ** (freqVibLFO / 1200) * 8.176 : void 0,
-        pan: pan ? pan / 1200 : void 0,
+        initialFilterFc:
+          8.176 *
+          Math.pow(
+            2,
+            this.getModGenAmount(generator, 'initialFilterFc') / 1200
+          ),
+        modEnvToFilterFc:
+          this.getModGenAmount(generator, 'modEnvToFilterFc') / 100,
+        initialFilterQ: this.getModGenAmount(generator, 'initialFilterQ') / 10,
+        reverbEffectSend:
+          this.getModGenAmount(generator, 'reverbEffectSend') / 10,
+        initialAttenuation:
+          this.getModGenAmount(generator, 'initialAttenuation') / 10,
+        freqVibLFO:
+          8.176 *
+          Math.pow(2, this.getModGenAmount(generator, 'freqVibLFO') / 1200),
+        pan: this.getModGenAmount(generator, 'pan'),
       };
     }
   }
@@ -535,13 +550,12 @@ export class Synthesizer {
   /**
    * @param {Object} generator
    * @param {string} enumeratorType
-   * @param {number=} optDefault
    * @return {number}
    */
-  getModGenAmount(generator, enumeratorType, optDefault = null) {
+  getModGenAmount(generator, enumeratorType) {
     return generator[enumeratorType]
       ? generator[enumeratorType].amount
-      : optDefault;
+      : this.parser.getGeneratorTable()[enumeratorType];
   }
 
   /**
@@ -557,9 +571,7 @@ export class Synthesizer {
    */
   setMasterVolume(volume) {
     this.masterVolume = volume;
-    console.log('master volume:', volume);
     this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
-    // console.log('master volume:', this.gainMaster.gain.value);
   }
 
   /**
@@ -726,7 +738,7 @@ export class Synthesizer {
             pitchOuter.className = 'progress';
             const pitch = doc.createElement('div');
             // 黄色
-            pitch.className = 'progress-bar';
+            pitch.className = 'progress-bar progress-bar-animated';
             pitchOuter.appendChild(pitch);
             itemElem.appendChild(pitchOuter);
             break;
@@ -806,7 +818,9 @@ export class Synthesizer {
       itemElem.className = this.items[item];
       itemElem.textContent = itemName[item];
       if (this.items[item] === 'keys') {
+        // MIDI音源のLCDのテキスト領域エミュレーター
         itemElem.appendChild(document.createElement('code'));
+        // GM / GS / XG表記
         itemElem.appendChild(document.createElement('div'));
       }
       headerElem.appendChild(itemElem);
@@ -820,10 +834,14 @@ export class Synthesizer {
         if (!{}.hasOwnProperty.call(this.items, item)) {
           continue;
         }
+
         wrapper.querySelector(`.header .${this.items[item]}`).style.width =
           wrapper.querySelector(`.channel .${this.items[item]}`).offsetWidth +
           'px';
       }
+
+      wrapper.querySelector(`.header .keys`).style.display =
+        document.documentElement.clientWidth <= 680 ? 'none' : 'flex';
     });
     ro.observe(wrapper);
 
@@ -831,6 +849,7 @@ export class Synthesizer {
   }
 
   /**
+   * シンセサイザーのDOMの更新
    * @param {number} channel
    * @param {number} key
    * @param {number} velocity
@@ -989,9 +1008,11 @@ export class Synthesizer {
     instrumentKey['cutOffFrequency'] = this.cutOffFrequency[channel];
     instrumentKey['harmonicContent'] = this.harmonicContent[channel];
     instrumentKey['reverb'] = this.reverb[channel];
+    instrumentKey['modulation'] = this.modulation[channel];
 
     // percussion
     if (bankIndex > 125) {
+      /*
       if (key === 42 || key === 44) {
         // 42: Closed Hi-Hat
         // 44: Pedal Hi-Hat
@@ -1003,6 +1024,7 @@ export class Synthesizer {
         // 81: Open Triangle
         this.noteOff(channel, 81, 0);
       }
+      */
       instrument['volume'] *= this.percussionVolume[key] / 127;
     }
 
@@ -1112,6 +1134,9 @@ export class Synthesizer {
         // Bank Select MSB #126 (Voice Type: Drum)
         // Bank Select MSB #127 (Voice Type: Drum)
         this.channelBank[channel] = value;
+        this.percussionPart[channel] = true;
+      } else if (value === 128) {
+        this.channelBank[channel] = 127;
         this.percussionPart[channel] = true;
       }
     } else if (this.isGS) {
@@ -1237,22 +1262,19 @@ export class Synthesizer {
    * @param {number} panpot panpot(0-127).
    */
   panpotChange(channel, panpot) {
+    this.channelPanpot[channel] = panpot;
     if (this.element) {
       const dom = this.element
         .querySelectorAll(`.instrument > .channel`)
         [channel].querySelector('.panpot .progress-bar');
       const percentage = (panpot / 127) * 100;
       dom.style.width = `${percentage}%`;
-      if (panpot < 63) {
-        dom.className = 'progress-bar left';
-      } else if (panpot > 65) {
-        dom.className = 'progress-bar right';
-      } else {
-        dom.className = 'progress-bar';
+      dom.classList.remove('left', 'right');
+      if (panpot === 64) {
+        return;
       }
+      dom.classList.add([panpot < 63 ? 'left' : 'right']);
     }
-
-    this.channelPanpot[channel] = panpot;
   }
 
   /**
@@ -1273,28 +1295,27 @@ export class Synthesizer {
     /** @type {number} */
     const calculated = bend - 8192;
 
-    if (this.element) {
-      const dom = this.element
-        .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.pitchBend .progress-bar');
-      dom.style.width = `${Math.floor((bend / 16384) * 100)}%`;
-      if (calculated < 0) {
-        dom.className = 'progress-bar low';
-      } else if (calculated > 0) {
-        dom.className = 'progress-bar high';
-      } else {
-        dom.className = 'progress-bar';
-      }
-    }
-
     for (i = 0, il = currentNoteOn.length; i < il; ++i) {
       currentNoteOn[i].updatePitchBend(calculated);
     }
 
     this.channelPitchBend[channel] = bend;
+
+    if (this.element) {
+      const dom = this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.pitchBend .progress-bar');
+      dom.style.width = `${Math.floor((bend / 16384) * 100)}%`;
+      dom.classList.remove('high', 'low');
+      if (calculated === 0) {
+        return;
+      }
+      dom.classList.add(calculated < 0 ? 'low' : 'high');
+    }
   }
 
   /**
+   * ピッチベンド・センシビリティ
    * @param {number} channel pitch bend sensitivity を変更するチャンネル.
    * @param {number} sensitivity
    */
@@ -1309,6 +1330,7 @@ export class Synthesizer {
   }
 
   /**
+   * アタックタイム
    * @param {number} channel
    * @param {number} attackTime
    */
@@ -1317,6 +1339,7 @@ export class Synthesizer {
   }
 
   /**
+   * ディケイタイム
    * @param {number} channel
    * @param {number} decayTime
    */
@@ -1325,6 +1348,7 @@ export class Synthesizer {
   }
 
   /**
+   * サスティンタイム
    * @param {number} channel
    * @param {number} sustinTime
    */
@@ -1333,6 +1357,7 @@ export class Synthesizer {
   }
 
   /**
+   * リリースタイム
    * @param {number} channel
    * @param {number} releaseTime
    */
@@ -1341,6 +1366,7 @@ export class Synthesizer {
   }
 
   /**
+   * ハーモニックコンテント（ブライトネス）
    * @param {number} channel
    * @param {number} value
    */
@@ -1349,6 +1375,7 @@ export class Synthesizer {
   }
 
   /**
+   * カットオフフリクエンシー
    * @param {number} channel
    * @param {number} value
    */
@@ -1373,13 +1400,24 @@ export class Synthesizer {
   }
 
   /**
-   * モデュレーター
+   * モジュレーション（ビブラート）デプス
    * @param {number} channel
    * @param {number} depth
    */
   modulationDepth(channel, depth) {
-    // TODO: LFOの反映量
-    // this.filter[channel].mix(depth / 127);
+    if (this.element) {
+      const dom = this.element
+        .querySelectorAll(`.instrument > .channel`)
+        [channel].querySelector('.pitchBend .progress-bar');
+
+      // モデレーターが0でないときは、ピッチに斜め線を入れる
+      if (depth !== 0) {
+        dom.classList.add(['progress-bar-striped']);
+      } else {
+        dom.classList.remove(['progress-bar-striped']);
+      }
+    }
+    this.modulation[channel] = depth;
   }
 
   /**
@@ -1399,6 +1437,7 @@ export class Synthesizer {
   }
 
   /**
+   * オールノートオフ
    * @param {number} channel NoteOff するチャンネル.
    */
   allNoteOff(channel) {
@@ -1415,6 +1454,7 @@ export class Synthesizer {
   }
 
   /**
+   * オールサウンドオフ
    * @param {number} channel 音を消すチャンネル.
    */
   allSoundOff(channel) {
@@ -1435,6 +1475,7 @@ export class Synthesizer {
   }
 
   /**
+   * リセットオールコントロール
    * @param {number} channel リセットするチャンネル
    */
   resetAllControl(channel) {
@@ -1471,8 +1512,8 @@ export class Synthesizer {
 
   /**
    * パーカッションチャネルにする
-   * @param {number} channel TODO:ドラムパートとしてセットするチャンネル
-   * @param {boolean} sw ドラムか通常かのスイッチ
+   * @param {number} channel パーカッションチャネルとしてセットするチャンネル
+   * @param {boolean} sw パーカッションチャネルか通常かのスイッチ
    */
   setPercussionPart(channel, sw) {
     if (!this.isXG) {
@@ -1492,10 +1533,10 @@ export class Synthesizer {
     const dom = this.element.querySelector('.header .keys code');
     dom.innerText = message.map((e) => String.fromCharCode(e)).join('');
 
-    // 2秒後に削除
+    // 10秒後に削除
     this.timer = setTimeout(() => {
       dom.innerText = '';
-    }, 10000);
+    }, 50000);
   }
 }
 
