@@ -37,7 +37,7 @@ export class Synthesizer {
     /** @type {Array.<number>} */
     this.channelInstrument = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** @type {Array.<number>} */
-    this.channelBank = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0];
+    this.channelBank = [0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0];
     /** @type {Array.<number>} */
     this.channelVolume = [
       127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127,
@@ -264,12 +264,6 @@ export class Synthesizer {
     this.isXG = false;
     this.isGS = false;
 
-    if (mode == 'XG') {
-      this.isXG = true;
-    } else if (mode == 'GS') {
-      this.isGS = true;
-    }
-
     for (i = 0; i < 16; ++i) {
       this.programChange(i, 0x00);
       this.volumeChange(i, 0x64);
@@ -289,6 +283,12 @@ export class Synthesizer {
       this.modulationDepth(i, 0);
       this.updateBankSelect(i);
       this.updateProgramSelect(i);
+    }
+
+    if (mode == 'XG') {
+      this.isXG = true;
+    } else if (mode == 'GS') {
+      this.isGS = true;
     }
 
     this.setPercussionPart(9, true);

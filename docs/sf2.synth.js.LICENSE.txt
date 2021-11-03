@@ -1,3 +1,5 @@
+/*! ../cancel/Cancel */
+
 /*! ../cancel/isCancel */
 
 /*! ../core/buildFullPath */
@@ -5,6 +7,8 @@
 /*! ../core/createError */
 
 /*! ../defaults */
+
+/*! ../env/data */
 
 /*! ../helpers/buildURL */
 
@@ -15,8 +19,6 @@
 /*! ../helpers/validator */
 
 /*! ../utils */
-
-/*! ./../../package.json */
 
 /*! ./../core/settle */
 
@@ -62,6 +64,8 @@
 
 /*! ./enhanceError */
 
+/*! ./env/data */
+
 /*! ./helpers/bind */
 
 /*! ./helpers/isAxiosError */
@@ -92,7 +96,7 @@
 
 /*! @logue/reverb/dist/NoiseType */
 
-/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-15T11:09:45.339Z */
+/*! @logue/sf2synth v0.3.8 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-11-03T01:09:23.172Z */
 
 /*! axios */
 
@@ -134,12 +138,12 @@
   !*** ./node_modules/axios/lib/utils.js ***!
   \*****************************************/
 
-/*!*****************************************!*\
-  !*** ./node_modules/axios/package.json ***!
-  \*****************************************/
-
 /*!********************************************!*\
   !*** ./node_modules/axios/lib/defaults.js ***!
+  \********************************************/
+
+/*!********************************************!*\
+  !*** ./node_modules/axios/lib/env/data.js ***!
   \********************************************/
 
 /*!**********************************************!*\

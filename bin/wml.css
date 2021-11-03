@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.5 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-09-15T11:09:45.339Z */
+/*! @logue/sf2synth v0.3.8 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-11-03T01:09:23.172Z */
 /*!*******************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/wml.scss ***!
   \*******************************************************************************************************/
@@ -754,6 +754,7 @@ textarea.form-control-lg {
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
   font-size: 0.875rem;
+  border-radius: 0.2rem;
 }
 
 .form-select-lg {
@@ -761,6 +762,7 @@ textarea.form-control-lg {
   padding-bottom: 0.5rem;
   padding-left: 1rem;
   font-size: 1.25rem;
+  border-radius: 0.3rem;
 }
 
 .form-check {
@@ -6068,103 +6070,103 @@ textarea.form-control-lg {
 .synthesizer .instrument .header .keys code {
   display: block;
 }
-.synthesizer .instrument .channel {
+.synthesizer .instrument > .channel {
   align-items: center;
   padding: 0.1rem;
 }
-.synthesizer .instrument .channel .mute {
+.synthesizer .instrument > .channel .mute {
   width: 3rem;
 }
-.synthesizer .instrument .channel .bank {
+.synthesizer .instrument > .channel .bank {
   width: 4.5rem;
 }
-.synthesizer .instrument .channel .program {
+.synthesizer .instrument > .channel .program {
   width: 14rem;
 }
 @media (max-width: 991.98px) {
-  .synthesizer .instrument .channel .program {
+  .synthesizer .instrument > .channel .program {
     width: 10rem;
   }
 }
 @media (max-width: 767.98px) {
-  .synthesizer .instrument .channel .program {
+  .synthesizer .instrument > .channel .program {
     width: 8rem;
   }
 }
-.synthesizer .instrument .channel .volume,
-.synthesizer .instrument .channel .expression,
-.synthesizer .instrument .channel .reverbDepth,
-.synthesizer .instrument .channel .pitchBendSensitivity {
+.synthesizer .instrument > .channel .volume,
+.synthesizer .instrument > .channel .expression,
+.synthesizer .instrument > .channel .reverbDepth,
+.synthesizer .instrument > .channel .pitchBendSensitivity {
   width: 2rem;
 }
-.synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
+.synthesizer .instrument > .channel .panpot,
+.synthesizer .instrument > .channel .pitchBend {
   width: 6em;
 }
 @media (max-width: 1199.98px) {
-  .synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
+  .synthesizer .instrument > .channel .panpot,
+.synthesizer .instrument > .channel .pitchBend {
     width: 4rem;
   }
 }
 @media (max-width: 991.98px) {
-  .synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
+  .synthesizer .instrument > .channel .panpot,
+.synthesizer .instrument > .channel .pitchBend {
     width: 3rem;
   }
 }
 @media (max-width: 767.98px) {
-  .synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
+  .synthesizer .instrument > .channel .panpot,
+.synthesizer .instrument > .channel .pitchBend {
     width: 4rem;
   }
 }
 @media (max-width: 575.98px) {
-  .synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
+  .synthesizer .instrument > .channel .panpot,
+.synthesizer .instrument > .channel .pitchBend {
     width: 2rem;
   }
 }
 @media (max-width: 767.98px) {
-  .synthesizer .instrument .channel {
+  .synthesizer .instrument > .channel {
     flex-wrap: wrap;
   }
 }
-.synthesizer .instrument .channel.hold {
+.synthesizer .instrument > .channel.hold {
   color: #dc3545;
 }
-.synthesizer .instrument .channel .panpot .progress .progress-bar {
+.synthesizer .instrument > .channel .panpot .progress .progress-bar {
   background-color: #20c997;
 }
-.synthesizer .instrument .channel .panpot .progress .progress-bar.left {
+.synthesizer .instrument > .channel .panpot .progress .progress-bar.left {
   background-color: #0dcaf0;
 }
-.synthesizer .instrument .channel .panpot .progress .progress-bar.right {
+.synthesizer .instrument > .channel .panpot .progress .progress-bar.right {
   background-color: #fd7e14;
 }
-.synthesizer .instrument .channel .pitchBend .progress .progress-bar {
+.synthesizer .instrument > .channel .pitchBend .progress .progress-bar {
   background-color: #6f42c1;
 }
-.synthesizer .instrument .channel .pitchBend .progress .progress-bar.low {
+.synthesizer .instrument > .channel .pitchBend .progress .progress-bar.low {
   background-color: #d63384;
 }
-.synthesizer .instrument .channel .pitchBend .progress .progress-bar.high {
+.synthesizer .instrument > .channel .pitchBend .progress .progress-bar.high {
   background-color: #d63384;
 }
-.synthesizer .instrument .channel .volume,
-.synthesizer .instrument .channel .expression,
-.synthesizer .instrument .channel .reverbDepth,
-.synthesizer .instrument .channel .pitchBendSensitivity {
+.synthesizer .instrument > .channel .volume,
+.synthesizer .instrument > .channel .expression,
+.synthesizer .instrument > .channel .reverbDepth,
+.synthesizer .instrument > .channel .pitchBendSensitivity {
   margin-right: 0.25rem;
   font-size: 0.75rem;
   text-align: right;
 }
-.synthesizer .instrument .channel .panpot,
-.synthesizer .instrument .channel .pitchBend {
+.synthesizer .instrument > .channel .panpot,
+.synthesizer .instrument > .channel .pitchBend {
   align-self: center;
   padding: 0.1rem;
 }
-.synthesizer .instrument .channel .keys {
+.synthesizer .instrument > .channel .keys {
   overflow: hidden;
   -webkit-app-region: no-drag;
   margin: 0.1rem;
@@ -6174,11 +6176,11 @@ textarea.form-control-lg {
   border: 1px solid #adb5bd;
 }
 @media (max-width: 767.98px) {
-  .synthesizer .instrument .channel .keys {
+  .synthesizer .instrument > .channel .keys {
     height: 1.75rem;
   }
 }
-.synthesizer .instrument .channel .keys .key {
+.synthesizer .instrument > .channel .keys .key {
   cursor: pointer;
   position: relative;
   float: left;
@@ -6187,44 +6189,44 @@ textarea.form-control-lg {
   margin: 0;
   background-color: transparent;
 }
-.synthesizer .instrument .channel .keys .key:nth-child(12n+1).tone {
+.synthesizer .instrument > .channel .keys .key:nth-child(12n+1).tone {
   border-left: 1px solid #495057;
 }
-.synthesizer .instrument .channel .keys .key.tone {
+.synthesizer .instrument > .channel .keys .key.tone {
   width: 10px;
   height: 100%;
   border-left: 1px solid #adb5bd;
   box-sizing: border-box;
 }
-.synthesizer .instrument .channel .keys .key.tone:first-child {
+.synthesizer .instrument > .channel .keys .key.tone:first-child {
   border-left: 0 none;
 }
 @media (max-width: 1399.98px) {
-  .synthesizer .instrument .channel .keys .key.tone {
+  .synthesizer .instrument > .channel .keys .key.tone {
     width: 7px;
   }
 }
 @media (max-width: 1199.98px) {
-  .synthesizer .instrument .channel .keys .key.tone {
+  .synthesizer .instrument > .channel .keys .key.tone {
     width: 6px;
   }
 }
 @media (max-width: 991.98px) {
-  .synthesizer .instrument .channel .keys .key.tone {
+  .synthesizer .instrument > .channel .keys .key.tone {
     width: 5px;
   }
 }
 @media (max-width: 767.98px) {
-  .synthesizer .instrument .channel .keys .key.tone {
+  .synthesizer .instrument > .channel .keys .key.tone {
     width: 7px;
   }
 }
 @media (max-width: 575.98px) {
-  .synthesizer .instrument .channel .keys .key.tone {
+  .synthesizer .instrument > .channel .keys .key.tone {
     width: 6px;
   }
 }
-.synthesizer .instrument .channel .keys .key.semitone {
+.synthesizer .instrument > .channel .keys .key.semitone {
   width: 7px;
   height: 50%;
   left: 4px;
@@ -6235,87 +6237,87 @@ textarea.form-control-lg {
   z-index: 999;
 }
 @media (max-width: 1399.98px) {
-  .synthesizer .instrument .channel .keys .key.semitone {
+  .synthesizer .instrument > .channel .keys .key.semitone {
     width: 5px;
     left: 3px;
     margin-left: -5px;
   }
 }
 @media (max-width: 1199.98px) {
-  .synthesizer .instrument .channel .keys .key.semitone {
+  .synthesizer .instrument > .channel .keys .key.semitone {
     width: 4px;
     left: 2px;
     margin-left: -4px;
   }
 }
 @media (max-width: 991.98px) {
-  .synthesizer .instrument .channel .keys .key.semitone {
+  .synthesizer .instrument > .channel .keys .key.semitone {
     width: 3px;
     left: 2px;
     margin-left: -3px;
   }
 }
 @media (max-width: 767.98px) {
-  .synthesizer .instrument .channel .keys .key.semitone {
+  .synthesizer .instrument > .channel .keys .key.semitone {
     width: 4px;
     left: 2px;
     margin-left: -4px;
   }
 }
 @media (max-width: 575.98px) {
-  .synthesizer .instrument .channel .keys .key.semitone {
+  .synthesizer .instrument > .channel .keys .key.semitone {
     width: 5px;
     left: 3px;
     margin-left: -5px;
   }
 }
-.synthesizer .instrument .channel:nth-child(1) .key.note-on {
-  background-color: #e53636;
+.synthesizer .instrument > .channel:nth-child(2) .key.note-on {
+  background-color: #ff1744;
 }
-.synthesizer .instrument .channel:nth-child(2) .key.note-on {
-  background-color: #e57636;
+.synthesizer .instrument > .channel:nth-child(3) .key.note-on {
+  background-color: #f50057;
 }
-.synthesizer .instrument .channel:nth-child(3) .key.note-on {
-  background-color: #e5ba3b;
+.synthesizer .instrument > .channel:nth-child(4) .key.note-on {
+  background-color: #d500f9;
 }
-.synthesizer .instrument .channel:nth-child(4) .key.note-on {
-  background-color: #d5e84c;
+.synthesizer .instrument > .channel:nth-child(5) .key.note-on {
+  background-color: #651fff;
 }
-.synthesizer .instrument .channel:nth-child(5) .key.note-on {
-  background-color: #8de536;
+.synthesizer .instrument > .channel:nth-child(6) .key.note-on {
+  background-color: #3d5afe;
 }
-.synthesizer .instrument .channel:nth-child(6) .key.note-on {
-  background-color: #51d83c;
+.synthesizer .instrument > .channel:nth-child(7) .key.note-on {
+  background-color: #2979ff;
 }
-.synthesizer .instrument .channel:nth-child(7) .key.note-on {
-  background-color: #35dd5f;
+.synthesizer .instrument > .channel:nth-child(8) .key.note-on {
+  background-color: #00b0ff;
 }
-.synthesizer .instrument .channel:nth-child(8) .key.note-on {
-  background-color: #33d697;
+.synthesizer .instrument > .channel:nth-child(9) .key.note-on {
+  background-color: #00e5ff;
 }
-.synthesizer .instrument .channel:nth-child(9) .key.note-on {
-  background-color: #30cccc;
+.synthesizer .instrument > .channel:nth-child(10) .key.note-on {
+  background-color: #1de9b6;
 }
-.synthesizer .instrument .channel:nth-child(10) .key.note-on {
-  background-color: #40aae8;
+.synthesizer .instrument > .channel:nth-child(11) .key.note-on {
+  background-color: #00e676;
 }
-.synthesizer .instrument .channel:nth-child(11) .key.note-on {
-  background-color: #5d80ea;
+.synthesizer .instrument > .channel:nth-child(12) .key.note-on {
+  background-color: #76ff03;
 }
-.synthesizer .instrument .channel:nth-child(12) .key.note-on {
-  background-color: #796aed;
+.synthesizer .instrument > .channel:nth-child(13) .key.note-on {
+  background-color: #c6ff00;
 }
-.synthesizer .instrument .channel:nth-child(13) .key.note-on {
-  background-color: #a056ea;
+.synthesizer .instrument > .channel:nth-child(14) .key.note-on {
+  background-color: #ffea00;
 }
-.synthesizer .instrument .channel:nth-child(14) .key.note-on {
-  background-color: #cf44e5;
+.synthesizer .instrument > .channel:nth-child(15) .key.note-on {
+  background-color: #ffc400;
 }
-.synthesizer .instrument .channel:nth-child(15) .key.note-on {
-  background-color: #e536b9;
+.synthesizer .instrument > .channel:nth-child(16) .key.note-on {
+  background-color: #ff9100;
 }
-.synthesizer .instrument .channel:nth-child(16) .key.note-on {
-  background-color: #e53679;
+.synthesizer .instrument > .channel:nth-child(17) .key.note-on {
+  background-color: #ff3d00;
 }
 
 /*# sourceMappingURL=wml.css.map*/
