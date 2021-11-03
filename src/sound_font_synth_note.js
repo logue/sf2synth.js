@@ -142,10 +142,8 @@ export class SynthesizerNote {
     // TODO: ドラムパートのPanが変化した場合、その計算をしなければならない
     // http://cpansearch.perl.org/src/PJB/MIDI-SoundFont-1.08/doc/sfspec21.html#8.4.6
     /** @type {number} */
-    const pan = instrument['pan'] !== void 0 ? instrument['pan'] : this.panpot;
-
-    /** @type {number} modulation */
-    const modulation = instrument['modulation'];
+    // console.log(instrument['pan'], this.panpot);
+    const pan = instrument['pan'] !== 0 ? instrument['pan'] : this.panpot;
 
     const sample = this.buffer.subarray(
       0,
@@ -181,7 +179,7 @@ export class SynthesizerNote {
     /** @type {StereoPannerNode} */
     const panner = this.panner;
     panner.panningModel = 'equalpower';
-    // panner.distanceModel = 'inverse';
+    panner.distanceModel = 'inverse';
     panner.setPosition(
       Math.sin((pan * Math.PI) / 2),
       0,
@@ -248,35 +246,11 @@ export class SynthesizerNote {
     modulator.connect(panner);
     panner.connect(this.expressionGainNode);
 
-    this.expressionGainNode.connect(output);
-
     if (!instrument['mute']) {
       this.connect();
     }
 
-    /*
-    // Modulation Depth
-    // TODO: 途中からビブラードをかけたときに反映されない
-    if (instrument['sampleModes'] !== 0) {
-      // console.log('modulation on');
-
-      // Create the instance of GainNode
-      const depth = ctx.createGain(); // for LFO
-      const lfo = ctx.createOscillator();
-
-      // OscillatorNode (LFO) -> GainNode (Depth) -> frequency (AudioParam)
-      lfo.connect(depth);
-      depth.connect(modulator);
-
-      // Set parameters for LFO
-      lfo.type = 'sine';
-      depth.gain.value = modulation;
-      lfo.frequency.value = instrument['freqVibLFO'];
-
-      // Effector (Vibrato) ON
-      lfo.start(0);
-    }
-    */
+    this.expressionGainNode.connect(output);
 
     // fire
     bufferSource.start(0, startTime);
@@ -367,8 +341,7 @@ export class SynthesizerNote {
       case 0:
         // ループしない
         bufferSource.loop = false;
-        bufferSource.disconnect();
-        bufferSource.buffer = null;
+        // bufferSource.disconnect();
         break;
       case 1:
         // ループさせる
@@ -418,15 +391,38 @@ export class SynthesizerNote {
         bufferSource.loop = false;
         bufferSource.buffer = null;
         break;
-      default:
-        bufferSource.loop = false;
-        bufferSource.buffer = null;
     }
   }
 
   /**
    */
   connect() {
+    /*
+    // Modulation Depth
+    // TODO: 途中からビブラードをかけたときに反映されない
+    if (
+      this.instrument['sampleModes'] !== 0 &&
+      this.instrument['modulation'] !== 0
+    ) {
+      console.log('modulation on');
+
+      // Create the instance of GainNode
+      const depth = ctx.createGain(); // for LFO
+      const lfo = ctx.createOscillator();
+
+      // OscillatorNode (LFO) -> GainNode (Depth) -> frequency (AudioParam)
+      lfo.connect(depth);
+      depth.connect(this.destination);
+
+      // Set parameters for LFO
+      lfo.type = 'sine';
+      depth.gain.value = modulation;
+      lfo.frequency.value = instrument['freqVibLFO'];
+
+      // Effector (Vibrato) ON
+      lfo.start(0);
+    }
+    */
     this.reverb.connect(this.outputGainNode).connect(this.destination);
   }
 

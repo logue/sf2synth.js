@@ -542,7 +542,7 @@ export class Synthesizer {
         freqVibLFO:
           8.176 *
           Math.pow(2, this.getModGenAmount(generator, 'freqVibLFO') / 1200),
-        pan: this.getModGenAmount(generator, 'pan'),
+        pan: this.getModGenAmount(generator, 'pan') / 1200,
       };
     }
   }
