@@ -2,8 +2,6 @@
 import SynthesizerNote from './sound_font_synth_note';
 import Parser from './sf2';
 import Reverb from '@logue/reverb';
-import { NoiseType } from '@logue/reverb/dist/NoiseType';
-
 /**
  * Synthesizer Class
  * @private
@@ -40,8 +38,8 @@ export class Synthesizer {
     this.channelBank = [0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0];
     /** @type {Array.<number>} */
     this.channelVolume = [
-      127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127,
-      127,
+      100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+      100,
     ];
     /** @type {Array.<number>} */
     this.channelPanpot = [
@@ -195,7 +193,7 @@ export class Synthesizer {
       this.reverb[i] = new Reverb(this.ctx, {
         // ノイズはブラウンノイズとする。
         time: 1.1,
-        noise: NoiseType.BROWN,
+        noise: 'brown',
         once: false,
         filterType: 'lowpass',
       });
@@ -208,10 +206,9 @@ export class Synthesizer {
 
     // 交差していない
     this.intersection = new IntersectionObserver(
-      (entries) =>
+      entries =>
         entries.forEach(
-          (entry) =>
-            (entry.target.dataset.isIntersecting = entry.isIntersecting)
+          entry => (entry.target.dataset.isIntersecting = entry.isIntersecting)
         ),
       {}
     );
@@ -253,25 +250,19 @@ export class Synthesizer {
 
     console.log('Reset Type:', mode);
 
-    /** @type {number} */
-    let i;
-
-    this.parser = new Parser(this.input, {
-      sampleRate: this.ctx.sampleRate,
-    });
-    this.bankSet = this.createAllInstruments();
+    this.refreshInstruments(this.input);
 
     this.isXG = false;
     this.isGS = false;
 
-    for (i = 0; i < 16; ++i) {
-      this.programChange(i, 0x00);
-      this.volumeChange(i, 0x64);
-      this.panpotChange(i, 0x40);
+    for (let i = 0; i < 16; ++i) {
+      this.programChange(i, 0);
+      this.volumeChange(i, 100);
+      this.panpotChange(i, 64);
       this.pitchBend(i, 0x00, 0x40); // 8192
       this.pitchBendSensitivity(i, 2);
       this.hold(i, 0);
-      this.expression[i] = 127;
+      this.expression(i, 127);
       this.bankSelectMsb(i, i === 9 ? 127 : 0);
       this.attackTime(i, 64);
       this.decayTime(i, 64);
@@ -281,6 +272,7 @@ export class Synthesizer {
       this.cutOffFrequency(i, 64);
       this.reverbDepth(i, 40);
       this.modulationDepth(i, 0);
+
       this.updateBankSelect(i);
       this.updateProgramSelect(i);
     }
@@ -293,7 +285,7 @@ export class Synthesizer {
 
     this.setPercussionPart(9, true);
 
-    for (i = 0; i < 128; ++i) {
+    for (let i = 0; i < 128; ++i) {
       this.percussionVolume[i] = 127;
     }
 
@@ -320,7 +312,9 @@ export class Synthesizer {
    */
   refreshInstruments(input) {
     this.input = input;
-    this.parser = new Parser(input);
+    this.parser = new Parser(input, {
+      sampleRate: this.ctx.sampleRate,
+    });
     this.bankSet = this.createAllInstruments();
   }
 
@@ -646,7 +640,7 @@ export class Synthesizer {
             checkbox.value = channel;
             checkbox.addEventListener(
               'input',
-              (event) => {
+              event => {
                 this.mute(channel, event.target.checked);
               },
               false
@@ -672,7 +666,8 @@ export class Synthesizer {
 
             bankSelect.addEventListener(
               'change',
-              ((synth, ch) => (event) => {
+              ((synth, ch) => event => {
+                console.log(synth, channelElem);
                 synth.bankChange(ch, event.target.value);
                 synth.programChange(
                   ch,
@@ -694,7 +689,7 @@ export class Synthesizer {
 
             select.addEventListener(
               'change',
-              ((synth, ch) => (event) => {
+              ((synth, ch) => event => {
                 synth.programChange(ch, event.target.value);
               })(this, channel),
               false
@@ -757,7 +752,7 @@ export class Synthesizer {
               // イベント割当
               keyElem.addEventListener(
                 eventStart,
-                ((synth, ch, k) => (event) => {
+                ((synth, ch, k) => event => {
                   event.preventDefault();
                   synth.drag = true;
                   synth.noteOn(ch, k, 127);
@@ -765,7 +760,7 @@ export class Synthesizer {
               );
               keyElem.addEventListener(
                 'mouseover',
-                ((synth, ch, k) => (event) => {
+                ((synth, ch, k) => event => {
                   event.preventDefault();
                   if (synth.drag) {
                     synth.noteOn(ch, k, 127);
@@ -774,14 +769,14 @@ export class Synthesizer {
               );
               keyElem.addEventListener(
                 'mouseout',
-                ((synth, ch, k) => (event) => {
+                ((synth, ch, k) => event => {
                   event.preventDefault();
                   synth.noteOff(ch, k, 0);
                 })(this, channel, key)
               );
               keyElem.addEventListener(
                 eventEnd,
-                ((synth, ch, k) => (event) => {
+                ((synth, ch, k) => event => {
                   event.preventDefault();
                   synth.drag = false;
                   synth.noteOff(ch, k, 0);
@@ -829,7 +824,7 @@ export class Synthesizer {
     wrapper.appendChild(instElem);
 
     // ヘッダー行のリサイズ
-    const ro = new ResizeObserver((entries) => {
+    const ro = new ResizeObserver(entries => {
       for (const item in this.items) {
         if (!{}.hasOwnProperty.call(this.items, item)) {
           continue;
@@ -910,12 +905,11 @@ export class Synthesizer {
    * @param {number} channel
    */
   updateProgramSelect(channel) {
-    if (!this.element) {
-      return;
-    }
     const dom = this.element.querySelectorAll(`.instrument > .channel`)[
       channel
     ];
+
+    console.log(this.channelBank[channel]);
     /** @type {number} */
     const bankIndex = this.channelBank[channel];
     /** @type {HTMLElement} */
@@ -1191,28 +1185,31 @@ export class Synthesizer {
    * @param {number} bank バンク・セレクト.
    */
   bankChange(channel, bank) {
-    if (typeof this.bankSet[bank] === 'object') {
-      // バンクが存在するとき
-      this.channelBank[channel] = bank;
+    /** パーカッションバンク */
+    const percussionBank = this.isXG ? 127 : 128;
+
+    if (!this.isGS || !this.isXG) {
+      // GS、XGフラグが立っていない（拡張音源ではない）場合は、ch10はドラム固定、それ以外は0とする。
+      bank = channel === 9 ? 128 : 0;
     } else {
-      // バンクが存在しないとき
-      if (this.percussionPart[channel]) {
-        // パーカッション
-        this.channelBank[channel] = !this.isXG ? 128 : 127;
+      if (this.bankSet[bank]) {
+        this.channelBank[channel] = bank;
       } else {
         // 存在しない場合0を選択
-        this.channelBank[channel] = 0;
+        this.channelBank[channel] = this.percussionPart[channel]
+          ? percussionBank
+          : 0;
       }
     }
 
-    // TODO: 厳密にはMIDI音源はプログラムチェンジがあったときに、バンク・セレクトの値が反映されるのでこの実装は正しくない。
-    this.updateProgramSelect(channel);
-
     if (this.element) {
+      // バンクセレクトの値を更新
       this.element
         .querySelectorAll(`.instrument > .channel`)
         [channel].querySelector('.bank > select').value = bank;
     }
+    // TODO: 厳密にはMIDI音源はプログラムチェンジがあったときに、バンク・セレクトの値が反映されるのでこの実装は正しくない。
+    this.updateProgramSelect(channel);
   }
 
   /**
@@ -1531,7 +1528,7 @@ export class Synthesizer {
   processMidiMessage(message) {
     clearTimeout(this.timer);
     const dom = this.element.querySelector('.header .keys code');
-    dom.innerText = message.map((e) => String.fromCharCode(e)).join('');
+    dom.innerText = message.map(e => String.fromCharCode(e)).join('');
 
     // 10秒後に削除
     this.timer = setTimeout(() => {

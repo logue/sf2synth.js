@@ -1,0 +1,19 @@
+root: true
+env:
+  browser: true
+  es2021: true
+extends:
+  - eslint:recommended
+  - google
+  - prettier
+  - eslint-config-prettier
+plugins:
+  - prettier
+parserOptions:
+  ecmaVersion: latest
+  parser: babel-eslint
+  sourceType: module
+rules:
+  require-jsdoc: warn
+  valid-jsdoc: off
+  new-cap: off

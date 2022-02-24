@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.8 | imaya / GREE Inc. / Logue | license: MIT | build: 2021-11-03T01:09:23.172Z */
+/*! @logue/sf2synth v0.3.9 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-02-24T00:02:30.028Z */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -27,7 +27,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * Riff Parser class
@@ -140,7 +140,7 @@ var Riff = /*#__PURE__*/function () {
 
 
 
-var RiffChunk =
+var RiffChunk = /*#__PURE__*/_createClass(
 /**
  * @param {string} type
  * @param {number} size
@@ -157,7 +157,7 @@ function RiffChunk(type, size, offset) {
   /** @type {number} */
 
   this.offset = offset;
-};
+});
 
 /***/ })
 
@@ -233,7 +233,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /* eslint-disable no-prototype-builtins */
 

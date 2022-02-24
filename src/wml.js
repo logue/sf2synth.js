@@ -57,7 +57,7 @@ export class WebMidiLink {
     // DOMが読み込み済みの場合は実行しない
     if (document.readyState === 'interactive') return;
 
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       const cb = () => {
         // ブラウザのアニメーション実行
         window.requestAnimationFrame(resolve);
@@ -120,18 +120,19 @@ export class WebMidiLink {
     alert.appendChild(progressOuter);
     this.placeholder.appendChild(alert);
 
-    console.log('dom');
-
     /**
      * ダウンロード中のハンドラ
      * @param {axios.progressEvent} progressEvent
      */
-    const downloadProgressHandler = (progressEvent) => {
+    const downloadProgressHandler = progressEvent => {
       const total = parseFloat(
         progressEvent.currentTarget.responseHeaders['Content-Length']
       );
       const current = progressEvent.currentTarget.response.length;
-      const percentCompleted = Math.floor((current / total) * 100);
+      const percentCompleted = Math.floor(
+        (progressEvent.loaded / progressEvent.total) * 100
+      );
+
       message.innerText = `Now Loading... (${current}/${total})`;
       progress.style.width = percentCompleted + '%';
       progress.innerText = percentCompleted + ' %';
@@ -188,8 +189,6 @@ export class WebMidiLink {
       console.info('This server/client does not cache function.');
       stream = await getContent();
     }
-
-    console.log(stream);
 
     alert.className = 'alert alert-info';
     message.innerText = 'Initializing...';
@@ -266,7 +265,7 @@ export class WebMidiLink {
     switch (type) {
       case 'midi':
         this.processMidiMessage(
-          msg.map((hex) => {
+          msg.map(hex => {
             return parseInt(hex, 16);
           })
         );
