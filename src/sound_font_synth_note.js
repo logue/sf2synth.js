@@ -2,7 +2,7 @@
  * SynthesizerNote Class
  * @private
  */
-export class SynthesizerNote {
+export default class SynthesizerNote {
   /**
    * @param {AudioContext} ctx
    * @param {AudioNode} destination
@@ -480,5 +480,3 @@ export class SynthesizerNote {
     this.schedulePlaybackRate();
   }
 }
-
-export default SynthesizerNote;

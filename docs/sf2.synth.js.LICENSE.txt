@@ -1,3 +1,5 @@
+/*! ../adapters/xhr */
+
 /*! ../cancel/Cancel */
 
 /*! ../cancel/isCancel */
@@ -6,7 +8,11 @@
 
 /*! ../core/createError */
 
+/*! ../core/enhanceError */
+
 /*! ../defaults */
+
+/*! ../defaults/transitional */
 
 /*! ../env/data */
 
@@ -16,13 +22,13 @@
 
 /*! ../helpers/isAbsoluteURL */
 
+/*! ../helpers/normalizeHeaderName */
+
 /*! ../helpers/validator */
 
 /*! ../utils */
 
 /*! ./../core/settle */
-
-/*! ./../defaults */
 
 /*! ./../helpers/buildURL */
 
@@ -38,8 +44,6 @@
 
 /*! ./InterceptorManager */
 
-/*! ./adapters/xhr */
-
 /*! ./cancel/Cancel */
 
 /*! ./cancel/CancelToken */
@@ -47,8 +51,6 @@
 /*! ./cancel/isCancel */
 
 /*! ./core/Axios */
-
-/*! ./core/enhanceError */
 
 /*! ./core/mergeConfig */
 
@@ -65,8 +67,6 @@
 /*! ./helpers/bind */
 
 /*! ./helpers/isAxiosError */
-
-/*! ./helpers/normalizeHeaderName */
 
 /*! ./helpers/spread */
 
@@ -86,15 +86,15 @@
 
 /*! ./transformData */
 
+/*! ./transitional */
+
 /*! ./utils */
 
 /*! @logue/reverb */
 
-/*! @logue/sf2synth v0.3.9 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-02-24T00:02:30.028Z */
+/*! @logue/sf2synth v0.3.9 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-04-07T10:12:05.227Z */
 
 /*! axios */
-
-/*! regenerator-runtime/runtime */
 
 /*!********************!*\
   !*** ./src/sf2.js ***!
@@ -133,10 +133,6 @@
   \*****************************************/
 
 /*!********************************************!*\
-  !*** ./node_modules/axios/lib/defaults.js ***!
-  \********************************************/
-
-/*!********************************************!*\
   !*** ./node_modules/axios/lib/env/data.js ***!
   \********************************************/
 
@@ -159,6 +155,10 @@
 /*!*************************************************!*\
   !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
   \*************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/axios/lib/defaults/index.js ***!
+  \**************************************************/
 
 /*!**************************************************!*\
   !*** ./node_modules/axios/lib/helpers/spread.js ***!
@@ -192,10 +192,6 @@
   !*** ./node_modules/axios/lib/helpers/validator.js ***!
   \*****************************************************/
 
-/*!*****************************************************!*\
-  !*** ./node_modules/regenerator-runtime/runtime.js ***!
-  \*****************************************************/
-
 /*!******************************************************!*\
   !*** ./node_modules/@logue/reverb/dist/reverb.es.js ***!
   \******************************************************/
@@ -227,6 +223,10 @@
 /*!********************************************************!*\
   !*** ./node_modules/axios/lib/helpers/parseHeaders.js ***!
   \********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/defaults/transitional.js ***!
+  \*********************************************************/
 
 /*!*********************************************************!*\
   !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!

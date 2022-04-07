@@ -26,16 +26,16 @@ const soundfont = 'Yamaha XG Sound Set.sf2';
 // Option
 const option = {
   // attach dom id
-  placeholder : 'placeholder',
+  placeholder: 'placeholder',
   // If you not nessesaly to draw keyboad, set false.
-  drawSynth : true,
+  drawSynth: true,
   // Cache Soundfont
-  cache : true
+  cache: true,
 };
 
 const wml = new SoundFont.WebMidiLink(option);
 wml.setLoadCallback(() => {
-    // Finishd to 
+  // Finishd to
 });
 wml.setup(url);
 ```
@@ -48,22 +48,22 @@ wml.setup(url);
 
 equires a browser that supports the Web Audio API.
 
-* Google Chrome 25+
-* Google Chrome for Android 28+
-* FireFox 25+
-* Edge
+- Google Chrome 25+
+- Google Chrome for Android 28+
+- FireFox 25+
+- Edge
 
 ## MIDI Compatibility
 
-* sf2synth.js is compliant with [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) Level 1.
-* Supported MIDI standards are [GM Level 2](https://en.wikipedia.org/wiki/General_MIDI_Level_2) and [YAMAHA XG Lite](https://en.wikipedia.org/wiki/Yamaha_XG) (equivalent to YAMAHA MU50).
-* MIDI files created in the [Roland GS](https://en.wikipedia.org/wiki/Roland_GS) standard may not play properly.
-* Portamento and chorus effect is not supported.
-* A specification called `progress` has been added as an instruction that is not compliant with WebMidiLink.
+- sf2synth.js is compliant with [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) Level 1.
+- Supported MIDI standards are [GM Level 2](https://en.wikipedia.org/wiki/General_MIDI_Level_2) and [YAMAHA XG Lite](https://en.wikipedia.org/wiki/Yamaha_XG) (equivalent to YAMAHA MU50).
+- MIDI files created in the [Roland GS](https://en.wikipedia.org/wiki/Roland_GS) standard may not play properly.
+- Portamento and chorus effect is not supported.
+- A specification called `progress` has been added as an instruction that is not compliant with WebMidiLink.
 
 ## License
 
 Licensed under the MIT License.
 
-* 2013      by imaya / GREE Inc.
-* 2013-2019 by Logue
+- 2013 by imaya / GREE Inc.
+- 2013-2022 by Logue

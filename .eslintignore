@@ -1,0 +1,4 @@
+.husky/
+.vscode/
+bin/
+docs/

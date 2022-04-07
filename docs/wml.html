@@ -1,112 +1,154 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="robots" content="noindex" />
+    <title>Web Midi Link</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'UA-33600926-1');
+    </script>
+    <!-- End Google Tag Manager -->
+    <link rel="stylesheet" href="wml.css" />
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="robots" content="noindex" />
-  <title>Web Midi Link</title>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-33600926-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-33600926-1');
-  </script>
-  <link rel="stylesheet" href="wml.css" />
-</head>
-
-<body>
-  <div class="container-fluid">
-    <header>
-      <h1 class="h2">SoundFont:<span id="soundfont"></span></h1>
-      <p class="text-end">
-        <a href="https://logue.dev/" target="_blank">Logue</a> /
-        <small class="text-muted">Last Modified: <span id="build"></span></small>
-      </p>
-    </header>
-    <main>
-      <div>
-          <label class="form-label" for="file">Load SoundFont2 file
-            <small class="text-muted">(drag and drop here *.sf2 file to change sound font)</small>
+  <body>
+    <div class="container-fluid">
+      <header>
+        <h1 class="h2">
+          SoundFont:
+          <span id="soundfont"></span>
+        </h1>
+        <p class="text-end">
+          <a href="https://logue.dev/" target="_blank">Logue</a>
+          /
+          <small class="text-muted">
+            Last Modified:
+            <span id="build"></span>
+          </small>
+        </p>
+      </header>
+      <main>
+        <div>
+          <label class="form-label" for="file">
+            Load SoundFont2 file
+            <small class="text-muted">
+              (drag and drop here *.sf2 file to change sound font)
+            </small>
           </label>
-          <input type="file" class="form-control" id="file" accept="audio/x-soundfont">
-      </div>
-      <hr />
-      <div id="placeholder"></div>
-    </main>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/query-string@1.0.1/query-string.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/g200kg/WAAPISim@master/waapisim.min.js"></script>
-  <script src="sf2.synth.js"></script>
-  <script>
-    /*<![CDATA[*/
-    const message = document.getElementById('message');
-    const qs = queryString.parse(window.location.search);
-    var option = {};
-    if (qs.ui === 'false') {
-      option.drawSynth = false;
-    }
-    const sf = qs.soundfont ? decodeURIComponent(qs.soundfont) : 'Yamaha XG Sound Set.sf2';
-    document.getElementById('soundfont').innerText = sf;
-    option.placeholder = 'placeholder';
-    const wml = new SoundFont.WebMidiLink(option);
-    document.getElementById('build').innerText = wml.build;;
-    wml.setLoadCallback(function () {
-      message.style.display = 'none';
-    });
-    wml.setup(sf);
+          <input
+            type="file"
+            class="form-control"
+            id="file"
+            accept="audio/x-soundfont"
+          />
+        </div>
+        <hr />
+        <div id="placeholder"></div>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/query-string@1.0.1/query-string.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/g200kg/WAAPISim@master/waapisim.min.js"></script>
+    <script src="sf2.synth.js"></script>
+    <script>
+      /*<![CDATA[*/
+      const message = document.getElementById('message');
+      const qs = queryString.parse(window.location.search);
+      var option = {};
+      if (qs.ui === 'false') {
+        option.drawSynth = false;
+      }
+      const sf = qs.soundfont
+        ? decodeURIComponent(qs.soundfont)
+        : 'Yamaha XG Sound Set.sf2';
+      document.getElementById('soundfont').innerText = sf;
+      option.placeholder = 'placeholder';
+      const wml = new SoundFont.WebMidiLink(option);
+      document.getElementById('build').innerText = wml.build;
+      wml.setLoadCallback(function () {
+        message.style.display = 'none';
+      });
+      wml.setup(sf);
 
-    // Load sound font
-    const handleSoundFont = (file) => {
-      const reader = new FileReader();
+      // Load sound font
+      const handleSoundFont = file => {
+        const reader = new FileReader();
 
-      // wml.cancelLoading();
+        // wml.cancelLoading();
 
-      reader.readAsArrayBuffer(file);
+        reader.readAsArrayBuffer(file);
 
-      reader.onload = function (e) {
-        var data = new Uint8Array(e.target.result);
-        wml.loadSoundFont(data);
+        reader.onload = function (e) {
+          var data = new Uint8Array(e.target.result);
+          wml.loadSoundFont(data);
+        };
       };
-    }
 
-    // local file
-    window.addEventListener('DOMContentLoaded', (event) => {
-      // File selector
-      const fileElement = document.getElementById('file');
-      document.getElementById('file').addEventListener('change', (event) => {
-        var file = document.getElementById("file").files[0];
-        handleSoundFont(file);
-        event.preventDefault();
-      }, false);
+      // local file
+      window.addEventListener(
+        'DOMContentLoaded',
+        event => {
+          // File selector
+          const fileElement = document.getElementById('file');
+          document.getElementById('file').addEventListener(
+            'change',
+            event => {
+              var file = document.getElementById('file').files[0];
+              handleSoundFont(file);
+              event.preventDefault();
+            },
+            false
+          );
 
-      const droparea = document.getElementById('placeholder');
-      droparea.addEventListener('dragover', (e) => {
-        droparea.className = "alert-danger";
-        e.preventDefault();
-      }, true);
+          const droparea = document.getElementById('placeholder');
+          droparea.addEventListener(
+            'dragover',
+            e => {
+              droparea.className = 'alert-danger';
+              e.preventDefault();
+            },
+            true
+          );
 
-      droparea.addEventListener('drop', (e) => {
-        droparea.className = "";
-        var dt = e.dataTransfer;
-        var files = dt.files;
-        e.stopPropagation();
-        e.preventDefault();
-        handleSoundFont(files[0]);
-      }, true);
+          droparea.addEventListener(
+            'drop',
+            e => {
+              droparea.className = '';
+              var dt = e.dataTransfer;
+              var files = dt.files;
+              e.stopPropagation();
+              e.preventDefault();
+              handleSoundFont(files[0]);
+            },
+            true
+          );
 
-      droparea.addEventListener('dragleave', (e) => {
-        droparea.className = "";
-      }, true);
-
-    }, false);
-    /*]]>*/
-  </script>
-  </div>
-</body>
-
+          droparea.addEventListener(
+            'dragleave',
+            e => {
+              droparea.className = '';
+            },
+            true
+          );
+        },
+        false
+      );
+      /*]]>*/
+    </script>
+  </body>
 </html>

@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.9 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-02-24T00:02:30.028Z */
+/*! @logue/sf2synth v0.3.9 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-04-07T10:12:05.227Z */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -8,7 +8,7 @@
 		exports["SoundFont"] = factory();
 	else
 		root["SoundFont"] = factory();
-})((typeof self !== 'undefined' ? self : this), function() {
+})((typeof self !== 'undefined' ? self : this), () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -225,8 +225,7 @@ var __webpack_exports__ = {};
   \********************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Parser": () => (/* binding */ Parser),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "default": () => (/* binding */ Parser)
 /* harmony export */ });
 /* harmony import */ var _riff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./riff.js */ "./src/riff.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -235,7 +234,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-/* eslint-disable no-prototype-builtins */
 
 /**
  * SoundFont Parser Class
@@ -365,7 +363,7 @@ var Parser = /*#__PURE__*/function () {
         /** @type {number} LFOの揺れが始まるまでの時間 */
         delayModLFO: -12000,
 
-        /** @type {number}LFOの揺れの周期  */
+        /** @type {number} LFOの揺れの周期  */
         freqModLFO: 0,
 
         /** @type {number} ホイールの揺れが始まるまでの時間 */
@@ -1454,7 +1452,8 @@ var Parser = /*#__PURE__*/function () {
 
   return Parser;
 }();
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Parser);
+
+
 })();
 
 /******/ 	return __webpack_exports__;

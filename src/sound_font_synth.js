@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import SynthesizerNote from './sound_font_synth_note';
 import Parser from './sf2';
 import Reverb from '@logue/reverb';
@@ -6,7 +5,7 @@ import Reverb from '@logue/reverb';
  * Synthesizer Class
  * @private
  */
-export class Synthesizer {
+export default class Synthesizer {
   /**
    * @param {Uint8Array} input
    */
@@ -891,12 +890,13 @@ export class Synthesizer {
       bankElement.removeChild(bankElement.firstChild);
 
     for (const bankNo in this.programSet) {
-      if ({}.hasOwnProperty.call(this.programSet, bankNo)) {
-        const option = document.createElement('option');
-        option.value = bankNo;
-        option.textContent = ('000' + parseInt(bankNo)).slice(-3);
-        bankElement.appendChild(option);
+      if (!{}.hasOwnProperty.call(this.programSet, bankNo)) {
+        continue;
       }
+      const option = document.createElement('option');
+      option.value = bankNo;
+      option.textContent = ('000' + parseInt(bankNo)).slice(-3);
+      bankElement.appendChild(option);
     }
   }
 
@@ -944,14 +944,18 @@ export class Synthesizer {
    * @param {number} key NoteOn するキー.
    * @param {number} velocity 強さ.
    */
-  noteOn(channel, key, velocity) {
+  noteOn(channel, key, velocity = 100) {
     /** @type {number} */
     const bankIndex = this.channelBank[channel];
-    /** @type {Object} */
+    // バンクに楽器が存在しない場合は、原則的にバンク0の楽器を選択する。
+    // ただし、SFX(Bank 64)は発音しない、
+    // パーカッション（Bank127~128) の場合、0のStandard Kitの音を鳴らさなければならない）
+    /**  @type {Object} */
     const bank =
       typeof this.bankSet[bankIndex] === 'object'
         ? this.bankSet[bankIndex]
         : this.bankSet[0];
+
     /** @type {Object} */
     let instrument;
 
@@ -962,7 +966,7 @@ export class Synthesizer {
       // パーカッションバンクが選択されている場合で音色が存在しない場合Standard Kitを選択
       instrument = this.bankSet[this.isXG ? 127 : 128][0];
     } else {
-      // 通常バンクが選択されている状態で音色が存在しない場合バンク0を選択
+      // 通常の音色が選択されている状態で音色が存在しない場合バンク0を選択
       instrument = this.bankSet[0][this.channelInstrument[channel]];
     }
 
@@ -1025,6 +1029,7 @@ export class Synthesizer {
     // note on
     /** @type {SynthesizerNote} */
     const note = new SynthesizerNote(this.ctx, this.gainMaster, instrumentKey);
+    // TODO: 本来パンポットはここで指定する
     note.noteOn();
     this.currentNoteOn[channel].push(note);
 
@@ -1035,9 +1040,8 @@ export class Synthesizer {
    * ノートオフ
    * @param {number} channel NoteOff するチャンネル.
    * @param {number} key NoteOff するキー.
-   * @param {number} velocity 強さ.
    */
-  noteOff(channel, key, velocity) {
+  noteOff(channel, key) {
     /** @type {number} */
     let i;
     /** @type {number} */
@@ -1514,8 +1518,10 @@ export class Synthesizer {
    */
   setPercussionPart(channel, sw) {
     if (!this.isXG) {
+      // GM Level2 / Roland GS
       this.channelBank[channel] = 128;
     } else {
+      // YAMAHA XG
       this.channelBank[channel] = 127;
     }
     this.percussionPart[channel] = sw;
@@ -1536,5 +1542,3 @@ export class Synthesizer {
     }, 50000);
   }
 }
-
-export default Synthesizer;

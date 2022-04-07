@@ -1,10 +1,9 @@
-/* eslint-disable no-prototype-builtins */
 import Riff from './riff.js';
 
 /**
  * SoundFont Parser Class
  */
-export class Parser {
+export default class Parser {
   /**
    * @param {ByteArray} input
    * @param {Object=} optParams
@@ -86,7 +85,7 @@ export class Parser {
       unused4: undefined,
       /** @type {number} LFOの揺れが始まるまでの時間 */
       delayModLFO: -12000,
-      /** @type {number}LFOの揺れの周期  */
+      /** @type {number} LFOの揺れの周期  */
       freqModLFO: 0,
       /** @type {number} ホイールの揺れが始まるまでの時間 */
       delayVibLFO: -12000,
@@ -1084,5 +1083,3 @@ export class Parser {
     };
   }
 }
-
-export default Parser;

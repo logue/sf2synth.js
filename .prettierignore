@@ -1,0 +1,6 @@
+index.html
+.husky/
+.vscode/
+bin/
+docs/*.js
+public/

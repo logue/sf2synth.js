@@ -1,5 +1,3 @@
-/* eslint-disable no-case-declarations */
-import 'regenerator-runtime/runtime';
 import axios from 'axios';
 import Meta from './meta.js';
 import Synthesizer from './sound_font_synth';

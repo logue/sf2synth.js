@@ -2,9 +2,11 @@ root: true
 env:
   browser: true
   es2021: true
+  node: true
 extends:
   - eslint:recommended
   - google
+  - plugin:import/recommended
   - prettier
   - eslint-config-prettier
 plugins:
@@ -13,7 +15,12 @@ parserOptions:
   ecmaVersion: latest
   parser: babel-eslint
   sourceType: module
+  createDefaultProgram: true
 rules:
-  require-jsdoc: warn
-  valid-jsdoc: off
   new-cap: off
+  no-invalid-this: off
+  no-unused-vars: warn
+  prettier/prettier: error
+  require-jsdoc: warn
+  valid-jsdoc: warn
+  no-case-declarations: off
