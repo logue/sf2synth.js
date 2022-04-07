@@ -1,4 +1,4 @@
-/*! @logue/sf2synth v0.3.9 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-04-07T10:12:05.227Z */
+/*! @logue/sf2synth v0.3.10 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-04-07T16:35:17.964Z */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -23,11 +23,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Riff)
 /* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /**
  * Riff Parser class
@@ -41,7 +40,7 @@ var Riff = /*#__PURE__*/function () {
   function Riff(input) {
     var optParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    _classCallCheck(this, Riff);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Riff);
 
     /** @type {ByteArray} */
     this.input = input;
@@ -68,7 +67,7 @@ var Riff = /*#__PURE__*/function () {
    */
 
 
-  _createClass(Riff, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Riff, [{
     key: "parse",
     value: function parse() {
       /** @type {number} */
@@ -140,14 +139,14 @@ var Riff = /*#__PURE__*/function () {
 
 
 
-var RiffChunk = /*#__PURE__*/_createClass(
+var RiffChunk = /*#__PURE__*/(0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(
 /**
  * @param {string} type
  * @param {number} size
  * @param {number} offset
  */
 function RiffChunk(type, size, offset) {
-  _classCallCheck(this, RiffChunk);
+  (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, RiffChunk);
 
   /** @type {string} */
   this.type = type;
@@ -158,6 +157,55 @@ function RiffChunk(type, size, offset) {
 
   this.offset = offset;
 });
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _classCallCheck)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/createClass.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/createClass.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _createClass)
+/* harmony export */ });
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
+  return Constructor;
+}
 
 /***/ })
 
@@ -227,12 +275,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Parser)
 /* harmony export */ });
-/* harmony import */ var _riff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./riff.js */ "./src/riff.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _riff_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./riff.js */ "./src/riff.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 
 /**
@@ -247,7 +293,7 @@ var Parser = /*#__PURE__*/function () {
   function Parser(input) {
     var optParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    _classCallCheck(this, Parser);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Parser);
 
     /** @type {ByteArray} */
     this.input = input;
@@ -292,7 +338,7 @@ var Parser = /*#__PURE__*/function () {
   /** @return {Object} ジェネレータとデフォルト値 */
 
 
-  _createClass(Parser, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Parser, [{
     key: "getGeneratorTable",
     value: function getGeneratorTable() {
       return Object.freeze({
@@ -491,7 +537,7 @@ var Parser = /*#__PURE__*/function () {
     key: "parse",
     value: function parse() {
       /** @type {Riff} */
-      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.input, this.parserOption); // parse RIFF chunk
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_2__["default"](this.input, this.parserOption); // parse RIFF chunk
 
       parser.parse();
 
@@ -540,7 +586,7 @@ var Parser = /*#__PURE__*/function () {
       /** @type {Riff} */
 
 
-      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_2__["default"](data, {
         index: ip,
         length: chunk.size - 4
       });
@@ -592,7 +638,7 @@ var Parser = /*#__PURE__*/function () {
       /** @type {Riff} */
 
 
-      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_2__["default"](data, {
         index: ip,
         length: chunk.size - 4
       });
@@ -627,7 +673,7 @@ var Parser = /*#__PURE__*/function () {
       /** @type {Riff} */
 
 
-      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_2__["default"](data, {
         index: ip,
         length: chunk.size - 4
       });
@@ -670,7 +716,7 @@ var Parser = /*#__PURE__*/function () {
       /** @type {Riff} */
 
 
-      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_0__["default"](data, {
+      var parser = new _riff_js__WEBPACK_IMPORTED_MODULE_2__["default"](data, {
         index: ip,
         length: chunk.size - 4
       });
