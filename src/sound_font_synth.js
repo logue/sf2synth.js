@@ -1,6 +1,7 @@
 import SynthesizerNote from './sound_font_synth_note';
 import Parser from './sf2';
 import Reverb from '@logue/reverb';
+
 /**
  * Synthesizer Class
  * @private

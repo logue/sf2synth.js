@@ -3,4 +3,4 @@ index.html
 .vscode/
 bin/
 docs/*.js
-public/
+docs/*.css

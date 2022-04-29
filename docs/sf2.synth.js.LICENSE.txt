@@ -1,14 +1,12 @@
 /*! ../adapters/xhr */
 
-/*! ../cancel/Cancel */
+/*! ../cancel/CanceledError */
 
 /*! ../cancel/isCancel */
 
+/*! ../core/AxiosError */
+
 /*! ../core/buildFullPath */
-
-/*! ../core/createError */
-
-/*! ../core/enhanceError */
 
 /*! ../defaults */
 
@@ -24,7 +22,13 @@
 
 /*! ../helpers/normalizeHeaderName */
 
+/*! ../helpers/parseProtocol */
+
+/*! ../helpers/toFormData */
+
 /*! ../helpers/validator */
+
+/*! ../lib/core/AxiosError */
 
 /*! ../utils */
 
@@ -40,13 +44,17 @@
 
 /*! ./../utils */
 
-/*! ./Cancel */
+/*! ./AxiosError */
+
+/*! ./CanceledError */
 
 /*! ./InterceptorManager */
 
-/*! ./cancel/Cancel */
+/*! ./buildFullPath */
 
 /*! ./cancel/CancelToken */
+
+/*! ./cancel/CanceledError */
 
 /*! ./cancel/isCancel */
 
@@ -54,13 +62,11 @@
 
 /*! ./core/mergeConfig */
 
-/*! ./createError */
-
 /*! ./defaults */
 
 /*! ./dispatchRequest */
 
-/*! ./enhanceError */
+/*! ./env/FormData */
 
 /*! ./env/data */
 
@@ -69,6 +75,8 @@
 /*! ./helpers/isAxiosError */
 
 /*! ./helpers/spread */
+
+/*! ./helpers/toFormData */
 
 /*! ./lib/axios */
 
@@ -102,7 +110,7 @@
 
 /*! @logue/reverb */
 
-/*! @logue/sf2synth v0.3.10 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-04-07T16:35:17.964Z */
+/*! @logue/sf2synth v0.3.10 | imaya / GREE Inc. / Logue | license: MIT | build: 2022-04-29T01:59:02.629Z */
 
 /*! axios */
 
@@ -164,9 +172,9 @@
   !*** ./node_modules/axios/lib/helpers/bind.js ***!
   \************************************************/
 
-/*!*************************************************!*\
-  !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
-  \*************************************************/
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/null.js ***!
+  \************************************************/
 
 /*!**************************************************!*\
   !*** ./node_modules/axios/lib/defaults/index.js ***!
@@ -181,12 +189,12 @@
   \***************************************************/
 
 /*!***************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
+  !*** ./node_modules/axios/lib/core/AxiosError.js ***!
   \***************************************************/
 
-/*!****************************************************!*\
-  !*** ./node_modules/axios/lib/core/createError.js ***!
-  \****************************************************/
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
+  \***************************************************/
 
 /*!****************************************************!*\
   !*** ./node_modules/axios/lib/core/mergeConfig.js ***!
@@ -195,10 +203,6 @@
 /*!****************************************************!*\
   !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
   \****************************************************/
-
-/*!*****************************************************!*\
-  !*** ./node_modules/axios/lib/core/enhanceError.js ***!
-  \*****************************************************/
 
 /*!*****************************************************!*\
   !*** ./node_modules/axios/lib/helpers/validator.js ***!
@@ -224,9 +228,17 @@
   !*** ./node_modules/axios/lib/core/transformData.js ***!
   \******************************************************/
 
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/toFormData.js ***!
+  \******************************************************/
+
 /*!*******************************************************!*\
   !*** ./node_modules/axios/lib/helpers/combineURLs.js ***!
   \*******************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CanceledError.js ***!
+  \********************************************************/
 
 /*!********************************************************!*\
   !*** ./node_modules/axios/lib/core/dispatchRequest.js ***!
@@ -246,6 +258,10 @@
 
 /*!*********************************************************!*\
   !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseProtocol.js ***!
   \*********************************************************/
 
 /*!**********************************************************!*\
