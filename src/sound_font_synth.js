@@ -1,6 +1,6 @@
 import SynthesizerNote from './sound_font_synth_note';
-import Parser from './sf2';
 import Reverb from '@logue/reverb';
+import Parser from './sf2';
 
 /**
  * Synthesizer Class
@@ -216,7 +216,7 @@ export default class Synthesizer {
     this.timer = null;
   }
 
-  /** @returns {AudioContext} */
+  /** @return {AudioContext} */
   getAudioContext() {
     /** @type {AudioContext} */
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -539,7 +539,7 @@ export default class Synthesizer {
   /**
    * @param {Object} generator
    * @param {string} enumeratorType
-   * @returns {number}
+   * @return {number}
    */
   getModGenAmount(generator, enumeratorType) {
     return generator[enumeratorType]
@@ -568,7 +568,7 @@ export default class Synthesizer {
     this.bufSrc.buffer = null;
   }
 
-  /** @returns {HTMLDivElement} */
+  /** @return {HTMLDivElement} */
   drawSynth() {
     /** @type {Document} */
     const doc = window.document;
@@ -1432,7 +1432,7 @@ export default class Synthesizer {
 
   /**
    * @param {number} channel Pitch bend sensitivity を取得するチャンネル.
-   * @returns {number}
+   * @return {number}
    */
   getPitchBendSensitivity(channel) {
     return this.channelPitchBendSensitivity[channel];

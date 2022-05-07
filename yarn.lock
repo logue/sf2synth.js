@@ -2257,7 +2257,15 @@ prettier-plugin-md-nocjsp@^1.2.0:
   resolved "https://registry.yarnpkg.com/prettier-plugin-md-nocjsp/-/prettier-plugin-md-nocjsp-1.2.0.tgz#ad8fed862590c87bb2ad5e0b83dbb24d355ea2e8"
   integrity sha512-ShX2dd8XoE6bi1zlY3U4yKJl/MN5LIdMDjVr//n/Dy6vWOWZdMqSFYeA7qcETTfUj6bTP4VfULDcQbgaJcgJKg==
 
-prettier@^2.6.2:
+prettier-plugin-sort-imports@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-sort-imports/-/prettier-plugin-sort-imports-1.6.0.tgz#53312008133f3765f9f68927cbd2c586a0f64617"
+  integrity sha512-EV9w7s//d/6aPOsCAsSM+cz9VvcCH8H4Pl3KOhX3WbG3k0U8ZIdoBYYRXxNO9pGFwy4e+HykXCtcFJaNJJ89HQ==
+  dependencies:
+    prettier "^2.5.1"
+    typescript "^4.0.3"
+
+prettier@^2.5.1, prettier@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.6.2.tgz#e26d71a18a74c3d0f0597f55f01fb6c06c206032"
   integrity sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==
@@ -2826,6 +2834,11 @@ type-fest@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
+
+typescript@^4.0.3:
+  version "4.6.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.4.tgz#caa78bbc3a59e6a5c510d35703f6a09877ce45e9"
+  integrity sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"

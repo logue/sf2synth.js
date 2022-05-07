@@ -260,7 +260,7 @@ export default class SynthesizerNote {
 
   /**
    * @param {number} val
-   * @returns {number}
+   * @return {number}
    */
   amountToFreq(val) {
     return 2 ** ((val - 6900) / 1200) * 440;
@@ -270,12 +270,12 @@ export default class SynthesizerNote {
     this.noteOffState = true;
   }
 
-  /** @returns {boolean} */
+  /** @return {boolean} */
   isNoteOff() {
     return this.noteOffState;
   }
 
-  /** @returns {void} */
+  /** @return {void} */
   release() {
     /**
      * @type {{

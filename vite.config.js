@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
 import eslintPlugin from '@modyqyw/vite-plugin-eslint';
 import stylelintPlugin from 'vite-plugin-stylelint';
+import { defineConfig } from 'vite';
 import path from 'path';
 import fs from 'fs';
 
@@ -35,8 +35,8 @@ const config = {
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/wml.js'),
-      name: 'sf2.synth',
-      fileName: format => `sf2.synth.${format}.js`,
+      name: 'sf2synth',
+      fileName: format => `sf2synth.${format}.js`,
     },
     // Minify option
     // https://vitejs.dev/config/#build-minify

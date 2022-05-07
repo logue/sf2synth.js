@@ -36,7 +36,7 @@ export default class Parser {
     this.GeneratorEnumeratorTable = Object.keys(this.getGeneratorTable());
   }
 
-  /** @returns {Object} ジェネレータとデフォルト値 */
+  /** @return {Object} ジェネレータとデフォルト値 */
   getGeneratorTable() {
     return Object.freeze({
       /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
@@ -618,7 +618,7 @@ export default class Parser {
   /**
    * @param {Array} sample
    * @param {number} sampleRate
-   * @returns {object}
+   * @return {object}
    */
   adjustSampleData(sample, sampleRate) {
     /** @type {Int16Array} */
@@ -653,7 +653,7 @@ export default class Parser {
 
   /**
    * @param {RiffChunk} chunk
-   * @returns {Object[]}
+   * @return {Object[]}
    */
   parseModulator(chunk) {
     /** @type {ByteArray} */
@@ -732,7 +732,7 @@ export default class Parser {
 
   /**
    * @param {RiffChunk} chunk
-   * @returns {Object[]}
+   * @return {Object[]}
    */
   parseGenerator(chunk) {
     /** @type {ByteArray} */
@@ -795,7 +795,7 @@ export default class Parser {
     return output;
   }
 
-  /** @returns {object[]} */
+  /** @return {object[]} */
   createInstrument() {
     /** @type {Object[]} */
     const instrument = this.instrument;
@@ -852,7 +852,7 @@ export default class Parser {
     return output;
   }
 
-  /** @returns {object[]} */
+  /** @return {object[]} */
   createPreset() {
     /** @type {Object[]} */
     const preset = this.presetHeader;

@@ -1,6 +1,6 @@
-import axios from 'axios';
-import Meta from './meta.js';
 import Synthesizer from './sound_font_synth';
+import Meta from './meta.js';
+import axios from 'axios';
 import './wml.scss';
 
 /** WebMidiLink Class */
@@ -137,7 +137,7 @@ export default class WebMidiLink {
     /**
      * データを取得.
      *
-     * @returns {axios.Response}
+     * @return {axios.Response}
      */
     const getContent = async () => {
       console.info('Load from server.');
@@ -676,7 +676,7 @@ export default class WebMidiLink {
    *
    * @private
    * @param {Array} message
-   * @returns {string}
+   * @return {string}
    */
   dumpMessage(message) {
     const ret = [];
