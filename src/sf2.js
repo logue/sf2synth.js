@@ -1,44 +1,42 @@
 import Riff from './riff.js';
 
-/**
- * SoundFont Parser Class
- */
+/** SoundFont Parser Class */
 export default class Parser {
   /**
    * @param {ByteArray} input
-   * @param {Object=} optParams
+   * @param {Object} [optParams]
    */
   constructor(input, optParams = {}) {
     /** @type {ByteArray} */
     this.input = input;
-    /** @type {(Object|undefined)} */
+    /** @type {Object | undefined} */
     this.parserOption = optParams.parserOption || {};
-    /** @type {(Number|undefined)} */
+    /** @type {Number | undefined} */
     this.sampleRate = optParams.sampleRate || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.presetHeader = [];
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.presetZone = [];
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.presetZoneModulator = [];
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.presetZoneGenerator = [];
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.instrument = [];
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.instrumentZone = [];
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.instrumentZoneModulator = [];
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.instrumentZoneGenerator = [];
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     this.sampleHeader = [];
-    /** @type {Array.<string>} */
+    /** @type {string[]} */
     this.GeneratorEnumeratorTable = Object.keys(this.getGeneratorTable());
   }
 
-  /** @return {Object} ジェネレータとデフォルト値 */
+  /** @returns {Object} ジェネレータとデフォルト値 */
   getGeneratorTable() {
     return Object.freeze({
       /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
@@ -85,7 +83,7 @@ export default class Parser {
       unused4: undefined,
       /** @type {number} LFOの揺れが始まるまでの時間 */
       delayModLFO: -12000,
-      /** @type {number} LFOの揺れの周期  */
+      /** @type {number} LFOの揺れの周期 */
       freqModLFO: 0,
       /** @type {number} ホイールの揺れが始まるまでの時間 */
       delayVibLFO: -12000,
@@ -177,7 +175,7 @@ export default class Parser {
       throw new Error('wrong chunk length');
     }
 
-    /** @type {?RiffChunk} */
+    /** @type {RiffChunk | null} */
     const chunk = parser.getChunk(0);
     if (chunk === null) {
       throw new Error('chunk not found');
@@ -188,9 +186,7 @@ export default class Parser {
     this.input = null;
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parseRiffChunk(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
@@ -232,9 +228,7 @@ export default class Parser {
     this.parsePdtaList(/** @type {!RiffChunk} */ (parser.getChunk(2)));
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parseInfoList(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
@@ -264,9 +258,7 @@ export default class Parser {
     parser.parse();
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parseSdtaList(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
@@ -298,13 +290,11 @@ export default class Parser {
       throw new Error('TODO');
     }
     this.samplingData =
-      /** @type {{type: string, size: number, offset: number}} */
+      /** @type {{ type: string; size: number; offset: number }} */
       (parser.getChunk(0));
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parsePdtaList(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
@@ -349,15 +339,13 @@ export default class Parser {
     this.parseShdr(/** @type {RiffChunk} */ (parser.getChunk(8)));
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parsePhdr(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const presetHeader = (this.presetHeader = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
@@ -398,15 +386,13 @@ export default class Parser {
     }
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parsePbag(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const presetZone = (this.presetZone = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
@@ -424,9 +410,7 @@ export default class Parser {
     }
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parsePmod(chunk) {
     // check parse target
     if (chunk.type !== 'pmod') {
@@ -436,9 +420,7 @@ export default class Parser {
     this.presetZoneModulator = this.parseModulator(chunk);
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parsePgen(chunk) {
     // check parse target
     if (chunk.type !== 'pgen') {
@@ -447,15 +429,13 @@ export default class Parser {
     this.presetZoneGenerator = this.parseGenerator(chunk);
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parseInst(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const instrument = (this.instrument = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
@@ -476,15 +456,13 @@ export default class Parser {
     }
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parseIbag(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const instrumentZone = (this.instrumentZone = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
@@ -502,9 +480,7 @@ export default class Parser {
     }
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parseImod(chunk) {
     // check parse target
     if (chunk.type !== 'imod') {
@@ -514,9 +490,7 @@ export default class Parser {
     this.instrumentZoneModulator = this.parseModulator(chunk);
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parseIgen(chunk) {
     // check parse target
     if (chunk.type !== 'igen') {
@@ -526,17 +500,15 @@ export default class Parser {
     this.instrumentZoneGenerator = this.parseGenerator(chunk);
   }
 
-  /**
-   * @param {RiffChunk} chunk
-   */
+  /** @param {RiffChunk} chunk */
   parseShdr(chunk) {
     /** @type {ByteArray} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const samples = (this.sample = []);
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const sampleHeader = (this.sampleHeader = []);
     /** @type {number} */
     const size = chunk.offset + chunk.size;
@@ -646,7 +618,7 @@ export default class Parser {
   /**
    * @param {Array} sample
    * @param {number} sampleRate
-   * @return {object}
+   * @returns {object}
    */
   adjustSampleData(sample, sampleRate) {
     /** @type {Int16Array} */
@@ -681,7 +653,7 @@ export default class Parser {
 
   /**
    * @param {RiffChunk} chunk
-   * @return {Array.<Object>}
+   * @returns {Object[]}
    */
   parseModulator(chunk) {
     /** @type {ByteArray} */
@@ -694,7 +666,7 @@ export default class Parser {
     let code;
     /** @type {string} */
     let key;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const output = [];
 
     while (ip < size) {
@@ -760,7 +732,7 @@ export default class Parser {
 
   /**
    * @param {RiffChunk} chunk
-   * @return {Array.<Object>}
+   * @returns {Object[]}
    */
   parseGenerator(chunk) {
     /** @type {ByteArray} */
@@ -773,7 +745,7 @@ export default class Parser {
     let code;
     /** @type {string} */
     let key;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const output = [];
 
     while (ip < size) {
@@ -823,25 +795,23 @@ export default class Parser {
     return output;
   }
 
-  /**
-   * @return {Array.<object>}
-   */
+  /** @returns {object[]} */
   createInstrument() {
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const instrument = this.instrument;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const zone = this.instrumentZone;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const output = [];
     /** @type {number} */
     let bagIndex;
     /** @type {number} */
     let bagIndexEnd;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     let zoneInfo;
-    /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
+    /** @type {{ generator: Object; generatorInfo: Object[] }} */
     let instrumentGenerator;
-    /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
+    /** @type {{ modulator: Object; modulatorInfo: Object[] }} */
     let instrumentModulator;
     /** @type {number} */
     let i;
@@ -882,27 +852,25 @@ export default class Parser {
     return output;
   }
 
-  /**
-   * @return {Array.<object>}
-   */
+  /** @returns {object[]} */
   createPreset() {
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const preset = this.presetHeader;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const zone = this.presetZone;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const output = [];
     /** @type {number} */
     let bagIndex;
     /** @type {number} */
     let bagIndexEnd;
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     let zoneInfo;
     /** @type {number} */
     let instrument;
-    /** @type {{generator: Object, generatorInfo: Array.<Object>}} */
+    /** @type {{ generator: Object; generatorInfo: Object[] }} */
     let presetGenerator;
-    /** @type {{modulator: Object, modulatorInfo: Array.<Object>}} */
+    /** @type {{ modulator: Object; modulatorInfo: Object[] }} */
     let presetModulator;
     /** @type {number} */
     let i;
@@ -951,10 +919,10 @@ export default class Parser {
   }
 
   /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{generator: Object, generatorInfo: Array.<Object>}}
    * @private
+   * @param {Object[]} zone
+   * @param {number} index
+   * @returns {{ generator: Object; generatorInfo: Object[] }}
    */
   createInstrumentGenerator_(zone, index) {
     const modgen = this.createBagModGen_(
@@ -973,10 +941,10 @@ export default class Parser {
   }
 
   /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
    * @private
+   * @param {Object[]} zone
+   * @param {number} index
+   * @returns {{ modulator: Object; modulatorInfo: Object[] }}
    */
   createInstrumentModulator_(zone, index) {
     const modgen = this.createBagModGen_(
@@ -995,10 +963,10 @@ export default class Parser {
   }
 
   /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{generator: Object, generatorInfo: Array.<Object>}}
    * @private
+   * @param {Object[]} zone
+   * @param {number} index
+   * @returns {{ generator: Object; generatorInfo: Object[] }}
    */
   createPresetGenerator_(zone, index) {
     const modgen = this.createBagModGen_(
@@ -1017,13 +985,13 @@ export default class Parser {
   }
 
   /**
-   * @param {Array.<Object>} zone
-   * @param {number} index
-   * @return {{modulator: Object, modulatorInfo: Array.<Object>}}
    * @private
+   * @param {Object[]} zone
+   * @param {number} index
+   * @returns {{ modulator: Object; modulatorInfo: Object[] }}
    */
   createPresetModulator_(zone, index) {
-    /** @type {{modgen: Object, modgenInfo: Array.<Object>}} */
+    /** @type {{ modgen: Object; modgenInfo: Object[] }} */
     const modgen = this.createBagModGen_(
       zone,
       zone[index].presetModulatorIndex,
@@ -1040,15 +1008,15 @@ export default class Parser {
   }
 
   /**
-   * @param {Array.<Object>} zone
+   * @private
+   * @param {Object[]} zone
    * @param {number} indexStart
    * @param {number} indexEnd
    * @param {Array} zoneModGen
-   * @return {{modgen: Object, modgenInfo: Array.<Object>}}
-   * @private
+   * @returns {{ modgen: Object; modgenInfo: Object[] }}
    */
   createBagModGen_(zone, indexStart, indexEnd, zoneModGen) {
-    /** @type {Array.<Object>} */
+    /** @type {Object[]} */
     const modgenInfo = [];
     /** @type {Object} */
     const modgen = {

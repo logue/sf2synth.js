@@ -1,5 +1,6 @@
 /**
  * SynthesizerNote Class
+ *
  * @private
  */
 export default class SynthesizerNote {
@@ -7,14 +8,14 @@ export default class SynthesizerNote {
    * @param {AudioContext} ctx
    * @param {AudioNode} destination
    * @param {{
-   *   channel: number,
-   *   key: number,
-   *   sample: Uint8Array,
-   *   basePlaybackRate: number,
-   *   loopStart: number,
-   *   loopEnd: number,
-   *   volume: number,
-   *   panpot: number
+   *   channel: number;
+   *   key: number;
+   *   sample: Uint8Array;
+   *   basePlaybackRate: number;
+   *   loopStart: number;
+   *   loopEnd: number;
+   *   volume: number;
+   *   panpot: number;
    * }} instrument
    */
   constructor(ctx, destination, instrument) {
@@ -22,15 +23,16 @@ export default class SynthesizerNote {
     this.ctx = ctx;
     /** @type {AudioNode} */
     this.destination = destination;
-    /** @type {{
-     *   channel: number,
-     *   key: number,
-     *   sample: Uint8Array,
-     *   basePlaybackRate: number,
-     *   loopStart: number,
-     *   loopEnd: number,
-     *   volume: number,
-     *   panpot: number
+    /**
+     * @type {{
+     *   channel: number;
+     *   key: number;
+     *   sample: Uint8Array;
+     *   basePlaybackRate: number;
+     *   loopStart: number;
+     *   loopEnd: number;
+     *   volume: number;
+     *   panpot: number;
      * }}
      */
     this.instrument = instrument;
@@ -98,21 +100,21 @@ export default class SynthesizerNote {
     this.modulator = ctx.createBiquadFilter();
   }
 
-  /**
-   */
   noteOn() {
     /** @type {AudioContext} */
     const ctx = this.ctx;
-    /** @type {{
-     *   channel: number,
-     *   key: number,
-     *   sample: Uint8Array,
-     *   basePlaybackRate: number,
-     *   loopStart: number,
-     *   loopEnd: number,
-     *   volume: number,
-     *   panpot: number
-     * }} */
+    /**
+     * @type {{
+     *   channel: number;
+     *   key: number;
+     *   sample: Uint8Array;
+     *   basePlaybackRate: number;
+     *   loopStart: number;
+     *   loopEnd: number;
+     *   volume: number;
+     *   panpot: number;
+     * }}
+     */
     const instrument = this.instrument;
     // console.log(instrument);
     /** @type {number} */
@@ -258,39 +260,35 @@ export default class SynthesizerNote {
 
   /**
    * @param {number} val
-   * @return {number}
+   * @returns {number}
    */
   amountToFreq(val) {
     return 2 ** ((val - 6900) / 1200) * 440;
   }
 
-  /**
-   */
   noteOff() {
     this.noteOffState = true;
   }
 
-  /**
-   * @return {boolean}
-   */
+  /** @returns {boolean} */
   isNoteOff() {
     return this.noteOffState;
   }
 
-  /**
-   * @return {void}
-   */
+  /** @returns {void} */
   release() {
-    /** @type {{
-     *   channel: number,
-     *   key: number,
-     *   sample: Uint8Array,
-     *   basePlaybackRate: number,
-     *   loopStart: number,
-     *   loopEnd: number,
-     *   volume: number,
-     *   panpot: number
-     * }} */
+    /**
+     * @type {{
+     *   channel: number;
+     *   key: number;
+     *   sample: Uint8Array;
+     *   basePlaybackRate: number;
+     *   loopStart: number;
+     *   loopEnd: number;
+     *   volume: number;
+     *   panpot: number;
+     * }}
+     */
     const instrument = this.instrument;
     /** @type {AudioBufferSourceNode} */
     const bufferSource = this.bufferSource;
@@ -394,8 +392,6 @@ export default class SynthesizerNote {
     }
   }
 
-  /**
-   */
   connect() {
     /*
     // Modulation Depth
@@ -426,13 +422,9 @@ export default class SynthesizerNote {
     this.reverb.connect(this.outputGainNode).connect(this.destination);
   }
 
-  /**
-   */
   disconnect() {
     this.outputGainNode.disconnect(0);
   }
-  /**
-   */
   schedulePlaybackRate() {
     const playbackRate = this.bufferSource.playbackRate;
     /** @type {number} */
@@ -460,16 +452,12 @@ export default class SynthesizerNote {
     );
   }
 
-  /**
-   * @param {number} expression
-   */
+  /** @param {number} expression */
   updateExpression(expression) {
     this.expressionGainNode.gain.value = (this.expression = expression) / 127;
   }
 
-  /**
-   * @param {number} pitchBend
-   */
+  /** @param {number} pitchBend */
   updatePitchBend(pitchBend) {
     this.computedPlaybackRate =
       this.playbackRate *

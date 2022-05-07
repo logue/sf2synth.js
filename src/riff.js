@@ -1,11 +1,12 @@
 /**
  * Riff Parser class
+ *
  * @private
  */
 export default class Riff {
   /**
-   * @param {ByteArray} input input buffer.
-   * @param {Object=} optParams option parameters.
+   * @param {ByteArray} input Input buffer.
+   * @param {Object} [optParams] Option parameters.
    */
   constructor(input, optParams = {}) {
     /** @type {ByteArray} */
@@ -14,7 +15,7 @@ export default class Riff {
     this.ip = optParams.index || 0;
     /** @type {number} */
     this.length = optParams.length || input.length - this.ip;
-    /** @type {Array.<RiffChunk>} */
+    /** @type {RiffChunk[]} */
     this.chunkList = [];
     /** @type {number} */
     this.offset = this.ip;
@@ -25,8 +26,7 @@ export default class Riff {
       optParams.bigEndian !== void 0 ? optParams.bigEndian : false;
   }
 
-  /**
-   */
+  /** @returns {void} */
   parse() {
     /** @type {number} */
     const length = this.length + this.offset;
@@ -38,8 +38,7 @@ export default class Riff {
     }
   }
 
-  /**
-   */
+  /** @returns {void} */
   parseChunk() {
     /** @type {ByteArray} */
     const input = this.input;
@@ -77,8 +76,8 @@ export default class Riff {
   }
 
   /**
-   * @param {number} index chunk index.
-   * @return {?RiffChunk}
+   * @param {number} index Chunk index.
+   * @returns {RiffChunk | null}
    */
   getChunk(index) {
     /** @type {RiffChunk} */
@@ -91,9 +90,7 @@ export default class Riff {
     return chunk;
   }
 
-  /**
-   * @return {number}
-   */
+  /** @returns {number} */
   getNumberOfChunks() {
     return this.chunkList.length;
   }
@@ -101,6 +98,7 @@ export default class Riff {
 
 /**
  * Riff Chunk Structure
+ *
  * @interface
  */
 class RiffChunk {

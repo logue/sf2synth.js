@@ -4,7 +4,6 @@
 @import '~bootstrap/scss/mixins';
 
 // Layout & components
-@import '~bootstrap/scss/root';
 @import '~bootstrap/scss/reboot';
 @import '~bootstrap/scss/containers';
 @import '~bootstrap/scss/forms';
@@ -68,10 +67,15 @@
       .reverbDepth,
       .pitchBendSensitivity {
         width: 2rem;
+        margin-right: 0.25rem;
+        font-size: 0.75rem;
+        text-align: right;
       }
 
       .panpot,
       .pitchBend {
+        align-self: center;
+        padding: 0.1rem;
         width: 6em;
         @include media-breakpoint-down(xl) {
           width: 4rem;
@@ -113,21 +117,6 @@
         }
       }
 
-      .volume,
-      .expression,
-      .reverbDepth,
-      .pitchBendSensitivity {
-        margin-right: 0.25rem;
-        font-size: 0.75rem;
-        text-align: right;
-      }
-
-      .panpot,
-      .pitchBend {
-        align-self: center;
-        padding: 0.1rem;
-      }
-
       .keys {
         overflow: hidden;
         -webkit-app-region: no-drag;
@@ -149,7 +138,7 @@
           margin: 0;
           background-color: transparent;
 
-          // devide by each C key
+          // divide by each C key
           &:nth-child(12n + 1).tone {
             border-left: 1px solid $gray-700;
           }

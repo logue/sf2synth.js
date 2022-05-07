@@ -1,22 +1,19 @@
 import axios from 'axios';
 import Meta from './meta.js';
 import Synthesizer from './sound_font_synth';
+import './wml.scss';
 
-/**
- * WebMidiLink Class
- */
-export class WebMidiLink {
-  /**
-   * @param {object} option
-   */
+/** WebMidiLink Class */
+export default class WebMidiLink {
+  /** @param {object} option */
   constructor(option = {}) {
-    /** @type {Array.<number>} */
+    /** @type {number[]} */
     this.NrpnMsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    /** @type {Array.<number>} */
+    /** @type {number[]} */
     this.NrpnLsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    /** @type {Array.<number>} */
+    /** @type {number[]} */
     this.RpnMsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    /** @type {Array.<number>} */
+    /** @type {number[]} */
     this.RpnLsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** @type {boolean} */
     this.ready = false;
@@ -48,9 +45,7 @@ export class WebMidiLink {
     this.build = Meta.date;
   }
 
-  /**
-   * DOMContentLoadedが発生するのを待機する（確実にJavaScriptが実行されるようにする）
-   */
+  /** DOMContentLoadedが発生するのを待機する（確実にJavaScriptが実行されるようにする） */
   async waitForReadystate() {
     // DOMが読み込み済みの場合は実行しない
     if (document.readyState === 'interactive') return;
@@ -120,6 +115,7 @@ export class WebMidiLink {
 
     /**
      * ダウンロード中のハンドラ
+     *
      * @param {axios.progressEvent} progressEvent
      */
     const downloadProgressHandler = progressEvent => {
@@ -140,7 +136,8 @@ export class WebMidiLink {
 
     /**
      * データを取得.
-     * @return {axios.Response}
+     *
+     * @returns {axios.Response}
      */
     const getContent = async () => {
       console.info('Load from server.');
@@ -219,9 +216,7 @@ export class WebMidiLink {
     opener.postMessage('link,ready', '*');
   }
 
-  /**
-   * @param {Uint8Array} input
-   */
+  /** @param {Uint8Array} input */
   loadSoundFont(input) {
     /** @type {Window} */
     const w = window;
@@ -247,9 +242,7 @@ export class WebMidiLink {
     w.postMessage('link,ready', '*');
   }
 
-  /**
-   * @param {Event} ev
-   */
+  /** @param {Event} ev */
   onmessage(ev) {
     /** @type {Array} */
     const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
@@ -304,9 +297,7 @@ export class WebMidiLink {
     this.loadCallback = callback;
   }
 
-  /**
-   * @param {Array.<number>} message
-   */
+  /** @param {number[]} message */
   processMidiMessage(message) {
     /** @type {number} */
     const channel = message[0] & 0x0f;
@@ -483,7 +474,10 @@ export class WebMidiLink {
         // [11] <checksum> [IGNORE]
         // [12] F7 EOX [IGNORE]
 
-        /** @type {number} Vendor ID (Roland=0x41 / YAMAHA=0x43 / Non Realtime=0x7E / Realtime=0x7F) */
+        /**
+         * @type {number} Vendor ID (Roland=0x41 / YAMAHA=0x43 / Non
+         *   Realtime=0x7E / Realtime=0x7F)
+         */
         const vendor = message[2];
         /** @type {number} Device ID (GM extended=0x10 / ポケミク=0x79 / Any=0x7F) */
         const device = message[3];
@@ -679,9 +673,10 @@ export class WebMidiLink {
 
   /**
    * Dump System Exclusive Message
+   *
    * @private
    * @param {Array} message
-   * @return {string}
+   * @returns {string}
    */
   dumpMessage(message) {
     const ret = [];
@@ -691,5 +686,3 @@ export class WebMidiLink {
     return ret.join(' ');
   }
 }
-
-export default WebMidiLink;
