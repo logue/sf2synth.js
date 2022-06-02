@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -9,6 +9,25 @@
     />
     <meta name="robots" content="noindex" />
     <title>Web Midi Link</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Google Tag Manager -->
+    <script>
+      try {
+        (function (w, d, s, l, i) {
+          w[l] = w[l] || [];
+          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+          var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+          j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+          f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'UA-33600926-1');
+      } catch (e) {
+        console.error(e);
+      }
+    </script>
+    <!-- End Google Tag Manager -->
     <link rel="stylesheet" href="style.css" />
   </head>
 
@@ -20,7 +39,6 @@
           <span id="soundfont"></span>
         </h1>
         <p class="text-end">
-          By
           <a href="https://logue.dev/" target="_blank">Logue</a>
           /
           <small class="text-muted">
@@ -30,7 +48,7 @@
         </p>
       </header>
       <main>
-        <div class="mb-3">
+        <div>
           <label class="form-label" for="file">
             Load SoundFont2 file
             <small class="text-muted">
@@ -44,25 +62,26 @@
             accept="audio/x-soundfont"
           />
         </div>
+        <hr />
         <div id="placeholder"></div>
       </main>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/query-string@1.0.1/query-string.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/g200kg/WAAPISim@master/waapisim.min.js"></script>
     <script src="sf2synth.umd.js"></script>
     <script>
+      /*<![CDATA[*/
       const message = document.getElementById('message');
       const qs = queryString.parse(window.location.search);
-
-      const option = { placeholder: 'placeholder' };
+      var option = {};
       if (qs.ui === 'false') {
         option.drawSynth = false;
       }
       const sf = qs.soundfont
-        ? decodeURIComponent(qs.soundfont)
+        ? decodeURI(qs.soundfont)
         : 'Yamaha XG Sound Set.sf2';
       document.getElementById('soundfont').innerText = sf;
-
+      option.placeholder = 'placeholder';
       const wml = new SoundFont.WebMidiLink(option);
       document.getElementById('build').innerText = new Date(
         wml.build
@@ -70,7 +89,7 @@
       wml.setLoadCallback(() => {
         message.style.display = 'none';
       });
-      wml.setup(sf);
+      wml.setup(encodeURI(sf));
 
       // Load sound font
       const handleSoundFont = file => {
@@ -135,20 +154,7 @@
         },
         false
       );
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-2Y2FW3QEG4"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-
-      gtag('config', 'G-2Y2FW3QEG4');
+      /*]]>*/
     </script>
   </body>
 </html>
