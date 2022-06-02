@@ -61,8 +61,8 @@
   },
   "dependencies": {
     "@logue/reverb": "^0.5.2",
-    "axios": "^0.27.2",
-    "bootstrap": "^5.2.0-beta1"
+    "bootstrap": "^5.2.0-beta1",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "eslint": "^8.16.0",
