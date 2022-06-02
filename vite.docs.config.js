@@ -37,7 +37,7 @@ const config = {
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/wml.js'),
-      name: 'SoundFont.WebMidiLink',
+      name: 'sf2synth',
       fileName: format => `sf2synth.${format}.js`,
     },
     // Minify option

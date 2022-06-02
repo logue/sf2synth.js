@@ -316,7 +316,8 @@ export default class WebMidiLink {
           synth.noteOff(channel, message[1], 0);
         }
         break;
-      case 0xb0: // Control Change: Bn cc dd
+      case 0xb0: {
+        // Control Change: Bn cc dd
         /** @type {number} */
         const value = message[2];
         switch (message[1]) {
@@ -386,8 +387,10 @@ export default class WebMidiLink {
                   break;
               }
             }
+
             // NRPN で LSB が必要なものは今のところない
             break;
+
           case 0x07: // Volume Change: Bn 07 dd
             synth.volumeChange(channel, value);
             break;
@@ -454,13 +457,15 @@ export default class WebMidiLink {
             break;
         }
         break;
+      }
       case 0xc0: // Program Change: Cn pp
         synth.programChange(channel, message[1]);
         break;
       case 0xe0: // Pitch Bend
         synth.pitchBend(channel, message[1], message[2]);
         break;
-      case 0xf0: // System Exclusive Message
+      case 0xf0: {
+        // System Exclusive Message
         // [1] F0
         // [2] <vendor ID> http://www.amei.or.jp/report/report4.html
         // [3] <device ID>
@@ -548,7 +553,7 @@ export default class WebMidiLink {
               synth.setMasterVolume(message[9] * 64);
               break;
 
-            case 0x15:
+            case 0x15: {
               // GS Dram part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
               // Notice: [sum] is ignroe in this program.
 
@@ -576,6 +581,7 @@ export default class WebMidiLink {
                 }
               }
               break;
+            }
             case 0x19:
               // VOLUME ON/OFF (PART LEVEL)
               // F0 41 10 42 12 40 1[part no] 19 [value] [checksum] F7
@@ -636,7 +642,7 @@ export default class WebMidiLink {
               // F0 43 1n 4C 00 00 04 [value] F7
               synth.setMasterVolume(message[9] * 64);
               break;
-            case 0x06:
+            case 0x06: {
               // Text:
               // F0 43 1n 4C 06 00 00 [text] F7
               // ex. F0 43 1n 4C 06 00 00 48 65 6C 6C 6F 21 F7 = Hello
@@ -645,6 +651,7 @@ export default class WebMidiLink {
               msg.pop();
               synth.processMidiMessage(msg);
               break;
+            }
             case 0x07:
               // Bitmap Window
               // F0 43 10 4C 07 00 00 [bitmap] F7
@@ -664,6 +671,7 @@ export default class WebMidiLink {
           }
         }
         break;
+      }
       default:
         // not supported
         synth.setPercussionPart(9, true);

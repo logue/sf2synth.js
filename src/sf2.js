@@ -919,6 +919,7 @@ export default class Parser {
   }
 
   /**
+   *
    * @private
    * @param {Object[]} zone
    * @param {number} index
@@ -941,6 +942,7 @@ export default class Parser {
   }
 
   /**
+   *
    * @private
    * @param {Object[]} zone
    * @param {number} index
@@ -963,6 +965,7 @@ export default class Parser {
   }
 
   /**
+   *
    * @private
    * @param {Object[]} zone
    * @param {number} index
@@ -985,6 +988,7 @@ export default class Parser {
   }
 
   /**
+   *
    * @private
    * @param {Object[]} zone
    * @param {number} index
@@ -1008,14 +1012,15 @@ export default class Parser {
   }
 
   /**
+   *
    * @private
-   * @param {Object[]} zone
+   * @param {Object[]} _zone
    * @param {number} indexStart
    * @param {number} indexEnd
    * @param {Array} zoneModGen
    * @returns {{ modgen: Object; modgenInfo: Object[] }}
    */
-  createBagModGen_(zone, indexStart, indexEnd, zoneModGen) {
+  createBagModGen_(_zone, indexStart, indexEnd, zoneModGen) {
     /** @type {Object[]} */
     const modgenInfo = [];
     /** @type {Object} */
