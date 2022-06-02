@@ -247,7 +247,7 @@ export default class Synthesizer {
   init(mode = 'GM') {
     this.gainMaster.disconnect();
 
-    console.log('Reset Type:', mode);
+    // console.log('Reset Type:', mode);
 
     this.refreshInstruments(this.input);
 
@@ -915,7 +915,7 @@ export default class Synthesizer {
       channel
     ];
 
-    console.log(this.channelBank[channel]);
+    // console.log(this.channelBank[channel]);
     /** @type {number} */
     const bankIndex = this.channelBank[channel];
     /** @type {HTMLElement} */
