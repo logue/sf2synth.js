@@ -26,7 +26,7 @@ export default class Riff {
       optParams.bigEndian !== void 0 ? optParams.bigEndian : false;
   }
 
-  /** @returns {void} */
+  /** @return {void} */
   parse() {
     /** @type {number} */
     const length = this.length + this.offset;
@@ -38,7 +38,7 @@ export default class Riff {
     }
   }
 
-  /** @returns {void} */
+  /** @return {void} */
   parseChunk() {
     /** @type {ByteArray} */
     const input = this.input;
@@ -77,7 +77,7 @@ export default class Riff {
 
   /**
    * @param {number} index Chunk index.
-   * @returns {RiffChunk | null}
+   * @return {RiffChunk | null}
    */
   getChunk(index) {
     /** @type {RiffChunk} */
@@ -90,7 +90,7 @@ export default class Riff {
     return chunk;
   }
 
-  /** @returns {number} */
+  /** @return {number} */
   getNumberOfChunks() {
     return this.chunkList.length;
   }

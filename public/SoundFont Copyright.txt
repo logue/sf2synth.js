@@ -1,8 +1,0 @@
-Yamaha XG Sound Set Re-Map.sf2 - It is highly supposed, that those data are protect by Copyright
-internal ICOP file copyright: Copyright 1998 Yamaha Corp.
-
-
-Yamaha XG Sounf Set Ver2.0.sf2
-By Logue
-
-based on YAMAHA S-YXG50_0.2.1.2.sf2

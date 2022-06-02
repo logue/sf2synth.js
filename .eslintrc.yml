@@ -7,10 +7,7 @@ extends:
   - eslint:recommended
   - google
   - plugin:import/recommended
-  - prettier
   - eslint-config-prettier
-plugins:
-  - prettier
 parserOptions:
   ecmaVersion: latest
   parser: babel-eslint
@@ -20,7 +17,18 @@ rules:
   new-cap: off
   no-invalid-this: off
   no-unused-vars: warn
-  prettier/prettier: error
   require-jsdoc: warn
-  valid-jsdoc: warn
-  no-case-declarations: off
+  valid-jsdoc: off
+  import/no-named-as-default: off
+  jsdoc/require-param-type: off
+  jsdoc/require-param: ['off', { enableRootFixer: false }]
+  jsdoc/require-returns-description: off
+  jsdoc/require-returns-type: off
+  jsdoc/require-returns: off
+settings:
+  import/resolver:
+    alias:
+      map:
+        - ['@', './src']
+      extensions:
+        - .js

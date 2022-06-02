@@ -1,5 +1,5 @@
-import WebMidiLink from './wml';
 import queryString from 'query-string';
+import WebMidiLink from './wml';
 
 const message = document.getElementById('message');
 const qs = queryString.parse(window.location.search);

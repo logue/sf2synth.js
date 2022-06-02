@@ -1,6 +1,5 @@
+import checker from 'vite-plugin-checker';
 import { defineConfig } from 'vite';
-import eslintPlugin from '@modyqyw/vite-plugin-eslint';
-import stylelintPlugin from 'vite-plugin-stylelint';
 import path from 'path';
 import fs from 'fs';
 
@@ -23,20 +22,23 @@ const config = {
     ],
   },
   plugins: [
-    // eslint
-    // https://github.com/ModyQyW/vite-plugin-eslint
-    eslintPlugin(),
-    // Stylelint
-    // https://github.com/ModyQyW/vite-plugin-stylelint
-    stylelintPlugin(),
+    // vite-plugin-checker
+    // https://github.com/fi3ework/vite-plugin-checker
+    checker({
+      typescript: false,
+      vueTsc: false,
+      eslint: {
+        lintCommand: `eslint`, // for example, lint .ts & .tsx
+      },
+    }),
   ],
   // Build Options
   // https://vitejs.dev/config/#build-options
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/wml.js'),
-      name: 'sf2.synth',
-      fileName: format => `sf2.synth.${format}.js`,
+      name: 'SoundFont.WebMidiLink',
+      fileName: format => `sf2synth.${format}.js`,
     },
     // Minify option
     // https://vitejs.dev/config/#build-minify

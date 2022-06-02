@@ -100,6 +100,7 @@ export default class SynthesizerNote {
     this.modulator = ctx.createBiquadFilter();
   }
 
+  /** Note on */
   noteOn() {
     /** @type {AudioContext} */
     const ctx = this.ctx;
@@ -260,22 +261,23 @@ export default class SynthesizerNote {
 
   /**
    * @param {number} val
-   * @returns {number}
+   * @return {number}
    */
   amountToFreq(val) {
     return 2 ** ((val - 6900) / 1200) * 440;
   }
 
+  /** Note off */
   noteOff() {
     this.noteOffState = true;
   }
 
-  /** @returns {boolean} */
+  /** @return {boolean} */
   isNoteOff() {
     return this.noteOffState;
   }
 
-  /** @returns {void} */
+  /** @return {void} */
   release() {
     /**
      * @type {{
@@ -296,6 +298,7 @@ export default class SynthesizerNote {
     const output = this.outputGainNode;
     /** @type {number} */
     const now = this.ctx.currentTime;
+    /** @type {number} */
     const release = instrument['releaseTime'] - 64;
 
     // ---------------------------------------------------------------------------
@@ -392,6 +395,7 @@ export default class SynthesizerNote {
     }
   }
 
+  /** Connect AudioContext */
   connect() {
     /*
     // Modulation Depth
@@ -422,10 +426,14 @@ export default class SynthesizerNote {
     this.reverb.connect(this.outputGainNode).connect(this.destination);
   }
 
+  /** Disconnect AudioContext */
   disconnect() {
     this.outputGainNode.disconnect(0);
   }
+
+  /** Caluclate playback rate */
   schedulePlaybackRate() {
+    /** @type {AudioParam} */
     const playbackRate = this.bufferSource.playbackRate;
     /** @type {number} */
     const computed = this.computedPlaybackRate;

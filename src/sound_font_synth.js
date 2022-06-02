@@ -1,6 +1,6 @@
 import SynthesizerNote from './sound_font_synth_note';
-import Parser from './sf2';
 import Reverb from '@logue/reverb';
+import Parser from './sf2';
 
 /**
  * Synthesizer Class
@@ -177,6 +177,7 @@ export default class Synthesizer {
       this.percussionVolume[i] = 127;
     }
 
+    /** @type {*} */
     this.programSet = {};
 
     /** @type {Reverb[]} リバーブエフェクト（チャンネル毎に用意する） */
@@ -216,7 +217,7 @@ export default class Synthesizer {
     this.timer = null;
   }
 
-  /** @returns {AudioContext} */
+  /** @return {AudioContext} */
   getAudioContext() {
     /** @type {AudioContext} */
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -246,7 +247,7 @@ export default class Synthesizer {
   init(mode = 'GM') {
     this.gainMaster.disconnect();
 
-    console.log('Reset Type:', mode);
+    // console.log('Reset Type:', mode);
 
     this.refreshInstruments(this.input);
 
@@ -299,6 +300,7 @@ export default class Synthesizer {
     this.element.dataset.mode = mode;
   }
 
+  /** Close AudioContext */
   close() {
     this.ctx.close();
   }
@@ -539,7 +541,7 @@ export default class Synthesizer {
   /**
    * @param {Object} generator
    * @param {string} enumeratorType
-   * @returns {number}
+   * @return {number}
    */
   getModGenAmount(generator, enumeratorType) {
     return generator[enumeratorType]
@@ -547,6 +549,9 @@ export default class Synthesizer {
       : this.parser.getGeneratorTable()[enumeratorType];
   }
 
+  /**
+   * Start Tone Generator
+   */
   start() {
     this.connect();
     this.bufSrc.start(0);
@@ -559,16 +564,18 @@ export default class Synthesizer {
     this.gainMaster.gain.value = this.baseVolume * (volume / 16384);
   }
 
+  /** Connect root AudioContext */
   connect() {
     this.bufSrc.connect(this.gainMaster);
   }
 
+  /** Disconnect root AudioContext */
   disconnect() {
     this.bufSrc.disconnect(this.gainMaster);
     this.bufSrc.buffer = null;
   }
 
-  /** @returns {HTMLDivElement} */
+  /** @return {HTMLDivElement} */
   drawSynth() {
     /** @type {Document} */
     const doc = window.document;
@@ -613,7 +620,7 @@ export default class Synthesizer {
         itemElem.className = this.items[item];
 
         switch (this.items[item]) {
-          case 'mute':
+          case 'mute': {
             /** @type {HTMLDivElement | null} */
             const checkboxElement = doc.createElement('div');
             checkboxElement.className = 'form-check';
@@ -639,7 +646,8 @@ export default class Synthesizer {
             checkboxElement.appendChild(labelElem);
             itemElem.appendChild(checkboxElement);
             break;
-          case 'bank':
+          }
+          case 'bank': {
             // Bank select
             /** @type {HTMLSelectElement} */
             const bankSelect = doc.createElement('select');
@@ -664,7 +672,8 @@ export default class Synthesizer {
 
             bankSelect.selectedIndex = this.channelBank[item];
             break;
-          case 'program':
+          }
+          case 'program': {
             // Program change
             /** @type {HTMLSelectElement | null} */
             const select = doc.createElement('select');
@@ -682,27 +691,32 @@ export default class Synthesizer {
 
             select.selectedIndex = this.channelInstrument[item];
             break;
-          case 'volume':
+          }
+          case 'volume': {
             const volumeElem = document.createElement('var');
             volumeElem.innerText = 100;
             itemElem.appendChild(volumeElem);
             break;
-          case 'expression':
+          }
+          case 'expression': {
             const expressionElem = document.createElement('var');
             expressionElem.innerText = 127;
             itemElem.appendChild(expressionElem);
             break;
-          case 'pitchBendSensitivity':
+          }
+          case 'pitchBendSensitivity': {
             const pitchSensElem = document.createElement('var');
             pitchSensElem.innerText = 2;
             itemElem.appendChild(pitchSensElem);
             break;
-          case 'reverbDepth':
+          }
+          case 'reverbDepth': {
             const reverbDepthElem = document.createElement('var');
             reverbDepthElem.innerText = 40;
             itemElem.appendChild(reverbDepthElem);
             break;
-          case 'panpot':
+          }
+          case 'panpot': {
             /** @type {HTMLDivElement | null} */
             const panpotOuter = doc.createElement('div');
             panpotOuter.className = 'progress';
@@ -712,7 +726,8 @@ export default class Synthesizer {
             panpotOuter.appendChild(panpot);
             itemElem.appendChild(panpotOuter);
             break;
-          case 'pitchBend':
+          }
+          case 'pitchBend': {
             /** @type {HTMLDivElement | null} */
             const pitchOuter = doc.createElement('div');
             pitchOuter.className = 'progress';
@@ -722,7 +737,8 @@ export default class Synthesizer {
             pitchOuter.appendChild(pitch);
             itemElem.appendChild(pitchOuter);
             break;
-          case 'keys':
+          }
+          case 'keys': {
             // 鍵盤の描画
             for (let key = 0; key < 127; key++) {
               /** @type {HTMLDivElement | null} */
@@ -769,6 +785,7 @@ export default class Synthesizer {
               );
             }
             break;
+          }
         }
         channelElem.appendChild(itemElem);
       }
@@ -898,7 +915,7 @@ export default class Synthesizer {
       channel
     ];
 
-    console.log(this.channelBank[channel]);
+    // console.log(this.channelBank[channel]);
     /** @type {number} */
     const bankIndex = this.channelBank[channel];
     /** @type {HTMLElement} */
@@ -1432,7 +1449,7 @@ export default class Synthesizer {
 
   /**
    * @param {number} channel Pitch bend sensitivity を取得するチャンネル.
-   * @returns {number}
+   * @return {number}
    */
   getPitchBendSensitivity(channel) {
     return this.channelPitchBendSensitivity[channel];

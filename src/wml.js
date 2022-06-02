@@ -1,6 +1,5 @@
-import axios from 'axios';
-import Meta from './meta.js';
 import Synthesizer from './sound_font_synth';
+import Meta from './meta.js';
 import './wml.scss';
 
 /** WebMidiLink Class */
@@ -30,8 +29,8 @@ export default class WebMidiLink {
     /** @type {boolean} */
     this.option.drawSynth =
       option.drawSynth !== void 0 ? option.drawSynth : true;
-    /** @type {boolean} */
-    this.option.cache = option.cache !== void 0 ? option.cache : true;
+    /** @type {number} */
+    this.option.cache = option.cache ? option.cache : 15 * 60 * 1000;
     /** @type {HTMLElement} */
     this.placeholder =
       option.placeholder !== void 0
@@ -115,105 +114,85 @@ export default class WebMidiLink {
 
     /**
      * ダウンロード中のハンドラ
-     *
-     * @param {axios.progressEvent} progressEvent
+     * @param {number} current
+     * @param {number} total
      */
-    const downloadProgressHandler = progressEvent => {
-      const total = parseFloat(
-        progressEvent.currentTarget.responseHeaders['Content-Length']
-      );
-      const current = progressEvent.currentTarget.response.length;
-      const percentCompleted = Math.floor(
-        (progressEvent.loaded / progressEvent.total) * 100
-      );
-
-      message.innerText = `Now Loading... (${current}/${total})`;
+    const progressHandler = (current, total) => {
+      const percentCompleted = Math.floor((current / total) * 100);
       progress.style.width = percentCompleted + '%';
       progress.innerText = percentCompleted + ' %';
       opener.postMessage('link,progress,' + current + ',' + total, '*');
-      requestAnimationFrame(downloadProgressHandler);
+      requestAnimationFrame(progressHandler);
     };
 
-    /**
-     * データを取得.
-     *
-     * @returns {axios.Response}
-     */
-    const getContent = async () => {
-      console.info('Load from server.');
-
-      try {
-        return await axios.get(
-          url,
-          {
-            headers: {
-              Accept: 'audio/x-soundfont',
-              'Access-Control-Allow-Origin': '*',
-            },
-            responseType: 'arraybuffer',
-          },
-          {
-            onDownloadProgress: downloadProgressHandler,
-          }
-        );
-      } catch (e) {
-        alert.className = 'alert alert-danger';
-        progressOuter.style.display = 'none';
-        message.innerText = `Error! HTTP Status: ${e.response.status} ${e.response.statusText}`;
-        return;
-      }
+    const loadedHandler = buffer => {
+      alert.className = 'alert alert-info';
+      message.innerText = 'Initializing...';
+      progress.style.width = '100%';
+      progress.className =
+        'progress-bar progress-bar-striped progress-bar-animated';
+      const input = new Uint8Array(buffer);
+      this.loadSoundFont(input);
+      this.placeholder.removeChild(alert);
+      opener.postMessage('link,ready', '*');
     };
 
-    /** @type {Response} */
-    let stream = null;
-
-    if (this.option.cache && window.caches) {
-      console.info('load from cache.');
-
-      // キャッシュが利用可能な場合
-      const cacheStorage = await caches.open('wml');
-      stream = await cacheStorage.match(url);
-
-      if (!stream) {
-        stream = await getContent();
-      } else {
-        console.info('load from cache.');
-      }
-    } else {
-      // キャッシュが使えない場合
-      console.info('This server/client does not cache function.');
-      stream = await getContent();
-    }
-
-    alert.className = 'alert alert-info';
-    message.innerText = 'Initializing...';
-    progress.style.width = '100%';
-    progress.className =
-      'progress-bar progress-bar-striped progress-bar-animated';
-
-    if (stream.error || !stream) {
+    const errorHandler = error => {
       alert.className = 'alert alert-danger';
-      message.innerText = 'An error occurred when downloading a SoundFont.';
-      progressOuter.style.display = 'none';
-      throw Error(stream.error);
-    }
-
-    // window.requestAnimationFrame(1);
-    console.info('ready');
-    const input = new Uint8Array(stream.data);
-    // try {
-    this.loadSoundFont(input);
-    /*
-  } catch(e) {
-      alert.className = 'alert alert-warning';
-      progressOuter.style.display = 'none';
       message.innerText =
         'An error occurred while parsing SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
+      progressOuter.style.display = 'none';
+      throw Error(error);
+    };
+
+    /** @type {CacheStorage} */
+    const cache = await caches.open('wml');
+    /** @type {Response} */
+    const cached = await cache.match(url);
+
+    if (!cached) {
+      // キャッシュがない場合Fetchで取得
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        headers: {
+          Accept: 'audio/x-soundfont',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+      console.info('load from server');
+      if (!response.ok) {
+        errorHandler();
+        return;
+      }
+      const clonedResponse = response.clone();
+      const clonedResponse2 = response.clone();
+
+      /** @type {RedableStream} */
+      const reader = response.body.getReader();
+
+      // eslint-disable-next-line
+      while (true) {
+        // 最後のチャンクも場合、done は true。
+        // value はチャンクバイトの Uint8Array
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        message.innerText = `Now Loading... (${value.length} byte)`;
+
+        if (response.headers.has('Content-Length')) {
+          // Content lengthヘッダーが出力されている場合プログレスバーを表示
+          progressHandler(value.length, response.headers.get('Content-Length'));
+        }
+      }
+
+      cache.put(url, clonedResponse);
+      loadedHandler(await clonedResponse2.arrayBuffer());
       return;
     }
-    */
-    this.placeholder.removeChild(alert);
-    opener.postMessage('link,ready', '*');
+    console.info('load from cache.');
+    loadedHandler(await cached.arrayBuffer());
   }
 
   /** @param {Uint8Array} input */
@@ -224,9 +203,9 @@ export default class WebMidiLink {
     if (!this.synth) {
       /** @type {Synthesizer} */
       const synth = (this.synth = new Synthesizer(input));
-      console.log(synth);
       if (this.option.drawSynth) {
         this.placeholder.appendChild(synth.drawSynth());
+        // this.placeholder.style.minHeight = '565px';
       } else {
         const readyElem = document.createElement('strong');
         readyElem.innerText = 'Ready.';
@@ -316,7 +295,8 @@ export default class WebMidiLink {
           synth.noteOff(channel, message[1], 0);
         }
         break;
-      case 0xb0: // Control Change: Bn cc dd
+      case 0xb0: {
+        // Control Change: Bn cc dd
         /** @type {number} */
         const value = message[2];
         switch (message[1]) {
@@ -386,8 +366,10 @@ export default class WebMidiLink {
                   break;
               }
             }
+
             // NRPN で LSB が必要なものは今のところない
             break;
+
           case 0x07: // Volume Change: Bn 07 dd
             synth.volumeChange(channel, value);
             break;
@@ -454,13 +436,15 @@ export default class WebMidiLink {
             break;
         }
         break;
+      }
       case 0xc0: // Program Change: Cn pp
         synth.programChange(channel, message[1]);
         break;
       case 0xe0: // Pitch Bend
         synth.pitchBend(channel, message[1], message[2]);
         break;
-      case 0xf0: // System Exclusive Message
+      case 0xf0: {
+        // System Exclusive Message
         // [1] F0
         // [2] <vendor ID> http://www.amei.or.jp/report/report4.html
         // [3] <device ID>
@@ -548,7 +532,7 @@ export default class WebMidiLink {
               synth.setMasterVolume(message[9] * 64);
               break;
 
-            case 0x15:
+            case 0x15: {
               // GS Dram part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
               // Notice: [sum] is ignroe in this program.
 
@@ -576,6 +560,7 @@ export default class WebMidiLink {
                 }
               }
               break;
+            }
             case 0x19:
               // VOLUME ON/OFF (PART LEVEL)
               // F0 41 10 42 12 40 1[part no] 19 [value] [checksum] F7
@@ -636,7 +621,7 @@ export default class WebMidiLink {
               // F0 43 1n 4C 00 00 04 [value] F7
               synth.setMasterVolume(message[9] * 64);
               break;
-            case 0x06:
+            case 0x06: {
               // Text:
               // F0 43 1n 4C 06 00 00 [text] F7
               // ex. F0 43 1n 4C 06 00 00 48 65 6C 6C 6F 21 F7 = Hello
@@ -645,6 +630,7 @@ export default class WebMidiLink {
               msg.pop();
               synth.processMidiMessage(msg);
               break;
+            }
             case 0x07:
               // Bitmap Window
               // F0 43 10 4C 07 00 00 [bitmap] F7
@@ -664,6 +650,7 @@ export default class WebMidiLink {
           }
         }
         break;
+      }
       default:
         // not supported
         synth.setPercussionPart(9, true);
@@ -676,7 +663,7 @@ export default class WebMidiLink {
    *
    * @private
    * @param {Array} message
-   * @returns {string}
+   * @return {string}
    */
   dumpMessage(message) {
     const ret = [];

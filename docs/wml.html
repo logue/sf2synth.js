@@ -78,7 +78,7 @@
         option.drawSynth = false;
       }
       const sf = qs.soundfont
-        ? decodeURIComponent(qs.soundfont)
+        ? decodeURI(qs.soundfont)
         : 'Yamaha XG Sound Set.sf2';
       document.getElementById('soundfont').innerText = sf;
       option.placeholder = 'placeholder';
@@ -89,7 +89,7 @@
       wml.setLoadCallback(() => {
         message.style.display = 'none';
       });
-      wml.setup(sf);
+      wml.setup(encodeURI(sf));
 
       // Load sound font
       const handleSoundFont = file => {
