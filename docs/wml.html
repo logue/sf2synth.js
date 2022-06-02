@@ -28,7 +28,7 @@
       }
     </script>
     <!-- End Google Tag Manager -->
-    <link rel="stylesheet" href="wml.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
@@ -68,7 +68,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/query-string@1.0.1/query-string.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/g200kg/WAAPISim@master/waapisim.min.js"></script>
-    <script src="sf2.synth.js"></script>
+    <script src="sf2synth.umd.js"></script>
     <script>
       /*<![CDATA[*/
       const message = document.getElementById('message');
@@ -83,8 +83,10 @@
       document.getElementById('soundfont').innerText = sf;
       option.placeholder = 'placeholder';
       const wml = new SoundFont.WebMidiLink(option);
-      document.getElementById('build').innerText = wml.build;
-      wml.setLoadCallback(function () {
+      document.getElementById('build').innerText = new Date(
+        wml.build
+      ).toLocaleString();
+      wml.setLoadCallback(() => {
         message.style.display = 'none';
       });
       wml.setup(sf);

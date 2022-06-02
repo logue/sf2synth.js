@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="robots" content="noindex" />
+  <title>Web Midi Link Test</title>
+  <link rel="stylesheet" lang="scss" href="src/wml.scss" />
+</head>
+
+<body>
+  <div class="container-fluid">
+    <header>
+      <h1>
+        SoundFont:
+        <span id="soundfont"></span>
+      </h1>
+      <p class="text-end">
+        by <a href="https://logue.dev/" target="_blank">Logue</a>
+        /
+        <small class="text-muted">
+          Last Modified:
+          <span id="build"></span>
+        </small>
+      </p>
+    </header>
+    <main>
+      <div class="mb-3">
+        <label for="file" class="form-label">
+          Select own SoundFont2 file
+        </label>
+        <input type="file" class="form-control" id="file" accept="audio/x-soundfont, *.sf2" />
+        <div id="fileHelp" class="form-text">
+          Drag and drop here *.sf2 file to change sound font
+        </div>
+      </div>
+      <hr />
+      <div id="placeholder"></div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/gh/g200kg/WAAPISim@master/waapisim.min.js"></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
