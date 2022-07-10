@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/sf2synth",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "SoundFont2 Synthesizer",
   "repository": {
     "type": "git",
@@ -76,7 +76,6 @@
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
-    "optionator": "^0.9.1",
     "prettier": "^2.7.1",
     "query-string": "^7.1.1",
     "rimraf": "^3.0.2",

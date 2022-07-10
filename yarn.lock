@@ -106,7 +106,6 @@ __metadata:
     husky: ^8.0.1
     lint-staged: ^13.0.3
     lodash: ^4.17.21
-    optionator: ^0.9.1
     prettier: ^2.7.1
     query-string: ^7.1.1
     rimraf: ^3.0.2

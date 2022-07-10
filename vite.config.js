@@ -46,8 +46,8 @@ const config = {
   // https://vitejs.dev/config/#build-options
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/wml.js'),
-      name: 'SoundFont.WebMidiLink',
+      entry: path.resolve(__dirname, 'src/index.js'),
+      name: 'SoundFont',
       fileName: format => `sf2synth.${format}.js`,
     },
     // Minify option

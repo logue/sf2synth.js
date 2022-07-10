@@ -1,6 +1,6 @@
+.yarn/
 .husky/
 .vscode/
 dist/
 docs/
 public/
-index.html
