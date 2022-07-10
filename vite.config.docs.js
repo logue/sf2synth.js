@@ -35,11 +35,7 @@ const config = {
   // Build Options
   // https://vitejs.dev/config/#build-options
   build: {
-    lib: {
-      entry: path.resolve(__dirname, 'src/wml.js'),
-      name: 'sf2synth',
-      fileName: format => `sf2synth.${format}.js`,
-    },
+    outDir: 'docs',
     // Minify option
     // https://vitejs.dev/config/#build-minify
     minify: 'terser',

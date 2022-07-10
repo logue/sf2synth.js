@@ -48,41 +48,47 @@
     "./dist/style.css": {
       "import": "./dist/style.css",
       "require": "./dist/style.css"
-    }
+    },
+    "./dist/wml.html": "./dist/wml.html"
   },
   "scripts": {
     "dev": "vite",
     "clean": "rimraf node_modules/.vite",
     "build": "vite build",
+    "build:docs": "vite build --config vite.config.docs.js",
     "build:clean": "rimraf dist",
     "lint": "eslint . --fix --cache --cache-location ./node_modules/.vite/vite-plugin-eslint && prettier . --write",
     "lint:style": "stylelint \"./**/*.{css,sass,scss,htm,html}\" --fix --cache-location ./node_modules/.vite/vite-plugin-stylelint",
+    "preview": "vite preview --config vite.config.docs.js",
     "prepare": "husky install"
   },
   "dependencies": {
-    "@logue/reverb": "^0.5.2",
+    "@logue/reverb": "^0.5.4",
     "bootstrap": "^5.2.0-beta1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "eslint": "^8.16.0",
+    "eslint": "^8.19.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.1",
-    "lint-staged": "^13.0.0",
-    "prettier": "^2.6.2",
+    "lint-staged": "^13.0.3",
+    "optionator": "^0.9.1",
+    "prettier": "^2.7.1",
     "query-string": "^7.1.1",
-    "sass": "1.52.1",
-    "stylelint": "^14.8.5",
+    "rimraf": "^3.0.2",
+    "sass": "1.53.0",
+    "stylelint": "^14.9.1",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-recommended-scss": "^6.0.0",
     "stylelint-order": "^5.0.0",
     "stylelint-prettier": "^2.0.0",
-    "vite": "^2.9.9",
-    "vite-plugin-checker": "^0.4.6"
+    "vite": "^2.9.14",
+    "vite-plugin-banner": "^0.3.0",
+    "vite-plugin-checker": "^0.4.8"
   },
   "husky": {
     "hooks": {
@@ -93,5 +99,6 @@
     "*.{js,ts,json,htm,html,md}": "eslint . --fix --cache --cache-location ./node_modules/.vite/vite-plugin-eslint",
     "*.{css,sass,scss,htm,html}": "stylelint --fix --cache --cache-location ./node_modules/.vite/vite-plugin-stylelint",
     "*": "prettier -w -u"
-  }
+  },
+  "packageManager": "yarn@3.2.1"
 }

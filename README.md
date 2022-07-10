@@ -4,14 +4,14 @@ sf2synth.js is [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) based S
 
 ## Install
 
-```
+```sh
 npm install @logue/sf2synth
 ```
 
 or
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/logue/sf2synth.js@develop/bin/sf2.synth.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/logue/sf2synth.js@develop/bin/sf2.synth.umd.js"></script>
 ```
 
 ## Usage

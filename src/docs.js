@@ -1,18 +1,30 @@
 import queryString from 'query-string';
 import WebMidiLink from './wml';
 
-const message = document.getElementById('message');
+/** Query string */
 const qs = queryString.parse(window.location.search);
-const option = {};
+/** sf2synth.js Option */
+const option = { placeholder: 'placeholder' };
 if (qs.ui === 'false') {
   option.drawSynth = false;
 }
+
+/** WebMidiLink */
+const wml = new WebMidiLink(option);
+/** Message DOM */
+const message = document.getElementById('message');
+/** File Input Form */
+const fileInput = document.getElementById('file');
+/** Placeholder */
+const placeholder = document.getElementById('placeholder');
+
+/** SoundFont file */
 const sf = qs.soundfont
   ? decodeURIComponent(qs.soundfont)
-  : 'docs/Yamaha XG Sound Set.sf2';
+  : 'Yamaha XG Sound Set.sf2';
+
 document.getElementById('soundfont').innerText = sf;
-option.placeholder = 'placeholder';
-const wml = new WebMidiLink(option);
+
 document.getElementById('build').innerText = new Date(
   wml.build
 ).toLocaleString();
@@ -29,41 +41,40 @@ const handleSoundFont = file => {
 
   reader.readAsArrayBuffer(file);
 
-  reader.onload = function (e) {
+  reader.onload = e => {
+    console.log('loaded', file);
+    document.getElementById('soundfont').innerText = file.name;
     const data = new Uint8Array(e.target.result);
-    wml.loadSoundFont(data);
+    wml.loadSoundFont(data, true);
   };
 };
 
 // local file
-window.addEventListener(
+document.addEventListener(
   'DOMContentLoaded',
-  _event => {
+  event => {
+    console.log('Document loaded');
     // File selector
-    document.getElementById('file').addEventListener(
-      'change',
-      event => {
-        const file = document.getElementById('file').files[0];
-        handleSoundFont(file);
-        event.preventDefault();
-      },
-      false
-    );
 
-    const droparea = document.getElementById('placeholder');
-    droparea.addEventListener(
+    fileInput.addEventListener('change', event => {
+      event.preventDefault();
+      handleSoundFont(fileInput.files[0]);
+      fileInput.value = '';
+    });
+
+    placeholder.addEventListener(
       'dragover',
       e => {
-        droparea.className = 'alert-danger';
+        placeholder.className = 'alert-danger';
         e.preventDefault();
       },
       true
     );
 
-    droparea.addEventListener(
+    placeholder.addEventListener(
       'drop',
       e => {
-        droparea.className = '';
+        placeholder.className = '';
         const dt = e.dataTransfer;
         const files = dt.files;
         e.stopPropagation();
@@ -73,10 +84,10 @@ window.addEventListener(
       true
     );
 
-    droparea.addEventListener(
+    placeholder.addEventListener(
       'dragleave',
       e => {
-        droparea.className = '';
+        placeholder.className = '';
       },
       true
     );

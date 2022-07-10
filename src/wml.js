@@ -88,6 +88,8 @@ export default class WebMidiLink {
    * @export
    */
   async load(url) {
+    console.log('load', url);
+
     /** @type {Window} */
     const opener = window.opener ? window.opener : window.parent;
     opener.postMessage('link,progress', '*');
@@ -125,6 +127,10 @@ export default class WebMidiLink {
       requestAnimationFrame(progressHandler);
     };
 
+    /**
+     * ロード完了時のハンドラ
+     * @param {ArrayBuffer} buffer
+     */
     const loadedHandler = buffer => {
       alert.className = 'alert alert-info';
       message.innerText = 'Initializing...';
@@ -137,6 +143,7 @@ export default class WebMidiLink {
       opener.postMessage('link,ready', '*');
     };
 
+    /** エラー時のハンドラ */
     const errorHandler = error => {
       alert.className = 'alert alert-danger';
       message.innerText =
@@ -160,7 +167,7 @@ export default class WebMidiLink {
           'Access-Control-Allow-Origin': '*',
         },
       });
-      console.info('load from server');
+      console.info('load from server:', url);
       if (!response.ok) {
         errorHandler();
         return;
@@ -195,7 +202,9 @@ export default class WebMidiLink {
     loadedHandler(await cached.arrayBuffer());
   }
 
-  /** @param {Uint8Array} input */
+  /**
+   * @param {Uint8Array} input
+   */
   loadSoundFont(input) {
     /** @type {Window} */
     const w = window;
@@ -217,6 +226,7 @@ export default class WebMidiLink {
     } else {
       this.synth.refreshInstruments(input);
     }
+    console.log('ready');
     // link ready
     w.postMessage('link,ready', '*');
   }

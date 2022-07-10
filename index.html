@@ -7,18 +7,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="robots" content="noindex" />
   <title>Web Midi Link Test</title>
-  <link rel="stylesheet" lang="scss" href="src/wml.scss" />
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <!-- Google Tag Manager -->
+  <script>
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'UA-33600926-1');
+  </script>
+  <!-- End Google Tag Manager -->
+  <link rel="stylesheet" lang="scss" href="/src/wml.scss" />
 </head>
 
 <body>
   <div class="container-fluid">
     <header>
-      <h1>
+      <h1 class="h2">
         SoundFont:
         <span id="soundfont"></span>
       </h1>
       <p class="text-end">
-        by <a href="https://logue.dev/" target="_blank">Logue</a>
+        <a href="https://logue.dev/" target="_blank">Logue</a>
         /
         <small class="text-muted">
           Last Modified:
@@ -27,21 +42,20 @@
       </p>
     </header>
     <main>
-      <div class="mb-3">
-        <label for="file" class="form-label">
-          Select own SoundFont2 file
+      <div>
+        <label class="form-label" for="file">
+          Load SoundFont2 file
+          <small class="text-muted">
+            (drag and drop here *.sf2 file to change sound font)
+          </small>
         </label>
-        <input type="file" class="form-control" id="file" accept="audio/x-soundfont, *.sf2" />
-        <div id="fileHelp" class="form-text">
-          Drag and drop here *.sf2 file to change sound font
-        </div>
+        <input type="file" class="form-control" id="file" accept="audio/x-soundfont" />
       </div>
       <hr />
       <div id="placeholder"></div>
     </main>
   </div>
-  <script src="https://cdn.jsdelivr.net/gh/g200kg/WAAPISim@master/waapisim.min.js"></script>
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/docs.js"></script>
 </body>
 
 </html>

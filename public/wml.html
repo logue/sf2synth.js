@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Web Midi Link</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div id="placeholder"></div>
+    </div>
+  </body>
+  <script src="./sf2synth.umd.js"></script>
+  <script>
+    /** sf2synth.js Option */
+    const option = { placeholder: 'placeholder' };
+
+    /** WebMidiLink */
+    const wml = new SoundFont.WebMidiLink(option);
+    /** Placeholder */
+    const placeholder = document.getElementById('placeholder');
+    /** SoundFont file */
+    const sf = 'Yamaha XG Sound Set.sf2';
+
+    // Load soundFont
+    wml.setup(sf);
+  </script>
+</html>

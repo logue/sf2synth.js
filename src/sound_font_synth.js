@@ -652,25 +652,18 @@ export default class Synthesizer {
             /** @type {HTMLSelectElement} */
             const bankSelect = doc.createElement('select');
             bankSelect.className = 'form-select form-select-sm';
-            itemElem.appendChild(bankSelect);
-            /** @type {HTMLOptionElement} */
-            const option = doc.createElement('option');
-            bankSelect.appendChild(option);
-
             bankSelect.addEventListener(
               'change',
               ((synth, ch) => event => {
-                console.log(synth, channelElem);
+                const program =
+                  channelElem.querySelector('.program select').value;
+                console.log(ch, event.target.value, program);
                 synth.bankChange(ch, event.target.value);
-                synth.programChange(
-                  ch,
-                  synth.channelElemInstrument[channelElem]
-                );
+                synth.programChange(ch, program);
               })(this, channel),
               false
             );
-
-            bankSelect.selectedIndex = this.channelBank[item];
+            itemElem.appendChild(bankSelect);
             break;
           }
           case 'program': {
@@ -678,9 +671,6 @@ export default class Synthesizer {
             /** @type {HTMLSelectElement | null} */
             const select = doc.createElement('select');
             select.className = 'form-select form-select-sm';
-
-            itemElem.appendChild(select);
-
             select.addEventListener(
               'change',
               ((synth, ch) => event => {
@@ -688,8 +678,7 @@ export default class Synthesizer {
               })(this, channel),
               false
             );
-
-            select.selectedIndex = this.channelInstrument[item];
+            itemElem.appendChild(select);
             break;
           }
           case 'volume': {
@@ -901,6 +890,9 @@ export default class Synthesizer {
       const option = document.createElement('option');
       option.value = bankNo;
       option.textContent = ('000' + parseInt(bankNo)).slice(-3);
+      if (bankNo === this.channelBank[channel]) {
+        option.selected = 'selected';
+      }
       bankElement.appendChild(option);
     }
   }
@@ -1205,19 +1197,19 @@ export default class Synthesizer {
     /** パーカッションバンク */
     const percussionBank = this.isXG ? 127 : 128;
 
-    if (!this.isGS || !this.isXG) {
-      // GS、XGフラグが立っていない（拡張音源ではない）場合は、ch10はドラム固定、それ以外は0とする。
-      bank = channel === 9 ? 128 : 0;
+    // if (this.isGM) {
+    // GS、XGフラグが立っていない（拡張音源ではない）場合は、ch10はドラム固定、それ以外は0とする。
+    //  bank = channel === 9 ? 128 : 0;
+    // } else {
+    if (this.bankSet[bank]) {
+      this.channelBank[channel] = bank;
     } else {
-      if (this.bankSet[bank]) {
-        this.channelBank[channel] = bank;
-      } else {
-        // 存在しない場合0を選択
-        this.channelBank[channel] = this.percussionPart[channel]
-          ? percussionBank
-          : 0;
-      }
+      // 存在しない場合0を選択
+      this.channelBank[channel] = this.percussionPart[channel]
+        ? percussionBank
+        : 0;
     }
+    // }
 
     if (this.element) {
       // バンクセレクトの値を更新
