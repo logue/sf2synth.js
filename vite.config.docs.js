@@ -5,6 +5,8 @@ import fs from 'fs';
 
 /** @type {UserConfig} https://vitejs.dev/config/ */
 const config = {
+  // https://vitejs.dev/config/#base
+  base: './',
   // https://vitejs.dev/config/#server-options
   server: {
     fs: {
