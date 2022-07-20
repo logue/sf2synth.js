@@ -5,6 +5,7 @@ import Parser from './sf2';
 /**
  * Synthesizer Class
  *
+ * @author imaya
  * @private
  */
 export default class Synthesizer {

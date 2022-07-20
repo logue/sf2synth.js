@@ -1,6 +1,10 @@
 import Riff from './riff.js';
 
-/** SoundFont Parser Class */
+/**
+ * SoundFont Parser Class
+ *
+ * @author imaya
+ */
 export default class Parser {
   /**
    * @param {ByteArray} input

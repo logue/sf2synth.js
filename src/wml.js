@@ -1,8 +1,13 @@
 import Synthesizer from './sound_font_synth';
 import Meta from './meta.js';
+import Loader from './loader';
 import './wml.scss';
 
-/** WebMidiLink Class */
+/**
+ * WebMidiLink Class
+ *
+ * @author imaya
+ */
 export default class WebMidiLink {
   /** @param {object} option */
   constructor(option = {}) {
@@ -37,7 +42,7 @@ export default class WebMidiLink {
         ? document.getElementById(option.placeholder)
         : window.document.body;
     /** @type {Window} */
-    this.opener = null;
+    this.window = null;
     /** @type {number} */
     this.version = Meta.version;
     /** @type {string} */
@@ -71,13 +76,12 @@ export default class WebMidiLink {
 
     console.log('setup');
 
-    /** @type {Window} */
-    const w = window;
-
-    if (w.opener) {
-      this.opener = w.opener;
-    } else if (w.parent !== w) {
-      this.opener = w.parent;
+    if (window.opener) {
+      this.window = window.opener;
+    } else if (window.parent !== window) {
+      this.window = window.parent;
+    } else {
+      this.window = window;
     }
 
     this.load(url);
@@ -88,147 +92,28 @@ export default class WebMidiLink {
    * @export
    */
   async load(url) {
-    console.log('load', url);
-
-    /** @type {Window} */
-    const opener = window.opener ? window.opener : window.parent;
-    opener.postMessage('link,progress', '*');
-
-    /** @type {HtmlDIVElement} */
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-warning';
-
-    /** @type {HTMLParagraphElement} */
-    const message = document.createElement('p');
-    message.innerText = 'Now Loading...';
-
-    /** @type {HTMLDivElement} */
-    const progressOuter = document.createElement('div');
-    progressOuter.className = 'progress';
-    /** @type {HTMLDivElement} */
-    const progress = document.createElement('div');
-    progress.className = 'progress-bar';
-
-    progressOuter.appendChild(progress);
-    alert.appendChild(message);
-    alert.appendChild(progressOuter);
-    this.placeholder.appendChild(alert);
-
-    /**
-     * ダウンロード中のハンドラ
-     * @param {number} current
-     * @param {number} total
-     */
-    const progressHandler = (current, total) => {
-      const percentCompleted = Math.floor((current / total) * 100);
-      progress.style.width = percentCompleted + '%';
-      progress.innerText = percentCompleted + ' %';
-      opener.postMessage('link,progress,' + current + ',' + total, '*');
-      requestAnimationFrame(progressHandler);
-    };
-
-    /**
-     * ロード完了時のハンドラ
-     * @param {ArrayBuffer} buffer
-     */
-    const loadedHandler = buffer => {
-      alert.className = 'alert alert-info';
-      message.innerText = 'Initializing...';
-      progress.style.width = '100%';
-      progress.className =
-        'progress-bar progress-bar-striped progress-bar-animated';
-      const input = new Uint8Array(buffer);
-      this.loadSoundFont(input);
-      this.placeholder.removeChild(alert);
-      opener.postMessage('link,ready', '*');
-    };
-
-    /** エラー時のハンドラ */
-    const errorHandler = error => {
-      alert.className = 'alert alert-danger';
-      message.innerText =
-        'An error occurred while parsing SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
-      progressOuter.style.display = 'none';
-      throw Error(error);
-    };
-
-    /** @type {CacheStorage} */
-    const cache = await caches.open('wml');
-    /** @type {Response} */
-    const cached = await cache.match(url);
-
-    if (!cached) {
-      // キャッシュがない場合Fetchで取得
-      const response = await fetch(url, {
-        method: 'GET',
-        mode: 'no-cors',
-        headers: {
-          Accept: 'audio/x-soundfont',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
-      console.info('load from server:', url);
-      if (!response.ok) {
-        errorHandler();
-        return;
-      }
-      const clonedResponse = response.clone();
-      const clonedResponse2 = response.clone();
-
-      /** @type {RedableStream} */
-      const reader = response.body.getReader();
-
-      // eslint-disable-next-line
-      while (true) {
-        // 最後のチャンクも場合、done は true。
-        // value はチャンクバイトの Uint8Array
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
+    const loader = new Loader(url, this.placeholder, input => {
+      if (!this.synth) {
+        /** @type {Synthesizer} */
+        const synth = (this.synth = new Synthesizer(input));
+        if (this.option.drawSynth) {
+          this.placeholder.appendChild(synth.drawSynth());
+          // this.placeholder.style.minHeight = '565px';
+        } else {
+          const readyElem = document.createElement('strong');
+          readyElem.innerText = 'Ready.';
+          this.placeholder.appendChild(readyElem);
         }
-        message.innerText = `Now Loading... (${value.length} byte)`;
-
-        if (response.headers.has('Content-Length')) {
-          // Content lengthヘッダーが出力されている場合プログレスバーを表示
-          progressHandler(value.length, response.headers.get('Content-Length'));
-        }
-      }
-
-      cache.put(url, clonedResponse);
-      loadedHandler(await clonedResponse2.arrayBuffer());
-      return;
-    }
-    console.info('load from cache.');
-    loadedHandler(await cached.arrayBuffer());
-  }
-
-  /**
-   * @param {Uint8Array} input
-   */
-  loadSoundFont(input) {
-    /** @type {Window} */
-    const w = window;
-
-    if (!this.synth) {
-      /** @type {Synthesizer} */
-      const synth = (this.synth = new Synthesizer(input));
-      if (this.option.drawSynth) {
-        this.placeholder.appendChild(synth.drawSynth());
-        // this.placeholder.style.minHeight = '565px';
+        synth.init();
+        synth.start();
+        window.addEventListener('message', this.messageHandler, false);
       } else {
-        const readyElem = document.createElement('strong');
-        readyElem.innerText = 'Ready.';
-        this.placeholder.appendChild(readyElem);
+        this.synth.refreshInstruments(input);
       }
-      synth.init();
-      synth.start();
-      w.addEventListener('message', this.messageHandler, false);
-    } else {
-      this.synth.refreshInstruments(input);
-    }
-    console.log('ready');
-    // link ready
-    w.postMessage('link,ready', '*');
+      this.window.postMessage('link,ready', '*');
+    });
+
+    await loader.fetch();
   }
 
   /** @param {Event} ev */
@@ -237,8 +122,6 @@ export default class WebMidiLink {
     const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
     /** @type {string} */
     const type = msg !== [] ? msg.shift() : '';
-    /** @type {Window} */
-    const opener = window.opener ? window.opener : window.parent;
     /** @type {string} */
     let command;
 
@@ -251,22 +134,22 @@ export default class WebMidiLink {
         );
         break;
       case 'link':
-        if (opener === void 0) {
+        if (this.window === void 0) {
           return;
         }
         command = msg.shift();
         switch (command) {
           case 'reqpatch':
             // TODO: dummy data
-            opener.postMessage('link,patch', '*');
+            this.window.postMessage('link,patch', '*');
             break;
           case 'setpatch':
           case 'ready':
-            opener.postMessage('link,ready', '*');
+            this.window.postMessage('link,ready', '*');
             // TODO: NOP
             break;
           case 'progress':
-            opener.postMessage('link,progress', '*');
+            this.window.postMessage('link,progress', '*');
             break;
           default:
             console.error('unknown link message:', command);

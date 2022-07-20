@@ -1,6 +1,7 @@
 /**
  * SynthesizerNote Class
  *
+ * @author imaya
  * @private
  */
 export default class SynthesizerNote {

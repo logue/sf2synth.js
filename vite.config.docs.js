@@ -40,14 +40,7 @@ const config = {
     outDir: 'docs',
     // Minify option
     // https://vitejs.dev/config/#build-minify
-    minify: 'terser',
-    terserOptions: {
-      ecma: 2020,
-      compress: { drop_console: true },
-      mangle: true, // Note `mangle.properties` is `false` by default.
-      module: true,
-      output: { comments: true, beautify: false },
-    },
+    minify: 'esbuild',
   },
 };
 
