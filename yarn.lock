@@ -84,10 +84,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@logue/reverb@npm:^0.5.4":
-  version: 0.5.4
-  resolution: "@logue/reverb@npm:0.5.4"
-  checksum: 5f759ba7c5d779d1fae95b5d3f3c592dc97c37dd545f54309aa3c5912ada67fb4f052e12f1a6e6689578df9bb45bbef1bb15d173b2ba5e6bd2b5a2133b5d64a8
+"@logue/reverb@npm:^0.5.5":
+  version: 0.5.5
+  resolution: "@logue/reverb@npm:0.5.5"
+  checksum: 4366e69397a2d7712df13a3643bb35de641a7b6e1a0710ce9821bc331063589fe1687047e8fdf50ee7ed50dea692033cf2556d956c63ec610ab800f22bdefa4e
   languageName: node
   linkType: hard
 
@@ -95,7 +95,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@logue/sf2synth@workspace:."
   dependencies:
-    "@logue/reverb": ^0.5.4
+    "@logue/reverb": ^0.5.5
     bootstrap: ^5.2.0
     eslint: ^8.20.0
     eslint-config-google: ^0.14.0

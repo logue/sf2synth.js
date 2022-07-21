@@ -1,5 +1,6 @@
 import WebMidiLink from './wml';
 import Parser from './sf2';
+import './wml.scss';
 
 const SoundFont = {
   WebMidiLink,

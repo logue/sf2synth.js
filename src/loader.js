@@ -62,7 +62,6 @@ export default class Loader {
 
     const input = new Uint8Array(buffer);
     this.callback(input);
-    this.placeholder.removeChild(this.alert);
   }
 
   /**

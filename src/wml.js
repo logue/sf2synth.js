@@ -1,7 +1,6 @@
 import Synthesizer from './sound_font_synth';
 import Meta from './meta.js';
 import Loader from './loader';
-import './wml.scss';
 
 /**
  * WebMidiLink Class
@@ -47,9 +46,14 @@ export default class WebMidiLink {
     this.version = Meta.version;
     /** @type {string} */
     this.build = Meta.date;
+
+    this.init();
   }
 
-  /** DOMContentLoadedが発生するのを待機する（確実にJavaScriptが実行されるようにする） */
+  /**
+   * DOMContentLoadedが発生するのを待機する
+   * （確実にJavaScriptが実行されるようにする）
+   */
   async waitForReadystate() {
     // DOMが読み込み済みの場合は実行しない
     if (document.readyState === 'interactive') return;
@@ -68,13 +72,10 @@ export default class WebMidiLink {
   }
 
   /**
-   * @param {string} url
-   * @export
+   * Initialize
    */
-  async setup(url) {
+  async init() {
     await this.waitForReadystate();
-
-    console.log('setup');
 
     if (window.opener) {
       this.window = window.opener;
@@ -83,37 +84,49 @@ export default class WebMidiLink {
     } else {
       this.window = window;
     }
-
-    this.load(url);
   }
 
   /**
+   * Setup Soundfont by URL.
+   *
    * @param {string} url
    * @export
    */
-  async load(url) {
-    const loader = new Loader(url, this.placeholder, input => {
-      if (!this.synth) {
-        /** @type {Synthesizer} */
-        const synth = (this.synth = new Synthesizer(input));
-        if (this.option.drawSynth) {
-          this.placeholder.appendChild(synth.drawSynth());
-          // this.placeholder.style.minHeight = '565px';
-        } else {
-          const readyElem = document.createElement('strong');
-          readyElem.innerText = 'Ready.';
-          this.placeholder.appendChild(readyElem);
-        }
-        synth.init();
-        synth.start();
-        window.addEventListener('message', this.messageHandler, false);
-      } else {
-        this.synth.refreshInstruments(input);
-      }
-      this.window.postMessage('link,ready', '*');
-    });
-
+  async setup(url) {
+    const loader = new Loader(url, this.placeholder, buffer =>
+      this.setupByBuffer(buffer)
+    );
     await loader.fetch();
+  }
+
+  /**
+   * Setup SoundFont by ArrayBuffer.
+   *
+   * @param {ArrayBuffer} buffer
+   * @export
+   */
+  setupByBuffer(buffer) {
+    while (this.placeholder.firstChild) {
+      this.placeholder.removeChild(this.placeholder.firstChild);
+    }
+    if (!this.synth) {
+      this.synth = new Synthesizer(buffer);
+      if (this.option.drawSynth) {
+        this.placeholder.appendChild(this.synth.drawSynth());
+      } else {
+        const readyElem = document.createElement('strong');
+        readyElem.innerText = 'Ready.';
+        this.placeholder.appendChild(readyElem);
+      }
+      this.synth.init();
+      this.synth.start();
+      window.addEventListener('message', this.messageHandler, false);
+    } else {
+      this.synth.refreshInstruments(buffer);
+    }
+    // コールバック実行
+    this.loadCallback();
+    this.window.postMessage('link,ready', '*');
   }
 
   /** @param {Event} ev */

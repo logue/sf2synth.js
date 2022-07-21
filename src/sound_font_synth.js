@@ -248,8 +248,6 @@ export default class Synthesizer {
   init(mode = 'GM') {
     this.gainMaster.disconnect();
 
-    // console.log('Reset Type:', mode);
-
     this.refreshInstruments(this.input);
 
     this.isXG = false;
@@ -395,12 +393,9 @@ export default class Synthesizer {
     /** @type {Generator} */
     const generator = info.generator;
 
-    // console.log(generator);
-
     if (!generator.keyRange || !generator.sampleID) {
       return;
     }
-    // console.log(generator);
 
     // デフォルト値
     // https://www.utsbox.com/?p=2390
@@ -624,7 +619,7 @@ export default class Synthesizer {
           case 'mute': {
             /** @type {HTMLDivElement | null} */
             const checkboxElement = doc.createElement('div');
-            checkboxElement.className = 'form-check';
+            checkboxElement.className = 'form-check form-check-inline';
             /** @type {HTMLInputElement | null} */
             const checkbox = doc.createElement('input');
             checkbox.setAttribute('type', 'checkbox');

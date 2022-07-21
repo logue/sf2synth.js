@@ -93,8 +93,8 @@
       document.getElementById('build').innerText = new Date(
         wml.build
       ).toLocaleString();
-      wml.setLoadCallback(function () {
-        message.style.display = 'none';
+      wml.setLoadCallback(() => {
+        // message.style.display = 'none';
       });
       wml.setup(sf);
 
@@ -110,7 +110,7 @@
           console.log('loaded', file);
           document.getElementById('soundfont').innerText = file.name;
           const data = new Uint8Array(e.target.result);
-          wml.loadSoundFont(data, true);
+          wml.setupByBuffer(data);
         };
       };
 

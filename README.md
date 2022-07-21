@@ -36,8 +36,8 @@ yarn add @logue/sf2synth
 import SoundFont from '@logue/sf2synth';
 
 // Url to SoundFont file.
-const url = './Yamaha XG Sound Set.sf2';
-// Option
+const sf2 = './Yamaha XG Sound Set.sf2';
+
 const option = {
   // attach dom id
   placeholder: 'placeholder',
@@ -51,7 +51,32 @@ const wml = new SoundFont.WebMidiLink(option);
 wml.setLoadCallback(() => {
   // When ready to load.
 });
-wml.setup(url);
+wml.setup(sf2);
+```
+
+### ArrayBuffer usage
+
+When using File API or AWS S3 (and its compatible storage), pour the arraybuffer directly into the setup function.
+
+In this case, the cache cannot be used. You will have to implement the caching yourself if necessary.
+
+```js
+import SoundFont from '@logue/sf2synth';
+
+/** SoundFont file. */
+const buffer = new ArrayBuffer(...);
+
+/** Option */
+const option = {
+  // attach dom id
+  placeholder: 'placeholder',
+  // If you not nessesaly to draw keyboad, set false.
+  drawSynth: true
+};
+
+const wml = new SoundFont.WebMidiLink(option);
+wml.setupByBuffer(buffer);
+
 ```
 
 ## Sample

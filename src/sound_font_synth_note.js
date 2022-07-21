@@ -66,6 +66,8 @@ export default class SynthesizerNote {
     /** @type {number} */
     this.expression = instrument['expression'];
     /** @type {number} */
+    this.modulation = instrument['modulation'];
+    /** @type {number} */
     this.cutOffFrequency = instrument['cutOffFrequency'];
     /** @type {number} */
     this.hermonicContent = instrument['hermonicContent'];
@@ -245,8 +247,24 @@ export default class SynthesizerNote {
     modulator.frequency.setValueAtTime(peekFreq, modHold);
     modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
 
+    // Vibrato
+    /** @type {GainNode} LFO Depth */
+    const lfoDepth = this.ctx.createGain();
+    /** @type {OscillatorNode} LFO Oscillator */
+    const lfo = this.ctx.createOscillator();
+    // Set parameters for LFO
+    lfo.type = 'sine';
+    lfoDepth.gain.value = 1 + (this.modulation || 0 + 1) / 127; // TODO: 多分計算間違ってる(最低値1+(値(0~127)+1)/127
+    lfo.frequency.value = this.instrument['freqVibLFO'];
+
+    // Effector (Vibrato) ON
+    lfo.start(0);
+    // OscillatorNode (LFO) -> GainNode (Depth) -> frequency (AudioParam)
+    lfo.connect(lfoDepth);
+
     // connect
-    bufferSource.connect(modulator);
+    bufferSource.connect(lfoDepth);
+    lfoDepth.connect(modulator);
     modulator.connect(panner);
     panner.connect(this.expressionGainNode);
 
@@ -310,7 +328,7 @@ export default class SynthesizerNote {
     /** @type {number} */
     const volEndTime =
       now + volEndTimeTmp * (1 + release / (release < 0 ? 64 : 63));
-    // var volEndTime = now + instrument['volRelease'] * (1 - instrument['volSustain']);
+    //   now + instrument['volRelease'] * (1 - instrument['volSustain']);
 
     // ---------------------------------------------------------------------------
     // modulation release time
@@ -329,7 +347,9 @@ export default class SynthesizerNote {
         (baseFreq === peekFreq
           ? 1
           : (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq));
-    // var modEndTime = now + instrument['modRelease'] * (1 - instrument['modSustain']);
+
+    // const modEndTime =
+    //   now + instrument['modRelease'] * (1 - instrument['modSustain']);
 
     if (!this.audioBuffer) {
       return;
@@ -343,7 +363,6 @@ export default class SynthesizerNote {
       case 0:
         // ループしない
         bufferSource.loop = false;
-        // bufferSource.disconnect();
         break;
       case 1:
         // ループさせる
@@ -353,14 +372,14 @@ export default class SynthesizerNote {
 
         modulator.frequency.cancelScheduledValues(0);
         modulator.frequency.setValueAtTime(modulator.frequency.value, now);
-        modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
+        modulator.frequency.exponentialRampToValueAtTime(baseFreq, modEndTime);
 
         bufferSource.playbackRate.cancelScheduledValues(0);
         bufferSource.playbackRate.setValueAtTime(
           bufferSource.playbackRate.value,
           now
         );
-        bufferSource.playbackRate.linearRampToValueAtTime(
+        bufferSource.playbackRate.exponentialRampToValueAtTime(
           this.computedPlaybackRate,
           modEndTime
         );
@@ -369,8 +388,7 @@ export default class SynthesizerNote {
         break;
       case 2:
         // 未定義
-        console.error('detect unused sampleModes');
-        break;
+        throw Error('[SynthesizerNote] Detect unused sampleModes');
       case 3:
         // ノートオフまでループさせる
         output.gain.cancelScheduledValues(0);
@@ -379,51 +397,29 @@ export default class SynthesizerNote {
 
         modulator.frequency.cancelScheduledValues(0);
         modulator.frequency.setValueAtTime(modulator.frequency.value, now);
-        modulator.frequency.linearRampToValueAtTime(baseFreq, modEndTime);
+        modulator.frequency.exponentialRampToValueAtTime(baseFreq, modEndTime);
 
         bufferSource.playbackRate.cancelScheduledValues(0);
         bufferSource.playbackRate.setValueAtTime(
           bufferSource.playbackRate.value,
           now
         );
-        bufferSource.playbackRate.linearRampToValueAtTime(
+        bufferSource.playbackRate.exponentialRampToValueAtTime(
           this.computedPlaybackRate,
           modEndTime
         );
         bufferSource.loop = false;
         bufferSource.buffer = null;
         break;
+      default:
+        throw Error(
+          `[SynthesizerNote] ${instrument['sampleModes']} is undefined sampleModes.`
+        );
     }
   }
 
   /** Connect AudioContext */
   connect() {
-    /*
-    // Modulation Depth
-    // TODO: 途中からビブラードをかけたときに反映されない
-    if (
-      this.instrument['sampleModes'] !== 0 &&
-      this.instrument['modulation'] !== 0
-    ) {
-      console.log('modulation on');
-
-      // Create the instance of GainNode
-      const depth = ctx.createGain(); // for LFO
-      const lfo = ctx.createOscillator();
-
-      // OscillatorNode (LFO) -> GainNode (Depth) -> frequency (AudioParam)
-      lfo.connect(depth);
-      depth.connect(this.destination);
-
-      // Set parameters for LFO
-      lfo.type = 'sine';
-      depth.gain.value = modulation;
-      lfo.frequency.value = instrument['freqVibLFO'];
-
-      // Effector (Vibrato) ON
-      lfo.start(0);
-    }
-    */
     this.reverb.connect(this.outputGainNode).connect(this.destination);
   }
 
