@@ -1,6 +1,5 @@
 /**
- * File Loader Class
- *
+ * @classdesc File Loader Class
  * @private
  * @author Logue <logue@hotmail.co.jp>
  */
@@ -9,10 +8,12 @@ export default class Loader {
    * Contructor
    * @param {string} url
    * @param {HTMLDivElement} placeholder
+   * @param {boolean} cache
    * @param {function} callback
    */
-  constructor(url, placeholder, callback) {
+  constructor(url, placeholder, cache, callback) {
     this.url = url;
+    this.cache = cache;
     this.placeholder = placeholder;
     this.callback = callback;
 
@@ -126,7 +127,9 @@ export default class Loader {
       }
     }
 
-    cache.put(this.url, clonedResponse);
+    if (this.cache) {
+      cache.put(this.url, clonedResponse);
+    }
     this.onComplete(await clonedResponse2.arrayBuffer());
   }
 }

@@ -56,7 +56,7 @@ wml.setup(sf2);
 
 ### ArrayBuffer usage
 
-When using File API or AWS S3 (and its compatible storage), pour the arraybuffer directly into the setup function.
+When using File API, pour the arraybuffer directly into the setup function.
 
 In this case, the cache cannot be used. You will have to implement the caching yourself if necessary.
 

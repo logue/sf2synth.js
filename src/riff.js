@@ -1,6 +1,7 @@
 /**
  * Riff Parser class
  *
+ * @author imaya
  * @private
  */
 export default class Riff {

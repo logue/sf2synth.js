@@ -47,36 +47,6 @@ export default class WebMidiLink {
     /** @type {string} */
     this.build = Meta.date;
 
-    this.init();
-  }
-
-  /**
-   * DOMContentLoadedが発生するのを待機する
-   * （確実にJavaScriptが実行されるようにする）
-   */
-  async waitForReadystate() {
-    // DOMが読み込み済みの場合は実行しない
-    if (document.readyState === 'interactive') return;
-
-    await new Promise(resolve => {
-      const cb = () => {
-        // ブラウザのアニメーション実行
-        window.requestAnimationFrame(resolve);
-        // 登録したイベントの解除
-        window.removeEventListener('DOMContentLoaded', cb);
-      };
-
-      // レンダリング完了時に、ブラウザのアニメーションを実行する関数を登録
-      window.addEventListener('DOMContentLoaded', cb);
-    });
-  }
-
-  /**
-   * Initialize
-   */
-  async init() {
-    await this.waitForReadystate();
-
     if (window.opener) {
       this.window = window.opener;
     } else if (window.parent !== window) {
@@ -93,7 +63,7 @@ export default class WebMidiLink {
    * @export
    */
   async setup(url) {
-    const loader = new Loader(url, this.placeholder, buffer =>
+    const loader = new Loader(url, this.placeholder, this.cache, buffer =>
       this.setupByBuffer(buffer)
     );
     await loader.fetch();
@@ -124,8 +94,12 @@ export default class WebMidiLink {
     } else {
       this.synth.refreshInstruments(buffer);
     }
-    // コールバック実行
-    this.loadCallback();
+
+    if (this.loadCallback) {
+      // コールバック実行
+      this.loadCallback();
+    }
+
     this.window.postMessage('link,ready', '*');
   }
 

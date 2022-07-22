@@ -19,17 +19,19 @@
   </body>
   <script src="./sf2synth.umd.js"></script>
   <script>
-    /** sf2synth.js Option */
-    const option = { placeholder: 'placeholder' };
+    window.onload = function () {
+      /** sf2synth.js Option */
+      const option = { placeholder: 'placeholder' };
 
-    /** WebMidiLink */
-    const wml = new SoundFont.WebMidiLink(option);
-    /** Placeholder */
-    const placeholder = document.getElementById('placeholder');
-    /** SoundFont file */
-    const sf = 'Yamaha XG Sound Set.sf2';
+      /** WebMidiLink */
+      const wml = new SoundFont.WebMidiLink(option);
+      /** Placeholder */
+      const placeholder = document.getElementById('placeholder');
+      /** SoundFont file */
+      const sf = 'Yamaha XG Sound Set.sf2';
 
-    // Load soundFont
-    wml.setup(sf);
+      // Load soundFont
+      wml.setup(sf);
+    };
   </script>
 </html>
