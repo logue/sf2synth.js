@@ -120,7 +120,6 @@ export default class SynthesizerNote {
      * }}
      */
     const instrument = this.instrument;
-    // console.log(instrument);
     /** @type {number} */
     const now = this.ctx.currentTime || 0;
     /** @type {number} */
@@ -148,7 +147,6 @@ export default class SynthesizerNote {
     // TODO: ドラムパートのPanが変化した場合、その計算をしなければならない
     // http://cpansearch.perl.org/src/PJB/MIDI-SoundFont-1.08/doc/sfspec21.html#8.4.6
     /** @type {number} */
-    // console.log(instrument['pan'], this.panpot);
     const pan = instrument['pan'] !== 0 ? instrument['pan'] : this.panpot;
 
     const sample = this.buffer.subarray(
@@ -242,29 +240,38 @@ export default class SynthesizerNote {
     modulator.frequency.setTargetAtTime(
       peekFreq,
       modDelay,
-      parseFloat(instrument['modAttack'] + 1) // For FireFox fix
+      parseFloat(instrument['modAttack'])
     );
     modulator.frequency.setValueAtTime(peekFreq, modHold);
-    modulator.frequency.linearRampToValueAtTime(sustainFreq, modDecay);
+    modulator.frequency.exponentialRampToValueAtTime(sustainFreq, modDecay);
 
     // Vibrato
-    /** @type {GainNode} LFO Depth */
+    /* * @type {GainNode} LFO Depth * /
     const lfoDepth = this.ctx.createGain();
-    /** @type {OscillatorNode} LFO Oscillator */
+    /* * @type {OscillatorNode} LFO Oscillator * /
     const lfo = this.ctx.createOscillator();
     // Set parameters for LFO
     lfo.type = 'sine';
-    lfoDepth.gain.value = 1 + (this.modulation || 0 + 1) / 127; // TODO: 多分計算間違ってる(最低値1+(値(0~127)+1)/127
+    lfoDepth.gain.value = 1;
     lfo.frequency.value = this.instrument['freqVibLFO'];
 
-    // Effector (Vibrato) ON
-    lfo.start(0);
+    if (this.modulation) {
+      // Effector (Vibrato) ON
+      lfo.start(0);
+    } else {
+      // Effector (Vibrato) Off
+      lfo.stop(0);
+    }
     // OscillatorNode (LFO) -> GainNode (Depth) -> frequency (AudioParam)
     lfo.connect(lfoDepth);
 
     // connect
     bufferSource.connect(lfoDepth);
     lfoDepth.connect(modulator);
+    modulator.connect(panner);
+    panner.connect(this.expressionGainNode);
+    */
+    bufferSource.connect(modulator);
     modulator.connect(panner);
     panner.connect(this.expressionGainNode);
 
