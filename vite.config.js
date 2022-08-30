@@ -1,4 +1,4 @@
-import checker from 'vite-plugin-checker';
+import { checker } from 'vite-plugin-checker';
 import { defineConfig } from 'vite';
 import path from 'path';
 import fs from 'fs';
@@ -38,9 +38,16 @@ const config = {
     }),
     // vite-plugin-banner
     // https://github.com/chengpeiquan/vite-plugin-banner
-    banner(
-      `/*! ${pkg.name} v${pkg.version} | imaya / GREE Inc. / Logue | license: ${pkg.license} | build: ${build} */`
-    ),
+    banner(`/**
+ * ${pkg.name}
+ *
+ * @description ${pkg.description}
+ * @author iyama, Logue
+ * @license ${pkg.license}
+ * @version ${pkg.version}
+ * @see {@link ${pkg.homepage}}
+ */
+`),
   ],
   // Build Options
   // https://vitejs.dev/config/#build-options
@@ -48,11 +55,16 @@ const config = {
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
       name: 'SoundFont',
+      formats: ['es', 'umd', 'iife'],
       fileName: format => `sf2synth.${format}.js`,
     },
+    target: 'es2021',
     // Minify option
     // https://vitejs.dev/config/#build-minify
     minify: 'esbuild',
+  },
+  esbuild: {
+    drop: ['console'],
   },
 };
 

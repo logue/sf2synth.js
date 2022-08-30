@@ -191,13 +191,7 @@ export default class Synthesizer {
     this.filter = [];
 
     for (i = 0; i < 16; ++i) {
-      this.reverb[i] = new Reverb(this.ctx, {
-        // ノイズはブラウンノイズとする。
-        time: 1.1,
-        noise: 'brown',
-        once: false,
-        filterType: 'lowpass',
-      });
+      this.reverb[i] = new Reverb(this.ctx, { noise: 'pink' });
       // フィルタを定義
       this.filter[i] = this.ctx.createBiquadFilter();
     }

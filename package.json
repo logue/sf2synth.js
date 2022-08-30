@@ -1,7 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/sf2synth",
-  "version": "0.4.5",
+  "version": "0.4.6",
+  "type": "module",
   "description": "SoundFont2 Synthesizer",
   "repository": {
     "type": "git",
@@ -19,7 +20,6 @@
     "xg",
     "gs"
   ],
-  "type": "module",
   "author": {
     "name": "imaya / GREE Inc.",
     "url": "https://github.com/gree"
@@ -57,7 +57,7 @@
     "node": ">=16.16.0",
     "yarn": ">=1.22.10"
   },
-  "packageManager": "yarn@3.2.2",
+  "packageManager": "yarn@3.2.3",
   "scripts": {
     "dev": "vite",
     "clean": "rimraf node_modules/.vite",
@@ -70,12 +70,12 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@logue/reverb": "^0.5.5",
+    "@logue/reverb": "^1.0.1",
     "bootstrap": "^5.2.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "eslint": "^8.21.0",
+    "eslint": "^8.23.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-alias": "^1.1.2",
@@ -86,15 +86,15 @@
     "prettier": "^2.7.1",
     "query-string": "^7.1.1",
     "rimraf": "^3.0.2",
-    "sass": "1.54.4",
-    "stylelint": "^14.10.0",
+    "sass": "^1.54.6",
+    "stylelint": "^14.11.0",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-recommended-scss": "^7.0.0",
     "stylelint-order": "^5.0.0",
     "stylelint-prettier": "^2.0.0",
-    "vite": "^3.0.5",
-    "vite-plugin-banner": "^0.3.0",
-    "vite-plugin-checker": "^0.4.9"
+    "vite": "^3.0.9",
+    "vite-plugin-banner": "^0.4.0",
+    "vite-plugin-checker": "^0.5.0"
   },
   "husky": {
     "hooks": {

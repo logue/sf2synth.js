@@ -1,4 +1,4 @@
-import checker from 'vite-plugin-checker';
+import { checker } from 'vite-plugin-checker';
 import { defineConfig } from 'vite';
 import path from 'path';
 import fs from 'fs';
