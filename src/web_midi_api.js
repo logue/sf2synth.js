@@ -7,47 +7,34 @@ import WebMidiLink from './wml';
  */
 export default class WebMidiApi extends WebMidiLink {
   /**
-   * Constructor
+   * @inheritdoc
    */
-  constructor() {
-    super();
+  constructor(option = {}) {
+    super(option);
     /** @type {MIDIAccess?} */
     this.midi = undefined;
   }
 
   /**
-   * セットアップ
-   *
-   * @param {string} SoundFontのURL
+   * @inheritdoc
    */
   async setup(url) {
-    /** @type {MIDIAccess} */
-    const midi = new Promise((resolve, reject) => {
-      parent.window.navigator
-        .requestMIDIAccess(/** @type {MIDIOptions} */ { sysex: true })
-        .then(
-          access => {
-            this.success(access);
-            resolve(this);
-            parent.setup(url);
-          },
-          err => {
-            reject(err);
-          }
-        );
-    });
-
-    this.midi = midi;
-    parent.setup(url);
+    this.midi = await navigator.requestMIDIAccess(
+      /** @type {MIDIOptions} */ { sysex: true }
+    );
+    await super.setup(url);
   }
 
-  /** Web Midi API Ready */
+  /**
+   * @inheritdoc
+   */
   onReady() {
-    if (parent.loadCallback) {
+    if (super.loadCallback) {
       // コールバック実行
-      parent.loadCallback();
+      super.loadCallback();
     }
+    // Web MIDI APIを待ち受け
     this.midi.onmidimessage = (/** @type {Uint8Array} */ msg) =>
-      parent.processMidiMessage(msg);
+      super.processMidiMessage(msg);
   }
 }

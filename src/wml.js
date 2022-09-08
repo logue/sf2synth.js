@@ -1,5 +1,5 @@
 import Synthesizer from './sound_font_synth';
-import Meta from './meta.js';
+
 import Loader from './loader';
 
 /**
@@ -20,10 +20,10 @@ export default class WebMidiLink {
     this.RpnLsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** @type {boolean} */
     this.ready = false;
-    /** @type {Synthesizer} */
-    this.synth = null;
-    /** @type {function(ArrayBuffer)} */
-    this.loadCallback = null;
+    /** @type {Synthesizer_} */
+    this.synth = undefined;
+    /** @type {function(ArrayBuffer)?} */
+    this.loadCallback = undefined;
     /** @type {Function} */
     this.messageHandler = this.onmessage.bind(this);
     /** @type {boolean} */
@@ -33,8 +33,8 @@ export default class WebMidiLink {
     /** @type {boolean} */
     this.option.drawSynth =
       option.drawSynth !== void 0 ? option.drawSynth : true;
-    /** @type {number} */
-    this.option.cache = option.cache ? option.cache : 15 * 60 * 1000;
+    /** @type {boolean} */
+    this.option.cache = option.cache || false;
     /** @type {HTMLElement} */
     this.placeholder =
       option.placeholder !== void 0
@@ -42,10 +42,6 @@ export default class WebMidiLink {
         : window.document.body;
     /** @type {Window} */
     this.window = null;
-    /** @type {number} */
-    this.version = Meta.version;
-    /** @type {string} */
-    this.build = Meta.date;
 
     if (window.opener) {
       this.window = window.opener;
@@ -60,11 +56,15 @@ export default class WebMidiLink {
    * Setup Soundfont by URL.
    *
    * @param {string} url
-   * @export
+   * @public
    */
   async setup(url) {
-    const loader = new Loader(url, this.placeholder, this.cache, buffer =>
-      this.setupByBuffer(buffer)
+    /** 読み込み */
+    const loader = new Loader(
+      url,
+      this.placeholder,
+      this.option.cache,
+      buffer => this.setupByBuffer(buffer)
     );
     await loader.fetch();
   }
@@ -73,37 +73,60 @@ export default class WebMidiLink {
    * Setup SoundFont by ArrayBuffer.
    *
    * @param {ArrayBuffer} buffer
-   * @export
    */
   setupByBuffer(buffer) {
+    // DOMをクリア
     while (this.placeholder.firstChild) {
       this.placeholder.removeChild(this.placeholder.firstChild);
     }
+
     if (!this.synth) {
+      // 読み込まれていないときシンセサイザをセットアップ
       this.synth = new Synthesizer(buffer);
       if (this.option.drawSynth) {
+        // キーボードなどを描画
         this.placeholder.appendChild(this.synth.drawSynth());
       } else {
+        // キーボードを描画しないときはReadyだけを表示する。
         const readyElem = document.createElement('strong');
         readyElem.innerText = 'Ready.';
         this.placeholder.appendChild(readyElem);
       }
+      // シンセサイザを初期化
       this.synth.init();
+      // 待受開始
       this.synth.start();
-      window.addEventListener('message', this.messageHandler, false);
     } else {
+      // 別のSoundFontが読み込まれたときリロード
       this.synth.refreshInstruments(buffer);
     }
+    this.onReady();
+  }
 
+  /**
+   * SoundFont Load Ready
+   *
+   * @protected
+   */
+  onReady() {
+    // 一旦MIDI Link待受を解除
+    this.window.removeEventListener('message', this.messageHandler);
     if (this.loadCallback) {
       // コールバック実行
       this.loadCallback();
     }
-
+    // MIDI Link待ち受け開始
+    this.window.addEventListener('message', this.messageHandler, false);
+    // ホスト側に準備完了通知を送信
     this.window.postMessage('link,ready', '*');
   }
 
-  /** @param {Event} ev */
+  /**
+   * WebMidiLink信号をパース
+   *
+   * @param {Event} ev
+   * @private
+   */
   onmessage(ev) {
     /** @type {Array} */
     const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
@@ -136,6 +159,7 @@ export default class WebMidiLink {
             // TODO: NOP
             break;
           case 'progress':
+            // ※この命令は、WebMidiLinkの仕様に含まれていません。
             this.window.postMessage('link,progress', '*');
             break;
           default:
@@ -144,19 +168,26 @@ export default class WebMidiLink {
         }
         break;
       default:
-      // console.error('unknown message type');
+        console.error('unknown message type');
     }
   }
 
   /**
+   * MIDI準備完了時のコールバック処理を登録する
+   *
    * @param {function(ArrayBuffer)} callback
-   * @export
+   * @public
    */
   setLoadCallback(callback) {
     this.loadCallback = callback;
   }
 
-  /** @param {number[]} message */
+  /**
+   * MIDI信号を解析し、シンセサイザーを操作する
+   *
+   * @param {number[] | ArrayBuffer} message
+   * @private
+   */
   processMidiMessage(message) {
     /** @type {number} */
     const channel = message[0] & 0x0f;
@@ -419,25 +450,13 @@ export default class WebMidiLink {
               const map = message[8];
               if (part === 0) {
                 // 10 Ch.
-                if (map !== 0x00) {
-                  synth.setPercussionPart(9, true);
-                } else {
-                  synth.setPercussionPart(9, false);
-                }
+                synth.setPercussionPart(9, map !== 0x00);
               } else if (part >= 10) {
                 // 1~9 Ch.
-                if (map !== 0x00) {
-                  synth.setPercussionPart(part - 1, true);
-                } else {
-                  synth.setPercussionPart(part - 1, false);
-                }
+                synth.setPercussionPart(part - 1, map !== 0x00);
               } else {
                 // 11~16 Ch.
-                if (map !== 0x00) {
-                  synth.setPercussionPart(part, true);
-                } else {
-                  synth.setPercussionPart(part, false);
-                }
+                synth.setPercussionPart(part, map !== 0x00);
               }
               break;
             }
@@ -474,7 +493,7 @@ export default class WebMidiLink {
           if (message[2] !== 0x43 && message[3] === 0x43) {
             // delete checksum
             message.splice(1, 1);
-            // console.log('message:', this.dumpMessage(message));
+            console.log('message:', this.dumpMessage(message));
           }
 
           switch (message[5]) {

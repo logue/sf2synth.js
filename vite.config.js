@@ -6,39 +6,42 @@ import banner from 'vite-plugin-banner';
 const pkg = require('./package.json');
 const build = new Date().toISOString();
 
-/** @type {UserConfig} https://vitejs.dev/config/ */
-const config = {
-  // https://vitejs.dev/config/#base
-  base: './',
-  // https://vitejs.dev/config/#server-options
-  server: {
-    fs: {
-      // Allow serving files from one level up to the project root
-      allow: ['..'],
+// Export vite config
+export default defineConfig(async ({ mode }) => {
+  // Hook production build.
+  /** @type {UserConfig} https://vitejs.dev/config/ */
+  const config = {
+    // https://vitejs.dev/config/#base
+    base: './',
+    // https://vitejs.dev/config/#server-options
+    server: {
+      fs: {
+        // Allow serving files from one level up to the project root
+        allow: ['..'],
+      },
     },
-  },
-  resolve: {
-    alias: [
-      {
-        // this is required for the SCSS modules
-        find: /^~(.*)$/,
-        replacement: '$1',
-      },
-    ],
-  },
-  plugins: [
-    // vite-plugin-checker
-    // https://github.com/fi3ework/vite-plugin-checker
-    checker({
-      typescript: false,
-      vueTsc: false,
-      eslint: {
-        lintCommand: `eslint`, // for example, lint .ts & .tsx
-      },
-    }),
-    // vite-plugin-banner
-    // https://github.com/chengpeiquan/vite-plugin-banner
-    banner(`/**
+    resolve: {
+      alias: [
+        {
+          // this is required for the SCSS modules
+          find: /^~(.*)$/,
+          replacement: '$1',
+        },
+      ],
+    },
+    plugins: [
+      // vite-plugin-checker
+      // https://github.com/fi3ework/vite-plugin-checker
+      checker({
+        typescript: false,
+        vueTsc: false,
+        eslint: {
+          lintCommand: `eslint`, // for example, lint .ts & .tsx
+        },
+      }),
+      // vite-plugin-banner
+      // https://github.com/chengpeiquan/vite-plugin-banner
+      banner(`/**
  * ${pkg.name}
  *
  * @description ${pkg.description}
@@ -48,29 +51,31 @@ const config = {
  * @see {@link ${pkg.homepage}}
  */
 `),
-  ],
-  // Build Options
-  // https://vitejs.dev/config/#build-options
-  build: {
-    lib: {
-      entry: path.resolve(__dirname, 'src/index.js'),
-      name: 'SoundFont',
-      formats: ['es', 'umd', 'iife'],
-      fileName: format => `sf2synth.${format}.js`,
+    ],
+    // Build Options
+    // https://vitejs.dev/config/#build-options
+    build: {
+      lib: {
+        entry: path.resolve(__dirname, 'src/index.js'),
+        name: 'SoundFont',
+        formats: ['es', 'umd', 'iife'],
+        fileName: format => `sf2synth.${format}.js`,
+      },
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          exports: 'named',
+        },
+      },
+      target: 'es2021',
+      // Minify option
+      // https://vitejs.dev/config/#build-minify
+      minify: 'esbuild',
     },
-    target: 'es2021',
-    // Minify option
-    // https://vitejs.dev/config/#build-minify
-    minify: 'esbuild',
-  },
-  esbuild: {
-    drop: ['console'],
-  },
-};
-
-// Export vite config
-export default defineConfig(async ({ command }) => {
-  // Hook production build.
+    esbuild: {
+      drop: mode === 'serve' ? [] : ['console'],
+    },
+  };
   // Write meta data.
 
   fs.writeFileSync(

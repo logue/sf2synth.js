@@ -5,7 +5,8 @@
  */
 export default class Loader {
   /**
-   * Contructor
+   * コンストラクタ
+   *
    * @param {string} url
    * @param {HTMLDivElement} placeholder
    * @param {boolean} cache
@@ -52,6 +53,7 @@ export default class Loader {
 
   /**
    * ロード完了時のハンドラ
+   *
    * @param {ArrayBuffer} buffer
    */
   onComplete(buffer) {
@@ -67,6 +69,7 @@ export default class Loader {
 
   /**
    * エラー時のハンドラ
+   *
    * @param {Error} error エラー内容
    */
   onError(error) {
@@ -87,6 +90,7 @@ export default class Loader {
     const cached = await cache.match(this.url);
 
     if (cached) {
+      // キャッシュが存在する場合、キャッシュの値を返す
       this.onComplete(await cached.arrayBuffer());
       return;
     }
@@ -95,20 +99,18 @@ export default class Loader {
     const response = await fetch(this.url, {
       method: 'GET',
       mode: 'no-cors',
-      headers: {
-        Accept: 'audio/x-soundfont',
-        'Access-Control-Allow-Origin': '*',
-        credentials: 'include',
-      },
+      credentials: 'include',
     });
-    if (!response.ok) {
-      this.onError();
-      return;
-    }
+
+    /** @type {number} ファイルの容量 */
+    const contentLength = parseInt(response.headers.get('Content-Length'));
+
+    /** @type {Response} 進捗用 */
     const clonedResponse = response.clone();
+    /** @type {Response} キャッシュ保存用 */
     const clonedResponse2 = response.clone();
 
-    /** @type {RedableStream} */
+    /** @type {RedableStream<Uint8Array>} */
     const reader = response.body.getReader();
 
     // eslint-disable-next-line
@@ -121,14 +123,15 @@ export default class Loader {
       }
       this.message.innerText = `Now Loading... (${value.length} byte)`;
 
-      if (response.headers.has('Content-Length')) {
+      if (contentLength !== 0) {
         // Content lengthヘッダーが出力されている場合プログレスバーを表示
-        this.onProgress(value.length, response.headers.get('Content-Length'));
+        this.onProgress(value.length, contentLength);
       }
     }
 
-    if (this.cache) {
-      cache.put(this.url, clonedResponse);
+    if (response.ok && this.cache) {
+      // キャッシュ保存
+      cache.add(clonedResponse);
     }
     this.onComplete(await clonedResponse2.arrayBuffer());
   }
