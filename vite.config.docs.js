@@ -1,7 +1,5 @@
 import { checker } from 'vite-plugin-checker';
 import { defineConfig } from 'vite';
-import path from 'path';
-import fs from 'fs';
 
 /** @type {import('vite').UserConfig} https://vitejs.dev/config/ */
 const config = {

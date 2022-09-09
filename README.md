@@ -23,7 +23,7 @@ yarn add @logue/sf2synth
 ### CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@logue/sf2synth@0.4.1/dist/sf2synth.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@logue/sf2synth@0.4.9/dist/sf2synth.umd.min.js"></script>
 ```
 
 ## Usage
@@ -77,6 +77,33 @@ const option = {
 const wml = new SoundFont.WebMidiLink(option);
 wml.setupByBuffer(buffer);
 
+```
+
+## WebMidiApi
+
+[WebMidiApi](https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API) is supported experimentally. A sound will be produced when a MIDI signal is sent to the DOM specified by the `placeholder`.
+
+```js
+import SoundFont from '@logue/sf2synth';
+
+// Url to SoundFont file.
+const sf2 = './Yamaha XG Sound Set.sf2';
+
+const option = {
+  // attach dom id
+  placeholder: 'placeholder',
+  // If you not nessesaly to draw keyboad, set false.
+  drawSynth: true,
+  // Cache Soundfont
+  cache: true,
+};
+
+/** Initialize Web MIDI API */
+const wml = new SoundFont.WebMidiApi(option);
+wml.setLoadCallback(() => {
+  // When ready to load.
+});
+wml.setup(sf2);
 ```
 
 ## Sample
