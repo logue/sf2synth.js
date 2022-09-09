@@ -105,13 +105,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@logue/reverb@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@logue/reverb@npm:1.0.1"
+"@logue/reverb@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@logue/reverb@npm:1.0.2"
   dependencies:
     "@thi.ng/colored-noise": ^0.3.16
     "@thi.ng/transducers": ^8.3.13
-  checksum: aff5f4a1a6409740ecc2a4fc8926cb391801198cce5f884c56b5350ec0a9f818bfff2ff229c09992895d26474e17ca64f3d5070797fa197d3eea6a00b9cd0748
+  checksum: 6b93c9387723621d31e964155c26c9c06f201367946b358aa7f158157d596aac6e90877217e4b0a16984677d9c3c6292de8d0bedc27faf9f140771f88857e3b1
   languageName: node
   linkType: hard
 
@@ -119,7 +119,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@logue/sf2synth@workspace:."
   dependencies:
-    "@logue/reverb": ^1.0.1
+    "@logue/reverb": ^1.0.2
     bootstrap: ^5.2.1
     eslint: ^8.23.0
     eslint-config-google: ^0.14.0

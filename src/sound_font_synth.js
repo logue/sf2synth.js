@@ -101,10 +101,8 @@ export default class Synthesizer {
       64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
     ];
 
-    /** @type {boolean} */
-    this.isGS = false;
-    /** @type {boolean} */
-    this.isXG = false;
+    /** @type {'GM'|'GM2'|'XG'|'GS'} */
+    this.mode = 'GM2';
 
     /** @type {string[][]} */
     this.programSet = [];
@@ -215,10 +213,7 @@ export default class Synthesizer {
   /** @return {AudioContext} */
   getAudioContext() {
     /** @type {AudioContext} */
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-    // for legacy browsers
-    ctx.createGain = ctx.createGain || ctx.createGainNode;
+    const ctx = new AudioContext();
 
     // Defreeze AudioContext for iOS.
     const initAudioContext = () => {
@@ -237,15 +232,14 @@ export default class Synthesizer {
   /**
    * System Reset
    *
-   * @param {string} mode
+   * @param {'GM'|'GM2'|'XG'|'GS'} mode 音源モード
    */
   init(mode = 'GM') {
     this.gainMaster.disconnect();
 
     this.refreshInstruments(this.input);
 
-    this.isXG = false;
-    this.isGS = false;
+    this.mode = mode;
 
     for (let i = 0; i < 16; ++i) {
       this.programChange(i, 0);
@@ -267,12 +261,6 @@ export default class Synthesizer {
 
       this.updateBankSelect(i);
       this.updateProgramSelect(i);
-    }
-
-    if (mode == 'XG') {
-      this.isXG = true;
-    } else if (mode == 'GS') {
-      this.isGS = true;
     }
 
     this.setPercussionPart(9, true);
@@ -953,7 +941,7 @@ export default class Synthesizer {
       instrument = bank[this.channelInstrument[channel]];
     } else if (this.percussionPart[channel]) {
       // パーカッションバンクが選択されている場合で音色が存在しない場合Standard Kitを選択
-      instrument = this.bankSet[this.isXG ? 127 : 128][0];
+      instrument = this.bankSet[this.mode === 'XG' ? 127 : 128][0];
     } else {
       // 通常の音色が選択されている状態で音色が存在しない場合バンク0を選択
       instrument = this.bankSet[0][this.channelInstrument[channel]];
@@ -1112,7 +1100,7 @@ export default class Synthesizer {
    * @param {number} value 値
    */
   bankSelectMsb(channel, value) {
-    if (this.isXG) {
+    if (this.mode === 'XG') {
       // 念の為バンクを0にリセット
       this.channelBank[channel] = 0;
       // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
@@ -1129,7 +1117,7 @@ export default class Synthesizer {
         this.channelBank[channel] = 127;
         this.percussionPart[channel] = true;
       }
-    } else if (this.isGS) {
+    } else if (this.mode === 'GS' || this.mode === 'GM2') {
       // GS音源
       // ※チャンネル10のバンク・セレクト命令は無視する。
       this.channelBank[channel] = channel === 9 ? 128 : value;
@@ -1149,7 +1137,7 @@ export default class Synthesizer {
    */
   bankSelectLsb(channel, value) {
     // XG音源以外は処理しない
-    if (!this.isXG || this.percussionPart[channel] === true) {
+    if (this.mode !== 'XG' || this.percussionPart[channel] === true) {
       return;
     }
 
@@ -1185,12 +1173,12 @@ export default class Synthesizer {
    */
   bankChange(channel, bank) {
     /** パーカッションバンク */
-    const percussionBank = this.isXG ? 127 : 128;
+    const percussionBank = this.mode === 'GS' ? 128 : 127;
 
-    // if (this.isGM) {
-    // GS、XGフラグが立っていない（拡張音源ではない）場合は、ch10はドラム固定、それ以外は0とする。
-    //  bank = channel === 9 ? 128 : 0;
-    // } else {
+    if (channel === 9) {
+      // GS、XGフラグが立っていない（拡張音源ではない）場合は、ch10はドラム固定、それ以外は0とする。
+      bank = percussionBank;
+    }
     if (this.bankSet[bank]) {
       this.channelBank[channel] = bank;
     } else {
@@ -1530,7 +1518,7 @@ export default class Synthesizer {
    * @param {boolean} sw パーカッションチャネルか通常かのスイッチ
    */
   setPercussionPart(channel, sw) {
-    if (!this.isXG) {
+    if (this.mode === 'GS' || this.mode === 'GM2') {
       // GM Level2 / Roland GS
       this.channelBank[channel] = 128;
     } else {
