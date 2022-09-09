@@ -89,7 +89,7 @@ export default class Loader {
     /** @type {Response} */
     const cached = await cache.match(this.url);
 
-    if (cached) {
+    if (this.cache && cached) {
       // キャッシュが存在する場合、キャッシュの値を返す
       this.onComplete(await cached.arrayBuffer());
       return;
@@ -100,6 +100,9 @@ export default class Loader {
       method: 'GET',
       mode: 'no-cors',
       credentials: 'include',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
     });
 
     /** @type {number} ファイルの容量 */

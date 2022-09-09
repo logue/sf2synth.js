@@ -1,5 +1,4 @@
 import Synthesizer from './sound_font_synth';
-
 import Loader from './loader';
 
 /**
@@ -20,7 +19,7 @@ export default class WebMidiLink {
     this.RpnLsb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** @type {boolean} */
     this.ready = false;
-    /** @type {Synthesizer_} */
+    /** @type {Synthesizer} */
     this.synth = undefined;
     /** @type {function(ArrayBuffer)?} */
     this.loadCallback = undefined;
@@ -110,13 +109,13 @@ export default class WebMidiLink {
    */
   onReady() {
     // 一旦MIDI Link待受を解除
-    this.window.removeEventListener('message', this.messageHandler);
+    window.removeEventListener('message', this.messageHandler);
     if (this.loadCallback) {
       // コールバック実行
       this.loadCallback();
     }
     // MIDI Link待ち受け開始
-    this.window.addEventListener('message', this.messageHandler, false);
+    window.addEventListener('message', this.messageHandler, false);
     // ホスト側に準備完了通知を送信
     this.window.postMessage('link,ready', '*');
   }
@@ -137,11 +136,8 @@ export default class WebMidiLink {
 
     switch (type) {
       case 'midi':
-        this.processMidiMessage(
-          msg.map(hex => {
-            return parseInt(hex, 16);
-          })
-        );
+        // console.log(msg);
+        this.processMidiMessage(msg.map(hex => parseInt(hex, 16)));
         break;
       case 'link':
         if (this.window === void 0) {
@@ -287,7 +283,7 @@ export default class WebMidiLink {
           case 0x0a: // Panpot Change: Bn 0A dd
             synth.panpotChange(channel, value);
             break;
-          case 0x78: // All Sound Off: Bn 78 00
+          case 0x78: // All Sound Off: Bn 78 00]
             synth.allSoundOff(channel);
             break;
           case 0x79: // Reset All Control: Bn 79 00
@@ -368,6 +364,7 @@ export default class WebMidiLink {
         // [10] <data>
         // [11] <checksum> [IGNORE]
         // [12] F7 EOX [IGNORE]
+        // console.log(this.dumpMessage(message));
 
         /**
          * @type {number} Vendor ID (Roland=0x41 / YAMAHA=0x43 / Non
@@ -379,22 +376,25 @@ export default class WebMidiLink {
         /** @type {number} Sub ID 1 (Model ID: GM=0x09 / GS=0x42 / XG=0x4C) */
         const model = message[4];
 
-        if (vendor === 0x7e && device === 0x09) {
+        if (vendor === 0x7e || device === 0x09) {
           // Gneral MIDI
           // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
-          console.log('GM:', this.dumpMessage(message));
+          // console.log('GM:', this.dumpMessage(message));
           // Non Realtime
           switch (model) {
             case 0x01:
               // GM System On
               synth.init('GM');
+              console.info('GM System On');
               break;
             case 0x02:
               // GM System Off
-              // Ignore
+              console.info('GM System Off');
+              // Throuh
               break;
             case 0x03:
               // GM2 System On
+              console.info('GM (v2) System On');
               synth.init('GM2');
               break;
             default:
@@ -463,19 +463,19 @@ export default class WebMidiLink {
             case 0x19:
               // VOLUME ON/OFF (PART LEVEL)
               // F0 41 10 42 12 40 1[part no] 19 [value] [checksum] F7
-              console.log('GS Volume On/Off: ', part, message[9]);
+              console.info('GS Volume On/Off: ', part, message[9]);
               break;
             case 0x30:
               // Reverb Effect
-              console.log('GS Reverb:', this.dumpMessage(message));
+              console.info('GS Reverb:', this.dumpMessage(message));
               break;
             case 0x38:
               // Chorus Effect
-              console.log('GS Chorus:', this.dumpMessage(message));
+              console.info('GS Chorus:', this.dumpMessage(message));
               break;
             case 0x45:
               // Bitmap icon 16x16 ?
-              console.log('GS Bitmap:', this.dumpMessage(message));
+              console.info('GS Bitmap:', this.dumpMessage(message));
               break;
             case 0x7f:
               // GS Reset: F0 41 10 42 12 40 00 7F 00 [checksum] F7

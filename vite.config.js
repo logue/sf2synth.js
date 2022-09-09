@@ -9,7 +9,7 @@ const build = new Date().toISOString();
 // Export vite config
 export default defineConfig(async ({ mode }) => {
   // Hook production build.
-  /** @type {UserConfig} https://vitejs.dev/config/ */
+  /** @type {import('vite').UserConfig} https://vitejs.dev/config/ */
   const config = {
     // https://vitejs.dev/config/#base
     base: './',
@@ -19,6 +19,7 @@ export default defineConfig(async ({ mode }) => {
         // Allow serving files from one level up to the project root
         allow: ['..'],
       },
+      cors: false,
     },
     resolve: {
       alias: [
@@ -64,7 +65,7 @@ export default defineConfig(async ({ mode }) => {
       sourcemap: true,
       rollupOptions: {
         output: {
-          exports: 'named',
+          // exports: 'named',
         },
       },
       target: 'es2021',

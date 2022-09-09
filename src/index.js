@@ -12,7 +12,6 @@ const SoundFont = {
   Parser,
 };
 
-export default SoundFont;
 export { WebMidiApi, WebMidiLink, Parser };
 
 if (!window.SoundFont) {
