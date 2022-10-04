@@ -64,7 +64,7 @@
     </div>
     <script type="module">
       import queryString from 'query-string';
-      import { WebMidiLink } from '/src/index';
+      import SoundFont from '/src/index';
 
       /** Query string */
       const qs = queryString.parse(window.location.search);
@@ -76,7 +76,7 @@
 
       window.onload = () => {
         /** WebMidiLink */
-        const wml = new WebMidiLink(option);
+        const wml = new SoundFont.WebMidiLink(option);
         /** Message DOM */
         const message = document.getElementById('message');
         /** File Input Form */
