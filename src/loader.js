@@ -15,7 +15,6 @@ export default class Loader {
   constructor(url, placeholder, cache, callback) {
     this.url = url;
     this.cache = cache;
-    this.placeholder = placeholder;
     this.callback = callback;
 
     /** @type {HtmlDIVElement} */
@@ -36,7 +35,8 @@ export default class Loader {
     this.progressOuter.appendChild(this.progress);
     this.alert.appendChild(this.message);
     this.alert.appendChild(this.progressOuter);
-    this.placeholder.appendChild(this.alert);
+
+    placeholder.appendChild(this.alert);
   }
 
   /**
@@ -46,8 +46,10 @@ export default class Loader {
    */
   onProgress(current, total) {
     const percentCompleted = Math.floor((current / total) * 100);
-    this.progress.style.width = percentCompleted + '%';
-    this.progress.innerText = percentCompleted + ' %';
+    if (this.progress) {
+      this.progress.style.width = percentCompleted + '%';
+      this.progress.innerText = percentCompleted + ' %';
+    }
     requestAnimationFrame(this.onProgress);
   }
 
@@ -59,9 +61,10 @@ export default class Loader {
   onComplete(buffer) {
     this.alert.className = 'alert alert-info';
     this.message.innerText = 'Initializing...';
-    this.progress.style.width = '100%';
     this.progress.className =
       'progress-bar progress-bar-striped progress-bar-animated';
+    this.progress.style.width = '100%';
+    requestAnimationFrame(this.onComplete);
 
     const input = new Uint8Array(buffer);
     this.callback(input);
@@ -105,16 +108,20 @@ export default class Loader {
       },
     });
 
+    /** @type {Response} キャッシュ用レスポンス */
+    const cloned = response.clone();
+
     /** @type {number} ファイルの容量 */
     const contentLength = parseInt(response.headers.get('Content-Length'));
 
-    /** @type {Response} 進捗用 */
-    const clonedResponse = response.clone();
-    /** @type {Response} キャッシュ保存用 */
-    const clonedResponse2 = response.clone();
-
-    /** @type {RedableStream<Uint8Array>} */
+    /** @type {RedableStream<Uint8Array>} ファイルリーダー */
     const reader = response.body.getReader();
+
+    /** @type {number} その時点の長さ */
+    let receivedLength = 0;
+
+    /** @type {ArrayBuffer} 受信したバイナリチャンクの配列(本文を構成します) */
+    const chunks = [];
 
     // eslint-disable-next-line
     while (true) {
@@ -124,18 +131,26 @@ export default class Loader {
       if (done) {
         break;
       }
-      this.message.innerText = `Now Loading... (${value.length} byte)`;
+      chunks.push(value);
+      receivedLength += value.length;
 
-      if (contentLength !== 0) {
-        // Content lengthヘッダーが出力されている場合プログレスバーを表示
-        this.onProgress(value.length, contentLength);
-      }
+      this.message.innerText = `Now Loading... (${receivedLength} of ${contentLength} byte)`;
+
+      // Content lengthヘッダーが出力されている場合プログレスバーを表示
+      this.onProgress(receivedLength, contentLength);
     }
 
-    if (response.ok && this.cache) {
+    const chunksAll = new Uint8Array(receivedLength);
+    let position = 0;
+    for (const chunk of chunks) {
+      chunksAll.set(chunk, position); // (4.2)
+      position += chunk.length;
+    }
+
+    if (response.ok) {
       // キャッシュ保存
-      cache.add(clonedResponse);
+      cache.put(this.url, cloned);
     }
-    this.onComplete(await clonedResponse2.arrayBuffer());
+    this.onComplete(chunksAll);
   }
 }

@@ -82,23 +82,24 @@ export default class WebMidiLink {
     if (!this.synth) {
       // 読み込まれていないときシンセサイザをセットアップ
       this.synth = new Synthesizer(buffer);
-      if (this.option.drawSynth) {
-        // キーボードなどを描画
-        this.placeholder.appendChild(this.synth.drawSynth());
-      } else {
-        // キーボードを描画しないときはReadyだけを表示する。
-        const readyElem = document.createElement('strong');
-        readyElem.innerText = 'Ready.';
-        this.placeholder.appendChild(readyElem);
-      }
-      // シンセサイザを初期化
-      this.synth.init();
       // 待受開始
       this.synth.start();
     } else {
       // 別のSoundFontが読み込まれたときリロード
       this.synth.refreshInstruments(buffer);
     }
+    if (this.option.drawSynth) {
+      // キーボードなどを描画
+      this.placeholder.appendChild(this.synth.drawSynth());
+    } else {
+      // キーボードを描画しないときはReadyだけを表示する。
+      const readyElem = document.createElement('strong');
+      readyElem.innerText = 'Ready.';
+      this.placeholder.appendChild(readyElem);
+    }
+    // シンセサイザを初期化
+    this.synth.init();
+
     this.onReady();
   }
 

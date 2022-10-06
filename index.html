@@ -8,22 +8,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="robots" content="noindex" />
-    <title>Web Midi Link Test</title>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <!-- Google Tag Manager -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'UA-33600926-1');
-    </script>
-    <!-- End Google Tag Manager -->
+    <title>Web Midi Link</title>
     <link rel="stylesheet" lang="scss" href="/src/wml.scss" />
   </head>
 
@@ -44,7 +29,7 @@
         </p>
       </header>
       <main>
-        <div>
+        <div id="drag">
           <label class="form-label" for="file">
             Load SoundFont2 file
             <small class="text-muted">
@@ -73,94 +58,97 @@
       if (qs.ui === 'false') {
         option.drawSynth = false;
       }
+      document.addEventListener(
+        'DOMContentLoaded',
+        event => {
+          /** WebMidiLink */
+          const wml = new SoundFont.WebMidiLink(option);
+          /** Message DOM */
+          const message = document.getElementById('message');
+          /** File Input Form */
+          const fileInput = document.getElementById('file');
+          /** Placeholder */
+          const placeholder = document.getElementById('placeholder');
+          /** drag */
+          const dragArea = document.getElementById('drag');
 
-      window.onload = () => {
-        /** WebMidiLink */
-        const wml = new SoundFont.WebMidiLink(option);
-        /** Message DOM */
-        const message = document.getElementById('message');
-        /** File Input Form */
-        const fileInput = document.getElementById('file');
-        /** Placeholder */
-        const placeholder = document.getElementById('placeholder');
+          /** SoundFont file */
+          const sf = qs.soundfont
+            ? decodeURIComponent(qs.soundfont)
+            : 'Yamaha XG Sound Set.sf2';
 
-        /** SoundFont file */
-        const sf = qs.soundfont
-          ? decodeURIComponent(qs.soundfont)
-          : 'Yamaha XG Sound Set.sf2';
+          document.getElementById('soundfont').innerText = sf;
 
-        document.getElementById('soundfont').innerText = sf;
+          document.getElementById('build').innerText = new Date(
+            SoundFont.build
+          ).toLocaleString();
+          wml.setLoadCallback(() => {
+            // message.style.display = 'none';
+          });
+          wml.setup(sf);
 
-        document.getElementById('build').innerText = new Date(
-          SoundFont.build
-        ).toLocaleString();
-        wml.setLoadCallback(() => {
-          // message.style.display = 'none';
-        });
-        wml.setup(sf);
+          /** Load sound font
+           * @param {File} file
+           */
+          const handleSoundFont = file => {
+            const reader = new FileReader();
 
-        // Load sound font
-        const handleSoundFont = file => {
-          const reader = new FileReader();
+            // wml.cancelLoading();
 
-          // wml.cancelLoading();
+            reader.readAsArrayBuffer(file);
 
-          reader.readAsArrayBuffer(file);
-
-          reader.onload = e => {
-            console.log('loaded', file);
-            document.getElementById('soundfont').innerText = file.name;
-            const data = new Uint8Array(e.target.result);
-            wml.setupByBuffer(data);
+            reader.onload = e => {
+              document.getElementById('soundfont').innerText = file.name;
+              const data = new Uint8Array(e.target.result);
+              wml.setupByBuffer(data);
+            };
           };
-        };
 
-        // local file
-        document.addEventListener(
-          'DOMContentLoaded',
-          event => {
-            console.log('Document loaded');
-            // File selector
-
-            fileInput.addEventListener('change', event => {
+          fileInput.addEventListener(
+            'change',
+            event => {
               event.preventDefault();
               handleSoundFont(fileInput.files[0]);
               fileInput.value = '';
-            });
+            },
+            false
+          );
 
-            placeholder.addEventListener(
-              'dragover',
-              e => {
-                placeholder.className = 'alert-danger';
-                e.preventDefault();
-              },
-              true
-            );
-
-            placeholder.addEventListener(
-              'drop',
-              e => {
-                placeholder.className = '';
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                e.stopPropagation();
-                e.preventDefault();
-                handleSoundFont(files[0]);
-              },
-              true
-            );
-
-            placeholder.addEventListener(
-              'dragleave',
-              e => {
-                placeholder.className = '';
-              },
-              true
-            );
-          },
-          false
-        );
-      };
+          dragArea.addEventListener(
+            'drop',
+            event => {
+              const dt = event.dataTransfer;
+              console.log(dt);
+              if (dt.files.length) {
+                event.preventDefault();
+                event.stopPropagation();
+                handleSoundFont(dt.files[0]);
+              }
+              fileInput.classList.remove('bg-info');
+            },
+            false
+          );
+          dragArea.addEventListener(
+            'dragover',
+            event => {
+              event.preventDefault();
+              event.stopPropagation();
+              dragArea.classList.add('bg-info');
+            },
+            false
+          );
+          dragArea.addEventListener(
+            'dragleave',
+            event => {
+              event.preventDefault();
+              event.stopPropagation();
+              dragArea.classList.remove('bg-info');
+            },
+            false
+          );
+        },
+        false
+      );
     </script>
   </body>
 </html>

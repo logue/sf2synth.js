@@ -8,7 +8,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="robots" content="noindex" />
-    <title>Web Midi Link Test</title>
+    <title>Web Midi Link</title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <!-- Google Tag Manager -->
     <script>
@@ -24,9 +24,7 @@
       })(window, document, 'script', 'dataLayer', 'UA-33600926-1');
     </script>
     <!-- End Google Tag Manager -->
-    
-    <script type="module" crossorigin src="./assets/index.1e0e14a6.js"></script>
-    <link rel="stylesheet" href="./assets/index.f28054eb.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/style.css">
   </head>
 
   <body>
@@ -46,7 +44,7 @@
         </p>
       </header>
       <main>
-        <div>
+        <div id="drag">
           <label class="form-label" for="file">
             Load SoundFont2 file
             <small class="text-muted">
@@ -64,6 +62,111 @@
         <div id="placeholder"></div>
       </main>
     </div>
-    
+    <script
+      src="https://cdn.jsdelivr.net/npm/query-string@1.0.1/query-string.js"
+      integrity="sha256-grrS5HRy2p4Z2sCglfc9r6rqRBewKCdWzuWhbUpIEJ4="
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/sf2synth.umd.js"></script>
+
+    <script>
+      /** Query string */
+      const qs = queryString.parse(window.location.search);
+      /** sf2synth.js Option */
+      const option = { placeholder: 'placeholder' };
+      if (qs.ui === 'false') {
+        option.drawSynth = false;
+      }
+      document.addEventListener(
+        'DOMContentLoaded',
+        event => {
+          /** WebMidiLink */
+          const wml = new SoundFont.WebMidiLink(option);
+          /** Message DOM */
+          const message = document.getElementById('message');
+          /** File Input Form */
+          const fileInput = document.getElementById('file');
+          /** Placeholder */
+          const placeholder = document.getElementById('placeholder');
+          /** drag */
+          const dragArea = document.getElementById('drag');
+
+          /** SoundFont file */
+          const sf = qs.soundfont
+            ? decodeURIComponent(qs.soundfont)
+            : 'Yamaha XG Sound Set.sf2';
+
+          document.getElementById('soundfont').innerText = sf;
+
+          document.getElementById('build').innerText = new Date(
+            SoundFont.build
+          ).toLocaleString();
+          wml.setLoadCallback(() => {
+            // message.style.display = 'none';
+          });
+          wml.setup(sf);
+
+          /** Load sound font
+           * @param {File} file
+           */
+          const handleSoundFont = file => {
+            const reader = new FileReader();
+
+            // wml.cancelLoading();
+
+            reader.readAsArrayBuffer(file);
+
+            reader.onload = e => {
+              document.getElementById('soundfont').innerText = file.name;
+              const data = new Uint8Array(e.target.result);
+              wml.setupByBuffer(data);
+            };
+          };
+
+          fileInput.addEventListener(
+            'change',
+            event => {
+              event.preventDefault();
+              handleSoundFont(fileInput.files[0]);
+              fileInput.value = '';
+            },
+            false
+          );
+
+          dragArea.addEventListener(
+            'drop',
+            event => {
+              const dt = event.dataTransfer;
+              console.log(dt);
+              if (dt.files.length) {
+                event.preventDefault();
+                event.stopPropagation();
+                handleSoundFont(dt.files[0]);
+              }
+              fileInput.classList.remove('bg-info');
+            },
+            false
+          );
+          dragArea.addEventListener(
+            'dragover',
+            event => {
+              event.preventDefault();
+              event.stopPropagation();
+              dragArea.classList.add('bg-info');
+            },
+            false
+          );
+          dragArea.addEventListener(
+            'dragleave',
+            event => {
+              event.preventDefault();
+              event.stopPropagation();
+              dragArea.classList.remove('bg-info');
+            },
+            false
+          );
+        },
+        false
+      );
+    </script>
   </body>
 </html>

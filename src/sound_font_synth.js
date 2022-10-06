@@ -189,7 +189,12 @@ export default class Synthesizer {
     this.filter = [];
 
     for (i = 0; i < 16; ++i) {
-      this.reverb[i] = new Reverb(this.ctx, { noise: 'violet', scale: 2, peaks: 16, filterType: 'allpass' });
+      this.reverb[i] = new Reverb(this.ctx, {
+        noise: 'violet',
+        scale: 1,
+        peaks: 2,
+        filterType: 'allpass',
+      });
       // フィルタを定義
       this.filter[i] = this.ctx.createBiquadFilter();
     }
@@ -242,6 +247,7 @@ export default class Synthesizer {
     this.mode = mode;
 
     for (let i = 0; i < 16; ++i) {
+      this.setPercussionPart(i, i === 9);
       this.programChange(i, 0);
       this.volumeChange(i, 100);
       this.panpotChange(i, 64);
@@ -250,6 +256,7 @@ export default class Synthesizer {
       this.hold(i, 0);
       this.expression(i, 127);
       this.bankSelectMsb(i, i === 9 ? 127 : 0);
+      this.bankSelectLsb(i, i === 9 ? 127 : 0);
       this.attackTime(i, 64);
       this.decayTime(i, 64);
       this.sustinTime(i, 64);
@@ -1173,7 +1180,10 @@ export default class Synthesizer {
   bankChange(channel, bank) {
     /** パーカッションバンク */
     const percussionBank = this.mode === 'GS' ? 128 : 127;
-
+    if (this.mode === 'GM') {
+      // GMの場合バンクセレクトを無効化
+      bank = 0;
+    }
     if (channel === 9) {
       // GS、XGフラグが立っていない（拡張音源ではない）場合は、ch10はドラム固定、それ以外は0とする。
       bank = percussionBank;
@@ -1478,6 +1488,7 @@ export default class Synthesizer {
    * @param {number} channel リセットするチャンネル
    */
   resetAllControl(channel) {
+    // 実装不十分では？
     this.allNoteOff(channel);
     this.expression(channel, 127);
     this.pitchBend(channel, 0x00, 0x40);
@@ -1525,6 +1536,7 @@ export default class Synthesizer {
       this.channelBank[channel] = 127;
     }
     this.percussionPart[channel] = sw;
+    this.updateBankSelect(channel);
   }
 
   /**
