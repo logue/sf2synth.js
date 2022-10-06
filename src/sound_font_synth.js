@@ -463,7 +463,7 @@ export default class Synthesizer {
           // (sampleHeader.startLoop - sampleHeader.start) +
           sampleHeader.startLoop +
           this.getModGenAmount(generator, 'startloopAddrsCoarseOffset') *
-          32768 +
+            32768 +
           this.getModGenAmount(generator, 'startloopAddrsOffset'),
         loopEnd:
           // (sampleHeader.endLoop - sampleHeader.start) +
@@ -475,15 +475,15 @@ export default class Synthesizer {
         volHold:
           2 ** (volHold / 1200) *
           2 **
-          (((60 - i) *
-            this.getModGenAmount(generator, 'keynumToVolEnvHold')) /
-            1200),
+            (((60 - i) *
+              this.getModGenAmount(generator, 'keynumToVolEnvHold')) /
+              1200),
         volDecay:
           2 ** (volDecay / 1200) *
           2 **
-          (((60 - i) *
-            this.getModGenAmount(generator, 'keynumToVolEnvDecay')) /
-            1200),
+            (((60 - i) *
+              this.getModGenAmount(generator, 'keynumToVolEnvDecay')) /
+              1200),
         volSustain: volSustain / 1000,
         volRelease: 2 ** (volRelease / 1200),
         modDelay: 2 ** (modDelay / 1200),
@@ -491,15 +491,15 @@ export default class Synthesizer {
         modHold:
           2 ** (modHold / 1200) *
           2 **
-          (((60 - i) *
-            this.getModGenAmount(generator, 'keynumToModEnvHold')) /
-            1200),
+            (((60 - i) *
+              this.getModGenAmount(generator, 'keynumToModEnvHold')) /
+              1200),
         modDecay:
           2 ** (modDecay / 1200) *
           2 **
-          (((60 - i) *
-            this.getModGenAmount(generator, 'keynumToModEnvDecay')) /
-            1200),
+            (((60 - i) *
+              this.getModGenAmount(generator, 'keynumToModEnvDecay')) /
+              1200),
         modSustain: modSustain / 1000,
         modRelease: 2 ** (modRelease / 1200),
         initialFilterFc:
@@ -863,7 +863,7 @@ export default class Synthesizer {
     /** @type {HTMLElement} */
     const bankElement = this.element
       .querySelectorAll(`.instrument > .channel`)
-    [channel].querySelector('.bank > select');
+      [channel].querySelector('.bank > select');
 
     while (bankElement.firstChild)
       bankElement.removeChild(bankElement.firstChild);
@@ -911,8 +911,9 @@ export default class Synthesizer {
       // TODO: 存在しないプログラムの場合、現状では空白になってしまう
       const option = document.createElement('option');
       option.value = programNo;
-      option.textContent = `${('000' + (parseInt(programNo) + 1)).slice(-3)}:${this.programSet[bankIndex][programNo]
-        }`;
+      option.textContent = `${('000' + (parseInt(programNo) + 1)).slice(-3)}:${
+        this.programSet[bankIndex][programNo]
+      }`;
       if (programNo === this.channelInstrument[channel]) {
         option.selected = 'selected';
       }
@@ -1167,7 +1168,7 @@ export default class Synthesizer {
     if (this.element) {
       this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.program > select').value = instrument;
+        [channel].querySelector('.program > select').value = instrument;
     }
   }
 
@@ -1202,7 +1203,7 @@ export default class Synthesizer {
       // バンクセレクトの値を更新
       this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.bank > select').value = bank;
+        [channel].querySelector('.bank > select').value = bank;
     }
     // TODO: 厳密にはMIDI音源はプログラムチェンジがあったときに、バンク・セレクトの値が反映されるのでこの実装は正しくない。
     this.updateProgramSelect(channel);
@@ -1218,7 +1219,7 @@ export default class Synthesizer {
     if (this.element) {
       this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.volume var').innerText = volume;
+        [channel].querySelector('.volume var').innerText = volume;
     }
 
     this.channelVolume[channel] = volume;
@@ -1245,7 +1246,7 @@ export default class Synthesizer {
     if (this.element) {
       this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.expression var').innerText = expression;
+        [channel].querySelector('.expression var').innerText = expression;
     }
 
     this.channelExpression[channel] = expression;
@@ -1262,7 +1263,7 @@ export default class Synthesizer {
     if (this.element) {
       const dom = this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.panpot .progress-bar');
+        [channel].querySelector('.panpot .progress-bar');
       const percentage = (panpot / 127) * 100;
       dom.style.width = `${percentage}%`;
       dom.classList.remove('left', 'right');
@@ -1301,7 +1302,7 @@ export default class Synthesizer {
     if (this.element) {
       const dom = this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.pitchBend .progress-bar');
+        [channel].querySelector('.pitchBend .progress-bar');
       dom.style.width = `${Math.floor((bend / 16384) * 100)}%`;
       dom.classList.remove('high', 'low');
       if (calculated === 0) {
@@ -1321,7 +1322,7 @@ export default class Synthesizer {
     if (this.element) {
       this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.pitchBendSensitivity > var').innerText =
+        [channel].querySelector('.pitchBendSensitivity > var').innerText =
         sensitivity;
     }
     this.channelPitchBendSensitivity[channel] = sensitivity;
@@ -1400,7 +1401,7 @@ export default class Synthesizer {
     if (this.element) {
       this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.reverbDepth var').innerText = depth;
+        [channel].querySelector('.reverbDepth var').innerText = depth;
     }
   }
 
@@ -1414,7 +1415,7 @@ export default class Synthesizer {
     if (this.element) {
       const dom = this.element
         .querySelectorAll(`.instrument > .channel`)
-      [channel].querySelector('.pitchBend .progress-bar');
+        [channel].querySelector('.pitchBend .progress-bar');
 
       // モデレーターが0でないときは、ピッチに斜め線を入れる
       if (depth !== 0) {
