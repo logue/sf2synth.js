@@ -4,6 +4,8 @@
  * @author Logue <logue@hotmail.co.jp>
  */
 export default class Loader {
+  /** キャッシュの名前空間 */
+  static CACHE_NAME = 'wml';
   /**
    * コンストラクタ
    *
@@ -78,8 +80,9 @@ export default class Loader {
   onError(error) {
     this.alert.className = 'alert alert-danger';
     this.message.innerText =
-      'An error occurred while parsing SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
+      'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
     this.progressOuter.style.display = 'none';
+    requestAnimationFrame(this.onError);
     throw Error(error);
   }
 
@@ -88,7 +91,7 @@ export default class Loader {
    */
   async fetch() {
     /** @type {CacheStorage} */
-    const cache = await window.caches.open('wml');
+    const cache = await window.caches.open(Loader.CACHE_NAME);
     /** @type {Response} */
     const cached = await cache.match(this.url);
 
@@ -115,9 +118,9 @@ export default class Loader {
     const contentLength = parseInt(response.headers.get('Content-Length'));
 
     /** @type {RedableStream<Uint8Array>} ファイルリーダー */
-    const reader = response.body.getReader();
+    const reader = cloned.body.getReader();
 
-    /** @type {number} その時点の長さ */
+    /** @type {number} 読み込まれたチャンクの長さ */
     let receivedLength = 0;
 
     /** @type {ArrayBuffer} 受信したバイナリチャンクの配列(本文を構成します) */
@@ -140,16 +143,18 @@ export default class Loader {
       this.onProgress(receivedLength, contentLength);
     }
 
+    /** @type {Uint8Array} 全チャンク */
     const chunksAll = new Uint8Array(receivedLength);
+    /** @type {number} 現在の読み込んだチャンク位置 */
     let position = 0;
     for (const chunk of chunks) {
-      chunksAll.set(chunk, position); // (4.2)
+      chunksAll.set(chunk, position);
       position += chunk.length;
     }
 
     if (response.ok) {
-      // キャッシュ保存
-      cache.put(this.url, cloned);
+      // キャッシュへ保存
+      cache.put(this.url, response);
     }
     this.onComplete(chunksAll);
   }

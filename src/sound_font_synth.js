@@ -642,7 +642,7 @@ export default class Synthesizer {
               ((synth, ch) => event => {
                 const program =
                   channelElem.querySelector('.program select').value;
-                console.log(ch, event.target.value, program);
+                // console.log(ch, event.target.value, program);
                 synth.bankChange(ch, event.target.value);
                 synth.programChange(ch, program);
               })(this, channel),
@@ -652,8 +652,7 @@ export default class Synthesizer {
             break;
           }
           case 'program': {
-            // Program change
-            /** @type {HTMLSelectElement | null} */
+            /** @type {HTMLSelectElement} Program change */
             const select = doc.createElement('select');
             select.className = 'form-select form-select-sm';
             select.addEventListener(
@@ -667,31 +666,35 @@ export default class Synthesizer {
             break;
           }
           case 'volume': {
+            /** @type {HTMLElement} */
             const volumeElem = document.createElement('var');
             volumeElem.innerText = 100;
             itemElem.appendChild(volumeElem);
             break;
           }
           case 'expression': {
+            /** @type {HTMLElement} */
             const expressionElem = document.createElement('var');
             expressionElem.innerText = 127;
             itemElem.appendChild(expressionElem);
             break;
           }
           case 'pitchBendSensitivity': {
+            /** @type {HTMLElement} */
             const pitchSensElem = document.createElement('var');
             pitchSensElem.innerText = 2;
             itemElem.appendChild(pitchSensElem);
             break;
           }
           case 'reverbDepth': {
+            /** @type {HTMLElement} */
             const reverbDepthElem = document.createElement('var');
             reverbDepthElem.innerText = 40;
             itemElem.appendChild(reverbDepthElem);
             break;
           }
           case 'panpot': {
-            /** @type {HTMLDivElement | null} */
+            /** @type {HTMLDivElement} */
             const panpotOuter = doc.createElement('div');
             panpotOuter.className = 'progress';
             const panpot = doc.createElement('div');
@@ -702,9 +705,10 @@ export default class Synthesizer {
             break;
           }
           case 'pitchBend': {
-            /** @type {HTMLDivElement | null} */
+            /** @type {HTMLDivElement} */
             const pitchOuter = doc.createElement('div');
             pitchOuter.className = 'progress';
+             /** @type {HTMLDivElement} */
             const pitch = doc.createElement('div');
             // 黄色
             pitch.className = 'progress-bar progress-bar-animated';
@@ -715,7 +719,7 @@ export default class Synthesizer {
           case 'keys': {
             // 鍵盤の描画
             for (let key = 0; key < 127; key++) {
-              /** @type {HTMLDivElement | null} */
+              /** @type {HTMLDivElement} */
               const keyElem = doc.createElement('div');
               /** @type {number} */
               const n = key % 12;
@@ -779,12 +783,14 @@ export default class Synthesizer {
       'Rev.',
       '',
     ];
+    /** @type {HTMLDivElement} */
     const headerElem = doc.createElement('div');
     headerElem.className = 'header';
     for (const item in this.items) {
       if (!{}.hasOwnProperty.call(this.items, item)) {
         continue;
       }
+      /** @type {HTMLDivElement} */
       const itemElem = doc.createElement('div');
       itemElem.className = this.items[item];
       itemElem.textContent = itemName[item];
@@ -909,6 +915,7 @@ export default class Synthesizer {
         continue;
       }
       // TODO: 存在しないプログラムの場合、現状では空白になってしまう
+       /** @type {HTMLOptionElement} */
       const option = document.createElement('option');
       option.value = programNo;
       option.textContent = `${('000' + (parseInt(programNo) + 1)).slice(-3)}:${
@@ -1107,6 +1114,8 @@ export default class Synthesizer {
    * @param {number} value 値
    */
   bankSelectMsb(channel, value) {
+    // 125より値が大きい場合、パーカッションとして処理
+    this.percussionPart[channel] = value >= 125;
     if (this.mode === 'XG') {
       // 念の為バンクを0にリセット
       this.channelBank[channel] = 0;
@@ -1114,15 +1123,12 @@ export default class Synthesizer {
       if (value === 64) {
         // Bank Select MSB #64 (Voice Type: SFX)
         this.channelBank[channel] = 125;
-        this.percussionPart[channel] = true;
       } else if (value === 126 || value === 127) {
         // Bank Select MSB #126 (Voice Type: Drum)
         // Bank Select MSB #127 (Voice Type: Drum)
         this.channelBank[channel] = value;
-        this.percussionPart[channel] = true;
       } else if (value === 128) {
         this.channelBank[channel] = 127;
-        this.percussionPart[channel] = true;
       }
     } else if (this.mode === 'GS' || this.mode === 'GM2') {
       // GS音源
@@ -1144,7 +1150,7 @@ export default class Synthesizer {
    */
   bankSelectLsb(channel, value) {
     // XG音源以外は処理しない
-    if (this.mode !== 'XG' || this.percussionPart[channel] === true) {
+    if (this.mode !== 'XG') {
       return;
     }
 
