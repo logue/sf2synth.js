@@ -708,7 +708,7 @@ export default class Synthesizer {
             /** @type {HTMLDivElement} */
             const pitchOuter = doc.createElement('div');
             pitchOuter.className = 'progress';
-             /** @type {HTMLDivElement} */
+            /** @type {HTMLDivElement} */
             const pitch = doc.createElement('div');
             // 黄色
             pitch.className = 'progress-bar progress-bar-animated';
@@ -915,7 +915,7 @@ export default class Synthesizer {
         continue;
       }
       // TODO: 存在しないプログラムの場合、現状では空白になってしまう
-       /** @type {HTMLOptionElement} */
+      /** @type {HTMLOptionElement} */
       const option = document.createElement('option');
       option.value = programNo;
       option.textContent = `${('000' + (parseInt(programNo) + 1)).slice(-3)}:${
@@ -977,7 +977,7 @@ export default class Synthesizer {
     /** @type {number} */
     let panpot =
       this.channelPanpot[channel] === 0
-        ? (Math.random() * 127) | 0
+        ? Math.floor(Math.random() * 127) // パンが0の場合ランダムとなる。
         : this.channelPanpot[channel] - 64;
     panpot /= panpot < 0 ? 64 : 63;
 
@@ -1000,20 +1000,19 @@ export default class Synthesizer {
     instrumentKey['modulation'] = this.modulation[channel];
 
     // percussion
-    if (bankIndex > 125) {
-      /*
+    if (bankIndex >= 127) {
+      // ドラムパートのハイハットクローズはここで定義するべきではない。
       if (key === 42 || key === 44) {
         // 42: Closed Hi-Hat
         // 44: Pedal Hi-Hat
         // 46: Open Hi-Hat
-        this.noteOff(channel, 46, 0);
+        this.noteOff(channel, 46);
       }
       if (key === 80) {
         // 80: Mute Triangle
         // 81: Open Triangle
-        this.noteOff(channel, 81, 0);
+        this.noteOff(channel, 81);
       }
-      */
       instrument['volume'] *= this.percussionVolume[key] / 127;
     }
 
@@ -1273,6 +1272,7 @@ export default class Synthesizer {
       const percentage = (panpot / 127) * 100;
       dom.style.width = `${percentage}%`;
       dom.classList.remove('left', 'right');
+      dom.title = panpot;
       if (panpot === 64) {
         return;
       }
@@ -1310,6 +1310,7 @@ export default class Synthesizer {
         .querySelectorAll(`.instrument > .channel`)
         [channel].querySelector('.pitchBend .progress-bar');
       dom.style.width = `${Math.floor((bend / 16384) * 100)}%`;
+      dom.title = calculated;
       dom.classList.remove('high', 'low');
       if (calculated === 0) {
         return;
