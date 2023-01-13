@@ -611,6 +611,7 @@ export default class Synthesizer {
             checkboxElement.className = 'form-check form-check-inline';
             /** @type {HTMLInputElement | null} */
             const checkbox = doc.createElement('input');
+            checkbox.ariaLabel = `Ch.${channel + 1} Mute`;
             checkbox.setAttribute('type', 'checkbox');
             checkbox.className = 'form-check-input';
             checkbox.id = 'mute' + channel + 'ch';
@@ -625,6 +626,7 @@ export default class Synthesizer {
             checkboxElement.appendChild(checkbox);
             /** @type {HTMLLabelElement} */
             const labelElem = doc.createElement('label');
+
             labelElem.className = 'form-check-label';
             labelElem.textContent = channel + 1;
             labelElem.setAttribute('for', 'mute' + channel + 'ch');
@@ -633,9 +635,9 @@ export default class Synthesizer {
             break;
           }
           case 'bank': {
-            // Bank select
-            /** @type {HTMLSelectElement} */
+            /** @type {HTMLSelectElement} Bank select */
             const bankSelect = doc.createElement('select');
+            bankSelect.ariaLabel = `Ch.${channel + 1} Bank Select`;
             bankSelect.className = 'form-select form-select-sm';
             bankSelect.addEventListener(
               'change',
@@ -655,6 +657,7 @@ export default class Synthesizer {
             /** @type {HTMLSelectElement} Program change */
             const select = doc.createElement('select');
             select.className = 'form-select form-select-sm';
+            select.ariaLabel = `Ch.${channel + 1} Program Change`;
             select.addEventListener(
               'change',
               ((synth, ch) => event => {
@@ -668,6 +671,7 @@ export default class Synthesizer {
           case 'volume': {
             /** @type {HTMLElement} */
             const volumeElem = document.createElement('var');
+            volumeElem.ariaLabel = `Ch.${channel + 1} Volume`;
             volumeElem.innerText = 100;
             itemElem.appendChild(volumeElem);
             break;
@@ -675,6 +679,7 @@ export default class Synthesizer {
           case 'expression': {
             /** @type {HTMLElement} */
             const expressionElem = document.createElement('var');
+            expressionElem.ariaLabel = `Ch.${channel + 1} Expression`;
             expressionElem.innerText = 127;
             itemElem.appendChild(expressionElem);
             break;
@@ -682,6 +687,9 @@ export default class Synthesizer {
           case 'pitchBendSensitivity': {
             /** @type {HTMLElement} */
             const pitchSensElem = document.createElement('var');
+            pitchSensElem.ariaLabel = `Ch.${
+              channel + 1
+            } Pitch Bend Sensitivity`;
             pitchSensElem.innerText = 2;
             itemElem.appendChild(pitchSensElem);
             break;
@@ -689,6 +697,7 @@ export default class Synthesizer {
           case 'reverbDepth': {
             /** @type {HTMLElement} */
             const reverbDepthElem = document.createElement('var');
+            reverbDepthElem.ariaLabel = `Ch.${channel + 1} Reverb Depth`;
             reverbDepthElem.innerText = 40;
             itemElem.appendChild(reverbDepthElem);
             break;
@@ -696,6 +705,11 @@ export default class Synthesizer {
           case 'panpot': {
             /** @type {HTMLDivElement} */
             const panpotOuter = doc.createElement('div');
+            panpotOuter.role = 'progressbar';
+            panpotOuter.ariaLabel = `Ch.${channel + 1} Panpod`;
+            panpotOuter.ariaValueMin = 0;
+            panpotOuter.ariaValueNow = 64;
+            panpotOuter.ariaValuemax = 127;
             panpotOuter.className = 'progress';
             const panpot = doc.createElement('div');
             // 緑色
@@ -707,6 +721,12 @@ export default class Synthesizer {
           case 'pitchBend': {
             /** @type {HTMLDivElement} */
             const pitchOuter = doc.createElement('div');
+            pitchOuter.className = 'progress';
+            pitchOuter.role = 'progressbar';
+            pitchOuter.ariaLabel = `Ch.${channel + 1} Pitch Bend`;
+            pitchOuter.ariaValueMin = -8192;
+            pitchOuter.ariaValueNow = 0;
+            pitchOuter.ariaValuemax = 8192;
             pitchOuter.className = 'progress';
             /** @type {HTMLDivElement} */
             const pitch = doc.createElement('div');
@@ -1268,11 +1288,13 @@ export default class Synthesizer {
     if (this.element) {
       const dom = this.element
         .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.panpot .progress-bar');
+        [channel].querySelector('.panpot');
+      dom.ariaValueNow = panpot;
+      const progressBar = dom.querySelector('.progress-bar');
       const percentage = (panpot / 127) * 100;
-      dom.style.width = `${percentage}%`;
-      dom.classList.remove('left', 'right');
-      dom.title = panpot;
+      progressBar.style.width = `${percentage}%`;
+      progressBar.classList.remove('left', 'right');
+      progressBar.title = panpot;
       if (panpot === 64) {
         return;
       }
@@ -1308,14 +1330,16 @@ export default class Synthesizer {
     if (this.element) {
       const dom = this.element
         .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.pitchBend .progress-bar');
-      dom.style.width = `${Math.floor((bend / 16384) * 100)}%`;
-      dom.title = calculated;
-      dom.classList.remove('high', 'low');
+        [channel].querySelector('.pitchBend');
+      dom.ariaValueNow = bend;
+      const progressBar = dom.querySelector('.progress-bar');
+      progressBar.style.width = `${Math.floor((bend / 16384) * 100)}%`;
+      progressBar.title = calculated;
+      progressBar.classList.remove('high', 'low');
       if (calculated === 0) {
         return;
       }
-      dom.classList.add(calculated < 0 ? 'low' : 'high');
+      progressBar.classList.add(calculated < 0 ? 'low' : 'high');
     }
   }
 

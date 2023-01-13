@@ -30,6 +30,12 @@ export default class Loader {
     /** @type {HTMLDivElement} */
     this.progressOuter = document.createElement('div');
     this.progressOuter.className = 'progress';
+    this.progressOuter.role = 'progressbar';
+    this.progressOuter.ariaLabel = `Loading Progress`;
+    this.progressOuter.ariaValueMin = 0;
+    this.progressOuter.ariaValueNow = 0;
+    this.progressOuter.ariaValuemax = 100;
+
     /** @type {HTMLDivElement} */
     this.progress = document.createElement('div');
     this.progress.className = 'progress-bar';

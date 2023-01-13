@@ -2,11 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
     <title>Web Midi Link</title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -79,16 +75,18 @@
       document.addEventListener(
         'DOMContentLoaded',
         event => {
-          /** WebMidiLink */
+           /** WebMidiLink */
           const wml = new SoundFont.WebMidiLink(option);
-          /** Message DOM */
+          /** @type {HTMLDivElement} Message DOM */
           const message = document.getElementById('message');
-          /** File Input Form */
+          /** @type {HTMLInputElement} File Input Form */
           const fileInput = document.getElementById('file');
-          /** Placeholder */
+          /** @type {HTMLDivElement} Placeholder */
           const placeholder = document.getElementById('placeholder');
-          /** drag */
+          /** @type {HTMLDivElement} drag area */
           const dragArea = document.getElementById('drag');
+          /** @type {HTMLTimeElement} Build Date */
+          const build = document.getElementById('build');
 
           /** SoundFont file */
           const sf = qs.soundfont
@@ -97,9 +95,9 @@
 
           document.getElementById('soundfont').innerText = sf;
 
-          document.getElementById('build').innerText = new Date(
-            SoundFont.build
-          ).toLocaleString();
+          build.dateTime = SoundFont.build;
+          build.innerText = new Date(SoundFont.build).toLocaleString();
+
           wml.setLoadCallback(() => {
             // message.style.display = 'none';
           });
