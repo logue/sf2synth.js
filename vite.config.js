@@ -63,25 +63,22 @@ export default defineConfig(async ({ mode }) => {
       // Build Target
       // https://vitejs.dev/config/build-options.html#build-target
       target: 'esnext',
+      outDir: mode === 'docs' ? 'docs' : 'dist',
       // Minify option
       // https://vitejs.dev/config/build-options.html#build-minify
-      minify: false,
+      minify: mode === 'docs',
       // https://vitejs.dev/config/build-options.html#build-lib
-      lib: {
-        entry: fileURLToPath(new URL('./src/index.js', import.meta.url)),
-        name: 'SoundFont',
-        formats: ['es', 'umd', 'iife'],
-        fileName: format => `sf2synth.${format}.js`,
-      },
+      lib:
+        mode === 'docs'
+          ? undefined
+          : {
+              entry: fileURLToPath(new URL('./src/index.js', import.meta.url)),
+              name: 'SoundFont',
+              formats: ['es', 'umd', 'iife'],
+              fileName: format => `sf2synth.${format}.js`,
+            },
       // https://vitejs.dev/config/build-options.html#build-sourcemap
       sourcemap: true,
-      // Rollup Options
-      // https://vitejs.dev/config/build-options.html#build-rollupoptions
-      rollupOptions: {
-        output: {
-          // exports: 'named',
-        },
-      },
     },
     esbuild: {
       drop: mode === 'serve' ? [] : ['console'],

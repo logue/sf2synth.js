@@ -1,6 +1,6 @@
 /.yarn/*
 !/.yarn/releases
 /node_modules
+/docs/
 /dist
-!/dist/wml.html
 /src/meta.js

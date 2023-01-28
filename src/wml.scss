@@ -31,13 +31,17 @@
 
 // 8. Add additional custom code here
 
+body {
+  transition: 0.25s;
+}
+
 .synthesizer {
   margin: 0 auto;
   .instrument {
     padding: 0 auto;
 
     > :nth-child(2n) {
-      background-color: var(--bs-gray-100);
+      background-color: var(--bs-tertiary-bg);
     }
 
     .channel,
@@ -66,10 +70,11 @@
       }
 
       .bank {
-        width: 4.5rem;
+        min-width: 4.5rem;
       }
 
       .program {
+        min-width: 8rem;
         width: 14rem;
         @include media-breakpoint-down(lg) {
           width: 10rem;
@@ -141,7 +146,7 @@
         align-self: flex-end;
         display: block;
         height: 1.66rem;
-        border: 1px solid var(--bs-gray-500);
+        border: 1px solid var(--bs-tertiary-color);
         @include media-breakpoint-down(md) {
           height: 1.75rem;
         }
@@ -157,13 +162,13 @@
 
           // divide by each C key
           &:nth-child(12n + 1).tone {
-            border-left: 1px solid var(--bs-gray-700);
+            border-left: 1px solid var(--bs-secondary-color);
           }
           // white key
           &.tone {
             width: 10px;
             height: 100%;
-            border-left: 1px solid var(--bs-gray-500);
+            border-left: 1px solid var(--bs-tertiary-color);
             box-sizing: border-box;
 
             &:first-child {
@@ -192,9 +197,9 @@
             height: 50%;
             left: 4px;
             margin-left: -6px;
-            border: 1px solid var(--bs-gray-900);
+            border: 1px solid var(--bs-tertiary-color);
             border-top: none;
-            background-color: var(--bs-gray-800);
+            background-color: var(--bs-emphasis-color);
             z-index: 999;
             @include media-breakpoint-down(xxl) {
               width: 5px;

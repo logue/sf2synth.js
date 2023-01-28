@@ -798,7 +798,7 @@ export default class Synthesizer {
       'Vol.',
       'Exp.',
       'Panpot',
-      'Pitch',
+      'Pitch Bend',
       '',
       'Rev.',
       '',
