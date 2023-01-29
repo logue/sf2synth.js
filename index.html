@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Web Midi Link</title>
+    
+    <script type="module" crossorigin src="./assets/index-3b88922d.js"></script>
+    <link rel="stylesheet" href="./assets/index-4e9330df.css">
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <header>
+        <div class="d-flex justify-content-between">
+          <h1 class="h2">
+            SoundFont:
+            <span id="soundfont"></span>
+          </h1>
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="toggleDarkMode"
+            />
+            <label class="form-check-label" for="toggleDarkMode">
+              Dark Mode
+            </label>
+          </div>
+        </div>
+        <p class="text-end">
+          <a href="https://logue.dev/" target="_blank">Logue</a>
+          /
+          <small class="text-muted">
+            Last Modified:
+            <time id="build"></time>
+          </small>
+        </p>
+      </header>
+      <main>
+        <div id="drag">
+          <label class="form-label" for="file">
+            Load SoundFont2 file
+            <small class="text-muted">
+              (drag and drop here *.sf2 file to change sound font)
+            </small>
+          </label>
+          <input
+            type="file"
+            class="form-control"
+            id="file"
+            accept="audio/x-soundfont"
+          />
+        </div>
+        <hr />
+        <div id="placeholder"></div>
+      </main>
+    </div>
+    
+  </body>
+</html>

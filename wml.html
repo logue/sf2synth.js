@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Web Midi Link</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <header>
+        <div class="d-flex justify-content-between">
+          <h1 class="h2">
+            SoundFont:
+            <span id="soundfont"></span>
+          </h1>
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="toggleDarkMode"
+            />
+            <label class="form-check-label" for="toggleDarkMode">
+              Dark Mode
+            </label>
+          </div>
+        </div>
+      </header>
+      <main>
+        <div id="placeholder"></div>
+      </main>
+    </div>
+  </body>
+  <script src="./sf2synth.umd.js"></script>
+  <script>
+    /** sf2synth.js Option */
+    const options = {
+      sf: 'Yamaha XG Sound Set.sf2',
+      ui: true,
+      placeholder: 'placeholder',
+      colorMode: 'auto',
+    };
+
+    document.addEventListener(
+      'DOMContentLoaded',
+      event => {
+        /** @type {HTMLInputElement} */
+        const toggleDarkMode = document.getElementById('toggleDarkMode');
+
+        /** SoundFont file */
+        const sf = decodeURIComponent(options.sf);
+        document.getElementById('soundfont').innerText = sf;
+
+        /** WebMidiLink */
+        const wml = new SoundFont.WebMidiLink(options);
+        wml.setup(sf);
+
+        // Keep an eye out for System Light/Dark Mode Changes
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addListener(() => {
+          // Ignore change if there's an override set
+          if (document.documentElement.getAttribute('data-force-color-mode')) {
+            return;
+          }
+
+          // Make sure the checkbox is up-to-date
+          toggleDarkMode.checked = mediaQuery.matches;
+        });
+
+        toggleDarkMode.addEventListener('change', e => {
+          setColorMode(e.target.checked ? 'dark' : 'light');
+        });
+      },
+      false
+    );
+
+    /**
+     * Toggle Color Mode.
+     *
+     * @param {<dark|light|auto>} mode
+     */
+    const setColorMode = mode => {
+      // Mode was given
+      if (mode) {
+        // Update data-* attr on html
+        document.documentElement.setAttribute('data-bs-theme', mode);
+        // Persist in local storage
+        window.localStorage.setItem('color-mode', mode);
+        // Make sure the checkbox is up-to-date
+        toggleDarkMode.checked = mode === 'dark';
+      }
+
+      // No mode given (e.g. reset)
+      else {
+        // Remove data-* attr from html
+        document.documentElement.setAttribute('data-bs-theme', 'auto');
+        // Remove entry from local storage
+        window.localStorage.removeItem('color-mode');
+        // Make sure the checkbox is up-to-date, matching the system preferences
+        toggleDarkMode.checked = window.matchMedia(
+          '(prefers-color-scheme: dark)'
+        ).matches;
+      }
+    };
+  </script>
+</html>
