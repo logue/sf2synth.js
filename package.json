@@ -51,7 +51,9 @@
       "import": "./dist/style.css",
       "require": "./dist/style.css"
     },
-    "./dist/wml.html": "./dist/wml.html"
+    "./dist/wml.html": "./dist/wml.html",
+    "./dist/Yamaha XG Sound Set.sf2": "./dist/Yamaha XG Sound Set.sf2",
+    "./dist/SoundFont Copyright.txt": "./dist/SoundFont Copyright.txt"
   },
   "engines": {
     "node": ">=18.13.0",
