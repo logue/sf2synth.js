@@ -1,7 +1,7 @@
 root: true
 env:
   browser: true
-  es2021: true
+  es2022: true
   node: true
 extends:
   - eslint:recommended
@@ -21,7 +21,9 @@ rules:
   valid-jsdoc: off
   import/no-named-as-default: off
   jsdoc/require-param-type: off
-  jsdoc/require-param: ['off', { enableRootFixer: false }]
+  jsdoc/require-param:
+    - off
+    - enableRootFixer: false
   jsdoc/require-returns-description: off
   jsdoc/require-returns-type: off
   jsdoc/require-returns: off

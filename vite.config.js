@@ -9,7 +9,7 @@ const pkg = require('./package.json');
 const build = new Date().toISOString();
 
 // Export vite config
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(async ({ mode, command }) => {
   // Hook production build.
   /** @type {import('vite').UserConfig} https://vitejs.dev/config/ */
   const config = {
@@ -78,7 +78,7 @@ export default defineConfig(async ({ mode }) => {
       sourcemap: true,
     },
     esbuild: {
-      drop: mode === 'serve' ? [] : ['console'],
+      drop: command !== 'serve' ? [] : ['console'],
     },
   };
   // Write meta data.

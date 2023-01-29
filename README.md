@@ -23,7 +23,11 @@ yarn add @logue/sf2synth
 ### CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@logue/sf2synth@0.4.9/dist/sf2synth.umd.min.js"></script>
+<link
+  href="https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/style.min.css"
+  rel="stylesheet"
+/>
+<script src="https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/sf2synth.umd.min.js"></script>
 ```
 
 ## Usage
@@ -139,4 +143,4 @@ equires a browser that supports the Web Audio API.
 Licensed under the MIT License.
 
 - 2013 by imaya / GREE Inc.
-- 2013-2022 by Logue
+- 2013-2023 by Logue
