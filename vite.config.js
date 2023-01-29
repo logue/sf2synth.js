@@ -15,25 +15,6 @@ export default defineConfig(async ({ mode }) => {
   const config = {
     // https://vitejs.dev/config/shared-options.html#base
     base: './',
-    // Resolver
-    resolve: {
-      // https://vitejs.dev/config/shared-options.html#resolve-alias
-      alias: [
-        {
-          // this is required for the SCSS modules
-          find: /^~(.*)$/,
-          replacement: '$1',
-        },
-      ],
-    },
-    // https://vitejs.dev/config/server-options.html
-    server: {
-      fs: {
-        // Allow serving files from one level up to the project root
-        allow: ['..'],
-      },
-      cors: false,
-    },
     plugins: [
       // vite-plugin-checker
       // https://github.com/fi3ework/vite-plugin-checker
@@ -57,6 +38,22 @@ export default defineConfig(async ({ mode }) => {
  */
 `),
     ],
+    // Resolver
+    resolve: {
+      // https://vitejs.dev/config/shared-options.html#resolve-alias
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '~': fileURLToPath(new URL('./node_modules', import.meta.url)),
+      },
+      extensions: ['.js', '.json', '.jsx', '.mjs'],
+    },
+    // https://vitejs.dev/config/server-options.html
+    server: {
+      fs: {
+        // Allow serving files from one level up to the project root
+        allow: ['..'],
+      },
+    },
     // Build Options
     // https://vitejs.dev/config/build-options.html
     build: {
