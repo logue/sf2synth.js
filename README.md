@@ -100,6 +100,8 @@ const option = {
   drawSynth: true,
   // Cache Soundfont
   cache: true,
+  // postMessage origin
+  targetOrigin: '*',
 };
 
 /** Initialize Web MIDI API */

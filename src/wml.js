@@ -30,10 +30,12 @@ export default class WebMidiLink {
     /** @type {object} */
     this.option = option;
     /** @type {boolean} */
-    this.option.drawSynth =
-      option.drawSynth !== void 0 ? option.drawSynth : true;
+    this.option.drawSynth = option.drawSynth || true;
     /** @type {boolean} */
     this.option.cache = option.cache || false;
+    /** @type {string} */
+    this.option.targetOrigin = option.targetOrigin || '*';
+
     /** @type {HTMLElement} */
     this.placeholder =
       option.placeholder !== void 0
@@ -118,7 +120,7 @@ export default class WebMidiLink {
     // MIDI Link待ち受け開始
     window.addEventListener('message', this.messageHandler, false);
     // ホスト側に準備完了通知を送信
-    this.window.postMessage('link,ready', '*');
+    this.window.postMessage('link,ready', this.option.targetOrigin);
   }
 
   /**
@@ -148,16 +150,16 @@ export default class WebMidiLink {
         switch (command) {
           case 'reqpatch':
             // TODO: dummy data
-            this.window.postMessage('link,patch', '*');
+            this.window.postMessage('link,patch', this.option.targetOrigin);
             break;
           case 'setpatch':
           case 'ready':
-            this.window.postMessage('link,ready', '*');
+            this.window.postMessage('link,ready', this.option.targetOrigin);
             // TODO: NOP
             break;
           case 'progress':
             // ※この命令は、WebMidiLinkの仕様に含まれていません。
-            this.window.postMessage('link,progress', '*');
+            this.window.postMessage('link,progress', this.option.targetOrigin);
             break;
           default:
             console.error('unknown link message:', command);
