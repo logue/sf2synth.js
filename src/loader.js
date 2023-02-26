@@ -54,10 +54,8 @@ export default class Loader {
    */
   onProgress(current, total) {
     const percentCompleted = Math.floor((current / total) * 100);
-    if (this.progress) {
-      this.progress.style.width = percentCompleted + '%';
-      this.progress.innerText = percentCompleted + ' %';
-    }
+    this.progress.style.width = percentCompleted + '%';
+    this.progress.innerText = percentCompleted + ' %';
     requestAnimationFrame(this.onProgress);
   }
 

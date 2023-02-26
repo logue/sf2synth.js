@@ -67,7 +67,11 @@ export default class WebMidiLink {
       this.option.cache,
       buffer => this.setupByBuffer(buffer)
     );
-    await loader.fetch();
+    try {
+      await loader.fetch();
+    } catch (e) {
+      //
+    }
   }
 
   /**

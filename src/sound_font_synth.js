@@ -283,6 +283,13 @@ export default class Synthesizer {
     if (this.element) {
       this.element.querySelector('.header .keys div').innerText =
         mode + ' Mode';
+
+      this.element
+        .querySelectorAll(`.instrument .bank > select`)
+        .forEach(
+          /** @type {HTMLSelectElement} */ element =>
+            (element.disabled = mode === 'GM')
+        );
     }
 
     this.element.dataset.mode = mode;
@@ -638,7 +645,7 @@ export default class Synthesizer {
             /** @type {HTMLSelectElement} Bank select */
             const bankSelect = doc.createElement('select');
             bankSelect.ariaLabel = `Ch.${channel + 1} Bank Select`;
-            bankSelect.className = 'form-select form-select-sm';
+            bankSelect.className = 'form-select form-select-sm bank-select';
             bankSelect.addEventListener(
               'change',
               ((synth, ch) => event => {
@@ -1205,7 +1212,7 @@ export default class Synthesizer {
    */
   bankChange(channel, bank) {
     /** パーカッションバンク */
-    const percussionBank = this.mode === 'GS' ? 128 : 127;
+    const percussionBank = this.mode === 'XG' ? 127 : 128;
     if (this.mode === 'GM') {
       // GMの場合バンクセレクトを無効化
       bank = 0;
