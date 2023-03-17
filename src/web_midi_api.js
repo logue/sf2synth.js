@@ -11,17 +11,15 @@ export default class WebMidiApi extends WebMidiLink {
    */
   constructor(option = {}) {
     super(option);
-    /** @type {MIDIAccess?} */
-    this.midi = undefined;
+    /** @type {WebMidi.MIDIAccess} */
+    this.midi;
   }
 
   /**
    * @inheritdoc
    */
   async setup(url) {
-    this.midi = await navigator.requestMIDIAccess(
-      /** @type {MIDIOptions} */ { sysex: true }
-    );
+    this.midi = await window.navigator.requestMIDIAccess({ sysex: true });
     await super.setup(url);
   }
 
@@ -34,7 +32,10 @@ export default class WebMidiApi extends WebMidiLink {
       super.loadCallback();
     }
     // Web MIDI APIを待ち受け
-    this.midi.onmidimessage = (/** @type {Uint8Array} */ msg) =>
-      super.processMidiMessage(msg);
+    this.midi.inputs.forEach(
+      (
+        /** @type {{ onmidimessage: (msg: WebMidi.MIDIMessageEvent) => void; }} */ input
+      ) => (input.onmidimessage = msg => super.processMidiMessage(msg.data))
+    );
   }
 }

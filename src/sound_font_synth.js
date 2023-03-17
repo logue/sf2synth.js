@@ -1,3 +1,4 @@
+// @ts-nocheck
 import SynthesizerNote from './sound_font_synth_note';
 import Reverb from '@logue/reverb';
 import Parser from './sf2';
@@ -6,7 +7,6 @@ import Parser from './sf2';
  * Synthesizer Class
  *
  * @author imaya
- * @private
  */
 export default class Synthesizer {
   /** @param {Uint8Array} input */
@@ -18,11 +18,11 @@ export default class Synthesizer {
 
     /** @type {Uint8Array} */
     this.input = input;
-    /** @type {SoundFont.Parser} */
-    this.parser = {};
+    /** @type {Parser} */
+    this.parser;
     /** @type {number} */
     this.bank = 0;
-    /** @type {Object[][]} */
+    /** @type {Object} */
     this.bankSet = {};
     /** @type {number} */
     this.bufferSize = 2048;
@@ -126,7 +126,7 @@ export default class Synthesizer {
       false,
       false,
     ];
-    /** @type {SoundFont.SynthesizerNote[][]} */
+    /** @type {SynthesizerNote[][]} */
     this.currentNoteOn = [
       [],
       [],
@@ -176,8 +176,8 @@ export default class Synthesizer {
       this.percussionVolume[i] = 127;
     }
 
-    /** @type {*} */
-    this.programSet = {};
+    /** @type {string[][]} */
+    this.programSet = [];
 
     /** @type {Reverb[]} リバーブエフェクト（チャンネル毎に用意する） */
     this.reverb = [];
@@ -189,12 +189,8 @@ export default class Synthesizer {
     this.filter = [];
 
     for (i = 0; i < 16; ++i) {
-      this.reverb[i] = new Reverb(this.ctx, {
-        noise: 'violet',
-        scale: 1,
-        peaks: 2,
-        filterType: 'allpass',
-      });
+      // @ts-ignore
+      this.reverb[i] = new Reverb(this.ctx, { noise: 'violet' });
       // フィルタを定義
       this.filter[i] = this.ctx.createBiquadFilter();
     }
@@ -281,15 +277,15 @@ export default class Synthesizer {
     this.gainMaster.connect(this.ctx.destination);
 
     if (this.element) {
-      this.element.querySelector('.header .keys div').innerText =
-        mode + ' Mode';
+      /** @type {HTMLDivElement} */
+      const modeElement = this.element.querySelector('.header .keys div');
+      modeElement.innerText = mode + ' Mode';
+      /** @type {NodeListOf<HTMLSelectElement>} */
+      const bankSelectElement = this.element.querySelectorAll(
+        `.instrument .bank > select`
+      );
 
-      this.element
-        .querySelectorAll(`.instrument .bank > select`)
-        .forEach(
-          /** @type {HTMLSelectElement} */ element =>
-            (element.disabled = mode === 'GM')
-        );
+      bankSelectElement.forEach(element => (element.disabled = mode === 'GM'));
     }
 
     this.element.dataset.mode = mode;
@@ -311,7 +307,7 @@ export default class Synthesizer {
 
   /** @returns {Object[][]} */
   createAllInstruments() {
-    /** @type {SoundFont.Parser} */
+    /** @type {Parser} */
     const parser = this.parser;
     parser.parse();
     /** @type {Array} TODO */
@@ -320,7 +316,7 @@ export default class Synthesizer {
     const instruments = parser.createInstrument();
     /** @type {Array} */
     const banks = [];
-    /** @type {Object[][]} */
+    /** @type {Record<number, any>} */
     let bank;
     /** @type {number} */
     let bankNumber;
@@ -370,7 +366,7 @@ export default class Synthesizer {
         this.createNoteInfo(parser, instrument.info[j], bank[presetNumber]);
       }
       if (!programSet[bankNumber]) {
-        programSet[bankNumber] = {};
+        programSet[bankNumber] = [];
       }
       programSet[bankNumber][presetNumber] = presetName;
     }
@@ -679,7 +675,7 @@ export default class Synthesizer {
             /** @type {HTMLElement} */
             const volumeElem = document.createElement('var');
             volumeElem.ariaLabel = `Ch.${channel + 1} Volume`;
-            volumeElem.innerText = 100;
+            volumeElem.innerText = '100';
             itemElem.appendChild(volumeElem);
             break;
           }
@@ -687,7 +683,7 @@ export default class Synthesizer {
             /** @type {HTMLElement} */
             const expressionElem = document.createElement('var');
             expressionElem.ariaLabel = `Ch.${channel + 1} Expression`;
-            expressionElem.innerText = 127;
+            expressionElem.innerText = '127';
             itemElem.appendChild(expressionElem);
             break;
           }
@@ -697,7 +693,7 @@ export default class Synthesizer {
             pitchSensElem.ariaLabel = `Ch.${
               channel + 1
             } Pitch Bend Sensitivity`;
-            pitchSensElem.innerText = 2;
+            pitchSensElem.innerText = '2';
             itemElem.appendChild(pitchSensElem);
             break;
           }
@@ -705,7 +701,7 @@ export default class Synthesizer {
             /** @type {HTMLElement} */
             const reverbDepthElem = document.createElement('var');
             reverbDepthElem.ariaLabel = `Ch.${channel + 1} Reverb Depth`;
-            reverbDepthElem.innerText = 40;
+            reverbDepthElem.innerText = '40';
             itemElem.appendChild(reverbDepthElem);
             break;
           }
@@ -714,9 +710,9 @@ export default class Synthesizer {
             const panpotOuter = doc.createElement('div');
             panpotOuter.role = 'progressbar';
             panpotOuter.ariaLabel = `Ch.${channel + 1} Panpod`;
-            panpotOuter.ariaValueMin = 0;
-            panpotOuter.ariaValueNow = 64;
-            panpotOuter.ariaValuemax = 127;
+            panpotOuter.ariaValueMin = '0';
+            panpotOuter.ariaValueNow = '64';
+            panpotOuter.ariaValueMax = '127';
             panpotOuter.className = 'progress';
             const panpot = doc.createElement('div');
             // 緑色
@@ -731,9 +727,9 @@ export default class Synthesizer {
             pitchOuter.className = 'progress';
             pitchOuter.role = 'progressbar';
             pitchOuter.ariaLabel = `Ch.${channel + 1} Pitch Bend`;
-            pitchOuter.ariaValueMin = -8192;
-            pitchOuter.ariaValueNow = 0;
-            pitchOuter.ariaValuemax = 8192;
+            pitchOuter.ariaValueMin = '-8192';
+            pitchOuter.ariaValueNow = '0';
+            pitchOuter.ariaValueMax = '8192';
             pitchOuter.className = 'progress';
             /** @type {HTMLDivElement} */
             const pitch = doc.createElement('div');
@@ -863,7 +859,7 @@ export default class Synthesizer {
     if (!this.element) {
       return;
     }
-    /** @type {HTMLDivElement} */
+    /** @type {HTMLDivElement[]} */
     const channelElem = this.element.querySelectorAll(`.instrument > .channel`)[
       channel
     ];
@@ -1142,9 +1138,13 @@ export default class Synthesizer {
   bankSelectMsb(channel, value) {
     // 125より値が大きい場合、パーカッションとして処理
     this.percussionPart[channel] = value >= 125;
-    if (this.mode === 'XG') {
-      // 念の為バンクを0にリセット
-      this.channelBank[channel] = 0;
+    // 念の為バンクを0にリセット
+    this.channelBank[channel] = channel === 9 ? 128 : 0;
+
+    if (this.mode === 'GM') {
+      // GM音源モードのときはバンク・セレクトを無視
+      return;
+    } else if (this.mode === 'XG') {
       // XG音源は、MSB→LSBの優先順でバンクセレクトをする。
       if (value === 64) {
         // Bank Select MSB #64 (Voice Type: SFX)
@@ -1156,14 +1156,11 @@ export default class Synthesizer {
       } else if (value === 128) {
         this.channelBank[channel] = 127;
       }
-    } else if (this.mode === 'GS' || this.mode === 'GM2') {
+    } else {
       // GS音源
       // ※チャンネル10のバンク・セレクト命令は無視する。
       this.channelBank[channel] = channel === 9 ? 128 : value;
       this.percussionPart[channel] = value === 128;
-    } else {
-      // GM音源モードのときはバンク・セレクトを無視
-      return;
     }
     this.updateBankSelect(channel);
   }
@@ -1180,10 +1177,11 @@ export default class Synthesizer {
       return;
     }
 
-    // 125より値が大きい場合、パーカッションとして処理
-    this.percussionPart[channel] = value >= 125;
+    if (!this.percussionPart[channel]) {
+      // ドラムパートではバンクセレクトLSB命令を無視する。
+      this.channelBank[channel] = value;
+    }
 
-    this.channelBank[channel] = value;
     this.updateBankSelect(channel);
   }
 
@@ -1297,6 +1295,7 @@ export default class Synthesizer {
         .querySelectorAll(`.instrument > .channel`)
         [channel].querySelector('.panpot');
       dom.ariaValueNow = panpot;
+      /** @type {HTMLDivElement} */
       const progressBar = dom.querySelector('.progress-bar');
       const percentage = (panpot / 127) * 100;
       progressBar.style.width = `${percentage}%`;
@@ -1581,7 +1580,7 @@ export default class Synthesizer {
   /**
    * MIDI音源のメッセージ欄に送られるsysExを解析
    *
-   * @param {array} message
+   * @param {number[]} message
    */
   processMidiMessage(message) {
     clearTimeout(this.timer);

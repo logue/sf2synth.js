@@ -19,7 +19,7 @@ export default class Loader {
     this.cache = cache;
     this.callback = callback;
 
-    /** @type {HtmlDIVElement} */
+    /** @type {HTMLDivElement} */
     this.alert = document.createElement('div');
     this.alert.className = 'alert alert-warning';
 
@@ -32,9 +32,9 @@ export default class Loader {
     this.progressOuter.className = 'progress';
     this.progressOuter.role = 'progressbar';
     this.progressOuter.ariaLabel = `Loading Progress`;
-    this.progressOuter.ariaValueMin = 0;
-    this.progressOuter.ariaValueNow = 0;
-    this.progressOuter.ariaValuemax = 100;
+    this.progressOuter.ariaValueMin = '0';
+    this.progressOuter.ariaValueNow = '0';
+    this.progressOuter.ariaValueMax = '100';
 
     /** @type {HTMLDivElement} */
     this.progress = document.createElement('div');
@@ -54,9 +54,8 @@ export default class Loader {
    */
   onProgress(current, total) {
     const percentCompleted = Math.floor((current / total) * 100);
-    this.progress.style.width = percentCompleted + '%';
-    this.progress.innerText = percentCompleted + ' %';
-    requestAnimationFrame(this.onProgress);
+    this.progress.style.width = `${percentCompleted}%`;
+    this.progress.innerText = `${percentCompleted}%`;
   }
 
   /**
@@ -70,10 +69,9 @@ export default class Loader {
     this.progress.className =
       'progress-bar progress-bar-striped progress-bar-animated';
     this.progress.style.width = '100%';
-    requestAnimationFrame(this.onComplete);
 
     const input = new Uint8Array(buffer);
-    this.callback(input);
+    requestAnimationFrame(this.callback(input));
   }
 
   /**
@@ -82,19 +80,20 @@ export default class Loader {
    * @param {Error} error エラー内容
    */
   onError(error) {
-    this.alert.className = 'alert alert-danger';
-    this.message.innerText =
-      'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
-    this.progressOuter.style.display = 'none';
-    requestAnimationFrame(this.onError);
-    throw Error(error);
+    requestAnimationFrame(function () {
+      this.alert.className = 'alert alert-danger';
+      this.message.innerText =
+        'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
+      this.progressOuter.style.display = 'none';
+    });
+    throw Error(error.message);
   }
 
   /**
    * データ取得
    */
   async fetch() {
-    /** @type {CacheStorage} */
+    /** @type {Cache} */
     const cache = await window.caches.open(Loader.CACHE_NAME);
     /** @type {Response} */
     const cached = await cache.match(this.url);
@@ -121,13 +120,13 @@ export default class Loader {
     /** @type {number} ファイルの容量 */
     const contentLength = parseInt(response.headers.get('Content-Length'));
 
-    /** @type {RedableStream<Uint8Array>} ファイルリーダー */
+    /** @type {ReadableStreamDefaultReader<Uint8Array>} ファイルリーダー */
     const reader = cloned.body.getReader();
 
     /** @type {number} 読み込まれたチャンクの長さ */
     let receivedLength = 0;
 
-    /** @type {ArrayBuffer} 受信したバイナリチャンクの配列(本文を構成します) */
+    /** @type {Uint8Array[]} 受信したバイナリチャンクの配列(本文を構成します) */
     const chunks = [];
 
     // eslint-disable-next-line

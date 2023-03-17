@@ -1,12 +1,12 @@
 {
+  "$schema": "https://json.schemastore.org/jsconfig",
   "compilerOptions": {
-    "module": "esnext",
+    "module": "es6",
     "target": "esnext",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "moduleResolution": "node",
+    "checkJs": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": ["webmidi"]
   },
-  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

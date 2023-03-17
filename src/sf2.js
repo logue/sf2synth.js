@@ -1,4 +1,4 @@
-import Riff from './riff.js';
+import { Riff } from './riff.js';
 
 /**
  * SoundFont Parser Class
@@ -7,11 +7,11 @@ import Riff from './riff.js';
  */
 export default class Parser {
   /**
-   * @param {ByteArray} input
+   * @param {Uint8Array} input
    * @param {Object} [optParams]
    */
   constructor(input, optParams = {}) {
-    /** @type {ByteArray} */
+    /** @type {Uint8Array} */
     this.input = input;
     /** @type {Object | undefined} */
     this.parserOption = optParams.parserOption || {};
@@ -179,7 +179,7 @@ export default class Parser {
       throw new Error('wrong chunk length');
     }
 
-    /** @type {RiffChunk | null} */
+    /** @type {import('./riff.js').RiffChunk | null} */
     const chunk = parser.getChunk(0);
     if (chunk === null) {
       throw new Error('chunk not found');
@@ -190,9 +190,9 @@ export default class Parser {
     this.input = null;
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parseRiffChunk(chunk) {
-    /** @type {ByteArray} */
+    /** @type {ArrayBuffer} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -215,7 +215,7 @@ export default class Parser {
     }
 
     // read structure
-    /** @type {Riff} */
+    /** @type {import('./riff.js').Riff} */
     const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
     parser.parse();
     if (parser.getNumberOfChunks() !== 3) {
@@ -223,18 +223,24 @@ export default class Parser {
     }
 
     // INFO-list
-    this.parseInfoList(/** @type {!RiffChunk} */ (parser.getChunk(0)));
+    this.parseInfoList(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(0))
+    );
 
     // sdta-list
-    this.parseSdtaList(/** @type {!RiffChunk} */ (parser.getChunk(1)));
+    this.parseSdtaList(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(1))
+    );
 
     // pdta-list
-    this.parsePdtaList(/** @type {!RiffChunk} */ (parser.getChunk(2)));
+    this.parsePdtaList(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(2))
+    );
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parseInfoList(chunk) {
-    /** @type {ByteArray} */
+    /** @type {ArrayBuffer} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -257,14 +263,14 @@ export default class Parser {
     }
 
     // read structure
-    /** @type {Riff} */
+    /** @type {import('./riff.js').Riff} */
     const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
     parser.parse();
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parseSdtaList(chunk) {
-    /** @type {ByteArray} */
+    /** @type {ArrayBuffer} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -287,7 +293,7 @@ export default class Parser {
     }
 
     // read structure
-    /** @type {Riff} */
+    /** @type {import('./riff.js').Riff} */
     const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
     parser.parse();
     if (parser.chunkList.length !== 1) {
@@ -298,9 +304,9 @@ export default class Parser {
       (parser.getChunk(0));
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parsePdtaList(chunk) {
-    /** @type {ByteArray} */
+    /** @type {Uint8Array} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -323,7 +329,7 @@ export default class Parser {
     }
 
     // read structure
-    /** @type {Riff} */
+    /** @type {import('./riff.js').Riff} */
     const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
     parser.parse();
 
@@ -332,20 +338,38 @@ export default class Parser {
       throw new Error('invalid pdta chunk');
     }
 
-    this.parsePhdr(/** @type {RiffChunk} */ (parser.getChunk(0)));
-    this.parsePbag(/** @type {RiffChunk} */ (parser.getChunk(1)));
-    this.parsePmod(/** @type {RiffChunk} */ (parser.getChunk(2)));
-    this.parsePgen(/** @type {RiffChunk} */ (parser.getChunk(3)));
-    this.parseInst(/** @type {RiffChunk} */ (parser.getChunk(4)));
-    this.parseIbag(/** @type {RiffChunk} */ (parser.getChunk(5)));
-    this.parseImod(/** @type {RiffChunk} */ (parser.getChunk(6)));
-    this.parseIgen(/** @type {RiffChunk} */ (parser.getChunk(7)));
-    this.parseShdr(/** @type {RiffChunk} */ (parser.getChunk(8)));
+    this.parsePhdr(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(0))
+    );
+    this.parsePbag(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(1))
+    );
+    this.parsePmod(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(2))
+    );
+    this.parsePgen(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(3))
+    );
+    this.parseInst(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(4))
+    );
+    this.parseIbag(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(5))
+    );
+    this.parseImod(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(6))
+    );
+    this.parseIgen(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(7))
+    );
+    this.parseShdr(
+      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(8))
+    );
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parsePhdr(chunk) {
-    /** @type {ByteArray} */
+    /** @type {Uint8Array} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -390,9 +414,9 @@ export default class Parser {
     }
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parsePbag(chunk) {
-    /** @type {ByteArray} */
+    /** @type {ArrayBuffer} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -414,7 +438,7 @@ export default class Parser {
     }
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parsePmod(chunk) {
     // check parse target
     if (chunk.type !== 'pmod') {
@@ -424,7 +448,7 @@ export default class Parser {
     this.presetZoneModulator = this.parseModulator(chunk);
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parsePgen(chunk) {
     // check parse target
     if (chunk.type !== 'pgen') {
@@ -433,9 +457,9 @@ export default class Parser {
     this.presetZoneGenerator = this.parseGenerator(chunk);
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parseInst(chunk) {
-    /** @type {ByteArray} */
+    /** @type {Uint8Array} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -460,9 +484,9 @@ export default class Parser {
     }
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parseIbag(chunk) {
-    /** @type {ByteArray} */
+    /** @type {ArrayBuffer} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -484,7 +508,7 @@ export default class Parser {
     }
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parseImod(chunk) {
     // check parse target
     if (chunk.type !== 'imod') {
@@ -494,7 +518,7 @@ export default class Parser {
     this.instrumentZoneModulator = this.parseModulator(chunk);
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parseIgen(chunk) {
     // check parse target
     if (chunk.type !== 'igen') {
@@ -504,9 +528,9 @@ export default class Parser {
     this.instrumentZoneGenerator = this.parseGenerator(chunk);
   }
 
-  /** @param {RiffChunk} chunk */
+  /** @param {import('./riff.js').RiffChunk} chunk */
   parseShdr(chunk) {
-    /** @type {ByteArray} */
+    /** @type {Uint8Array} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -620,7 +644,7 @@ export default class Parser {
   }
 
   /**
-   * @param {Array} sample
+   * @param {Int16Array} sample
    * @param {number} sampleRate
    * @return {object}
    */
@@ -656,11 +680,11 @@ export default class Parser {
   }
 
   /**
-   * @param {RiffChunk} chunk
+   * @param {import('./riff.js').RiffChunk} chunk
    * @return {Object[]}
    */
   parseModulator(chunk) {
-    /** @type {ByteArray} */
+    /** @type {ArrayBuffer} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;
@@ -735,11 +759,11 @@ export default class Parser {
   }
 
   /**
-   * @param {RiffChunk} chunk
+   * @param {import('./riff.js').RiffChunk} chunk
    * @return {Object[]}
    */
   parseGenerator(chunk) {
-    /** @type {ByteArray} */
+    /** @type {ArrayBuffer} */
     const data = this.input;
     /** @type {number} */
     let ip = chunk.offset;

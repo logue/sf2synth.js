@@ -21,7 +21,7 @@ export default class WebMidiLink {
     this.ready = false;
     /** @type {Synthesizer} */
     this.synth = undefined;
-    /** @type {function(ArrayBuffer)?} */
+    /** @type {Function?} */
     this.loadCallback = undefined;
     /** @type {Function} */
     this.messageHandler = this.onmessage.bind(this);
@@ -36,11 +36,11 @@ export default class WebMidiLink {
     /** @type {string} */
     this.option.targetOrigin = option.targetOrigin || '*';
 
-    /** @type {HTMLElement} */
-    this.placeholder =
-      option.placeholder !== void 0
-        ? document.getElementById(option.placeholder)
-        : window.document.body;
+    /** @type {HTMLDivElement} */
+    // @ts-ignore
+    this.placeholder = option.placeholder
+      ? document.getElementById(option.placeholder)
+      : window.document.body;
     /** @type {Window} */
     this.window = null;
 
@@ -87,11 +87,13 @@ export default class WebMidiLink {
 
     if (!this.synth) {
       // 読み込まれていないときシンセサイザをセットアップ
+      // @ts-ignore
       this.synth = new Synthesizer(buffer);
       // 待受開始
       this.synth.start();
     } else {
       // 別のSoundFontが読み込まれたときリロード
+      // @ts-ignore
       this.synth.refreshInstruments(buffer);
     }
     if (this.option.drawSynth) {
@@ -116,12 +118,14 @@ export default class WebMidiLink {
    */
   onReady() {
     // 一旦MIDI Link待受を解除
+    // @ts-ignore
     window.removeEventListener('message', this.messageHandler);
     if (this.loadCallback) {
       // コールバック実行
       this.loadCallback();
     }
     // MIDI Link待ち受け開始
+    // @ts-ignore
     window.addEventListener('message', this.messageHandler, false);
     // ホスト側に準備完了通知を送信
     this.window.postMessage('link,ready', this.option.targetOrigin);
@@ -135,8 +139,10 @@ export default class WebMidiLink {
    */
   onmessage(ev) {
     /** @type {Array} */
+    // @ts-ignore
     const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
     /** @type {string} */
+    // @ts-ignore
     const type = msg !== [] ? msg.shift() : '';
     /** @type {string} */
     let command;
@@ -178,7 +184,7 @@ export default class WebMidiLink {
   /**
    * MIDI準備完了時のコールバック処理を登録する
    *
-   * @param {function(ArrayBuffer)} callback
+   * @param {Function} callback コールバック関数
    * @public
    */
   setLoadCallback(callback) {
@@ -189,7 +195,7 @@ export default class WebMidiLink {
    * MIDI信号を解析し、シンセサイザーを操作する
    *
    * @param {number[] | ArrayBuffer} message
-   * @private
+   * @protected
    */
   processMidiMessage(message) {
     /** @type {number} */
@@ -200,12 +206,14 @@ export default class WebMidiLink {
     // http://amei.or.jp/midistandardcommittee/MIDI1.0.pdf
     switch (message[0] & 0xf0) {
       case 0x80: // NoteOff: 8n kk vv
+        // @ts-ignore
         synth.noteOff(channel, message[1], message[2]);
         break;
       case 0x90: // NoteOn: 9n kk vv
         if (message[2] > 0) {
           synth.noteOn(channel, message[1], message[2]);
         } else {
+          // @ts-ignore
           synth.noteOff(channel, message[1], 0);
         }
         break;
@@ -405,6 +413,7 @@ export default class WebMidiLink {
               synth.init('GM2');
               break;
             default:
+              // @ts-ignore
               console.log('GM:', this.dumpMessage(message));
           }
         } else if (vendor === 0x7f) {
@@ -413,6 +422,7 @@ export default class WebMidiLink {
             // master volume: F0 7F 7F 04 01 [value] [value] F7
             synth.setMasterVolume(message[5] + (message[6] << 7));
           } else {
+            // @ts-ignore
             console.log('realtime:', this.dumpMessage(message));
           }
         } else if (vendor === 0x41) {
@@ -432,6 +442,7 @@ export default class WebMidiLink {
 
               if (message[7] === 0x00) {
                 // ページが0x00の場合、LCDに表示するメッセージとする
+                // @ts-ignore
                 const msg = message.splice(8);
                 // Remove F7
                 msg.pop();
@@ -440,6 +451,7 @@ export default class WebMidiLink {
                 synth.processMidiMessage(msg);
               } else {
                 // GS音源のLCDの16x16のビットマップ画像
+                // @ts-ignore
                 console.log('GS Bitmap message:', this.dumpMessage(message));
               }
               break;
@@ -474,14 +486,17 @@ export default class WebMidiLink {
               break;
             case 0x30:
               // Reverb Effect
+              // @ts-ignore
               console.info('GS Reverb:', this.dumpMessage(message));
               break;
             case 0x38:
               // Chorus Effect
+              // @ts-ignore
               console.info('GS Chorus:', this.dumpMessage(message));
               break;
             case 0x45:
               // Bitmap icon 16x16 ?
+              // @ts-ignore
               console.info('GS Bitmap:', this.dumpMessage(message));
               break;
             case 0x7f:
@@ -490,6 +505,7 @@ export default class WebMidiLink {
               console.info('GS Reset');
               break;
             default:
+              // @ts-ignore
               console.log('GS:', this.dumpMessage(message));
           }
         } else if (vendor == 0x43) {
@@ -499,7 +515,9 @@ export default class WebMidiLink {
 
           if (message[2] !== 0x43 && message[3] === 0x43) {
             // delete checksum
+            // @ts-ignore
             message.splice(1, 1);
+            // @ts-ignore
             console.log('message:', this.dumpMessage(message));
           }
 
@@ -520,7 +538,14 @@ export default class WebMidiLink {
               // 02: Reverb
               // 40: Variation
               // 5B: Part to apply variation effect
+              // @ts-ignore
               console.log('XG Effect:', this.dumpMessage(message));
+              break;
+            case 0x03:
+              // Insertion Effect
+              // F0 43 10 4C 03 [type] [value] F7
+              // @ts-ignore
+              console.log('XG Insertion Effect:', this.dumpMessage(message));
               break;
             case 0x04:
               // XG Master Volume:
@@ -531,6 +556,7 @@ export default class WebMidiLink {
               // Text:
               // F0 43 1n 4C 06 00 00 [text] F7
               // ex. F0 43 1n 4C 06 00 00 48 65 6C 6C 6F 21 F7 = Hello
+              // @ts-ignore
               const msg = message.splice(8);
               // Remove F7
               msg.pop();
@@ -542,6 +568,7 @@ export default class WebMidiLink {
               // F0 43 10 4C 07 00 00 [bitmap] F7
               // 音源のアイコン描画領域に描画する16x16のビットマップ画像。
               // 7bitごとに上から描画するが仕様がややこしいので処理しない
+              // @ts-ignore
               console.log('XG Bitmap:', this.dumpMessage(message));
               break;
             case 0x08:
@@ -552,6 +579,7 @@ export default class WebMidiLink {
               break;
 
             default:
+              // @ts-ignore
               console.log('XG:', this.dumpMessage(message));
           }
         }

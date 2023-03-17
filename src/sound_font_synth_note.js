@@ -43,7 +43,7 @@ export default class SynthesizerNote {
     this.key = instrument['key'];
     /** @type {number} */
     this.velocity = instrument['velocity'];
-    /** @type {Int16Array} */
+    /** @type {Uint8Array} */
     this.buffer = instrument['sample'];
     /** @type {number} */
     this.playbackRate = instrument['basePlaybackRate'];
@@ -72,7 +72,7 @@ export default class SynthesizerNote {
     /** @type {number} */
     this.hermonicContent = instrument['hermonicContent'];
 
-    /** @type {Reverb} */
+    /** @type {import('@logue/reverb').default} */
     this.reverb = instrument['reverb'];
 
     // state
@@ -91,7 +91,7 @@ export default class SynthesizerNote {
     this.audioBuffer = null;
     /** @type {AudioBufferSourceNode} */
     this.bufferSource = ctx.createBufferSource();
-    /** @type {StereoPannerNode} */
+    /** @type {PannerNode} */
     this.panner = ctx.createPanner();
     /** @type {GainNode} */
     this.outputGainNode = ctx.createGain();
@@ -180,15 +180,13 @@ export default class SynthesizerNote {
     this.expressionGainNode.gain.value = this.expression / 127;
 
     // panpot
-    /** @type {StereoPannerNode} */
+    /** @type {PannerNode} */
     const panner = this.panner;
     panner.panningModel = 'equalpower';
     panner.distanceModel = 'inverse';
-    panner.setPosition(
-      Math.sin((pan * Math.PI) / 2),
-      0,
-      Math.cos((pan * Math.PI) / 2)
-    );
+    panner.positionX.setValueAtTime(Math.sin((pan * Math.PI) / 2), 0);
+    panner.positionY.setValueAtTime(0, 0);
+    panner.positionZ.setValueAtTime(Math.cos((pan * Math.PI) / 2), 0);
 
     // ---------------------------------------------------------------------------
     // Delay, Attack, Hold, Decay, Sustain
@@ -203,8 +201,7 @@ export default class SynthesizerNote {
       volume = 0;
     }
 
-    // volume envelope
-    /** @type {AudioNode} */
+    /** @type {AudioParam} volume envelope */
     const outputGain = output.gain;
     outputGain.setValueAtTime(0, now);
     outputGain.setValueAtTime(0, volDelay);
