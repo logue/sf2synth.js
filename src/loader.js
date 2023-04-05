@@ -9,6 +9,7 @@ export default class Loader {
   /**
    * コンストラクタ
    *
+   * @constructor
    * @param {string} url
    * @param {HTMLDivElement} placeholder
    * @param {boolean} cache

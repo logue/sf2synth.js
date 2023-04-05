@@ -12,11 +12,12 @@ export default class WebMidiApi extends WebMidiLink {
   constructor(option = {}) {
     super(option);
     /** @type {WebMidi.MIDIAccess} */
-    this.midi;
+    this.midi = undefined;
   }
 
   /**
    * @inheritdoc
+   * @param {string} url
    */
   async setup(url) {
     this.midi = await window.navigator.requestMIDIAccess({ sysex: true });

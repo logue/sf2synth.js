@@ -6,19 +6,18 @@
     <meta name="robots" content="noindex" />
     <meta name="color-scheme" content="light dark" />
     <title>Web Midi Link</title>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <!-- Google Tag Manager -->
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-2Y2FW3QEG4"
+    ></script>
     <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'UA-33600926-1');
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-2Y2FW3QEG4');
     </script>
     <link rel="stylesheet" href="/src/wml.scss" />
   </head>
@@ -111,12 +110,8 @@
       document.addEventListener(
         'DOMContentLoaded',
         event => {
-          /** @type {HTMLDivElement} Message DOM */
-          const message = document.getElementById('message');
           /** @type {HTMLInputElement} File Input Form */
           const fileInput = document.getElementById('file');
-          /** @type {HTMLDivElement} Placeholder */
-          const placeholder = document.getElementById('placeholder');
           /** @type {HTMLDivElement} drag area */
           const dragArea = document.getElementById('drag');
           /** @type {HTMLTimeElement} Build Date */
@@ -157,14 +152,13 @@
             toggleDarkMode.checked = mediaQuery.matches;
           });
 
-          /** Load sound font
+          /**
+           * Load sound font
+           *
            * @param {File} file
            */
           const handleSoundFont = file => {
             const reader = new FileReader();
-
-            // wml.cancelLoading();
-
             reader.readAsArrayBuffer(file);
 
             reader.onload = e => {
@@ -222,15 +216,6 @@
           toggleDarkMode.addEventListener('change', e => {
             setColorMode(e.target.checked ? 'dark' : 'light');
           });
-
-          /*
-          document
-            .getElementById('reset-darkmode')
-            .addEventListener('click', e => {
-              e.preventDefault();
-              setColorMode(false);
-            });
-          */
         },
         false
       );

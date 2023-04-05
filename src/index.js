@@ -15,6 +15,6 @@ const SoundFont = {
 export default SoundFont;
 
 if (!window.SoundFont) {
-  // for CDN
+  // @ts-ignore
   window.SoundFont = SoundFont;
 }

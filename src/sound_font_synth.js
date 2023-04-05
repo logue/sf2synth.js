@@ -1,4 +1,3 @@
-// @ts-nocheck
 import SynthesizerNote from './sound_font_synth_note';
 import Reverb from '@logue/reverb';
 import Parser from './sf2';
@@ -13,9 +12,6 @@ export default class Synthesizer {
   constructor(input) {
     /** @type {number} */
     let i;
-    /** @type {number} */
-    let il;
-
     /** @type {Uint8Array} */
     this.input = input;
     /** @type {Parser} */
@@ -171,9 +167,10 @@ export default class Synthesizer {
     ];
 
     /** @type {number[]} */
-    this.percussionVolume = new Array(128);
-    for (i = 0, il = this.percussionVolume.length; i < il; ++i) {
+    this.percussionVolume = [];
+    while (i === 127) {
       this.percussionVolume[i] = 127;
+      i++;
     }
 
     /** @type {string[][]} */
@@ -198,17 +195,20 @@ export default class Synthesizer {
     /** 表示項目 */
     this.items = [];
 
-    // 交差していない
+    /** @type {IntersectionObserver} 交差していない */
     this.intersection = new IntersectionObserver(
       entries =>
-        entries.forEach(
-          entry => (entry.target.dataset.isIntersecting = entry.isIntersecting)
-        ),
+        entries.forEach(entry => {
+          // @ts-ignore
+          entry.target.dataset.isIntersecting = entry.isIntersecting;
+        }),
       {}
     );
 
-    /** @type {function} タイマーのスレッド */
-    this.timer = null;
+    /** @type {number} タイマーのスレッド */
+    this.timer = 0;
+    /** @type {boolean} */
+    this.drag = false;
   }
 
   /** @return {AudioContext} */
@@ -219,7 +219,7 @@ export default class Synthesizer {
     // Defreeze AudioContext for iOS.
     const initAudioContext = () => {
       document.removeEventListener('touchstart', initAudioContext);
-      // wake up AudioContext
+      /** @type {AudioBufferSourceNode} wake up AudioContext */
       const emptySource = ctx.createBufferSource();
       emptySource.start();
       emptySource.stop();
@@ -272,7 +272,7 @@ export default class Synthesizer {
       this.percussionVolume[i] = 127;
     }
 
-    // this.setMasterVolume(8192);
+    this.setMasterVolume(8192);
 
     this.gainMaster.connect(this.ctx.destination);
 
@@ -320,38 +320,27 @@ export default class Synthesizer {
     let bank;
     /** @type {number} */
     let bankNumber;
-    /** @type {Object} TODO */
-    let preset;
     /** @type {Object} */
     let instrument;
     /** @type {number} */
     let presetNumber;
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
-    /** @type {number} */
-    let j;
-    /** @type {number} */
-    let jl;
     /** @type {string} */
     let presetName;
 
     const programSet = [];
 
-    for (i = 0, il = presets.length; i < il; ++i) {
-      preset = presets[i];
+    presets.forEach(preset => {
       presetNumber = preset.header.preset;
       bankNumber = preset.header.bank;
       presetName = preset.name.replace(/\0*$/, '');
 
       if (typeof preset.instrument !== 'number') {
-        continue;
+        return;
       }
 
       instrument = instruments[preset.instrument];
       if (instrument.name.replace(/\0*$/, '') === 'EOI') {
-        continue;
+        return;
       }
 
       // select bank
@@ -362,14 +351,15 @@ export default class Synthesizer {
       bank[presetNumber] = {};
       bank[presetNumber].name = presetName;
 
-      for (j = 0, jl = instrument.info.length; j < jl; ++j) {
-        this.createNoteInfo(parser, instrument.info[j], bank[presetNumber]);
-      }
+      instrument.info.forEach(info =>
+        this.createNoteInfo(parser, info, bank[presetNumber])
+      );
+
       if (!programSet[bankNumber]) {
         programSet[bankNumber] = [];
       }
       programSet[bankNumber][presetNumber] = presetName;
-    }
+    });
 
     this.programSet = programSet;
 
@@ -382,7 +372,7 @@ export default class Synthesizer {
    * @param {any} preset
    */
   createNoteInfo(parser, info, preset) {
-    /** @type {Generator} */
+    /** @type {*} */
     const generator = info.generator;
 
     if (!generator.keyRange || !generator.sampleID) {
@@ -446,11 +436,7 @@ export default class Synthesizer {
         basePlaybackRate:
           1.0594630943592953 ** // Math.pow(2, 1 / 12)
           ((i -
-            this.getModGenAmount(
-              generator,
-              'overridingRootKey',
-              sampleHeader.originalPitch
-            ) +
+            this.getModGenAmount(generator, 'overridingRootKey') +
             tune +
             sampleHeader.pitchCorrection / 100) *
             scale),
@@ -618,10 +604,11 @@ export default class Synthesizer {
             checkbox.setAttribute('type', 'checkbox');
             checkbox.className = 'form-check-input';
             checkbox.id = 'mute' + channel + 'ch';
-            checkbox.value = channel;
+            checkbox.value = channel.toString();
             checkbox.addEventListener(
-              'input',
+              'change',
               event => {
+                // @ts-ignore
                 this.mute(channel, event.target.checked);
               },
               false
@@ -631,7 +618,7 @@ export default class Synthesizer {
             const labelElem = doc.createElement('label');
 
             labelElem.className = 'form-check-label';
-            labelElem.textContent = channel + 1;
+            labelElem.textContent = (channel + 1).toString();
             labelElem.setAttribute('for', 'mute' + channel + 'ch');
             checkboxElement.appendChild(labelElem);
             itemElem.appendChild(checkboxElement);
@@ -645,11 +632,12 @@ export default class Synthesizer {
             bankSelect.addEventListener(
               'change',
               ((synth, ch) => event => {
-                const program =
-                  channelElem.querySelector('.program select').value;
+                /** @type {HTMLSelectElement} */
+                const program = channelElem.querySelector('.program select');
                 // console.log(ch, event.target.value, program);
+                // @ts-ignore
                 synth.bankChange(ch, event.target.value);
-                synth.programChange(ch, program);
+                synth.programChange(ch, parseInt(program.value));
               })(this, channel),
               false
             );
@@ -664,6 +652,7 @@ export default class Synthesizer {
             select.addEventListener(
               'change',
               ((synth, ch) => event => {
+                // @ts-ignore
                 synth.programChange(ch, event.target.value);
               })(this, channel),
               false
@@ -773,7 +762,7 @@ export default class Synthesizer {
                 'mouseout',
                 ((synth, ch, k) => event => {
                   event.preventDefault();
-                  synth.noteOff(ch, k, 0);
+                  synth.noteOff(ch, k);
                 })(this, channel, key)
               );
               keyElem.addEventListener(
@@ -781,7 +770,7 @@ export default class Synthesizer {
                 ((synth, ch, k) => event => {
                   event.preventDefault();
                   synth.drag = false;
-                  synth.noteOff(ch, k, 0);
+                  synth.noteOff(ch, k);
                 })(this, channel, key)
               );
             }
@@ -830,17 +819,22 @@ export default class Synthesizer {
 
     // ヘッダー行のリサイズ
     const ro = new ResizeObserver(entries => {
-      for (const item in this.items) {
-        if (!{}.hasOwnProperty.call(this.items, item)) {
-          continue;
-        }
+      this.items.forEach(item => {
+        /** @type {HTMLElement} */
+        const headerItem = wrapper.querySelector(
+          `.header .${this.items[item]}`
+        );
+        /** @type {HTMLElement} */
+        const channelItem = wrapper.querySelector(
+          `.channel .${this.items[item]}`
+        );
 
-        wrapper.querySelector(`.header .${this.items[item]}`).style.width =
-          wrapper.querySelector(`.channel .${this.items[item]}`).offsetWidth +
-          'px';
-      }
+        headerItem.style.width = channelItem.offsetWidth + 'px';
+      });
+      /** @type {HTMLElement} */
+      const keysItem = wrapper.querySelector(`.header .keys`);
 
-      wrapper.querySelector(`.header .keys`).style.display =
+      keysItem.style.display =
         document.documentElement.clientWidth <= 680 ? 'none' : 'flex';
     });
     ro.observe(wrapper);
@@ -859,19 +853,21 @@ export default class Synthesizer {
     if (!this.element) {
       return;
     }
-    /** @type {HTMLDivElement[]} */
-    const channelElem = this.element.querySelectorAll(`.instrument > .channel`)[
-      channel
-    ];
+    /** @type {NodeListOf<HTMLDivElement>} */
+    const channelElems = this.element.querySelectorAll(
+      `.instrument > .channel`
+    );
 
-    if (channelElem.dataset.isIntersecting) {
+    if (channelElems[channel].dataset.isIntersecting) {
       /** @type {HTMLDivElement} */
-      const keyElem = channelElem.querySelector(`.key:nth-child(${key + 1})`);
+      const keyElem = channelElems[channel].querySelector(
+        `.key:nth-child(${key + 1})`
+      );
       if (velocity === 0) {
         if (keyElem.classList.contains('note-on')) {
           keyElem.classList.remove('note-on');
         }
-        keyElem.style.opacity = 1;
+        keyElem.style.opacity = '1';
       } else {
         keyElem.classList.add('note-on');
         // ベロシティに応じて透過度を調整
@@ -904,8 +900,8 @@ export default class Synthesizer {
       const option = document.createElement('option');
       option.value = bankNo;
       option.textContent = ('000' + parseInt(bankNo)).slice(-3);
-      if (bankNo === this.channelBank[channel]) {
-        option.selected = 'selected';
+      if (parseInt(bankNo) === this.channelBank[channel]) {
+        option.selected = true;
       }
       bankElement.appendChild(option);
     }
@@ -924,12 +920,12 @@ export default class Synthesizer {
     // console.log(this.channelBank[channel]);
     /** @type {number} */
     const bankIndex = this.channelBank[channel];
-    /** @type {HTMLElement} */
+    /** @type {HTMLSelectElement} */
     const bankElement = dom.querySelector('.bank > select');
-    /** @type {HTMLElement} */
+    /** @type {HTMLSelectElement} */
     const programElement = dom.querySelector('.program > select');
 
-    bankElement.value = this.channelBank[channel];
+    bankElement.value = this.channelBank[channel].toString();
     while (programElement.firstChild)
       programElement.removeChild(programElement.firstChild);
 
@@ -944,8 +940,8 @@ export default class Synthesizer {
       option.textContent = `${('000' + (parseInt(programNo) + 1)).slice(-3)}:${
         this.programSet[bankIndex][programNo]
       }`;
-      if (programNo === this.channelInstrument[channel]) {
-        option.selected = 'selected';
+      if (parseInt(programNo) === this.channelInstrument[channel]) {
+        option.selected = true;
       }
       programElement.appendChild(option);
     }
@@ -1114,17 +1110,18 @@ export default class Synthesizer {
     }
 
     if (this.element) {
-      /** @type {HTMLDivElement} */
-      const channelElement = this.element.querySelectorAll(
+      /** @type {NodeListOf<HTMLDivElement>} */
+      const channelElements = this.element.querySelectorAll(
         `.instrument > .channel`
-      )[channel];
-      if (!channelElement) {
+      );
+
+      if (!channelElements[channel]) {
         return;
       }
       if (this.channelHold[channel]) {
-        channelElement.classList.add('hold');
-      } else if (channelElement.classList.contains('hold')) {
-        channelElement.classList.remove('hold');
+        channelElements[channel].classList.add('hold');
+      } else if (channelElements[channel].classList.contains('hold')) {
+        channelElements[channel].classList.remove('hold');
       }
     }
   }
@@ -1196,9 +1193,12 @@ export default class Synthesizer {
 
     this.bankChange(channel, this.channelBank[channel]);
     if (this.element) {
-      this.element
+      /** @type {HTMLSelectElement} */
+      const select = this.element
         .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.program > select').value = instrument;
+        [channel].querySelector('.program > select');
+
+      select.value = instrument.toString();
     }
   }
 
@@ -1230,10 +1230,11 @@ export default class Synthesizer {
     // }
 
     if (this.element) {
-      // バンクセレクトの値を更新
-      this.element
+      /** @type {HTMLSelectElement} バンクセレクトの値 */
+      const bankSelect = this.element
         .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.bank > select').value = bank;
+        [channel].querySelector('.bank > select');
+      bankSelect.value = bank.toString();
     }
     // TODO: 厳密にはMIDI音源はプログラムチェンジがあったときに、バンク・セレクトの値が反映されるのでこの実装は正しくない。
     this.updateProgramSelect(channel);
@@ -1247,9 +1248,11 @@ export default class Synthesizer {
    */
   volumeChange(channel, volume) {
     if (this.element) {
-      this.element
+      /** @type {HTMLElement} */
+      const volumeVariable = this.element
         .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.volume var').innerText = volume;
+        [channel].querySelector('.volume var');
+      volumeVariable.innerText = volume.toString();
     }
 
     this.channelVolume[channel] = volume;
@@ -1274,9 +1277,12 @@ export default class Synthesizer {
     }
 
     if (this.element) {
-      this.element
+      /** @type {HTMLElement} */
+      const expressionVariabe = this.element
         .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.expression var').innerText = expression;
+        [channel].querySelector('.expression var');
+
+      expressionVariabe.innerText = expression.toString();
     }
 
     this.channelExpression[channel] = expression;
@@ -1294,17 +1300,17 @@ export default class Synthesizer {
       const dom = this.element
         .querySelectorAll(`.instrument > .channel`)
         [channel].querySelector('.panpot');
-      dom.ariaValueNow = panpot;
+      dom.ariaValueNow = panpot.toString();
       /** @type {HTMLDivElement} */
       const progressBar = dom.querySelector('.progress-bar');
       const percentage = (panpot / 127) * 100;
       progressBar.style.width = `${percentage}%`;
       progressBar.classList.remove('left', 'right');
-      progressBar.title = panpot;
+      progressBar.title = panpot.toString();
       if (panpot === 64) {
         return;
       }
-      dom.classList.add([panpot < 63 ? 'left' : 'right']);
+      dom.classList.add(panpot < 63 ? 'left' : 'right');
     }
   }
 
@@ -1322,7 +1328,7 @@ export default class Synthesizer {
     let i;
     /** @type {number} */
     let il;
-    /** @type {SoundFont.SynthesizerNote[]} */
+    /** @type {import('./sound_font_synth_note').default[]} */
     const currentNoteOn = this.currentNoteOn[channel];
     /** @type {number} */
     const calculated = bend - 8192;
@@ -1334,13 +1340,15 @@ export default class Synthesizer {
     this.channelPitchBend[channel] = bend;
 
     if (this.element) {
+      /** @type {HTMLDivElement} */
       const dom = this.element
         .querySelectorAll(`.instrument > .channel`)
         [channel].querySelector('.pitchBend');
-      dom.ariaValueNow = bend;
+      dom.ariaValueNow = bend.toString();
+      /** @type {HTMLDivElement} */
       const progressBar = dom.querySelector('.progress-bar');
       progressBar.style.width = `${Math.floor((bend / 16384) * 100)}%`;
-      progressBar.title = calculated;
+      progressBar.title = calculated.toString();
       progressBar.classList.remove('high', 'low');
       if (calculated === 0) {
         return;
@@ -1357,10 +1365,11 @@ export default class Synthesizer {
    */
   pitchBendSensitivity(channel, sensitivity) {
     if (this.element) {
-      this.element
+      /** @type {HTMLElement} */
+      const pitchBendSensitivityVariable = this.element
         .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.pitchBendSensitivity > var').innerText =
-        sensitivity;
+        [channel].querySelector('.pitchBendSensitivity > var');
+      pitchBendSensitivityVariable.innerText = sensitivity.toString();
     }
     this.channelPitchBendSensitivity[channel] = sensitivity;
   }
@@ -1436,9 +1445,11 @@ export default class Synthesizer {
     this.reverb[channel].mix(depth / 127);
 
     if (this.element) {
-      this.element
+      /** @type {HTMLElement} */
+      const reverbVariable = this.element
         .querySelectorAll(`.instrument > .channel`)
-        [channel].querySelector('.reverbDepth var').innerText = depth;
+        [channel].querySelector('.reverbDepth var');
+      reverbVariable.innerText = depth.toString();
     }
   }
 
@@ -1456,9 +1467,9 @@ export default class Synthesizer {
 
       // モデレーターが0でないときは、ピッチに斜め線を入れる
       if (depth !== 0) {
-        dom.classList.add(['progress-bar-striped']);
+        dom.classList.add('progress-bar-striped');
       } else {
-        dom.classList.remove(['progress-bar-striped']);
+        dom.classList.remove('progress-bar-striped');
       }
     }
     this.modulation[channel] = depth;
@@ -1494,7 +1505,7 @@ export default class Synthesizer {
 
     // 再生中の音をすべて止める
     while (currentNoteOn.length > 0) {
-      this.noteOff(channel, currentNoteOn[0].key, 0);
+      this.noteOff(channel, currentNoteOn[0].key);
     }
   }
 
@@ -1511,7 +1522,7 @@ export default class Synthesizer {
 
     while (currentNoteOn.length > 0) {
       note = currentNoteOn.shift();
-      this.noteOff(channel, note.key, 0);
+      this.noteOff(channel, note.key);
       note.release();
       note.disconnect();
     }
@@ -1584,6 +1595,7 @@ export default class Synthesizer {
    */
   processMidiMessage(message) {
     clearTimeout(this.timer);
+    /** @type {HTMLElement} */
     const dom = this.element.querySelector('.header .keys code');
     dom.innerText = message.map(e => String.fromCharCode(e)).join('');
 

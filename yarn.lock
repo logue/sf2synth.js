@@ -32,12 +32,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@csstools/css-parser-algorithms@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@csstools/css-parser-algorithms@npm:2.0.1"
+"@csstools/css-parser-algorithms@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@csstools/css-parser-algorithms@npm:2.1.0"
   peerDependencies:
     "@csstools/css-tokenizer": ^2.0.0
-  checksum: 9f168cfc8fa30ba19fcbe7632d947b74beea494db60cf0eb250f7b77fe72239fb5e6d292b035144dbc52977fb4768f157064f8358530701fe56e5ef2993174c7
+  checksum: 197c8b0db9e721974d3850a44c73a7c1c0ebdddf981ddbc5f0a56d60c09c332bcd9f63ae391811ba3b11b9939faa50ada15c5cc38490861ba48f8933b599f660
   languageName: node
   linkType: hard
 
@@ -58,13 +58,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@csstools/selector-specificity@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "@csstools/selector-specificity@npm:2.1.1"
+"@csstools/selector-specificity@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@csstools/selector-specificity@npm:2.2.0"
   peerDependencies:
-    postcss: ^8.4
     postcss-selector-parser: ^6.0.10
-  checksum: 392ab62732e93aa8cbea445bf3485c1acbbecc8ec087b200e06c9ddd2acf740fd1fe46abdacf813e7a50a95a60346377ee3eecb4e1fe3709582e2851430b376a
+  checksum: 97c89f23b3b527d7bd51ed299969ed2b9fbb219a367948b44aefec228b8eda6ae0ad74fe8a82f9aac8ff32cfd00bb6d0c98d1daeab2e8fc6d5c4af25e5be5673
   languageName: node
   linkType: hard
 
@@ -240,27 +239,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/eslintrc@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@eslint/eslintrc@npm:2.0.1"
+"@eslint/eslintrc@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@eslint/eslintrc@npm:2.0.2"
   dependencies:
     ajv: ^6.12.4
     debug: ^4.3.2
-    espree: ^9.5.0
+    espree: ^9.5.1
     globals: ^13.19.0
     ignore: ^5.2.0
     import-fresh: ^3.2.1
     js-yaml: ^4.1.0
     minimatch: ^3.1.2
     strip-json-comments: ^3.1.1
-  checksum: 56b9192a687a450db53a7b883daf9f0f447c43b3510189cf88808a7a2467c2a302a42a50f184cc6d5a9faf3d1df890a2ef0fd0d60b751f32a3e9dfea717c6b48
+  checksum: cfcf5e12c7b2c4476482e7f12434e76eae16fcd163ee627309adb10b761e5caa4a4e52ed7be464423320ff3d11eca5b50de5bf8be3e25834222470835dd5c801
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:8.36.0":
-  version: 8.36.0
-  resolution: "@eslint/js@npm:8.36.0"
-  checksum: b7d6b84b823c8c7784be390741196617565527b1f7c0977fde9455bfb57fd88f81c074a03dd878757d2c33fa29f24291e9ecbc1425710f067917324b55e1bf3a
+"@eslint/js@npm:8.37.0":
+  version: 8.37.0
+  resolution: "@eslint/js@npm:8.37.0"
+  checksum: 7a07fb085c94ce1538949012c292fd3a6cd734f149bc03af6157dfbd8a7477678899ef57b4a27e15b36470a997389ad79a0533d5880c71e67720ae1a7de7c62d
   languageName: node
   linkType: hard
 
@@ -296,13 +295,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@logue/reverb@npm:^1.2.8":
-  version: 1.2.8
-  resolution: "@logue/reverb@npm:1.2.8"
+"@logue/reverb@npm:^1.2.10":
+  version: 1.2.10
+  resolution: "@logue/reverb@npm:1.2.10"
   dependencies:
-    "@thi.ng/colored-noise": ^1.0.12
-    "@thi.ng/transducers": ^8.3.38
-  checksum: 3b69eb7ae521f56c0a263c31e2984ebe5520fc76306b2b405e85ff180d822399b963673c0fea774240cd29ed77bab84894000b541475c1603da51b5db3c150be
+    "@thi.ng/colored-noise": ^1.0.13
+    "@thi.ng/transducers": ^8.4.1
+  checksum: 3fe8b9e204196a833f9e46737165a17504357352b29ea23ee75e34578d9aaf73c6713e3da335eb35f4c2150c7e63ed11e0c5800e8d2a3f8e85534fcc9cff16eb
   languageName: node
   linkType: hard
 
@@ -310,27 +309,27 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@logue/sf2synth@workspace:."
   dependencies:
-    "@logue/reverb": ^1.2.8
+    "@logue/reverb": ^1.2.10
     "@types/webmidi": ^2.0.7
-    bootstrap: ^5.3.0-alpha.1
-    eslint: ^8.36.0
+    bootstrap: ^5.3.0-alpha.3
+    eslint: ^8.37.0
     eslint-config-google: ^0.14.0
-    eslint-config-prettier: ^8.7.0
+    eslint-config-prettier: ^8.8.0
     eslint-import-resolver-alias: ^1.1.2
     eslint-plugin-import: ^2.27.5
     eslint-plugin-prettier: ^4.2.1
     husky: ^8.0.3
     lint-staged: ^13.2.0
     lodash: ^4.17.21
-    prettier: ^2.8.4
+    prettier: ^2.8.7
     query-string: ^8.1.0
-    rimraf: ^4.4.0
-    sass: 1.59.3
-    stylelint: ^15.3.0
+    rimraf: ^4.4.1
+    sass: 1.60.0
+    stylelint: ^15.4.0
     stylelint-config-recommended-scss: ^9.0.1
     stylelint-order: ^6.0.3
     stylelint-prettier: ^3.0.0
-    vite: ^4.2.0
+    vite: ^4.2.1
     vite-plugin-banner: ^0.7.0
     vite-plugin-checker: ^0.5.6
   languageName: unknown
@@ -383,129 +382,129 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/api@npm:^8.7.4":
-  version: 8.7.4
-  resolution: "@thi.ng/api@npm:8.7.4"
-  checksum: 9e2c0bfc32210629197e03550248b29270b10ab63ae21628be039b02700e6c9dbe4a5f68c795a4b9bbbd4c07268f290bf15ca1389cd07f09344f8429d63d7aa0
+"@thi.ng/api@npm:^8.7.5":
+  version: 8.7.5
+  resolution: "@thi.ng/api@npm:8.7.5"
+  checksum: 18df466cf969e848d4c4afbabb8f094e8a446212227547a49535eba86f481d42c3b0959ab4e70c86fd919dbb958478fa5a92e88d972fa668502b417a50d0785e
   languageName: node
   linkType: hard
 
-"@thi.ng/arrays@npm:^2.5.8":
-  version: 2.5.8
-  resolution: "@thi.ng/arrays@npm:2.5.8"
+"@thi.ng/arrays@npm:^2.5.9":
+  version: 2.5.9
+  resolution: "@thi.ng/arrays@npm:2.5.9"
   dependencies:
-    "@thi.ng/api": ^8.7.4
-    "@thi.ng/checks": ^3.3.10
-    "@thi.ng/compare": ^2.1.27
-    "@thi.ng/equiv": ^2.1.20
-    "@thi.ng/errors": ^2.2.13
-    "@thi.ng/random": ^3.3.27
-  checksum: edba9b756d606492402b0937bef062aeb6940cfa6dabdb2a9b6a1732778c79c53508249af3bdd1f58c9af9938d64ab4437ad2a4da35ef957e3d0c1605bf423a0
+    "@thi.ng/api": ^8.7.5
+    "@thi.ng/checks": ^3.3.11
+    "@thi.ng/compare": ^2.1.28
+    "@thi.ng/equiv": ^2.1.21
+    "@thi.ng/errors": ^2.2.14
+    "@thi.ng/random": ^3.3.28
+  checksum: ebda25085079839d659601fb4fd17a04274d66dcba362ff0dcc095b10ccb7a55367c6a0e45f7874835a68b73429afd092e559f3109d927bba891275f25fde4d6
   languageName: node
   linkType: hard
 
-"@thi.ng/binary@npm:^3.3.21":
-  version: 3.3.21
-  resolution: "@thi.ng/binary@npm:3.3.21"
+"@thi.ng/binary@npm:^3.3.22":
+  version: 3.3.22
+  resolution: "@thi.ng/binary@npm:3.3.22"
   dependencies:
-    "@thi.ng/api": ^8.7.4
-  checksum: d7aa9f9817460bb6a5a1bfc62eeaca0fcb96b278e041918a475b879c33839dfe24d104828c5ee97c0e23956f770cf0b16cc030fed321de14d61a8d15a2e45b0b
+    "@thi.ng/api": ^8.7.5
+  checksum: 30a5ce508c05e6222cec7f30e5d8f3ebd97b3dbb4698de596f6d27ada12f361d88f400deb5ed65ba2d353dbb5bdc4f38d7a4ff1182ca4a6b13ad63b8759024c0
   languageName: node
   linkType: hard
 
-"@thi.ng/checks@npm:^3.3.10":
-  version: 3.3.10
-  resolution: "@thi.ng/checks@npm:3.3.10"
+"@thi.ng/checks@npm:^3.3.11":
+  version: 3.3.11
+  resolution: "@thi.ng/checks@npm:3.3.11"
   dependencies:
     tslib: ^2.5.0
-  checksum: 9707df1974f3d87cfa66c2409d8cf7d98d0a778a7a7376c175b7b8f66aec4546ebfe21ee36402cdbc4f1f58f6967266e3ebfbcde4241a2dd8d0c9740b87c7c51
+  checksum: ea914e4eb7d59a66b342ee31a6a8f97e6e1f65130a6c07c927698e293b29928f5f9caccc13f6ec1058d9becb30f09d107edf33a82161b6e06c079a78c41213d6
   languageName: node
   linkType: hard
 
-"@thi.ng/colored-noise@npm:^1.0.12":
-  version: 1.0.12
-  resolution: "@thi.ng/colored-noise@npm:1.0.12"
+"@thi.ng/colored-noise@npm:^1.0.13":
+  version: 1.0.13
+  resolution: "@thi.ng/colored-noise@npm:1.0.13"
   dependencies:
-    "@thi.ng/binary": ^3.3.21
-    "@thi.ng/random": ^3.3.27
-  checksum: fc49071409fd16b328b23d5f0da35ecf6bae69de19fc8d7b78ae120a97bd806a5a794b155488ded677fa584f500899d0a897cfeb611c5854286aaf976f8d102e
+    "@thi.ng/binary": ^3.3.22
+    "@thi.ng/random": ^3.3.28
+  checksum: e82595f030be9e2c67fa9c27b3574f80df54756a50d93a5094c303436105322bee8eea4e0e88d34bff4c6088cee562d04511a163930cd4a763d72260411eff5f
   languageName: node
   linkType: hard
 
-"@thi.ng/compare@npm:^2.1.27":
-  version: 2.1.27
-  resolution: "@thi.ng/compare@npm:2.1.27"
+"@thi.ng/compare@npm:^2.1.28":
+  version: 2.1.28
+  resolution: "@thi.ng/compare@npm:2.1.28"
   dependencies:
-    "@thi.ng/api": ^8.7.4
-  checksum: d795d15c578b0d19ef86b51a9c87102d6060558f85bfd2a77f7cdd5278ca6cb79262157343e4f6c23b0127932a1a3005446d064c91e690b4ea57c00545079747
+    "@thi.ng/api": ^8.7.5
+  checksum: 7c9fbec18a8ddcf7794714646052a8bbb0b8d37dcb8bf0528003d2a010e5d7198552931b0d443df7196c61901d95201646107ee27b49a9785e7ce87f85b2de64
   languageName: node
   linkType: hard
 
-"@thi.ng/compose@npm:^2.1.29":
-  version: 2.1.29
-  resolution: "@thi.ng/compose@npm:2.1.29"
+"@thi.ng/compose@npm:^2.1.30":
+  version: 2.1.30
+  resolution: "@thi.ng/compose@npm:2.1.30"
   dependencies:
-    "@thi.ng/api": ^8.7.4
-    "@thi.ng/errors": ^2.2.13
-  checksum: 32a3acc15b0226b2d480538f0eb010434f8d0006cf9889a99ab4e1eb0b9b0270b94d43d46227362dec2eea192e9352bcfe8be2ae0627704e68a3a950d2a82d33
+    "@thi.ng/api": ^8.7.5
+    "@thi.ng/errors": ^2.2.14
+  checksum: f0e3f2460be514ee1a32b9ad5969ccd289167a6352215b20a8baccd2b147a814b03b40e315f7d74d1d345f6549161131d0fc7f1354ba8980bbd7a6da408eb9fb
   languageName: node
   linkType: hard
 
-"@thi.ng/equiv@npm:^2.1.20":
-  version: 2.1.20
-  resolution: "@thi.ng/equiv@npm:2.1.20"
-  checksum: c4894f34424b9e6c9e6be4935b7354ad37b36c5ae71831eef0a677b1aeb4444afdf7ee8bacc1c0529a94cf715bd24e7a428d34daf610aa75a39c0df1a2ea51f9
+"@thi.ng/equiv@npm:^2.1.21":
+  version: 2.1.21
+  resolution: "@thi.ng/equiv@npm:2.1.21"
+  checksum: ec86fe9ed787008e0217b0433bf608798b45f5d7e75aa47545bab5f545e2ead81e752071a36d6fe98c655a6993dafd6e621902db366d9a5f61096079f63c7b89
   languageName: node
   linkType: hard
 
-"@thi.ng/errors@npm:^2.2.13":
-  version: 2.2.13
-  resolution: "@thi.ng/errors@npm:2.2.13"
-  checksum: 6fcf819739985d1c9ab9a36045e4fbbc6860ad77b185d73896de04f13868d1fdf2faad71fda62a717a33ddf00ada74670d440166ea07d7695584c96293237942
+"@thi.ng/errors@npm:^2.2.14":
+  version: 2.2.14
+  resolution: "@thi.ng/errors@npm:2.2.14"
+  checksum: 3c7b18e20f08d41e6603b887ba66b81b492c1c1ed01a4a8e40cfc22f905917e6df0d3d3806e245560db8ca0bca10d898b81d164a60df8356cdb669805266c827
   languageName: node
   linkType: hard
 
-"@thi.ng/hex@npm:^2.3.7":
-  version: 2.3.7
-  resolution: "@thi.ng/hex@npm:2.3.7"
-  checksum: 7c199d7af1839d8ca9edbf0ef062ad8304290e2440e33936a1851c71a0ebce8e9f51eaff896b3df4b97e87a1aacbc81798bef62825a09c8c29a19e38def16336
+"@thi.ng/hex@npm:^2.3.8":
+  version: 2.3.8
+  resolution: "@thi.ng/hex@npm:2.3.8"
+  checksum: 82bffc098f9ab9e80048177a33860f9a234df689cd7654a3407d15ccb2e0c53f8d92346bea3f716c2a9743b5c802b9d93568f2be0b5c8a0326dd6555113198c7
   languageName: node
   linkType: hard
 
-"@thi.ng/math@npm:^5.4.5":
-  version: 5.4.5
-  resolution: "@thi.ng/math@npm:5.4.5"
+"@thi.ng/math@npm:^5.4.6":
+  version: 5.4.6
+  resolution: "@thi.ng/math@npm:5.4.6"
   dependencies:
-    "@thi.ng/api": ^8.7.4
-  checksum: 2e7b1e32442c0b3ae8b2b09457b3969ec97890be90628318b85474f4e62d7366160a9a957f2ebe845da57dab6a407bfd250dbd59a4835137ff38203af92642bd
+    "@thi.ng/api": ^8.7.5
+  checksum: c6bfa340221db2172d0d94e751e05e62242d0e7c9d09e5076224af87a588733cc1312c604fe76e60be05fb57bc42bce4dc270154d481951e243ccf8d8ecf1767
   languageName: node
   linkType: hard
 
-"@thi.ng/random@npm:^3.3.27":
-  version: 3.3.27
-  resolution: "@thi.ng/random@npm:3.3.27"
+"@thi.ng/random@npm:^3.3.28":
+  version: 3.3.28
+  resolution: "@thi.ng/random@npm:3.3.28"
   dependencies:
-    "@thi.ng/api": ^8.7.4
-    "@thi.ng/checks": ^3.3.10
-    "@thi.ng/errors": ^2.2.13
-    "@thi.ng/hex": ^2.3.7
-  checksum: 992a419f730d1f5b6a4f95921a47ee1eb93cacba3aadecca39b68907ce816b99e9bf8b1a9967cf662dbae874b2dc9dd4b7f6e51d1ca134e277b070d1ae7b2b45
+    "@thi.ng/api": ^8.7.5
+    "@thi.ng/checks": ^3.3.11
+    "@thi.ng/errors": ^2.2.14
+    "@thi.ng/hex": ^2.3.8
+  checksum: cd58c4557cda4f561688eb869e98357d67ec1263714e5155e851f90b29035426ca20c13c595e82f606b724ee861ec5ef4173e91917fe7a9bf6b846d186feff38
   languageName: node
   linkType: hard
 
-"@thi.ng/transducers@npm:^8.3.38":
-  version: 8.3.38
-  resolution: "@thi.ng/transducers@npm:8.3.38"
+"@thi.ng/transducers@npm:^8.4.1":
+  version: 8.4.1
+  resolution: "@thi.ng/transducers@npm:8.4.1"
   dependencies:
-    "@thi.ng/api": ^8.7.4
-    "@thi.ng/arrays": ^2.5.8
-    "@thi.ng/checks": ^3.3.10
-    "@thi.ng/compare": ^2.1.27
-    "@thi.ng/compose": ^2.1.29
-    "@thi.ng/errors": ^2.2.13
-    "@thi.ng/math": ^5.4.5
-    "@thi.ng/random": ^3.3.27
-  checksum: 09f1cdf3951b1242c1da3cf36f5a3cd93aea0fc8177ce2f9cbe3c93b3d955f6f0f0e9abf63e97b8e3b6fa1f9161e03376a63356ed6fd315fa7181d9e9ab2a732
+    "@thi.ng/api": ^8.7.5
+    "@thi.ng/arrays": ^2.5.9
+    "@thi.ng/checks": ^3.3.11
+    "@thi.ng/compare": ^2.1.28
+    "@thi.ng/compose": ^2.1.30
+    "@thi.ng/errors": ^2.2.14
+    "@thi.ng/math": ^5.4.6
+    "@thi.ng/random": ^3.3.28
+  checksum: 33a4cfde20d1fd452b8b1897492312aa873790c0b83d12d88cde5a7c2aecc449f3f3e1752df263ac73577c4a387fc3d24e8bd7b49b04018794d908440158601f
   languageName: node
   linkType: hard
 
@@ -791,12 +790,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:^5.3.0-alpha.1":
-  version: 5.3.0-alpha1
-  resolution: "bootstrap@npm:5.3.0-alpha1"
+"bootstrap@npm:^5.3.0-alpha.3":
+  version: 5.3.0-alpha3
+  resolution: "bootstrap@npm:5.3.0-alpha3"
   peerDependencies:
-    "@popperjs/core": ^2.11.6
-  checksum: 600d69d570124c29fec32b5ae1478fa38c97b7e6cbb155d4d89495164968e40090c70fbbf83ff42cb2765b4273784c397e8e561fb3aacf8b36941a9c5648c8d4
+    "@popperjs/core": ^2.11.7
+  checksum: 1739c40e4033c134e9dc51235e8018f267a9fc8114feba6a5b402f2ab0c68e67c363e2f243c79f252d1cf8fcde82262b04bbaaf6ea1695c37537c02f34ae4f79
   languageName: node
   linkType: hard
 
@@ -1062,15 +1061,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cosmiconfig@npm:^8.1.0":
-  version: 8.1.0
-  resolution: "cosmiconfig@npm:8.1.0"
+"cosmiconfig@npm:^8.1.3":
+  version: 8.1.3
+  resolution: "cosmiconfig@npm:8.1.3"
   dependencies:
     import-fresh: ^3.2.1
     js-yaml: ^4.1.0
     parse-json: ^5.0.0
     path-type: ^4.0.0
-  checksum: 78a1846acc4935ab4d928e3f768ee2ad2fddbec96377935462749206568423ff4757140ac7f2ccd1f547f86309b8448c04b26588848b5a1520f2e9741cdeecf0
+  checksum: b3d277bc3a8a9e649bf4c3fc9740f4c52bf07387481302aa79839f595045368903bf26ea24a8f7f7b8b180bf46037b027c5cb63b1391ab099f3f78814a147b2b
   languageName: node
   linkType: hard
 
@@ -1470,14 +1469,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^8.7.0":
-  version: 8.7.0
-  resolution: "eslint-config-prettier@npm:8.7.0"
+"eslint-config-prettier@npm:^8.8.0":
+  version: 8.8.0
+  resolution: "eslint-config-prettier@npm:8.8.0"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
     eslint-config-prettier: bin/cli.js
-  checksum: b05bc7f2296ce3e0925c14147849706544870e0382d38af2352d709a6cf8521bdaff2bd8e5021f1780e570775a8ffa1d2bac28b8065d90d43a3f1f98fd26ce52
+  checksum: 1e94c3882c4d5e41e1dcfa2c368dbccbfe3134f6ac7d40101644d3bfbe3eb2f2ffac757f3145910b5eacf20c0e85e02b91293d3126d770cbf3dc390b3564681c
   languageName: node
   linkType: hard
 
@@ -1570,14 +1569,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.36.0":
-  version: 8.36.0
-  resolution: "eslint@npm:8.36.0"
+"eslint-visitor-keys@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "eslint-visitor-keys@npm:3.4.0"
+  checksum: 33159169462d3989321a1ec1e9aaaf6a24cc403d5d347e9886d1b5bfe18ffa1be73bdc6203143a28a606b142b1af49787f33cff0d6d0813eb5f2e8d2e1a6043c
+  languageName: node
+  linkType: hard
+
+"eslint@npm:^8.37.0":
+  version: 8.37.0
+  resolution: "eslint@npm:8.37.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.4.0
-    "@eslint/eslintrc": ^2.0.1
-    "@eslint/js": 8.36.0
+    "@eslint/eslintrc": ^2.0.2
+    "@eslint/js": 8.37.0
     "@humanwhocodes/config-array": ^0.11.8
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
@@ -1588,8 +1594,8 @@ __metadata:
     doctrine: ^3.0.0
     escape-string-regexp: ^4.0.0
     eslint-scope: ^7.1.1
-    eslint-visitor-keys: ^3.3.0
-    espree: ^9.5.0
+    eslint-visitor-keys: ^3.4.0
+    espree: ^9.5.1
     esquery: ^1.4.2
     esutils: ^2.0.2
     fast-deep-equal: ^3.1.3
@@ -1616,18 +1622,18 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: e9a961fc3b3de5cff5a1cb2c92eeffaa7e155a715489e30b3e1e76f186bd1255e0481e09564f2094733c0b1dbd3453499fb72ae7c043c83156e11e6d965b2304
+  checksum: 80f3d5cdce2d671f4794e392d234a78d039c347673defb0596268bd481e8f30a53d93c01ff4f66a546c87d97ab4122c0e9cafe1371f87cb03cee6b7d5aa97595
   languageName: node
   linkType: hard
 
-"espree@npm:^9.5.0":
-  version: 9.5.0
-  resolution: "espree@npm:9.5.0"
+"espree@npm:^9.5.1":
+  version: 9.5.1
+  resolution: "espree@npm:9.5.1"
   dependencies:
     acorn: ^8.8.0
     acorn-jsx: ^5.3.2
-    eslint-visitor-keys: ^3.3.0
-  checksum: a7f110aefb6407e0d3237aa635ab3cea87106ae63748dd23c67031afccc640d04c4209fca2daf16e2233c82efb505faead0fb84097478fd9cc6e8f8dd80bf99d
+    eslint-visitor-keys: ^3.4.0
+  checksum: cdf6e43540433d917c4f2ee087c6e987b2063baa85a1d9cdaf51533d78275ebd5910c42154e7baf8e3e89804b386da0a2f7fad2264d8f04420e7506bf87b3b88
   languageName: node
   linkType: hard
 
@@ -3584,12 +3590,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.8.4":
-  version: 2.8.4
-  resolution: "prettier@npm:2.8.4"
+"prettier@npm:^2.8.7":
+  version: 2.8.7
+  resolution: "prettier@npm:2.8.7"
   bin:
     prettier: bin-prettier.js
-  checksum: c173064bf3df57b6d93d19aa98753b9b9dd7657212e33b41ada8e2e9f9884066bb9ca0b4005b89b3ab137efffdf8fbe0b462785aba20364798ff4303aadda57e
+  checksum: fdc8f2616f099f5f0d685907f4449a70595a0fc1d081a88919604375989e0d5e9168d6121d8cc6861f21990b31665828e00472544d785d5940ea08a17660c3a6
   languageName: node
   linkType: hard
 
@@ -3821,14 +3827,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "rimraf@npm:4.4.0"
+"rimraf@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "rimraf@npm:4.4.1"
   dependencies:
     glob: ^9.2.0
   bin:
     rimraf: dist/cjs/src/bin.js
-  checksum: 0cedaf9d138589d1bb0ab851f05804c6d30827aa66563472b04ab76245f83537e23e7b94f1f79ea6c368c0d84a18fcde6a756fca3a44c967e08792671b3a0a6e
+  checksum: b786adc02651e2e24bbedb04bbdea80652fc9612632931ff2d9f898c5e4708fe30956186597373c568bd5230a4dc2fadfc816ccacba8a1daded3a006a6b74f1a
   languageName: node
   linkType: hard
 
@@ -3889,16 +3895,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:1.59.3":
-  version: 1.59.3
-  resolution: "sass@npm:1.59.3"
+"sass@npm:1.60.0":
+  version: 1.60.0
+  resolution: "sass@npm:1.60.0"
   dependencies:
     chokidar: ">=3.0.0 <4.0.0"
     immutable: ^4.0.0
     source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: 839b5282cdf7d0ba3fdbfb605277dd584a8c40fa3e3e58ad905d64cd812acfb82ff0a4072d4981673db884ee61505472ff07c5c5a8a497f16ba013b183ba6473
+  checksum: 06e163c37af466ec194cf2ed8dab616372afeb19322d356947d48ea664fc38398ae77c4d91bea9cb0ace954ce289d5518d0f8555ecc49f6bf2539a8ef52fc580
   languageName: node
   linkType: hard
 
@@ -4298,17 +4304,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint@npm:^15.3.0":
-  version: 15.3.0
-  resolution: "stylelint@npm:15.3.0"
+"stylelint@npm:^15.4.0":
+  version: 15.4.0
+  resolution: "stylelint@npm:15.4.0"
   dependencies:
-    "@csstools/css-parser-algorithms": ^2.0.1
+    "@csstools/css-parser-algorithms": ^2.1.0
     "@csstools/css-tokenizer": ^2.1.0
     "@csstools/media-query-list-parser": ^2.0.1
-    "@csstools/selector-specificity": ^2.1.1
+    "@csstools/selector-specificity": ^2.2.0
     balanced-match: ^2.0.0
     colord: ^2.9.3
-    cosmiconfig: ^8.1.0
+    cosmiconfig: ^8.1.3
     css-functions-list: ^3.1.0
     css-tree: ^2.3.1
     debug: ^4.3.4
@@ -4346,7 +4352,7 @@ __metadata:
     write-file-atomic: ^5.0.0
   bin:
     stylelint: bin/stylelint.js
-  checksum: d6ef20cfc498dba274fc2b17ea9d342e0ca1a24bc07755066842f0a28e1dc6f36c2b67f4cf87a3a232ae98cf42864e884cdcd11428fe4caf0f5f1677cac8d85a
+  checksum: f56a75ffb8ee016690b78b2d401626134317526682ce818d686096db5d33472bf5d3b2941f5b5b3f9711061e5ad123a335a6f482316a567c4c75deba6929702a
   languageName: node
   linkType: hard
 
@@ -4665,9 +4671,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "vite@npm:4.2.0"
+"vite@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "vite@npm:4.2.1"
   dependencies:
     esbuild: ^0.17.5
     fsevents: ~2.3.2
@@ -4699,7 +4705,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 1088cdc0c89ab835aab07a0a114397b749e8dfb20f4b94241ba179d9c371b72d31e13782b22893860c3d65da596e43b24fce5e023f79cfde427f42549f2e1844
+  checksum: 70eb162ffc299017a3c310e3adc95e9661def6b17aafd1f8e5e02e516766060435590dbe3df1e4e95acc3583c728a76e91f07c546221d1e701f1b2b021293f45
   languageName: node
   linkType: hard
 
