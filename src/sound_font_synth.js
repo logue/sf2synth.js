@@ -818,16 +818,12 @@ export default class Synthesizer {
     wrapper.appendChild(instElem);
 
     // ヘッダー行のリサイズ
-    const ro = new ResizeObserver(entries => {
+    const ro = new ResizeObserver(_entries => {
       this.items.forEach(item => {
         /** @type {HTMLElement} */
-        const headerItem = wrapper.querySelector(
-          `.header .${this.items[item]}`
-        );
+        const headerItem = wrapper.querySelector(`.header .${item}`);
         /** @type {HTMLElement} */
-        const channelItem = wrapper.querySelector(
-          `.channel .${this.items[item]}`
-        );
+        const channelItem = wrapper.querySelector(`.channel .${item}`);
 
         headerItem.style.width = channelItem.offsetWidth + 'px';
       });
@@ -917,7 +913,6 @@ export default class Synthesizer {
       channel
     ];
 
-    // console.log(this.channelBank[channel]);
     /** @type {number} */
     const bankIndex = this.channelBank[channel];
     /** @type {HTMLSelectElement} */
