@@ -127,11 +127,6 @@
           build.dateTime = SoundFont.build;
           build.innerText = new Date(SoundFont.build).toLocaleString();
 
-          if (options.colorMode !== 'auto') {
-            // Apply color mode.
-            setColorMode(options.colorMode);
-          }
-
           /** WebMidiLink */
           const wml = new SoundFont.WebMidiLink(options);
 
@@ -147,6 +142,9 @@
             if (document.documentElement.getAttribute('data-bs-theme')) {
               return;
             }
+
+            // Apply color mode.
+            wml.setColorMode(options.colorMode);
 
             // Make sure the checkbox is up-to-date
             toggleDarkMode.checked = mediaQuery.matches;
@@ -214,40 +212,11 @@
 
           // Toggle Dark mode
           toggleDarkMode.addEventListener('change', e => {
-            setColorMode(e.target.checked ? 'dark' : 'light');
+            wml.setColorMode(e.target.checked ? 'dark' : 'light');
           });
         },
         false
       );
-
-      /**
-       * Toggle Color Mode.
-       *
-       * @param {<dark|light|auto>} mode
-       */
-      const setColorMode = mode => {
-        // Mode was given
-        if (mode) {
-          // Update data-* attr on html
-          document.documentElement.setAttribute('data-bs-theme', mode);
-          // Persist in local storage
-          window.localStorage.setItem('color-mode', mode);
-          // Make sure the checkbox is up-to-date
-          toggleDarkMode.checked = mode === 'dark';
-        }
-
-        // No mode given (e.g. reset)
-        else {
-          // Remove data-* attr from html
-          document.documentElement.setAttribute('data-bs-theme', 'auto');
-          // Remove entry from local storage
-          window.localStorage.removeItem('color-mode');
-          // Make sure the checkbox is up-to-date, matching the system preferences
-          toggleDarkMode.checked = window.matchMedia(
-            '(prefers-color-scheme: dark)'
-          ).matches;
-        }
-      };
     </script>
   </body>
 </html>

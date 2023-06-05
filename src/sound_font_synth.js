@@ -292,8 +292,8 @@ export default class Synthesizer {
   }
 
   /** Close AudioContext */
-  close() {
-    this.ctx.close();
+  async close() {
+    await this.ctx.close();
   }
 
   /** @param {Uint8Array} input */
@@ -559,7 +559,7 @@ export default class Synthesizer {
     /** @type {HTMLDivElement} */
     const instElem = doc.createElement('div');
     instElem.className = 'instrument';
-    /** @type {Array} */
+    /** @type {string[]} */
     this.items = [
       'mute',
       'bank',

@@ -194,7 +194,7 @@ export default class WebMidiLink {
   /**
    * MIDI信号を解析し、シンセサイザーを操作する
    *
-   * @param {number[] | ArrayBuffer} message
+   * @param {number[]} message
    * @protected
    */
   processMidiMessage(message) {
@@ -368,10 +368,10 @@ export default class WebMidiLink {
       case 0xf0: {
         // System Exclusive Message
         // [1] F0
-        // [2] <vendor ID> http://www.amei.or.jp/report/report4.html
-        // [3] <device ID>
-        // [4] <sub ID 1>
-        // [5] <sub ID 2>
+        // [2] <Manufacturer SysEx ID Numbers ID> https://www.amei.or.jp/report/report6.html
+        // [3] <Device ID>
+        // [4] <Model ID>
+        // [5] <Sub ID>
         // [6] <size of parameter key>
         // [7] <size of parameter value>
         // [8] <MSB>
@@ -382,16 +382,16 @@ export default class WebMidiLink {
         // console.log(this.dumpMessage(message));
 
         /**
-         * @type {number} Vendor ID (Roland=0x41 / YAMAHA=0x43 / Non
-         *   Realtime=0x7E / Realtime=0x7F)
+         * @type {number} System Exclusive Manufacture's ID Number
+         * @see {@link https://electronicmusic.fandom.com/wiki/List_of_MIDI_Manufacturer_IDs}
          */
-        const vendor = message[2];
+        const manufacturerId = message[2];
         /** @type {number} Device ID (GM extended=0x10 / ポケミク=0x79 / Any=0x7F) */
         const device = message[3];
-        /** @type {number} Sub ID 1 (Model ID: GM=0x09 / GS=0x42 / XG=0x4C) */
+        /** @type {number} Model ID: (GM=0x09 / GS=0x42 / XG=0x4C) */
         const model = message[4];
 
-        if (vendor === 0x7e || device === 0x09) {
+        if (manufacturerId === 0x7e || device === 0x09) {
           // Gneral MIDI
           // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
           // console.log('GM:', this.dumpMessage(message));
@@ -416,22 +416,53 @@ export default class WebMidiLink {
               // @ts-ignore
               console.log('GM:', this.dumpMessage(message));
           }
-        } else if (vendor === 0x7f) {
+        } else if (manufacturerId === 0x7f) {
           // Realtime
-          if (message[4] === 1) {
+          if (model === 0x01) {
             // master volume: F0 7F 7F 04 01 [value] [value] F7
             synth.setMasterVolume(message[5] + (message[6] << 7));
           } else {
             // @ts-ignore
             console.log('realtime:', this.dumpMessage(message));
           }
-        } else if (vendor === 0x41) {
-          // GS
+        } else if (manufacturerId === 0x7d) {
+          // smfplayer / sf2synth固有命令は、プライベート／非営利用途用のManufacturer IDである0x7Dを使用する。
+          // プログラム上意味はないが、GM互換であるため、deviceID:0x10、ModelID:0x09とする。
+          // よって、FO 7D 10 09 [...] 7Fで定義
+          if (message[5] === 0x01) {
+            // カラーモード切替
+            // FO 7D 10 09 01 [value]
+            if (message[6] === 0x01) {
+              // 明示的にライトモード
+              this.setColorMode('light');
+            } else if (message[6] === 0x02) {
+              // 明示的にダークモード
+              this.setColorMode('dark');
+            } else {
+              // OSの設定に合わせる
+              this.setColorMode('auto');
+            }
+          }
+        } else if (manufacturerId === 0x41 || model === 0x42) {
+          // Roland GS
           // http://lib.roland.co.jp/support/jp/manuals/res/1809974/SC-88VL_j.pdf
-          // F0 41 10 42 12 40 [part] [key] [value] [checksum] F7
-          const part = message[7] - 0x0f;
+          // deviceは10、modelIDは42固定。
+          // F0 41 10 42 12 [addr] [part] [key] [value] [checksum] F7
+          // (DeviceID = 10, ModelID = 42, CommandID = 12)
+
+          // QuickTime音源や、WindowsMIDI音源は、GS互換音源なのでmanufacturerIdが41とは限らない
+
+          /* * @param {number} GsAddress GSアドレス（未使用）
+          const GsAddress = message[6];
+          */
+          /** @type {number} GSパート番号 */
+          const GsPart = message[7] - 0x0f;
+          /** @type {number} GSのキーパラメータ */
+          const GsKey = message[8];
+          /** @type {number} GSの値 */
+          const GsValue = message[9];
           // TODO
-          switch (message[8]) {
+          switch (GsKey) {
             case 0x00:
               // TEXT INSERT FOR SC (ASCI code)
               // http://kurizill.g1.xrea.com/memorandum/midi2.htm
@@ -440,7 +471,7 @@ export default class WebMidiLink {
 
               // device IDの値は0x45固定だがその判定処理は省略
 
-              if (message[7] === 0x00) {
+              if (GsPart === 0x00) {
                 // ページが0x00の場合、LCDに表示するメッセージとする
                 // @ts-ignore
                 const msg = message.splice(8);
@@ -459,44 +490,40 @@ export default class WebMidiLink {
               // GS Master Volume:
               // F0 41 10 42 12 40 00 04 [value] [checksum] F7
               // console.log('GS Volume:', this.dumpMessage(message));
-              synth.setMasterVolume(message[9] * 64);
+              synth.setMasterVolume(GsValue * 64);
               break;
 
             case 0x15: {
               // GS Dram part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
               // Notice: [sum] is ignroe in this program.
 
-              const map = message[8];
-              if (part === 0) {
+              if (GsPart === 0) {
                 // 10 Ch.
-                synth.setPercussionPart(9, map !== 0x00);
-              } else if (part >= 10) {
+                synth.setPercussionPart(9, GsValue !== 0x00);
+              } else if (GsPart >= 10) {
                 // 1~9 Ch.
-                synth.setPercussionPart(part - 1, map !== 0x00);
+                synth.setPercussionPart(GsPart - 1, GsValue !== 0x00);
               } else {
                 // 11~16 Ch.
-                synth.setPercussionPart(part, map !== 0x00);
+                synth.setPercussionPart(GsPart, GsValue !== 0x00);
               }
               break;
             }
             case 0x19:
               // VOLUME ON/OFF (PART LEVEL)
               // F0 41 10 42 12 40 1[part no] 19 [value] [checksum] F7
-              console.info('GS Volume On/Off: ', part, message[9]);
+              console.info('GS Volume On/Off: ', GsPart, GsValue);
               break;
             case 0x30:
               // Reverb Effect
-              // @ts-ignore
               console.info('GS Reverb:', this.dumpMessage(message));
               break;
             case 0x38:
               // Chorus Effect
-              // @ts-ignore
               console.info('GS Chorus:', this.dumpMessage(message));
               break;
             case 0x45:
               // Bitmap icon 16x16 ?
-              // @ts-ignore
               console.info('GS Bitmap:', this.dumpMessage(message));
               break;
             case 0x7f:
@@ -508,20 +535,22 @@ export default class WebMidiLink {
               // @ts-ignore
               console.log('GS:', this.dumpMessage(message));
           }
-        } else if (vendor == 0x43) {
+        } else if (manufacturerId === 0x43 || model === 0x4c) {
           // YAMAHA XG
           // https://jp.yamaha.com/files/download/other_assets/9/321739/read_aoyama.pdf
           // https://jp.yamaha.com/files/download/other_assets/1/316861/MU100J1.pdf
 
-          if (message[2] !== 0x43 && message[3] === 0x43) {
-            // delete checksum
-            // @ts-ignore
-            message.splice(1, 1);
-            // @ts-ignore
-            console.log('message:', this.dumpMessage(message));
-          }
+          // カシオとKORGはXG互換音源を作っていたためmanufacturerIdが43とは限らない
 
-          switch (message[5]) {
+          // delete checksum
+          message.splice(1, 1);
+
+          /** @type {number} Xg音源のキー */
+          const XgKey = message[5];
+          /** @type {number} Xg音源のパート */
+          const XgPart = message[6];
+
+          switch (XgKey) {
             case 0x00:
               // XG Reset:
               // F0 43 1n 4C 00 00 7E 00 F7
@@ -533,18 +562,25 @@ export default class WebMidiLink {
               break;
             case 0x02:
               // Effect
+              // https://jp.yamaha.com/files/download/other_assets/5/321745/efctparamlist.pdf
               // F0 43 10 4C 02 01 [type] [value] F7
               // type
               // 02: Reverb
+              //   リバーブエフェクトのインパルス応答を選択する
               // 40: Variation
-              // 5B: Part to apply variation effect
-              // @ts-ignore
+              //   インサーションエフェクトとして使用するモードと全チャンネルにかけるシステムエフェクトモード場合がある。
+              //   アンプシミュレーターやディストーション、フェイザー、ディレイなど飛び道具的なエフェクトはここに入っていた。
+              // 41: バリエーションエフェクトの種類
+              //   [value]にエフェクトの種類
+              // 5B: バリエーションエフェクトのスイッチ
+              //   [value]が0でインサーションエフェクト、1でシステムエフェクトモードに切り替える。
+              //   インサーションエフェクトが実装される前（MU100よりも前の機種）は、ディレイ・エフェクトで使う場合が多かった。
               console.log('XG Effect:', this.dumpMessage(message));
               break;
             case 0x03:
               // Insertion Effect
               // F0 43 10 4C 03 [type] [value] F7
-              // @ts-ignore
+              // MU100以降の機種で実装されている。最大２系統。１チャンネルのみ指定可能。
               console.log('XG Insertion Effect:', this.dumpMessage(message));
               break;
             case 0x04:
@@ -567,15 +603,14 @@ export default class WebMidiLink {
               // Bitmap Window
               // F0 43 10 4C 07 00 00 [bitmap] F7
               // 音源のアイコン描画領域に描画する16x16のビットマップ画像。
-              // 7bitごとに上から描画するが仕様がややこしいので処理しない
-              // @ts-ignore
+              // 7bitごとに左上から描画する。仕様がややこしいので処理しない
               console.log('XG Bitmap:', this.dumpMessage(message));
               break;
             case 0x08:
               // XG Dram Part:
               // F0 43 10 4C 08 [partNum] 07 [map] F7
-              // ※厳密には[map]は1以上の値が入るが、本プログラムでは一律パーカッションパートとして処理をする。
-              synth.setPercussionPart(message[6], message[8] !== 0x00);
+              // 厳密には[map]は1以上の値が入り、３＋１系統までしか使えない（MU2000の場合）が、本プログラムでは制限しない。
+              synth.setPercussionPart(XgPart, message[8] !== 0x00);
               break;
 
             default:
@@ -605,5 +640,27 @@ export default class WebMidiLink {
       ret.push(msg.toString(16).toUpperCase());
     }
     return ret.join(' ');
+  }
+
+  /**
+   * カラーモード切替
+   *
+   * @param {'dark'|'light'|'auto'|undefined} mode カラーモード
+   */
+  setColorMode(mode) {
+    // Mode was given
+    if (mode || mode !== 'auto') {
+      // Update data-* attr on html
+      document.documentElement.setAttribute('data-bs-theme', mode);
+    }
+    // No mode given (e.g. reset)
+    else {
+      mode = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+      document.documentElement.setAttribute('data-bs-theme', 'auto');
+      // Remove data-* attr from html
+      document.documentElement.removeAttribute('data-bs-theme');
+    }
   }
 }
