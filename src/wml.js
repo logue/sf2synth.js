@@ -56,10 +56,12 @@ export default class WebMidiLink {
   /**
    * Setup Soundfont by URL.
    *
-   * @param {string} url
+   * @param {string} url SoundFont URL
    * @public
    */
-  async setup(url) {
+  async setup(
+    url = 'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2'
+  ) {
     /** 読み込み */
     const loader = new Loader(
       url,
@@ -67,11 +69,7 @@ export default class WebMidiLink {
       this.option.cache,
       buffer => this.setupByBuffer(buffer)
     );
-    try {
-      await loader.fetch();
-    } catch (e) {
-      //
-    }
+    await loader.fetch();
   }
 
   /**
@@ -366,6 +364,9 @@ export default class WebMidiLink {
         synth.pitchBend(channel, message[1], message[2]);
         break;
       case 0xf0: {
+        // delete checksum
+        message.splice(1, 1);
+
         // System Exclusive Message
         // [1] F0
         // [2] <Manufacturer SysEx ID Numbers ID> https://www.amei.or.jp/report/report6.html
@@ -385,11 +386,11 @@ export default class WebMidiLink {
          * @type {number} System Exclusive Manufacture's ID Number
          * @see {@link https://electronicmusic.fandom.com/wiki/List_of_MIDI_Manufacturer_IDs}
          */
-        const manufacturerId = message[2];
+        const manufacturerId = message[1];
         /** @type {number} Device ID (GM extended=0x10 / ポケミク=0x79 / Any=0x7F) */
-        const device = message[3];
+        const device = message[2];
         /** @type {number} Model ID: (GM=0x09 / GS=0x42 / XG=0x4C) */
-        const model = message[4];
+        const model = message[3];
 
         if (manufacturerId === 0x7e || device === 0x09) {
           // Gneral MIDI
@@ -400,42 +401,44 @@ export default class WebMidiLink {
             case 0x01:
               // GM System On
               synth.init('GM');
-              console.info('GM System On');
+              console.info('\x1b[34mGM System On\x1b[0m');
               break;
             case 0x02:
               // GM System Off
-              console.info('GM System Off');
+              console.info('\x1b[34mGM System Off\x1b[0m');
               // Throuh
               break;
             case 0x03:
               // GM2 System On
-              console.info('GM (v2) System On');
+              console.info('\x1b[34mGM (v2) System On\x1b[0m');
               synth.init('GM2');
               break;
             default:
               // @ts-ignore
-              console.log('GM:', this.dumpMessage(message));
+              console.log('\x1b[34mGM\x1b[0m: ' + this.dumpMessage(message));
           }
         } else if (manufacturerId === 0x7f) {
           // Realtime
           if (model === 0x01) {
             // master volume: F0 7F 7F 04 01 [value] [value] F7
-            synth.setMasterVolume(message[5] + (message[6] << 7));
+            synth.setMasterVolume(message[4] + (message[5] << 7));
           } else {
             // @ts-ignore
-            console.log('realtime:', this.dumpMessage(message));
+            console.log(
+              '\x1b[34mRealtime\x1b[0m: ' + this.dumpMessage(message)
+            );
           }
         } else if (manufacturerId === 0x7d) {
           // smfplayer / sf2synth固有命令は、プライベート／非営利用途用のManufacturer IDである0x7Dを使用する。
           // プログラム上意味はないが、GM互換であるため、deviceID:0x10、ModelID:0x09とする。
           // よって、FO 7D 10 09 [...] 7Fで定義
-          if (message[5] === 0x01) {
+          if (message[4] === 0x01) {
             // カラーモード切替
             // FO 7D 10 09 01 [value]
-            if (message[6] === 0x01) {
+            if (message[5] === 0x01) {
               // 明示的にライトモード
               this.setColorMode('light');
-            } else if (message[6] === 0x02) {
+            } else if (message[5] === 0x02) {
               // 明示的にダークモード
               this.setColorMode('dark');
             } else {
@@ -443,7 +446,9 @@ export default class WebMidiLink {
               this.setColorMode('auto');
             }
           }
-        } else if (manufacturerId === 0x41 || model === 0x42) {
+        }
+
+        if (model === 0x42) {
           // Roland GS
           // http://lib.roland.co.jp/support/jp/manuals/res/1809974/SC-88VL_j.pdf
           // deviceは10、modelIDは42固定。
@@ -456,11 +461,11 @@ export default class WebMidiLink {
           const GsAddress = message[6];
           */
           /** @type {number} GSパート番号 */
-          const GsPart = message[7] - 0x0f;
+          const GsPart = message[6] - 0x0f;
           /** @type {number} GSのキーパラメータ */
-          const GsKey = message[8];
+          const GsKey = message[7];
           /** @type {number} GSの値 */
-          const GsValue = message[9];
+          const GsValue = message[8];
           // TODO
           switch (GsKey) {
             case 0x00:
@@ -483,7 +488,10 @@ export default class WebMidiLink {
               } else {
                 // GS音源のLCDの16x16のビットマップ画像
                 // @ts-ignore
-                console.log('GS Bitmap message:', this.dumpMessage(message));
+                console.log(
+                  '\x1b[31mGS Bitmap message\x1b[0m:' +
+                    this.dumpMessage(message)
+                );
               }
               break;
             case 0x04:
@@ -512,76 +520,90 @@ export default class WebMidiLink {
             case 0x19:
               // VOLUME ON/OFF (PART LEVEL)
               // F0 41 10 42 12 40 1[part no] 19 [value] [checksum] F7
-              console.info('GS Volume On/Off: ', GsPart, GsValue);
+              console.info(
+                '\x1b[31mGS Volume On/Off\x1b[0m: ' + GsPart,
+                GsValue
+              );
               break;
             case 0x30:
               // Reverb Effect
-              console.info('GS Reverb:', this.dumpMessage(message));
+              console.info(
+                '\x1b[31mGS Reverb\x1b[0m: ' + this.dumpMessage(message)
+              );
               break;
             case 0x38:
               // Chorus Effect
-              console.info('GS Chorus:', this.dumpMessage(message));
+              console.info(
+                '\x1b[31mGS Chorus\x1b[0m: ' + this.dumpMessage(message)
+              );
               break;
             case 0x45:
               // Bitmap icon 16x16 ?
-              console.info('GS Bitmap:', this.dumpMessage(message));
+              console.info(
+                '\x1b[31mGS Bitmap\x1b[0m: ' + this.dumpMessage(message)
+              );
               break;
             case 0x7f:
               // GS Reset: F0 41 10 42 12 40 00 7F 00 [checksum] F7
               synth.init('GS');
-              console.info('GS Reset');
+              console.info('\x1b[31mGS Reset\x1b[0m');
               break;
             default:
               // @ts-ignore
-              console.log('GS:', this.dumpMessage(message));
+              console.log('\x1b[31mGS\x1b[0m: ' + this.dumpMessage(message));
           }
-        } else if (manufacturerId === 0x43 || model === 0x4c) {
+        } else if (model === 0x4c) {
           // YAMAHA XG
+          // F0 43 10 4C [...] F7
           // https://jp.yamaha.com/files/download/other_assets/9/321739/read_aoyama.pdf
           // https://jp.yamaha.com/files/download/other_assets/1/316861/MU100J1.pdf
 
           // カシオとKORGはXG互換音源を作っていたためmanufacturerIdが43とは限らない
 
-          // delete checksum
-          message.splice(1, 1);
-
           /** @type {number} Xg音源のキー */
-          const XgKey = message[5];
+          const XgKey = message[4];
           /** @type {number} Xg音源のパート */
-          const XgPart = message[6];
+          const XgPart = message[5];
 
           switch (XgKey) {
             case 0x00:
               // XG Reset:
               // F0 43 1n 4C 00 00 7E 00 F7
-              // console.log('message:', this.dumpMessage(message));
-              if (message[7] === 0x7e) {
+              if (message[6] === 0x7e) {
                 synth.init('XG');
-                console.info('XG Reset');
+                console.info('\x1b[32mXG Reset\x1b[0m');
               }
               break;
             case 0x02:
               // Effect
               // https://jp.yamaha.com/files/download/other_assets/5/321745/efctparamlist.pdf
               // F0 43 10 4C 02 01 [type] [value] F7
+              //
               // type
               // 02: Reverb
               //   リバーブエフェクトのインパルス応答を選択する
               // 40: Variation
+              //   F0 43 10 4C 02 01 40 [type] 00 F7
               //   インサーションエフェクトとして使用するモードと全チャンネルにかけるシステムエフェクトモード場合がある。
               //   アンプシミュレーターやディストーション、フェイザー、ディレイなど飛び道具的なエフェクトはここに入っていた。
               // 41: バリエーションエフェクトの種類
               //   [value]にエフェクトの種類
-              // 5B: バリエーションエフェクトのスイッチ
+              // 5B: バリエーションエフェクトをかけるパート
+              //   F0 43 10 4C 02 01 5B [part] F7
               //   [value]が0でインサーションエフェクト、1でシステムエフェクトモードに切り替える。
               //   インサーションエフェクトが実装される前（MU100よりも前の機種）は、ディレイ・エフェクトで使う場合が多かった。
-              console.log('XG Effect:', this.dumpMessage(message));
+              console.log(
+                '\x1b[32mXG Effect\x1b[0m: ' + this.dumpMessage(message)
+              );
               break;
             case 0x03:
               // Insertion Effect
               // F0 43 10 4C 03 [type] [value] F7
               // MU100以降の機種で実装されている。最大２系統。１チャンネルのみ指定可能。
-              console.log('XG Insertion Effect:', this.dumpMessage(message));
+              console.log(
+                '\x1b[32mXG Insertion Effect\x1b[0m: ' +
+                  this.dumpMessage(message)
+              );
               break;
             case 0x04:
               // XG Master Volume:
@@ -604,7 +626,9 @@ export default class WebMidiLink {
               // F0 43 10 4C 07 00 00 [bitmap] F7
               // 音源のアイコン描画領域に描画する16x16のビットマップ画像。
               // 7bitごとに左上から描画する。仕様がややこしいので処理しない
-              console.log('XG Bitmap:', this.dumpMessage(message));
+              console.log(
+                '\x1b[32mXG Bitmap\x1b[0m: ' + this.dumpMessage(message)
+              );
               break;
             case 0x08:
               // XG Dram Part:
@@ -615,7 +639,7 @@ export default class WebMidiLink {
 
             default:
               // @ts-ignore
-              console.log('XG:', this.dumpMessage(message));
+              console.log('\x1b[32mXG\x1b[0m: ', this.dumpMessage(message));
           }
         }
         break;
@@ -631,33 +655,56 @@ export default class WebMidiLink {
    * Dump System Exclusive Message
    *
    * @private
-   * @param {Array} message
+   * @param {number[]} messages
    * @return {string}
    */
-  dumpMessage(message) {
+  dumpMessage(messages) {
     const ret = [];
-    for (const msg of message) {
-      ret.push(msg.toString(16).toUpperCase());
+    let i = 0;
+    for (const msg of messages) {
+      let str = '';
+      switch (i) {
+        case 0:
+          // 青
+          str = '\x1b[35m';
+          break;
+        case 1:
+        case 2:
+        case 3:
+          // 黄色
+          str = '\x1b[33m';
+          break;
+        default:
+          // 末尾の場合は青、それ以外はシアン
+          str = messages.length - 1 === i ? '\x1b[35m' : '\x1b[36m';
+          break;
+      }
+
+      ret.push(str + msg.toString(16).toUpperCase().padStart(2, '0'));
+      i++;
     }
-    return ret.join(' ');
+    return ret.join(' ') + '\x1b[0m';
   }
 
   /**
-   * カラーモード切替
+   * Change Color mode
    *
-   * @param {'dark'|'light'|'auto'|undefined} mode カラーモード
+   * @param {'dark'|'light'|'auto'|undefined} mode Color Mode
+   * @public
    */
   setColorMode(mode) {
     // Mode was given
-    if (mode || mode !== 'auto') {
+    if (mode) {
+      if (mode === 'auto') {
+        mode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+      }
       // Update data-* attr on html
       document.documentElement.setAttribute('data-bs-theme', mode);
     }
     // No mode given (e.g. reset)
     else {
-      mode = window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light';
       document.documentElement.setAttribute('data-bs-theme', 'auto');
       // Remove data-* attr from html
       document.documentElement.removeAttribute('data-bs-theme');

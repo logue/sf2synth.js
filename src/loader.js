@@ -13,7 +13,7 @@ export default class Loader {
    * @param {string} url
    * @param {HTMLDivElement} placeholder
    * @param {boolean} cache
-   * @param {function} callback
+   * @param {Function} callback
    */
   constructor(url, placeholder, cache, callback) {
     this.url = url;
@@ -52,6 +52,7 @@ export default class Loader {
    * ダウンロード中のハンドラ
    * @param {number} current
    * @param {number} total
+   * @private
    */
   onProgress(current, total) {
     const percentCompleted = Math.floor((current / total) * 100);
@@ -63,6 +64,7 @@ export default class Loader {
    * ロード完了時のハンドラ
    *
    * @param {ArrayBuffer} buffer
+   * @private
    */
   onComplete(buffer) {
     this.alert.className = 'alert alert-info';
@@ -78,26 +80,32 @@ export default class Loader {
   /**
    * エラー時のハンドラ
    *
-   * @param {Error} error エラー内容
+   * @param {Error | undefined} error エラー内容
+   * @private
    */
-  onError(error) {
+  onError(error = undefined) {
     requestAnimationFrame(function () {
       this.alert.className = 'alert alert-danger';
       this.message.innerText =
         'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
       this.progressOuter.style.display = 'none';
     });
-    throw Error(error.message);
+    if (error) {
+      throw Error(error.message);
+    }
   }
 
   /**
    * データ取得
+   * @public
    */
   async fetch() {
     /** @type {Cache} */
     const cache = await window.caches.open(Loader.CACHE_NAME);
+    /** @type {string} Cache Key */
+    const key = decodeURIComponent(this.url);
     /** @type {Response} */
-    const cached = await cache.match(this.url);
+    const cached = await cache.match(key);
 
     if (this.cache && cached) {
       // キャッシュが存在する場合、キャッシュの値を返す
@@ -105,15 +113,20 @@ export default class Loader {
       return;
     }
 
-    /** @type {Response} キャッシュがない場合Fetchで取得 */
+    /** @type {void | Response} キャッシュがない場合Fetchで取得 */
     const response = await fetch(this.url, {
       method: 'GET',
       mode: 'no-cors',
       credentials: 'include',
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Cross-Origin-Resource-Policy': 'cross-origin',
       },
-    });
+    }).catch(error => this.onError(error));
+
+    if (!response) {
+      this.onError();
+      return;
+    }
 
     /** @type {Response} キャッシュ用レスポンス */
     const cloned = response.clone();
@@ -158,7 +171,7 @@ export default class Loader {
 
     if (response.ok) {
       // キャッシュへ保存
-      cache.put(this.url, response);
+      cache.put(key, response);
     }
     this.onComplete(chunksAll);
   }
