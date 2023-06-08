@@ -286,9 +286,8 @@ export default class Synthesizer {
       );
 
       bankSelectElement.forEach(element => (element.disabled = mode === 'GM'));
+      this.element.dataset.mode = mode;
     }
-
-    this.element.dataset.mode = mode;
   }
 
   /** Close AudioContext */
@@ -909,6 +908,9 @@ export default class Synthesizer {
    * @param {number} channel
    */
   updateProgramSelect(channel) {
+    if (!this.element) {
+      return;
+    }
     const dom = this.element.querySelectorAll(`.instrument > .channel`)[
       channel
     ];

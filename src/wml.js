@@ -30,11 +30,14 @@ export default class WebMidiLink {
     /** @type {object} */
     this.option = {};
     /** @type {boolean} Display synthsizer Web UI */
-    this.option.drawSynth = option.drawSynth || true;
+    this.option.drawSynth = option.drawSynth !== 'false';
+    console.log(this.option);
     /** @type {boolean} Use Cache API */
     this.option.cache = option.cache || false;
     /** @type {string} CORS */
     this.option.targetOrigin = option.targetOrigin || '*';
+    /** @type {'dark'|'light'|'auto'|undefined} Color mode */
+    this.option.colorMode = option.colorMode || 'auto';
     /** @type {string} SoundFont URL */
     this.url =
       'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2';
@@ -44,6 +47,7 @@ export default class WebMidiLink {
     this.placeholder = option.placeholder
       ? document.getElementById(option.placeholder)
       : window.document.body;
+    this.setColorMode(this.option.colorMode);
     /** @type {Window} */
     this.window = null;
 
@@ -110,11 +114,14 @@ export default class WebMidiLink {
       this.synth.refreshInstruments(buffer);
     }
     if (this.option.drawSynth) {
+      console.log(this.option.drawSynth);
       // キーボードなどを描画
       this.placeholder.appendChild(this.synth.drawSynth());
     } else {
-      // キーボードを描画しないときはReadyだけを表示する。
-      const readyElem = document.createElement('strong');
+      /** @type {HTMLDivElement} キーボードを描画しないときはReadyだけを表示する。 */
+      const readyElem = document.createElement('div');
+      readyElem.className = 'alert alert-success';
+      readyElem.role = 'alert';
       readyElem.innerText = 'Ready.';
       this.placeholder.appendChild(readyElem);
     }
@@ -162,7 +169,6 @@ export default class WebMidiLink {
 
     switch (type) {
       case 'midi':
-        // console.log(msg);
         this.processMidiMessage(msg.map(hex => parseInt(hex, 16)));
         break;
       case 'link':
@@ -445,11 +451,12 @@ export default class WebMidiLink {
           }
         } else if (manufacturerId === 0x7d) {
           // smfplayer / sf2synth固有命令は、プライベート／非営利用途用のManufacturer IDである0x7Dを使用する。
-          // プログラム上意味はないが、GM互換であるため、deviceID:0x10、ModelID:0x09とする。
-          // よって、FO 7D 10 09 [...] 7Fで定義
+          // プログラム上意味はないが、GM互換であるため、deviceID:0x10、ModelID:0x00とする。
+          // よって、F0 7D 10 00 [...] 7Fで定義
+
           if (message[4] === 0x01) {
             // カラーモード切替
-            // FO 7D 10 09 01 [value]
+            // F0 7D 10 00 01 [value]
             if (message[5] === 0x01) {
               // 明示的にライトモード
               this.setColorMode('light');

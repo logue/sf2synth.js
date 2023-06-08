@@ -100,19 +100,19 @@
       import SoundFont from '/src/index';
 
       /** sf2synth.js Option */
-      const options = Object.assign(
-        {
+      const options = {
+        ...{
           // URL to SoundFont File
           // url: 'Yamaha XG Sound Set.sf2',
           // Show Keyboard
-          ui: true,
+          drawSynth: true,
           // Target dom id
           placeholder: 'placeholder',
           // Color Mode (auto, dark, light)
           colorMode: 'auto',
         },
-        qs.parse(window.location.search)
-      );
+        ...qs.parse(window.location.search),
+      };
 
       document.addEventListener(
         'DOMContentLoaded',

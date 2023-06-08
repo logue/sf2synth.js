@@ -91,10 +91,9 @@ wml.setupByBuffer(buffer);
 ```js
 import SoundFont from '@logue/sf2synth';
 
-// Url to SoundFont file.
-const sf2 = './Yamaha XG Sound Set.sf2';
-
 const option = {
+  // Url to SoundFont file. If blank, the Yamaha XG Sound Set.sf2 from jsdelivr will be loaded.
+  url: './Yamaha XG Sound Set.sf2',
   // attach dom id
   placeholder: 'placeholder',
   // If you not nessesaly to draw keyboad, set false.
@@ -110,14 +109,24 @@ const wml = new SoundFont.WebMidiApi(option);
 wml.setLoadCallback(() => {
   // When ready to load.
 });
-wml.setup(sf2);
+wml.setup(); //
 ```
+
+## Dark mode
+
+If you want switch dark mode, specify it using the SysEx [non-commercial (Manifucture ID = `7D`)](https://www.amei.or.jp/report/report4.html) area.
+
+| SysEx                     | Mode  |
+| ------------------------- | ----- |
+| `F0 0A 7D 10 00 01 00 F7` | Auto  |
+| `F0 0A 7D 10 00 01 01 F7` | Light |
+| `F0 0A 7D 10 00 01 02 F7` | Dark  |
 
 ## Sample
 
 sf2synth.js corresponds to the sound source in MIDI. Call and use this wml.html from a sequencer like [smfplayer.js](https://github.com/logue/smfplayer.js).
 
-<https://logue.dev/sf2synth.js/wml.html>
+<https://logue.dev/sf2synth.js/>
 
 ## Compatibility
 
