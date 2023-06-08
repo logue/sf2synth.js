@@ -92,7 +92,7 @@ wml.setupByBuffer(buffer);
 import SoundFont from '@logue/sf2synth';
 
 const option = {
-  // Url to SoundFont file. If blank, the Yamaha XG Sound Set.sf2 from jsdelivr will be loaded.
+  // Default Url to SoundFont file. If blank, the Yamaha XG Sound Set.sf2 from jsdelivr will be loaded.
   url: './Yamaha XG Sound Set.sf2',
   // attach dom id
   placeholder: 'placeholder',
@@ -102,6 +102,8 @@ const option = {
   cache: true,
   // postMessage origin
   targetOrigin: '*',
+  // Default Color Mode (dark, light)
+  colorMode: 'auto',
 };
 
 /** Initialize Web MIDI API */
@@ -109,7 +111,10 @@ const wml = new SoundFont.WebMidiApi(option);
 wml.setLoadCallback(() => {
   // When ready to load.
 });
-wml.setup(); //
+
+// If you want to explicitly specify another SoundFont, put the SoundFont URL in the setup function.
+// No need to restart this program.
+wml.setup();
 ```
 
 ## Dark mode
