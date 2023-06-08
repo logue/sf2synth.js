@@ -36,7 +36,9 @@ export default class WebMidiApi extends WebMidiLink {
     this.midi.inputs.forEach(
       (
         /** @type {{ onmidimessage: (msg: WebMidi.MIDIMessageEvent) => void; }} */ input
-      ) => (input.onmidimessage = msg => super.processMidiMessage(msg.data))
+      ) =>
+        (input.onmidimessage = msg =>
+          super.processMidiMessage(Array.from(msg.data)))
     );
   }
 }

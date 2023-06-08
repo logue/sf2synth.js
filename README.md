@@ -39,24 +39,25 @@ yarn add @logue/sf2synth
 ```js
 import SoundFont from '@logue/sf2synth';
 
-// Url to SoundFont file.
-const sf2 = './Yamaha XG Sound Set.sf2';
-
 const option = {
-  // attach dom id
+  // Url to SoundFont file.
+  url: 'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2', // Default
+  // Enter the ID of the destination DOM. If left blank, it will be added to the end of body.
   placeholder: 'placeholder',
-  // If you not nessesaly to draw keyboad, set false.
+  // Displays the MIDI keyboard GUI. Set it to false if you don't need. Since it does not process the drawing load, the operation becomes lighter.
   drawSynth: true,
-  // Cache Soundfont
+  // ave the acquired SoundFont data in the browser using the Cache API. (Default is false)
   cache: true,
 };
 
-const wml = new SoundFont.WebMidiLink(option);
+const wml = new SoundFont.WebMidiLink({});
 wml.setLoadCallback(() => {
   // When ready to load.
 });
-wml.setup(sf2);
+wml.setup(); // If you want to override the SoundFont URL, put that address in this function.
 ```
+
+Please refer to the [index.html](./index.html) source code for details.
 
 ### ArrayBuffer usage
 

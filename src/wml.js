@@ -22,19 +22,22 @@ export default class WebMidiLink {
     /** @type {Synthesizer} */
     this.synth = undefined;
     /** @type {Function?} */
-    this.loadCallback = undefined;
+    this.loadCallback = () => {};
     /** @type {Function} */
     this.messageHandler = this.onmessage.bind(this);
     /** @type {boolean} */
     this.rpnMode = true;
     /** @type {object} */
-    this.option = option;
-    /** @type {boolean} */
+    this.option = {};
+    /** @type {boolean} Display synthsizer Web UI */
     this.option.drawSynth = option.drawSynth || true;
-    /** @type {boolean} */
+    /** @type {boolean} Use Cache API */
     this.option.cache = option.cache || false;
-    /** @type {string} */
+    /** @type {string} CORS */
     this.option.targetOrigin = option.targetOrigin || '*';
+    /** @type {string} SoundFont URL */
+    this.url =
+      'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2';
 
     /** @type {HTMLDivElement} */
     // @ts-ignore
@@ -56,20 +59,32 @@ export default class WebMidiLink {
   /**
    * Setup Soundfont by URL.
    *
-   * @param {string} url SoundFont URL
+   * @param {string?} url SoundFont URL
    * @public
    */
-  async setup(
-    url = 'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2'
-  ) {
+  async setup(url) {
+    if (url) {
+      // URLが明示的に指定されていた場合
+      this.url = url;
+    }
+
     /** 読み込み */
     const loader = new Loader(
-      url,
+      this.url,
       this.placeholder,
       this.option.cache,
       buffer => this.setupByBuffer(buffer)
     );
     await loader.fetch();
+  }
+
+  /**
+   * Get SoundFont URL.
+   *
+   * @return {string}
+   */
+  getUrl() {
+    return this.url;
   }
 
   /**

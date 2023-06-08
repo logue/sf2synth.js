@@ -72,9 +72,8 @@ export default class Loader {
     this.progress.className =
       'progress-bar progress-bar-striped progress-bar-animated';
     this.progress.style.width = '100%';
-
-    const input = new Uint8Array(buffer);
-    requestAnimationFrame(this.callback(input));
+    // コールバック実行
+    this.callback(new Uint8Array(buffer));
   }
 
   /**
@@ -102,10 +101,8 @@ export default class Loader {
   async fetch() {
     /** @type {Cache} */
     const cache = await window.caches.open(Loader.CACHE_NAME);
-    /** @type {string} Cache Key */
-    const key = decodeURIComponent(this.url);
     /** @type {Response} */
-    const cached = await cache.match(key);
+    const cached = await cache.match(this.url);
 
     if (this.cache && cached) {
       // キャッシュが存在する場合、キャッシュの値を返す
@@ -116,15 +113,9 @@ export default class Loader {
     /** @type {void | Response} キャッシュがない場合Fetchで取得 */
     const response = await fetch(this.url, {
       method: 'GET',
-      mode: 'no-cors',
-      credentials: 'include',
-      headers: {
-        'Cross-Origin-Resource-Policy': 'cross-origin',
-      },
-    }).catch(error => this.onError(error));
+    }).catch(e => this.onError(e));
 
-    if (!response) {
-      this.onError();
+    if (!response || (response && !response.ok)) {
       return;
     }
 
@@ -169,10 +160,9 @@ export default class Loader {
       position += chunk.length;
     }
 
-    if (response.ok) {
-      // キャッシュへ保存
-      cache.put(key, response);
-    }
+    // キャッシュへ保存
+    await cache.put(this.url, response);
+    // 完了時のイベントを実行
     this.onComplete(chunksAll);
   }
 }

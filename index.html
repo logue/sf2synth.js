@@ -2,6 +2,9 @@
 <html lang="en" data-bs-theme="auto">
   <head>
     <meta charset="utf-8" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <meta http-equiv="Access-Control-Allow-Methods" content="GET" />
+    <meta http-equiv="Access-Control-Allow-Headers" content="*" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
     <meta name="color-scheme" content="light dark" />
@@ -85,7 +88,11 @@
           </div>
         </div>
         <hr />
-        <div id="placeholder"></div>
+        <div id="placeholder">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
       </main>
     </div>
     <script type="module">
@@ -96,7 +103,7 @@
       const options = Object.assign(
         {
           // URL to SoundFont File
-          sf: 'Yamaha XG Sound Set.sf2',
+          // url: 'Yamaha XG Sound Set.sf2',
           // Show Keyboard
           ui: true,
           // Target dom id
@@ -119,21 +126,20 @@
           /** @type {HTMLInputElement} */
           const toggleDarkMode = document.getElementById('toggleDarkMode');
 
-          /** @type {string} SoundFont file */
-          const sf = decodeURIComponent(options.sf);
-          document.getElementById('soundfont').innerText = sf;
-
           // Apply build time
           build.dateTime = SoundFont.build;
           build.innerText = new Date(SoundFont.build).toLocaleString();
 
-          /** WebMidiLink */
+          /** @type {typeof import("./src/wml").WebMidiLink } WebMidiLink */
           const wml = new SoundFont.WebMidiLink(options);
 
           wml.setLoadCallback(() => {
             dragArea.classList.remove('bg-info');
+            document.getElementById('soundfont').innerText = decodeURIComponent(
+              wml.getUrl()
+            ).match('.+/(.+?)([\?#;].*)?$')[1];
           });
-          wml.setup(sf);
+          wml.setup();
 
           // Keep an eye out for System Light/Dark Mode Changes
           const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
