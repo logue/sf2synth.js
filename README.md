@@ -93,15 +93,21 @@ import SoundFont from '@logue/sf2synth';
 
 const option = {
   // Default Url to SoundFont file. If blank, the Yamaha XG Sound Set.sf2 from jsdelivr will be loaded.
-  url: './Yamaha XG Sound Set.sf2',
+  // The following address will be the same SoundFont as the original sf2synth.js.
+  // url: 'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/A320U.sf2',
+
   // attach dom id
   placeholder: 'placeholder',
+
   // If you not nessesaly to draw keyboad, set false.
   drawSynth: true,
+
   // Cache Soundfont
   cache: true,
+
   // postMessage origin
   targetOrigin: '*',
+
   // Default Color Mode (dark, light)
   colorMode: 'auto',
 };
