@@ -24,7 +24,7 @@ export default class WebMidiLink {
     /** @type {Function?} */
     this.loadCallback = () => {};
     /** @type {Function} */
-    this.messageHandler = this.onmessage.bind(this);
+    this.messageHandler = this.onMessage.bind(this);
     /** @type {boolean} */
     this.rpnMode = true;
     /** @type {object} */
@@ -157,7 +157,7 @@ export default class WebMidiLink {
    * @param {Event} ev
    * @private
    */
-  onmessage(ev) {
+  onMessage(ev) {
     /** @type {Array} */
     // @ts-ignore
     const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];

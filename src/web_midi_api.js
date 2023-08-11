@@ -11,7 +11,7 @@ export default class WebMidiApi extends WebMidiLink {
    */
   constructor(option = {}) {
     super(option);
-    /** @type {WebMidi.MIDIAccess} */
+    /** @type {WebMidi.MIDIAccess | undefined} */
     this.midi = undefined;
   }
 

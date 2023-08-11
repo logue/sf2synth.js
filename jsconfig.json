@@ -4,9 +4,10 @@
     "module": "es6",
     "target": "esnext",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "checkJs": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["webmidi"]
+    "types": ["webmidi", "node"]
   },
   "exclude": ["node_modules"]
 }
