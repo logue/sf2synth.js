@@ -13,8 +13,3 @@ const SoundFont = {
 };
 
 export default SoundFont;
-
-if (!window.SoundFont) {
-  // @ts-ignore
-  window.SoundFont = SoundFont;
-}

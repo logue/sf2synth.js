@@ -20,16 +20,6 @@ or
 yarn add @logue/sf2synth
 ```
 
-### CDN
-
-```html
-<link
-  href="https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/style.min.css"
-  rel="stylesheet"
-/>
-<script src="https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/sf2synth.umd.min.js"></script>
-```
-
 ## Usage
 
 ```html
@@ -58,6 +48,22 @@ wml.setup(); // If you want to override the SoundFont URL, put that address in t
 ```
 
 Please refer to the [index.html](./index.html) source code for details.
+
+### CDN
+
+Entry point is `SoundFont`.
+
+```html
+<link
+  href="https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/style.min.css"
+  rel="stylesheet"
+/>
+<script src="https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/sf2synth.iife.min.js"></script>
+<script>
+  const wml = new SoundFont.WebMidiLink({});
+  // ...
+</script>
+```
 
 ### ArrayBuffer usage
 
@@ -132,6 +138,8 @@ If you want switch dark mode, specify it using the SysEx [non-commercial (Manifu
 | `F0 0A 7D 10 00 01 00 F7` | Auto  |
 | `F0 0A 7D 10 00 01 01 F7` | Light |
 | `F0 0A 7D 10 00 01 02 F7` | Dark  |
+
+This feature may change in the future.
 
 ## Sample
 
