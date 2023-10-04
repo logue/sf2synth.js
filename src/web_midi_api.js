@@ -28,10 +28,8 @@ export default class WebMidiApi extends WebMidiLink {
    * @inheritdoc
    */
   onReady() {
-    if (super.loadCallback) {
-      // コールバック実行
-      super.loadCallback();
-    }
+    // コールバック実行
+    super.callback();
     // Web MIDI APIを待ち受け
     this.midi.inputs.forEach(
       (

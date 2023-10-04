@@ -30,13 +30,28 @@
 @import '~/bootstrap/scss/utilities/api';
 
 // 8. Add additional custom code here
-
-body {
-  transition: 0.25s;
+:root {
+  --channel-1-color: #ff1744;
+  --channel-2-color: #f50057;
+  --channel-3-color: #d500f9;
+  --channel-4-color: #651fff;
+  --channel-5-color: #3d5afe;
+  --channel-6-color: #1565c0;
+  --channel-7-color: #00b0ff;
+  --channel-8-color: #00e5ff;
+  --channel-9-color: #1de9b6;
+  --channel-10-color: #00e676;
+  --channel-11-color: #76ff03;
+  --channel-12-color: #c6ff00;
+  --channel-13-color: #ffea00;
+  --channel-14-color: #ffc400;
+  --channel-15-color: #ff9100;
+  --channel-16-color: #ff3d00;
 }
 
 .synthesizer {
   margin: 0 auto;
+  transition: 0.25s;
   .instrument {
     padding: 0 auto;
 
@@ -231,52 +246,52 @@ body {
       }
       // Note on highlight color.
       &:nth-child(2) .key.note-on {
-        background-color: #ff1744;
+        background-color: var(--channel-1-color);
       }
       &:nth-child(3) .key.note-on {
-        background-color: #f50057;
+        background-color: var(--channel-2-color);
       }
       &:nth-child(4) .key.note-on {
-        background-color: #d500f9;
+        background-color: var(--channel-3-color);
       }
       &:nth-child(5) .key.note-on {
-        background-color: #651fff;
+        background-color: var(--channel-4-color);
       }
       &:nth-child(6) .key.note-on {
-        background-color: #3d5afe;
+        background-color: var(--channel-5-color);
       }
       &:nth-child(7) .key.note-on {
-        background-color: #2979ff;
+        background-color: var(--channel-6-color);
       }
       &:nth-child(8) .key.note-on {
-        background-color: #00b0ff;
+        background-color: var(--channel-7-color);
       }
       &:nth-child(9) .key.note-on {
-        background-color: #00e5ff;
+        background-color: var(--channel-8-color);
       }
       &:nth-child(10) .key.note-on {
-        background-color: #1de9b6;
+        background-color: var(--channel-9-color);
       }
       &:nth-child(11) .key.note-on {
-        background-color: #00e676;
+        background-color: var(--channel-10-color);
       }
       &:nth-child(12) .key.note-on {
-        background-color: #76ff03;
+        background-color: var(--channel-11-color);
       }
       &:nth-child(13) .key.note-on {
-        background-color: #c6ff00;
+        background-color: var(--channel-12-color);
       }
       &:nth-child(14) .key.note-on {
-        background-color: #ffea00;
+        background-color: var(--channel-13-color);
       }
       &:nth-child(15) .key.note-on {
-        background-color: #ffc400;
+        background-color: var(--channel-14-color);
       }
       &:nth-child(16) .key.note-on {
-        background-color: #ff9100;
+        background-color: var(--channel-15-color);
       }
       &:nth-child(17) .key.note-on {
-        background-color: #ff3d00;
+        background-color: var(--channel-16-color);
       }
     }
   }

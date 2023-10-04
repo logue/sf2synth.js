@@ -15,7 +15,7 @@ export default class Synthesizer {
     /** @type {Uint8Array} */
     this.input = input;
     /** @type {Parser} */
-    this.parser;
+    this.parser = undefined;
     /** @type {number} */
     this.bank = 0;
     /** @type {Object} */
@@ -205,8 +205,8 @@ export default class Synthesizer {
       {}
     );
 
-    /** @type {number} タイマーのスレッド */
-    this.timer = 0;
+    /** @type {NodeJS.Timeout} タイマーのスレッド */
+    this.timer = undefined;
     /** @type {boolean} */
     this.drag = false;
   }
@@ -519,7 +519,7 @@ export default class Synthesizer {
   getModGenAmount(generator, enumeratorType) {
     return generator[enumeratorType]
       ? generator[enumeratorType].amount
-      : this.parser.getGeneratorTable()[enumeratorType];
+      : Parser.getGeneratorTable()[enumeratorType];
   }
 
   /**
@@ -585,7 +585,7 @@ export default class Synthesizer {
         this.hold(channel, 0);
       });
       for (const item in this.items) {
-        if (!{}.hasOwnProperty.call(this.items, item)) {
+        if (!Object.hasOwn(this.items, item)) {
           continue;
         }
         /** @type {HTMLDivElement} */

@@ -13,35 +13,35 @@ export default class Parser {
   constructor(input, optParams = {}) {
     /** @type {Uint8Array} */
     this.input = input;
-    /** @type {Object | undefined} */
+    /** @type {object} */
     this.parserOption = optParams.parserOption || {};
-    /** @type {Number | undefined} */
+    /** @type {number} */
     this.sampleRate = optParams.sampleRate || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.presetHeader = [];
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.presetZone = [];
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.presetZoneModulator = [];
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.presetZoneGenerator = [];
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.instrument = [];
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.instrumentZone = [];
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.instrumentZoneModulator = [];
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.instrumentZoneGenerator = [];
-    /** @type {Object[]} */
+    /** @type {object[]} */
     this.sampleHeader = [];
     /** @type {string[]} */
-    this.GeneratorEnumeratorTable = Object.keys(this.getGeneratorTable());
+    this.GeneratorEnumeratorTable = Object.keys(Parser.getGeneratorTable());
   }
 
-  /** @return {Object} ジェネレータとデフォルト値 */
-  getGeneratorTable() {
+  /** @return {Record<string, number?>} ジェネレータとデフォルト値 */
+  static getGeneratorTable() {
     return Object.freeze({
       /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
       startAddrsOffset: 0,
@@ -186,7 +186,6 @@ export default class Parser {
     }
 
     this.parseRiffChunk(chunk);
-    // console.log(this.sampleHeader);
     this.input = null;
   }
 

@@ -21,8 +21,6 @@ export default class WebMidiLink {
     this.ready = false;
     /** @type {Synthesizer} */
     this.synth = undefined;
-    /** @type {Function?} */
-    this.loadCallback = () => {};
     /** @type {Function} */
     this.messageHandler = this.onMessage.bind(this);
     /** @type {boolean} */
@@ -31,13 +29,12 @@ export default class WebMidiLink {
     this.option = {};
     /** @type {boolean} Display synthsizer Web UI */
     this.option.drawSynth = option.drawSynth !== 'false';
-    console.log(this.option);
     /** @type {boolean} Use Cache API */
-    this.option.cache = option.cache || false;
+    this.option.cache = option.cache ?? true;
     /** @type {string} CORS */
-    this.option.targetOrigin = option.targetOrigin || '*';
+    this.option.targetOrigin = option.targetOrigin ?? '*';
     /** @type {'dark'|'light'|'auto'|undefined} Color mode */
-    this.option.colorMode = option.colorMode || 'auto';
+    this.option.colorMode = option.colorMode ?? 'auto';
     /** @type {string} SoundFont URL */
     this.url =
       'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2';
@@ -114,7 +111,6 @@ export default class WebMidiLink {
       this.synth.refreshInstruments(buffer);
     }
     if (this.option.drawSynth) {
-      console.log(this.option.drawSynth);
       // キーボードなどを描画
       this.placeholder.appendChild(this.synth.drawSynth());
     } else {
@@ -132,6 +128,15 @@ export default class WebMidiLink {
   }
 
   /**
+   * Callback
+   *
+   * @protected
+   */
+  callback() {
+    return;
+  }
+
+  /**
    * SoundFont Load Ready
    *
    * @protected
@@ -140,10 +145,8 @@ export default class WebMidiLink {
     // 一旦MIDI Link待受を解除
     // @ts-ignore
     window.removeEventListener('message', this.messageHandler);
-    if (this.loadCallback) {
-      // コールバック実行
-      this.loadCallback();
-    }
+    // コールバック実行
+    this.callback();
     // MIDI Link待ち受け開始
     // @ts-ignore
     window.addEventListener('message', this.messageHandler, false);
@@ -163,7 +166,7 @@ export default class WebMidiLink {
     const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
     /** @type {string} */
     // @ts-ignore
-    const type = msg !== [] ? msg.shift() : '';
+    const type = msg.length !== 0 ? msg.shift() : '';
     /** @type {string} */
     let command;
 
@@ -203,11 +206,11 @@ export default class WebMidiLink {
   /**
    * MIDI準備完了時のコールバック処理を登録する
    *
-   * @param {Function} callback コールバック関数
+   * @param {()=>{}} callback コールバック関数
    * @public
    */
   setLoadCallback(callback) {
-    this.loadCallback = callback;
+    this.callback = callback;
   }
 
   /**
