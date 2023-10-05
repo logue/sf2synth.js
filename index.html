@@ -23,8 +23,8 @@
       gtag('config', 'G-2Y2FW3QEG4');
     </script>
     
-    <script type="module" crossorigin src="./assets/index-57f9856d.js"></script>
-    <link rel="stylesheet" href="./assets/index-fa3e2294.css">
+    <script type="module" crossorigin src="./assets/index-2ea191d8.js"></script>
+    <link rel="stylesheet" href="./assets/index-a3516246.css">
   </head>
 
   <body>
@@ -77,33 +77,28 @@
       </header>
       <main>
         <div id="drag" class="mb-3">
-          <label class="form-label" for="file">Load SoundFont2 file</label>
-          <input
-            type="file"
-            class="form-control"
-            id="file"
-            accept="audio/x-soundfont"
-            aria-describedby="fileHelp"
-          />
-          <!--
-            <button
-              class="btn btn-outline-secondary dropdown-toggle"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+          <div class="input-group">
+            <label class="input-group-text" for="file">
+              Upload own *.sf2 file
+            </label>
+            <input
+              type="file"
+              class="form-control"
+              id="file"
+              accept="audio/x-soundfont"
+              aria-describedby="fileHelp"
+            />
+            <select
+              class="form-select"
+              aria-label="Load SoundFont2 file"
+              id="selector"
             >
-              Default
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Yamaha XG SoundFont</a></li>
-              <li>
-                <a class="dropdown-item" href="#">
-                  Yamaha XG Sound Set Ver.2.0
-                </a>
-              </li>
-              <li><a class="dropdown-item" href="#">A320U.sf2</a></li>
-            </ul>
-          -->
+              <option selected value="Yamaha XG Sound Set.sf2">
+                Yamaha XG SoundFont.sf2
+              </option>
+              <option value="A320U.sf2">A320U.sf2</option>
+            </select>
+          </div>
           <div id="fileHelp" class="form-text">
             drag and drop here *.sf2 file to change sound font.
           </div>
