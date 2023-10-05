@@ -343,9 +343,7 @@ export default class Synthesizer {
       }
 
       // select bank
-      if (banks[bankNumber] === void 0) {
-        banks[bankNumber] = [];
-      }
+      banks[bankNumber] = banks[bankNumber] ?? [];
       bank = banks[bankNumber];
       bank[presetNumber] = {};
       bank[presetNumber].name = presetName;
@@ -798,7 +796,7 @@ export default class Synthesizer {
     const headerElem = doc.createElement('div');
     headerElem.className = 'header';
     for (const item in this.items) {
-      if (!{}.hasOwnProperty.call(this.items, item)) {
+      if (!Object.hasOwn(this.items, item)) {
         continue;
       }
       /** @type {HTMLDivElement} */
@@ -889,7 +887,7 @@ export default class Synthesizer {
       bankElement.removeChild(bankElement.firstChild);
 
     for (const bankNo in this.programSet) {
-      if (!{}.hasOwnProperty.call(this.programSet, bankNo)) {
+      if (!Object.hasOwn(this.programSet, bankNo)) {
         continue;
       }
       const option = document.createElement('option');
@@ -927,7 +925,7 @@ export default class Synthesizer {
       programElement.removeChild(programElement.firstChild);
 
     for (const programNo in this.programSet[bankIndex]) {
-      if (!{}.hasOwnProperty.call(this.programSet[bankIndex], programNo)) {
+      if (!Object.hasOwn(this.programSet[bankIndex], programNo)) {
         continue;
       }
       // TODO: 存在しないプログラムの場合、現状では空白になってしまう
@@ -1207,7 +1205,7 @@ export default class Synthesizer {
    */
   bankChange(channel, bank) {
     /** パーカッションバンク */
-    const percussionBank = this.mode === 'XG' ? 127 : 128;
+    const percussionBank = this.mode === 'XG' || this.mode === 'GM' ? 127 : 128;
     if (this.mode === 'GM') {
       // GMの場合バンクセレクトを無効化
       bank = 0;
@@ -1574,13 +1572,9 @@ export default class Synthesizer {
    * @param {boolean} sw パーカッションチャネルか通常かのスイッチ
    */
   setPercussionPart(channel, sw) {
-    if (this.mode === 'GS' || this.mode === 'GM2') {
-      // GM Level2 / Roland GS
-      this.channelBank[channel] = 128;
-    } else {
-      // YAMAHA XG
-      this.channelBank[channel] = 127;
-    }
+    this.channelBank[channel] =
+      this.mode === 'GS' || this.mode === 'GM2' ? 128 : 127;
+
     this.percussionPart[channel] = sw;
     this.updateBankSelect(channel);
   }

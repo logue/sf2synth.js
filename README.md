@@ -32,6 +32,7 @@ import SoundFont from '@logue/sf2synth';
 const option = {
   // Url to SoundFont file.
   url: 'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2', // Default
+  // url: 'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/A320U.sf2', // Same as original sf2synth.js
   // Enter the ID of the destination DOM. If left blank, it will be added to the end of body.
   placeholder: 'placeholder',
   // Displays the MIDI keyboard GUI. Set it to false if you don't need. Since it does not process the drawing load, the operation becomes lighter.

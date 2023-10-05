@@ -64,6 +64,10 @@ export default class WebMidiLink {
    * @public
    */
   async setup(url) {
+    // DOMをクリア
+    while (this.placeholder.firstChild) {
+      this.placeholder.removeChild(this.placeholder.firstChild);
+    }
     if (url) {
       // URLが明示的に指定されていた場合
       this.url = url;
