@@ -28,57 +28,15 @@
   <body>
     <div class="container-fluid">
       <header>
-        <div class="d-flex justify-content-between">
-          <h1 class="h2">
-            SoundFont:
-            <span id="soundfont"></span>
-          </h1>
-          <div class="form-check form-switch">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="toggleDarkMode"
-            />
-            <label class="form-check-label" for="toggleDarkMode">
-              Dark Mode
-            </label>
-            &nbsp;
-            <a
-              href="https://github.com/logue/sf2synth.js"
-              target="_blank"
-              class="text-muted"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                class="bi bi-github"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-                />
-              </svg>
-            </a>
-          </div>
-        </div>
-        <p class="text-end">
-          <a href="https://logue.dev/" target="_blank">Logue</a>
-          /
-          <small class="text-muted">
-            Last Modified:
-            <time id="build"></time>
-          </small>
-        </p>
+        <h1 class="h2">
+          SoundFont:
+          <span id="soundfont"></span>
+        </h1>
       </header>
       <main>
-        <div id="drag" class="mb-3">
-          <div class="input-group">
-            <label class="input-group-text" for="file">
-              Upload own *.sf2 file
-            </label>
+        <div class="d-flex justify-content-between">
+          <div id="drag">
+            <label for="file" class="form-label">Select own *.sf2 file</label>
             <input
               type="file"
               class="form-control"
@@ -86,19 +44,53 @@
               accept="audio/x-soundfont"
               aria-describedby="fileHelp"
             />
-            <select
-              class="form-select"
-              aria-label="Load SoundFont2 file"
-              id="selector"
-            >
-              <option selected value="Yamaha XG Sound Set.sf2">
-                Yamaha XG SoundFont.sf2
-              </option>
-              <option value="A320U.sf2">A320U.sf2</option>
-            </select>
+            <!--
+              <select
+                class="form-select"
+                aria-label="Load SoundFont2 file"
+                id="selector"
+              >
+                <option selected value="Yamaha XG Sound Set.sf2">
+                  Yamaha XG SoundFont.sf2
+                </option>
+                <option value="A320U.sf2">A320U.sf2</option>
+              </select>
+            -->
+            <span id="fileHelp" class="form-text">
+              Drag and drop the *.sf2 file here to change the sound font.
+            </span>
           </div>
-          <div id="fileHelp" class="form-text">
-            drag and drop here *.sf2 file to change sound font.
+          <div>
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="toggleDarkMode"
+              />
+              <label class="form-check-label" for="toggleDarkMode">
+                Dark Mode
+              </label>
+              &nbsp;
+              <a
+                href="https://github.com/logue/sf2synth.js"
+                target="_blank"
+                class="text-muted"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-github"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                  />
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
         <hr />
@@ -108,6 +100,16 @@
           </div>
         </div>
       </main>
+      <footer>
+        <p class="text-end">
+          <a href="https://logue.dev/" target="_blank">Logue</a>
+          /
+          <small class="text-muted">
+            Last Modified:
+            <time id="build"></time>
+          </small>
+        </p>
+      </footer>
     </div>
     <script type="module">
       import qs from 'query-string';
@@ -140,7 +142,7 @@
           /** @type {HTMLInputElement} */
           const toggleDarkMode = document.getElementById('toggleDarkMode');
           /** @type {HTMLSelectElement} */
-          const selector = document.getElementById('selector');
+          // const selector = document.getElementById('selector');
 
           // Apply build time
           build.dateTime = SoundFont.build;
@@ -237,12 +239,14 @@
             wml.setColorMode(e.target.checked ? 'dark' : 'light');
           });
 
+          /*
           selector.addEventListener('change', () => {
             console.log(selector.value);
             wml.setup(
               `https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/${selector.value}`
             );
           });
+          */
         },
         false
       );

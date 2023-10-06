@@ -10,11 +10,13 @@
 @import '~/bootstrap/scss/root';
 @import '~/bootstrap/scss/reboot';
 
+@import '~/bootstrap/scss/containers';
 @import '~/bootstrap/scss/alert';
 @import '~/bootstrap/scss/forms';
 @import '~/bootstrap/scss/progress';
 
 // Helpers
+@import '~/bootstrap/scss/grid';
 @import '~/bootstrap/scss/helpers';
 
 // Utilities

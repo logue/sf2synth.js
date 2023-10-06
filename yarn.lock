@@ -316,13 +316,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@logue/reverb@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "@logue/reverb@npm:1.3.2"
+"@logue/reverb@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "@logue/reverb@npm:1.3.3"
   dependencies:
-    "@thi.ng/colored-noise": ^1.0.27
-    "@thi.ng/transducers": ^8.7.1
-  checksum: 51ffebbc05d3fa770dd23e0bdb217ef8f0d5888900dcdafc2a772b1a2b7bce356cc5cdfe2660983cd27a7bf38b64991501b150065336122d9bda1fd067aaa1b7
+    "@thi.ng/colored-noise": ^1.0.28
+    "@thi.ng/transducers": ^8.7.2
+  checksum: a52f377cd36a12eacb5696bee11354177459962c4f01b478d9d769019491c24e880db97e0f7f6d1d786357de3ecf59a468c8e9667d4fdf4094611f0b070ea3ee
   languageName: node
   linkType: hard
 
@@ -330,7 +330,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@logue/sf2synth@workspace:."
   dependencies:
-    "@logue/reverb": ^1.3.2
+    "@logue/reverb": ^1.3.3
     "@types/node": ^20.8.2
     "@types/webmidi": ^2.0.8
     bootstrap: ^5.3.2
@@ -346,7 +346,7 @@ __metadata:
     prettier: ^3.0.3
     query-string: ^8.1.0
     rimraf: ^5.0.5
-    sass: 1.68.0
+    sass: 1.69.0
     stylelint: ^15.10.3
     stylelint-config-recommended-scss: ^13.0.0
     stylelint-order: ^6.0.3
@@ -432,17 +432,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/arrays@npm:^2.5.24":
-  version: 2.5.24
-  resolution: "@thi.ng/arrays@npm:2.5.24"
+"@thi.ng/arrays@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "@thi.ng/arrays@npm:2.6.0"
   dependencies:
     "@thi.ng/api": ^8.9.5
     "@thi.ng/checks": ^3.4.5
     "@thi.ng/compare": ^2.2.0
     "@thi.ng/equiv": ^2.1.30
     "@thi.ng/errors": ^2.3.5
-    "@thi.ng/random": ^3.6.5
-  checksum: fbf1a0401dd1f053f52b97ada2e4d823e354e98a04c600ee92f2e5a22b37f33de9896ce6a0d02c5aa7619cffcfa4f7ee21be03ae783eb7e89d26f5773f37ee18
+    "@thi.ng/random": ^3.6.6
+  checksum: 4e1d09d70f9d9eebdc7d4120e5788c6e33485eca72ca27de7d270112e3fe99ddd17eb9c68bf5c610b5c81c0b36bc7cd0edd619d3fbfff7631994650acb3c300c
   languageName: node
   linkType: hard
 
@@ -464,13 +464,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/colored-noise@npm:^1.0.27":
-  version: 1.0.27
-  resolution: "@thi.ng/colored-noise@npm:1.0.27"
+"@thi.ng/colored-noise@npm:^1.0.28":
+  version: 1.0.28
+  resolution: "@thi.ng/colored-noise@npm:1.0.28"
   dependencies:
     "@thi.ng/binary": ^3.3.33
-    "@thi.ng/random": ^3.6.5
-  checksum: fd057fc94eb4163d6c00ef8803b23947e96488e308adb85ab313b3c0ed29be9a64ad3094728b4ce51d4c51fb8cdab0a352feb9af1218db7b2ee9dd1517131d4b
+    "@thi.ng/random": ^3.6.6
+  checksum: 1558574d1f5f45fffd157f8523f92afe0d055724a02d194f74b9f0b6e76a3ad3e64a2cf5dad01160859f00a08ee5b539d8d8896bd1c12d106b746d59bb74999c
   languageName: node
   linkType: hard
 
@@ -523,31 +523,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@thi.ng/random@npm:^3.6.5":
-  version: 3.6.5
-  resolution: "@thi.ng/random@npm:3.6.5"
+"@thi.ng/random@npm:^3.6.6":
+  version: 3.6.6
+  resolution: "@thi.ng/random@npm:3.6.6"
   dependencies:
     "@thi.ng/api": ^8.9.5
     "@thi.ng/checks": ^3.4.5
     "@thi.ng/errors": ^2.3.5
     "@thi.ng/hex": ^2.3.17
-  checksum: 6817fcc8edd346b93eecd89030d7dbfdf6f3a1936bd596429df534dd2e1bc426b68310bf117eb0580e59c867533f9fe3db4f7cdf020fa06323d77144338d038d
+  checksum: 76b4456ffd0976e23523be49a96511c3762b5f3b76b4092471daba1bdacaf9b01e096c0507972e44c2eca73769461bff5029330460940884f723c0360817b88f
   languageName: node
   linkType: hard
 
-"@thi.ng/transducers@npm:^8.7.1":
-  version: 8.7.1
-  resolution: "@thi.ng/transducers@npm:8.7.1"
+"@thi.ng/transducers@npm:^8.7.2":
+  version: 8.7.2
+  resolution: "@thi.ng/transducers@npm:8.7.2"
   dependencies:
     "@thi.ng/api": ^8.9.5
-    "@thi.ng/arrays": ^2.5.24
+    "@thi.ng/arrays": ^2.6.0
     "@thi.ng/checks": ^3.4.5
     "@thi.ng/compare": ^2.2.0
     "@thi.ng/compose": ^2.1.41
     "@thi.ng/errors": ^2.3.5
     "@thi.ng/math": ^5.6.1
-    "@thi.ng/random": ^3.6.5
-  checksum: cdde11eebbf3450f20a8cbbeabc9fec88ec1b778e11206a10110ff1a6af9cd13389e8c21623a69a05fa21e148f9ed1b6afd6f21ad4970dd174f834e0b5334997
+    "@thi.ng/random": ^3.6.6
+  checksum: e9b7012526ab04f0a7d87b7b80f8d08ec52aab08c5056dcaea28d5250afa190e1c5aa9222ab9c3aa08fefca49a860386a291885f4e636c61d19f1efa5dcf8eac
   languageName: node
   linkType: hard
 
@@ -4274,16 +4274,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:1.68.0":
-  version: 1.68.0
-  resolution: "sass@npm:1.68.0"
+"sass@npm:1.69.0":
+  version: 1.69.0
+  resolution: "sass@npm:1.69.0"
   dependencies:
     chokidar: ">=3.0.0 <4.0.0"
     immutable: ^4.0.0
     source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: 65ccede83c96768beeb8dcaf67957b7c76b12ff1276bfd2849d7be151d46ba1400048a67717e6e5e4969bc75e87348e5530f5f272833f2e60a891c21a33d8ab0
+  checksum: eabea31ea3b1dd529c7eff345c8b6468afe6ab8011bd4f95caa2cffb8fb115cc055ea21de425be6197f7ed22516f5652eccb98d315d592ea152ada553f964b8a
   languageName: node
   linkType: hard
 
