@@ -83,15 +83,12 @@ export default class Loader {
    * @private
    */
   onError(error = undefined) {
-    requestAnimationFrame(function () {
+    requestAnimationFrame(() => {
       this.alert.className = 'alert alert-danger';
       this.message.innerText =
         'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
       this.progressOuter.style.display = 'none';
     });
-    if (error) {
-      throw Error(error.message);
-    }
   }
 
   /**

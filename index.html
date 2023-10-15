@@ -116,10 +116,10 @@
       import SoundFont from '/src/index';
 
       /** sf2synth.js Option */
-      const options = {
+      let options = {
         ...{
           // URL to SoundFont File
-          // url: 'Yamaha XG Sound Set.sf2',
+          // url: 'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2',
           // Show Keyboard
           drawSynth: true,
           // Target dom id
@@ -128,7 +128,11 @@
           colorMode: 'auto',
         },
         ...qs.parse(window.location.search),
+        ...qs.parse(window.location.hash),
       };
+
+      /** @type {typeof import("./src/wml").WebMidiLink } WebMidiLink */
+      const wml = new SoundFont.WebMidiLink(options);
 
       document.addEventListener(
         'DOMContentLoaded',
@@ -144,19 +148,17 @@
           /** @type {HTMLSelectElement} */
           // const selector = document.getElementById('selector');
 
-          // Apply build time
-          build.dateTime = SoundFont.build;
-          build.innerText = new Date(SoundFont.build).toLocaleString();
-
-          /** @type {typeof import("./src/wml").WebMidiLink } WebMidiLink */
-          const wml = new SoundFont.WebMidiLink(options);
-
           wml.setLoadCallback(() => {
             dragArea.classList.remove('bg-info');
             document.getElementById('soundfont').innerText = decodeURIComponent(
               wml.getUrl()
             ).match('.+/(.+?)([?#;].*)?$')[1];
           });
+
+          // Apply build time
+          build.dateTime = SoundFont.build;
+          build.innerText = new Date(SoundFont.build).toLocaleString();
+
           wml.setup();
 
           // Keep an eye out for System Light/Dark Mode Changes
@@ -247,6 +249,17 @@
             );
           });
           */
+        },
+        false
+      );
+
+      window.addEventListener(
+        'hashchange',
+        () => {
+          const url = qs.parse(window.location.hash);
+          if (url) {
+            wml.setup(url);
+          }
         },
         false
       );

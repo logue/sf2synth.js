@@ -37,6 +37,7 @@ export default class WebMidiLink {
     this.option.colorMode = option.colorMode ?? 'auto';
     /** @type {string} SoundFont URL */
     this.url =
+      option.url ??
       'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2';
 
     /** @type {HTMLDivElement} */
@@ -63,7 +64,7 @@ export default class WebMidiLink {
    * @param {string?} url SoundFont URL
    * @public
    */
-  async setup(url) {
+  async setup(url = undefined) {
     // DOMをクリア
     while (this.placeholder.firstChild) {
       this.placeholder.removeChild(this.placeholder.firstChild);
@@ -78,7 +79,7 @@ export default class WebMidiLink {
       this.url,
       this.placeholder,
       this.option.cache,
-      buffer => this.setupByBuffer(buffer)
+      (/** @type {ArrayBuffer} */ buffer) => this.setupByBuffer(buffer)
     );
     await loader.fetch();
   }
