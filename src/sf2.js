@@ -930,8 +930,8 @@ export default class Parser {
           presetGenerator.generator['instrument'] !== void 0
             ? presetGenerator.generator['instrument'].amount
             : presetModulator.modulator['instrument'] !== void 0
-            ? presetModulator.modulator['instrument'].amount
-            : null;
+              ? presetModulator.modulator['instrument'].amount
+              : null;
       }
 
       output.push({
