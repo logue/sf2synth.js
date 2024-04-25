@@ -175,4 +175,4 @@ equires a browser that supports the Web Audio API.
 Licensed under the MIT License.
 
 - 2013 by imaya / GREE Inc.
-- 2013-2023 by Logue
+- 2013-2024 by Logue

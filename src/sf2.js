@@ -628,16 +628,16 @@ export default class Parser {
       samples.push(sample);
 
       sampleHeader.push({
-        sampleName: sampleName,
-        start: start,
-        end: end,
-        startLoop: startLoop,
-        endLoop: endLoop,
-        sampleRate: sampleRate,
-        originalPitch: originalPitch,
-        pitchCorrection: pitchCorrection,
-        sampleLink: sampleLink,
-        sampleType: sampleType,
+        sampleName,
+        start,
+        end,
+        startLoop,
+        endLoop,
+        sampleRate,
+        originalPitch,
+        pitchCorrection,
+        sampleLink,
+        sampleType,
       });
     }
   }
@@ -673,8 +673,8 @@ export default class Parser {
     }
 
     return {
-      sample: sample,
-      multiply: multiply,
+      sample,
+      multiply,
     };
   }
 
@@ -704,12 +704,12 @@ export default class Parser {
       // Dest Oper
       code = data[ip++] | (data[ip++] << 8);
       key = this.GeneratorEnumeratorTable[code];
-      if (key === void 0) {
+      if (!key) {
         // Amount
         output.push({
           type: key,
           value: {
-            code: code,
+            code,
             amount: data[ip] | (((data[ip + 1] << 8) << 16) >> 16),
             lo: data[ip++],
             hi: data[ip++],
@@ -778,11 +778,11 @@ export default class Parser {
     while (ip < size) {
       code = data[ip++] | (data[ip++] << 8);
       key = this.GeneratorEnumeratorTable[code];
-      if (key === void 0) {
+      if (!key) {
         output.push({
           type: key,
           value: {
-            code: code,
+            code,
             amount: data[ip] | (((data[ip + 1] << 8) << 16) >> 16),
             lo: data[ip++],
             hi: data[ip++],
@@ -927,10 +927,10 @@ export default class Parser {
         });
 
         instrument =
-          presetGenerator.generator['instrument'] !== void 0
-            ? presetGenerator.generator['instrument'].amount
-            : presetModulator.modulator['instrument'] !== void 0
-              ? presetModulator.modulator['instrument'].amount
+          presetGenerator.generator.instrument !== undefined
+            ? presetGenerator.generator.instrument.amount
+            : presetModulator.modulator.instrument !== undefined
+              ? presetModulator.modulator.instrument.amount
               : null;
       }
 
@@ -938,7 +938,7 @@ export default class Parser {
         name: preset[i].presetName,
         info: zoneInfo,
         header: preset[i],
-        instrument: instrument,
+        instrument,
       });
     }
 
@@ -1078,8 +1078,8 @@ export default class Parser {
     }
 
     return {
-      modgen: modgen,
-      modgenInfo: modgenInfo,
+      modgen,
+      modgenInfo,
     };
   }
 }

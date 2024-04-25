@@ -1,6 +1,7 @@
-import SynthesizerNote from './sound_font_synth_note';
 import Reverb from '@logue/reverb';
-import Parser from './sf2';
+
+import Parser from './sf2.js';
+import SynthesizerNote from './sound_font_synth_note.js';
 
 /**
  * Synthesizer Class
@@ -282,7 +283,7 @@ export default class Synthesizer {
       modeElement.innerText = mode + ' Mode';
       /** @type {NodeListOf<HTMLSelectElement>} */
       const bankSelectElement = this.element.querySelectorAll(
-        `.instrument .bank > select`
+        '.instrument .bank > select'
       );
 
       bankSelectElement.forEach(element => (element.disabled = mode === 'GM'));
@@ -429,7 +430,7 @@ export default class Synthesizer {
         sample: parser.sample[sampleId],
         sampleRate: sampleHeader.sampleRate,
         // 54
-        sampleModes: sampleModes,
+        sampleModes,
         basePlaybackRate:
           1.0594630943592953 ** // Math.pow(2, 1 / 12)
           ((i -
@@ -825,7 +826,7 @@ export default class Synthesizer {
         headerItem.style.width = channelItem.offsetWidth + 'px';
       });
       /** @type {HTMLElement} */
-      const keysItem = wrapper.querySelector(`.header .keys`);
+      const keysItem = wrapper.querySelector('.header .keys');
 
       keysItem.style.display =
         document.documentElement.clientWidth <= 680 ? 'none' : 'flex';
@@ -848,7 +849,7 @@ export default class Synthesizer {
     }
     /** @type {NodeListOf<HTMLDivElement>} */
     const channelElems = this.element.querySelectorAll(
-      `.instrument > .channel`
+      '.instrument > .channel'
     );
 
     if (channelElems[channel].dataset.isIntersecting) {
@@ -880,11 +881,12 @@ export default class Synthesizer {
     }
     /** @type {HTMLElement} */
     const bankElement = this.element
-      .querySelectorAll(`.instrument > .channel`)
+      .querySelectorAll('.instrument > .channel')
       [channel].querySelector('.bank > select');
 
-    while (bankElement.firstChild)
+    while (bankElement.firstChild) {
       bankElement.removeChild(bankElement.firstChild);
+    }
 
     for (const bankNo in this.programSet) {
       if (!Object.hasOwn(this.programSet, bankNo)) {
@@ -909,7 +911,7 @@ export default class Synthesizer {
     if (!this.element) {
       return;
     }
-    const dom = this.element.querySelectorAll(`.instrument > .channel`)[
+    const dom = this.element.querySelectorAll('.instrument > .channel')[
       channel
     ];
 
@@ -921,8 +923,9 @@ export default class Synthesizer {
     const programElement = dom.querySelector('.program > select');
 
     bankElement.value = this.channelBank[channel].toString();
-    while (programElement.firstChild)
+    while (programElement.firstChild) {
       programElement.removeChild(programElement.firstChild);
+    }
 
     for (const programNo in this.programSet[bankIndex]) {
       if (!Object.hasOwn(this.programSet[bankIndex], programNo)) {
@@ -975,7 +978,7 @@ export default class Synthesizer {
       instrument = this.bankSet[0][this.channelInstrument[channel]];
     }
 
-    if (instrument[key] === void 0) {
+    if (!instrument[key]) {
       // TODO
       console.warn(
         'instrument not found: bank=%s instrument=%s channel=%s key=%s',
@@ -996,22 +999,22 @@ export default class Synthesizer {
     panpot /= panpot < 0 ? 64 : 63;
 
     // create note information
-    instrumentKey['channel'] = channel;
-    instrumentKey['key'] = key;
-    instrumentKey['velocity'] = velocity;
-    instrumentKey['panpot'] = panpot;
-    instrumentKey['volume'] = this.channelVolume[channel] / 127;
-    instrumentKey['pitchBend'] = this.channelPitchBend[channel] - 8192;
-    instrumentKey['expression'] = this.channelExpression[channel];
-    instrumentKey['pitchBendSensitivity'] = Math.round(
+    instrumentKey.channel = channel;
+    instrumentKey.key = key;
+    instrumentKey.velocity = velocity;
+    instrumentKey.panpot = panpot;
+    instrumentKey.volume = this.channelVolume[channel] / 127;
+    instrumentKey.pitchBend = this.channelPitchBend[channel] - 8192;
+    instrumentKey.expression = this.channelExpression[channel];
+    instrumentKey.pitchBendSensitivity = Math.round(
       this.channelPitchBendSensitivity[channel]
     );
-    instrumentKey['mute'] = this.channelMute[channel];
-    instrumentKey['releaseTime'] = this.channelRelease[channel];
-    instrumentKey['cutOffFrequency'] = this.cutOffFrequency[channel];
-    instrumentKey['harmonicContent'] = this.harmonicContent[channel];
-    instrumentKey['reverb'] = this.reverb[channel];
-    instrumentKey['modulation'] = this.modulation[channel];
+    instrumentKey.mute = this.channelMute[channel];
+    instrumentKey.releaseTime = this.channelRelease[channel];
+    instrumentKey.cutOffFrequency = this.cutOffFrequency[channel];
+    instrumentKey.harmonicContent = this.harmonicContent[channel];
+    instrumentKey.reverb = this.reverb[channel];
+    instrumentKey.modulation = this.modulation[channel];
 
     // percussion
     if (bankIndex >= 127) {
@@ -1027,7 +1030,7 @@ export default class Synthesizer {
         // 81: Open Triangle
         this.noteOff(channel, 81);
       }
-      instrument['volume'] *= this.percussionVolume[key] / 127;
+      instrument.volume *= this.percussionVolume[key] / 127;
     }
 
     // note on
@@ -1107,7 +1110,7 @@ export default class Synthesizer {
     if (this.element) {
       /** @type {NodeListOf<HTMLDivElement>} */
       const channelElements = this.element.querySelectorAll(
-        `.instrument > .channel`
+        '.instrument > .channel'
       );
 
       if (!channelElements[channel]) {
@@ -1190,7 +1193,7 @@ export default class Synthesizer {
     if (this.element) {
       /** @type {HTMLSelectElement} */
       const select = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.program > select');
 
       select.value = instrument.toString();
@@ -1227,7 +1230,7 @@ export default class Synthesizer {
     if (this.element) {
       /** @type {HTMLSelectElement} バンクセレクトの値 */
       const bankSelect = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.bank > select');
       bankSelect.value = bank.toString();
     }
@@ -1245,7 +1248,7 @@ export default class Synthesizer {
     if (this.element) {
       /** @type {HTMLElement} */
       const volumeVariable = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.volume var');
       volumeVariable.innerText = volume.toString();
     }
@@ -1274,7 +1277,7 @@ export default class Synthesizer {
     if (this.element) {
       /** @type {HTMLElement} */
       const expressionVariabe = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.expression var');
 
       expressionVariabe.innerText = expression.toString();
@@ -1293,7 +1296,7 @@ export default class Synthesizer {
     this.channelPanpot[channel] = panpot;
     if (this.element) {
       const dom = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.panpot');
       dom.ariaValueNow = panpot.toString();
       /** @type {HTMLDivElement} */
@@ -1323,7 +1326,7 @@ export default class Synthesizer {
     let i;
     /** @type {number} */
     let il;
-    /** @type {import('./sound_font_synth_note').default[]} */
+    /** @type {import('./sound_font_synth_note.js').default[]} */
     const currentNoteOn = this.currentNoteOn[channel];
     /** @type {number} */
     const calculated = bend - 8192;
@@ -1337,7 +1340,7 @@ export default class Synthesizer {
     if (this.element) {
       /** @type {HTMLDivElement} */
       const dom = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.pitchBend');
       dom.ariaValueNow = bend.toString();
       /** @type {HTMLDivElement} */
@@ -1362,7 +1365,7 @@ export default class Synthesizer {
     if (this.element) {
       /** @type {HTMLElement} */
       const pitchBendSensitivityVariable = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.pitchBendSensitivity > var');
       pitchBendSensitivityVariable.innerText = sensitivity.toString();
     }
@@ -1442,7 +1445,7 @@ export default class Synthesizer {
     if (this.element) {
       /** @type {HTMLElement} */
       const reverbVariable = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.reverbDepth var');
       reverbVariable.innerText = depth.toString();
     }
@@ -1457,7 +1460,7 @@ export default class Synthesizer {
   modulationDepth(channel, depth) {
     if (this.element) {
       const dom = this.element
-        .querySelectorAll(`.instrument > .channel`)
+        .querySelectorAll('.instrument > .channel')
         [channel].querySelector('.pitchBend .progress-bar');
 
       // モデレーターが0でないときは、ピッチに斜め線を入れる

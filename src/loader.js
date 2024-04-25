@@ -32,7 +32,7 @@ export default class Loader {
     this.progressOuter = document.createElement('div');
     this.progressOuter.className = 'progress';
     this.progressOuter.role = 'progressbar';
-    this.progressOuter.ariaLabel = `Loading Progress`;
+    this.progressOuter.ariaLabel = 'Loading Progress';
     this.progressOuter.ariaValueMin = '0';
     this.progressOuter.ariaValueNow = '0';
     this.progressOuter.ariaValueMax = '100';

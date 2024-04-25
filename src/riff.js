@@ -20,10 +20,10 @@ export class Riff {
     /** @type {number} */
     this.offset = this.ip;
     /** @type {boolean} */
-    this.padding = optParams.padding !== void 0 ? optParams.padding : true;
+    this.padding = optParams.padding !== undefined ? optParams.padding : true;
     /** @type {boolean} */
     this.bigEndian =
-      optParams.bigEndian !== void 0 ? optParams.bigEndian : false;
+      optParams.bigEndian !== undefined ? optParams.bigEndian : false;
   }
 
   /** @returns {void} */

@@ -1,5 +1,5 @@
-import Synthesizer from './sound_font_synth';
-import Loader from './loader';
+import Loader from './loader.js';
+import Synthesizer from './sound_font_synth.js';
 
 /**
  * WebMidiLink Class
@@ -137,9 +137,7 @@ export default class WebMidiLink {
    *
    * @protected
    */
-  callback() {
-    return;
-  }
+  callback() {}
 
   /**
    * SoundFont Load Ready
@@ -180,7 +178,7 @@ export default class WebMidiLink {
         this.processMidiMessage(msg.map(hex => parseInt(hex, 16)));
         break;
       case 'link':
-        if (this.window === void 0) {
+        if (!this.window) {
           return;
         }
         command = msg.shift();
