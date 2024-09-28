@@ -131,7 +131,6 @@ export default class Loader {
     /** @type {Uint8Array[]} 受信したバイナリチャンクの配列(本文を構成します) */
     const chunks = [];
 
-    // eslint-disable-next-line
     while (true) {
       // 最後のチャンクも場合、done は true。
       // value はチャンクバイトの Uint8Array

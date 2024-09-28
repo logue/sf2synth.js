@@ -28,7 +28,7 @@ export default class WebMidiLink {
     /** @type {object} */
     this.option = {};
     /** @type {boolean} Display synthsizer Web UI */
-    this.option.drawSynth = option.drawSynth !== 'false';
+    this.option.drawSynth = option.drawSynth ?? true;
     /** @type {boolean} Use Cache API */
     this.option.cache = option.cache ?? true;
     /** @type {string} CORS */
@@ -125,6 +125,10 @@ export default class WebMidiLink {
       readyElem.role = 'alert';
       readyElem.innerText = 'Ready.';
       this.placeholder.appendChild(readyElem);
+
+      setTimeout(() => {
+        this.placeholder.removeChild(readyElem);
+      }, 3000);
     }
     // シンセサイザを初期化
     this.synth.init();

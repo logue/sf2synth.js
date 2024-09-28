@@ -22,9 +22,7 @@ export default defineConfig(async ({ mode, command }) => {
       checker({
         typescript: false,
         vueTsc: false,
-        eslint: {
-          lintCommand: 'eslint', // for example, lint .ts & .tsx
-        },
+        // eslint: { lintCommand: 'eslint' }, // for example, lint .ts & .tsx
       }),
       // vite-plugin-banner
       // https://github.com/chengpeiquan/vite-plugin-banner
@@ -46,14 +44,6 @@ export default defineConfig(async ({ mode, command }) => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
         '~': fileURLToPath(new URL('./node_modules', import.meta.url)),
-      },
-      extensions: ['.js', '.json', '.jsx', '.mjs'],
-    },
-    // https://vitejs.dev/config/server-options.html
-    server: {
-      fs: {
-        // Allow serving files from one level up to the project root
-        allow: ['..'],
       },
     },
     // Build Options
