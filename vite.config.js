@@ -6,7 +6,8 @@ import { defineConfig } from 'vite';
 import banner from 'vite-plugin-banner';
 import { checker } from 'vite-plugin-checker';
 
-const pkg = require('./package.json');
+import pkg from './package.json';
+
 const build = new Date().toISOString();
 
 // Export vite config
