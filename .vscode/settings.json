@@ -1,0 +1,5 @@
+{
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "js/ts.implicitProjectConfig.checkJs": true
+}
