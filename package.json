@@ -57,6 +57,7 @@
   },
   "homepage": "https://github.com/enjikaka/sf2-player",
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@pika/plugin-build-web": "^0.8.1",
     "@pika/plugin-bundle-web": "^0.8.1",
     "@pika/plugin-standard-pkg": "^0.8.1",
