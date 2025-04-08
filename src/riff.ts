@@ -1,12 +1,27 @@
+interface RiffOptParams {
+  index?: number;
+  length?: number;
+  padding?: boolean;
+  bigEndian?: boolean;
+}
+
 /**
  * Riff Parser class
  *
  * This class implements a parser for the Resource Interchange File Format (RIFF),
  * which is a generic file container format for storing data in tagged chunks.
  *
- * @author imaya
+ * @author imaya, enjikaka
  */
 export class Riff {
+  input: ArrayBuffer;
+  ip: number;
+  length: number;
+  chunkList: RiffChunk[];
+  offset: number;
+  padding: boolean;
+  bigEndian: boolean;
+
   /**
    * Creates a new Riff parser instance
    *
@@ -18,7 +33,7 @@ export class Riff {
    * @param {boolean} [optParams.bigEndian=false] Whether the data is in big-endian format
    * @throws {Error} If input is not a valid ArrayBuffer or has insufficient length
    */
-  constructor(input, optParams = {}) {
+  constructor(input: ArrayBuffer, optParams: RiffOptParams = {}) {
     if (!(input instanceof ArrayBuffer)) {
       throw new Error('Input must be an ArrayBuffer');
     }
@@ -32,19 +47,12 @@ export class Riff {
       throw new Error('Invalid start index');
     }
 
-    /** @type {ArrayBuffer} */
     this.input = input;
-    /** @type {number} */
     this.ip = index;
-    /** @type {number} */
     this.length = optParams.length || input.byteLength - this.ip;
-    /** @type {RiffChunk[]} */
     this.chunkList = [];
-    /** @type {number} */
     this.offset = this.ip;
-    /** @type {boolean} */
     this.padding = optParams.padding !== undefined ? optParams.padding : true;
-    /** @type {boolean} */
     this.bigEndian = optParams.bigEndian !== undefined ? optParams.bigEndian : false;
 
     if (this.length <= 0) {
@@ -154,29 +162,16 @@ export class Riff {
  * @interface
  */
 export class RiffChunk {
+  type: string;
+  size: number;
+  offset: number;
+
   /**
    * Creates a new RIFF chunk
-   *
-   * @param {string} type The chunk type identifier (4 characters)
-   * @param {number} size The size of the chunk data in bytes
-   * @param {number} offset The offset in the input buffer where the chunk data begins
    */
-  constructor(type, size, offset) {
-    if (type.length !== 4) {
-      throw new Error('Chunk type must be exactly 4 characters');
-    }
-    if (size < 0) {
-      throw new Error('Chunk size cannot be negative');
-    }
-    if (offset < 0) {
-      throw new Error('Chunk offset cannot be negative');
-    }
-
-    /** @type {string} */
+  constructor(type: string, size: number, offset: number) {
     this.type = type;
-    /** @type {number} */
     this.size = size;
-    /** @type {number} */
     this.offset = offset;
   }
 }

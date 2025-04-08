@@ -9,8 +9,8 @@
   },
   "scripts": {
     "server": "http-server ./ -p 8080",
-    "esbuild": "npx esbuild src/index.js --bundle --sourcemap --minify --platform=browser --format=esm --outfile=pkg/index.js",
-    "esbuild:watch": "npx esbuild src/index.js --bundle --platform=browser --format=esm --watch --outfile=pkg/index.js",
+    "esbuild": "npx esbuild src/index.ts --bundle --sourcemap --minify --platform=browser --format=esm --outfile=pkg/index.js",
+    "esbuild:watch": "npx esbuild src/index.ts --bundle --platform=browser --format=esm --watch --outfile=pkg/index.js",
     "dev": "npx npm-run-all --parallel esbuild:watch server",
     "build": "rm -rf pkg/ && mkdir pkg && npm run esbuild",
     "release": "npm version patch && cp package.json ./pkg/package.json && npm publish ./pkg"
@@ -59,10 +59,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@logue/reverb": "^1.3.16",
-    "@pika/plugin-build-web": "^0.8.1",
-    "@pika/plugin-bundle-web": "^0.8.1",
-    "@pika/plugin-standard-pkg": "^0.8.1",
     "esbuild": "^0.25.2",
-    "http-server": "^0.12.1"
+    "http-server": "^14.1.1"
   }
 }
