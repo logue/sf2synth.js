@@ -63,7 +63,7 @@ export default class Loader {
   /**
    * ロード完了時のハンドラ
    *
-   * @param {ArrayBuffer} buffer
+   * @param {Uint8Array} buffer
    * @private
    */
   onComplete(buffer) {
@@ -103,7 +103,7 @@ export default class Loader {
 
     if (this.cache && cached) {
       // キャッシュが存在する場合、キャッシュの値を返す
-      this.onComplete(await cached.arrayBuffer());
+      this.onComplete(new Uint8Array(await cached.arrayBuffer()));
       return;
     }
 

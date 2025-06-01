@@ -11,7 +11,7 @@ export default class WebMidiApi extends WebMidiLink {
    */
   constructor(option = {}) {
     super(option);
-    /** @type {WebMidi.MIDIAccess | undefined} */
+    /** @type {MIDIAccess | undefined} */
     this.midi = undefined;
   }
 
@@ -33,7 +33,7 @@ export default class WebMidiApi extends WebMidiLink {
     // Web MIDI APIを待ち受け
     this.midi.inputs.forEach(
       (
-        /** @type {{ onmidimessage: (msg: WebMidi.MIDIMessageEvent) => void; }} */ input
+        /** @type {{ onmidimessage: (msg: MIDIMessageEvent) => void; }} */ input
       ) =>
         (input.onmidimessage = msg =>
           super.processMidiMessage(Array.from(msg.data)))
