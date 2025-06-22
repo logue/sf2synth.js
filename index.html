@@ -98,9 +98,9 @@
         </div>
         <hr />
         <div id="placeholder">
-          <div class="spinner-border" role="status">
+          <output class="spinner-border">
             <span class="visually-hidden">Loading...</span>
-          </div>
+          </output>
         </div>
       </main>
       <footer>
@@ -116,7 +116,7 @@
     </div>
     <script type="module">
       import qs from 'query-string';
-      import SoundFont from '/src/index';
+      import SoundFont from './src/index.js';
 
       /** sf2synth.js Option */
       let options = {

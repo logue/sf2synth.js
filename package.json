@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/sf2synth",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "type": "module",
   "description": "SoundFont2 Synthesizer",
   "repository": {
@@ -62,7 +62,7 @@
     "node": ">=22.7.4",
     "pnpm": ">=10.3.0"
   },
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.12.1",
   "scripts": {
     "dev": "vite",
     "clean": "rimraf node_modules/.vite",
@@ -75,25 +75,26 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@logue/reverb": "^1.4.0",
-    "bootstrap": "^5.3.6"
+    "@logue/reverb": "^1.4.1",
+    "bootstrap": "^5.3.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.28.0",
-    "eslint": "^9.28.0",
+    "@eslint/js": "^9.29.0",
+    "@types/node": "^24.0.3",
+    "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-import-resolver-alias": "^1.1.2",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-prettier": "^5.4.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.0",
     "globals": "^16.2.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.0",
+    "lint-staged": "^16.1.2",
     "prettier": "^3.5.3",
-    "query-string": "^9.2.0",
+    "query-string": "^9.2.1",
     "rimraf": "^6.0.1",
-    "sass": "1.89.1",
-    "stylelint": "^16.20.0",
+    "sass-embedded": "1.89.2",
+    "stylelint": "^16.21.0",
     "stylelint-config-recommended-scss": "^15.0.1",
     "stylelint-order": "^7.0.0",
     "stylelint-prettier": "^5.0.3",
@@ -114,11 +115,5 @@
   "resolutions": {
     "json5": ">=2.2.3",
     "yaml": ">=2.3.2"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "esbuild"
-    ]
   }
 }
