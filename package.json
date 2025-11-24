@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/sf2synth",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "type": "module",
   "description": "SoundFont2 Synthesizer",
   "repository": {
@@ -43,15 +43,15 @@
   "module": "dist/sf2synth.es.js",
   "jsdelivr": "dist/sf2synth.iife.js",
   "unpkg": "dist/sf2synth.iife.js",
-  "style": "dist/style.css",
+  "style": "dist/sf2synth.css",
   "exports": {
     ".": {
       "import": "./dist/sf2synth.es.js",
-      "style": "./dist/style.css"
+      "style": "./dist/sf2synth.css"
     },
     "./dist/style.css": {
-      "import": "./dist/style.css",
-      "require": "./dist/style.css"
+      "import": "./dist/sf2synth.css",
+      "require": "./dist/sf2synth.css"
     },
     "./dist/Yamaha XG Sound Set.sf2": "./dist/Yamaha XG Sound Set.sf2",
     "./dist/SoundFont Copyright.txt": "./dist/SoundFont Copyright.txt",
@@ -62,7 +62,7 @@
     "node": ">=22.7.4",
     "pnpm": ">=10.3.0"
   },
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.23.0",
   "scripts": {
     "dev": "vite",
     "clean": "rimraf node_modules/.vite",
@@ -75,32 +75,32 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@logue/reverb": "^1.4.1",
-    "bootstrap": "^5.3.7"
+    "@logue/reverb": "^1.4.3",
+    "bootstrap": "^5.3.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.29.0",
-    "@types/node": "^24.0.3",
-    "eslint": "^9.29.0",
-    "eslint-config-prettier": "^10.1.5",
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.0",
-    "globals": "^16.2.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.5.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
-    "prettier": "^3.5.3",
-    "query-string": "^9.2.1",
-    "rimraf": "^6.0.1",
-    "sass-embedded": "1.89.2",
-    "stylelint": "^16.21.0",
-    "stylelint-config-recommended-scss": "^15.0.1",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.6.2",
+    "query-string": "^9.3.1",
+    "rimraf": "^6.1.2",
+    "sass-embedded": "1.93.3",
+    "stylelint": "^16.26.0",
+    "stylelint-config-recommended-scss": "^16.0.2",
     "stylelint-order": "^7.0.0",
     "stylelint-prettier": "^5.0.3",
-    "vite": "^6.3.5",
+    "vite": "^7.2.4",
     "vite-plugin-banner": "^0.8.1",
-    "vite-plugin-checker": "^0.9.3"
+    "vite-plugin-checker": "^0.11.0"
   },
   "husky": {
     "hooks": {
