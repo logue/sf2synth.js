@@ -359,7 +359,8 @@ export default class SynthesizerNote {
 
       // Set vibrato depth based on modulation level
       // Modulation depth controls the intensity of the vibrato
-      const vibratoDepth = (modulation / SynthesizerNote.MIDI_MAX_VALUE) * 10; // Adjust multiplier as needed
+      // Scale down the modulation to a more subtle effect (typical MIDI vibrato depth)
+      const vibratoDepth = (modulation / SynthesizerNote.MIDI_MAX_VALUE) * 0.01;
       this.lfoDepth.gain.value = vibratoDepth;
 
       // Connect LFO to buffer source playback rate

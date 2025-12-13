@@ -193,7 +193,7 @@ export default class Synthesizer {
       this.filter[i] = this.ctx.createBiquadFilter();
     }
 
-    /** 表示項目 */
+    /** @type {string[]} 表示項目 */
     this.items = [];
 
     /** @type {IntersectionObserver} 交差していない */
