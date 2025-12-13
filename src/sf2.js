@@ -6,6 +6,20 @@ import { Riff } from './riff.js';
  * @author imaya
  */
 export default class Parser {
+  // Constants
+  static CHUNK_ID_SIZE = 4;
+  static EXPECTED_RIFF_CHUNKS = 1;
+  static EXPECTED_SFBK_CHUNKS = 3;
+  static EXPECTED_PDTA_CHUNKS = 9;
+  static EXPECTED_SDTA_CHUNKS = 1;
+  static PRESET_HEADER_SIZE = 38;
+  static INSTRUMENT_HEADER_SIZE = 22;
+  static NAME_SIZE = 20;
+  static SAMPLE_HEADER_SIZE = 46;
+  static BAG_SIZE = 4;
+  static MODULATOR_SIZE = 10;
+  static GENERATOR_SIZE = 4;
+
   /**
    * @param {Uint8Array} input
    * @param {Object} [optParams]
@@ -168,18 +182,57 @@ export default class Parser {
     });
   }
 
+  /**
+   * Read 4-character signature from data
+   * @private
+   * @param {Uint8Array} data Data array
+   * @param {number} offset Offset position
+   * @returns {string} Signature string
+   */
+  readSignature(data, offset) {
+    return String.fromCharCode(
+      data[offset],
+      data[offset + 1],
+      data[offset + 2],
+      data[offset + 3]
+    );
+  }
+
+  /**
+   * Validate chunk type
+   * @private
+   * @param {import('./riff.js').RiffChunk} chunk Chunk to validate
+   * @param {string} expectedType Expected chunk type
+   * @throws {Error} If chunk type doesn't match
+   */
+  validateChunkType(chunk, expectedType) {
+    if (chunk.type !== expectedType) {
+      throw new Error(`invalid chunk type: expected '${expectedType}', got '${chunk.type}'`);
+    }
+  }
+
+  /**
+   * Validate signature
+   * @private
+   * @param {string} signature Actual signature
+   * @param {string} expected Expected signature
+   * @throws {Error} If signature doesn't match
+   */
+  validateSignature(signature, expected) {
+    if (signature !== expected) {
+      throw new Error(`invalid signature: expected '${expected}', got '${signature}'`);
+    }
+  }
+
   /** @export */
   parse() {
-    /** @type {Riff} */
-    const parser = new Riff(this.input, this.parserOption);
+    const parser = new Riff(/** @type {ArrayBuffer} */ (this.input.buffer), this.parserOption);
 
-    // parse RIFF chunk
     parser.parse();
-    if (parser.chunkList.length !== 1) {
-      throw new Error('wrong chunk length');
+    if (parser.chunkList.length !== Parser.EXPECTED_RIFF_CHUNKS) {
+      throw new Error(`wrong chunk length: expected ${Parser.EXPECTED_RIFF_CHUNKS}, got ${parser.chunkList.length}`);
     }
 
-    /** @type {import('./riff.js').RiffChunk | null} */
     const chunk = parser.getChunk(0);
     if (chunk === null) {
       throw new Error('chunk not found');
@@ -191,34 +244,19 @@ export default class Parser {
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parseRiffChunk(chunk) {
-    /** @type {ArrayBuffer} */
     const data = this.input;
-    /** @type {number} */
     let ip = chunk.offset;
 
-    // check parse target
-    if (chunk.type !== 'RIFF') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    this.validateChunkType(chunk, 'RIFF');
 
-    // check signature
-    /** @type {string} */
-    const signature = String.fromCharCode(
-      data[ip++],
-      data[ip++],
-      data[ip++],
-      data[ip++]
-    );
-    if (signature !== 'sfbk') {
-      throw new Error('invalid signature:' + signature);
-    }
+    const signature = this.readSignature(data, ip);
+    ip += Parser.CHUNK_ID_SIZE;
+    this.validateSignature(signature, 'sfbk');
 
-    // read structure
-    /** @type {import('./riff.js').Riff} */
-    const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
+    const parser = new Riff(data, { index: ip, length: chunk.size - Parser.CHUNK_ID_SIZE });
     parser.parse();
-    if (parser.getNumberOfChunks() !== 3) {
-      throw new Error('invalid sfbk structure');
+    if (parser.getNumberOfChunks() !== Parser.EXPECTED_SFBK_CHUNKS) {
+      throw new Error(`invalid sfbk structure: expected ${Parser.EXPECTED_SFBK_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`);
     }
 
     // INFO-list
@@ -239,64 +277,34 @@ export default class Parser {
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parseInfoList(chunk) {
-    /** @type {ArrayBuffer} */
     const data = this.input;
-    /** @type {number} */
     let ip = chunk.offset;
 
-    // check parse target
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    this.validateChunkType(chunk, 'LIST');
 
-    // check signature
-    /** @type {string} */
-    const signature = String.fromCharCode(
-      data[ip++],
-      data[ip++],
-      data[ip++],
-      data[ip++]
-    );
-    if (signature !== 'INFO') {
-      throw new Error('invalid signature:' + signature);
-    }
+    const signature = this.readSignature(data, ip);
+    ip += Parser.CHUNK_ID_SIZE;
+    this.validateSignature(signature, 'INFO');
 
-    // read structure
-    /** @type {import('./riff.js').Riff} */
-    const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
+    const parser = new Riff(data, { index: ip, length: chunk.size - Parser.CHUNK_ID_SIZE });
     parser.parse();
   }
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parseSdtaList(chunk) {
-    /** @type {ArrayBuffer} */
     const data = this.input;
-    /** @type {number} */
     let ip = chunk.offset;
 
-    // check parse target
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    this.validateChunkType(chunk, 'LIST');
 
-    // check signature
-    /** @type {string} */
-    const signature = String.fromCharCode(
-      data[ip++],
-      data[ip++],
-      data[ip++],
-      data[ip++]
-    );
-    if (signature !== 'sdta') {
-      throw new Error('invalid signature:' + signature);
-    }
+    const signature = this.readSignature(data, ip);
+    ip += Parser.CHUNK_ID_SIZE;
+    this.validateSignature(signature, 'sdta');
 
-    // read structure
-    /** @type {import('./riff.js').Riff} */
-    const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
+    const parser = new Riff(data, { index: ip, length: chunk.size - Parser.CHUNK_ID_SIZE });
     parser.parse();
-    if (parser.chunkList.length !== 1) {
-      throw new Error('TODO');
+    if (parser.chunkList.length !== Parser.EXPECTED_SDTA_CHUNKS) {
+      throw new Error(`invalid sdta structure: expected ${Parser.EXPECTED_SDTA_CHUNKS} chunk, got ${parser.chunkList.length}`);
     }
     this.samplingData =
       /** @type {{ type: string; size: number; offset: number }} */
@@ -305,36 +313,20 @@ export default class Parser {
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parsePdtaList(chunk) {
-    /** @type {Uint8Array} */
     const data = this.input;
-    /** @type {number} */
     let ip = chunk.offset;
 
-    // check parse target
-    if (chunk.type !== 'LIST') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    this.validateChunkType(chunk, 'LIST');
 
-    // check signature
-    /** @type {string} */
-    const signature = String.fromCharCode(
-      data[ip++],
-      data[ip++],
-      data[ip++],
-      data[ip++]
-    );
-    if (signature !== 'pdta') {
-      throw new Error('invalid signature:' + signature);
-    }
+    const signature = this.readSignature(data, ip);
+    ip += Parser.CHUNK_ID_SIZE;
+    this.validateSignature(signature, 'pdta');
 
-    // read structure
-    /** @type {import('./riff.js').Riff} */
-    const parser = new Riff(data, { index: ip, length: chunk.size - 4 });
+    const parser = new Riff(data, { index: ip, length: chunk.size - Parser.CHUNK_ID_SIZE });
     parser.parse();
 
-    // check number of chunks
-    if (parser.getNumberOfChunks() !== 9) {
-      throw new Error('invalid pdta chunk');
+    if (parser.getNumberOfChunks() !== Parser.EXPECTED_PDTA_CHUNKS) {
+      throw new Error(`invalid pdta chunk: expected ${Parser.EXPECTED_PDTA_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`);
     }
 
     this.parsePhdr(
@@ -368,19 +360,12 @@ export default class Parser {
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parsePhdr(chunk) {
-    /** @type {Uint8Array} */
-    const data = this.input;
-    /** @type {number} */
-    let ip = chunk.offset;
-    /** @type {Object[]} */
-    const presetHeader = (this.presetHeader = []);
-    /** @type {number} */
-    const size = chunk.offset + chunk.size;
+    this.validateChunkType(chunk, 'phdr');
 
-    // check parse target
-    if (chunk.type !== 'phdr') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    const data = this.input;
+    let ip = chunk.offset;
+    const presetHeader = (this.presetHeader = []);
+    const size = chunk.offset + chunk.size;
 
     while (ip < size) {
       presetHeader.push({
@@ -415,19 +400,12 @@ export default class Parser {
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parsePbag(chunk) {
-    /** @type {ArrayBuffer} */
-    const data = this.input;
-    /** @type {number} */
-    let ip = chunk.offset;
-    /** @type {Object[]} */
-    const presetZone = (this.presetZone = []);
-    /** @type {number} */
-    const size = chunk.offset + chunk.size;
+    this.validateChunkType(chunk, 'pbag');
 
-    // check parse target
-    if (chunk.type !== 'pbag') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    const data = this.input;
+    let ip = chunk.offset;
+    const presetZone = (this.presetZone = []);
+    const size = chunk.offset + chunk.size;
 
     while (ip < size) {
       presetZone.push({
@@ -439,38 +417,24 @@ export default class Parser {
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parsePmod(chunk) {
-    // check parse target
-    if (chunk.type !== 'pmod') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
+    this.validateChunkType(chunk, 'pmod');
     this.presetZoneModulator = this.parseModulator(chunk);
   }
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parsePgen(chunk) {
-    // check parse target
-    if (chunk.type !== 'pgen') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    this.validateChunkType(chunk, 'pgen');
     this.presetZoneGenerator = this.parseGenerator(chunk);
   }
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parseInst(chunk) {
-    /** @type {Uint8Array} */
-    const data = this.input;
-    /** @type {number} */
-    let ip = chunk.offset;
-    /** @type {Object[]} */
-    const instrument = (this.instrument = []);
-    /** @type {number} */
-    const size = chunk.offset + chunk.size;
+    this.validateChunkType(chunk, 'inst');
 
-    // check parse target
-    if (chunk.type !== 'inst') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    const data = this.input;
+    let ip = chunk.offset;
+    const instrument = (this.instrument = []);
+    const size = chunk.offset + chunk.size;
 
     while (ip < size) {
       instrument.push({
@@ -485,19 +449,12 @@ export default class Parser {
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parseIbag(chunk) {
-    /** @type {ArrayBuffer} */
-    const data = this.input;
-    /** @type {number} */
-    let ip = chunk.offset;
-    /** @type {Object[]} */
-    const instrumentZone = (this.instrumentZone = []);
-    /** @type {number} */
-    const size = chunk.offset + chunk.size;
+    this.validateChunkType(chunk, 'ibag');
 
-    // check parse target
-    if (chunk.type !== 'ibag') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    const data = this.input;
+    let ip = chunk.offset;
+    const instrumentZone = (this.instrumentZone = []);
+    const size = chunk.offset + chunk.size;
 
     while (ip < size) {
       instrumentZone.push({
@@ -509,101 +466,77 @@ export default class Parser {
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parseImod(chunk) {
-    // check parse target
-    if (chunk.type !== 'imod') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
+    this.validateChunkType(chunk, 'imod');
     this.instrumentZoneModulator = this.parseModulator(chunk);
   }
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parseIgen(chunk) {
-    // check parse target
-    if (chunk.type !== 'igen') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
-
+    this.validateChunkType(chunk, 'igen');
     this.instrumentZoneGenerator = this.parseGenerator(chunk);
+  }
+
+  /**
+   * Read 32-bit unsigned integer (little-endian)
+   * @private
+   * @param {Uint8Array} data Data array
+   * @param {number} offset Offset position
+   * @returns {number} 32-bit unsigned integer
+   */
+  readUInt32LE(data, offset) {
+    return (
+      (data[offset] << 0) |
+      (data[offset + 1] << 8) |
+      (data[offset + 2] << 16) |
+      (data[offset + 3] << 24)
+    ) >>> 0;
+  }
+
+  /**
+   * Read 16-bit unsigned integer (little-endian)
+   * @private
+   * @param {Uint8Array} data Data array
+   * @param {number} offset Offset position
+   * @returns {number} 16-bit unsigned integer
+   */
+  readUInt16LE(data, offset) {
+    return data[offset] | (data[offset + 1] << 8);
   }
 
   /** @param {import('./riff.js').RiffChunk} chunk */
   parseShdr(chunk) {
-    /** @type {Uint8Array} */
-    const data = this.input;
-    /** @type {number} */
-    let ip = chunk.offset;
-    /** @type {Object[]} */
-    const samples = (this.sample = []);
-    /** @type {Object[]} */
-    const sampleHeader = (this.sampleHeader = []);
-    /** @type {number} */
-    const size = chunk.offset + chunk.size;
-    /** @type {string} */
-    let sampleName;
-    /** @type {number} */
-    let start;
-    /** @type {number} */
-    let end;
-    /** @type {number} */
-    let startLoop;
-    /** @type {number} */
-    let endLoop;
-    /** @type {number} */
-    let sampleRate;
-    /** @type {number} */
-    let originalPitch;
-    /** @type {number} */
-    let pitchCorrection;
-    /** @type {number} */
-    let sampleLink;
-    /** @type {number} */
-    let sampleType;
+    this.validateChunkType(chunk, 'shdr');
 
-    // check parse target
-    if (chunk.type !== 'shdr') {
-      throw new Error('invalid chunk type:' + chunk.type);
-    }
+    const data = this.input;
+    let ip = chunk.offset;
+    const samples = (this.sample = []);
+    const sampleHeader = (this.sampleHeader = []);
+    const size = chunk.offset + chunk.size;
 
     while (ip < size) {
-      sampleName = String.fromCharCode.apply(
+      const sampleName = String.fromCharCode.apply(
         null,
-        data.subarray(ip, (ip += 20))
+        data.subarray(ip, ip + Parser.NAME_SIZE)
       );
-      start =
-        ((data[ip++] << 0) |
-          (data[ip++] << 8) |
-          (data[ip++] << 16) |
-          (data[ip++] << 24)) >>>
-        0;
-      end =
-        ((data[ip++] << 0) |
-          (data[ip++] << 8) |
-          (data[ip++] << 16) |
-          (data[ip++] << 24)) >>>
-        0;
-      startLoop =
-        ((data[ip++] << 0) |
-          (data[ip++] << 8) |
-          (data[ip++] << 16) |
-          (data[ip++] << 24)) >>>
-        0;
-      endLoop =
-        ((data[ip++] << 0) |
-          (data[ip++] << 8) |
-          (data[ip++] << 16) |
-          (data[ip++] << 24)) >>>
-        0;
-      sampleRate =
-        ((data[ip++] << 0) |
-          (data[ip++] << 8) |
-          (data[ip++] << 16) |
-          (data[ip++] << 24)) >>>
-        0;
-      originalPitch = data[ip++];
-      pitchCorrection = (data[ip++] << 24) >> 24;
-      sampleLink = data[ip++] | (data[ip++] << 8);
-      sampleType = data[ip++] | (data[ip++] << 8);
+      ip += Parser.NAME_SIZE;
+
+      const start = this.readUInt32LE(data, ip);
+      ip += 4;
+      const end = this.readUInt32LE(data, ip);
+      ip += 4;
+      let startLoop = this.readUInt32LE(data, ip);
+      ip += 4;
+      let endLoop = this.readUInt32LE(data, ip);
+      ip += 4;
+      let sampleRate = this.readUInt32LE(data, ip);
+      ip += 4;
+
+      const originalPitch = data[ip++];
+      const pitchCorrection = (data[ip++] << 24) >> 24; // Sign extend
+      const sampleLink = this.readUInt16LE(data, ip);
+      ip += 2;
+      const sampleType = this.readUInt16LE(data, ip);
+      ip += 2;
 
       let sample = new Int16Array(
         new Uint8Array(
@@ -683,17 +616,9 @@ export default class Parser {
    * @return {Object[]}
    */
   parseModulator(chunk) {
-    /** @type {ArrayBuffer} */
     const data = this.input;
-    /** @type {number} */
     let ip = chunk.offset;
-    /** @type {number} */
     const size = chunk.offset + chunk.size;
-    /** @type {number} */
-    let code;
-    /** @type {string} */
-    let key;
-    /** @type {Object[]} */
     const output = [];
 
     while (ip < size) {
@@ -702,8 +627,8 @@ export default class Parser {
       ip += 2;
 
       // Dest Oper
-      code = data[ip++] | (data[ip++] << 8);
-      key = this.GeneratorEnumeratorTable[code];
+      const code = data[ip++] | (data[ip++] << 8);
+      const key = this.GeneratorEnumeratorTable[code];
       if (!key) {
         // Amount
         output.push({
@@ -762,22 +687,14 @@ export default class Parser {
    * @return {Object[]}
    */
   parseGenerator(chunk) {
-    /** @type {ArrayBuffer} */
     const data = this.input;
-    /** @type {number} */
     let ip = chunk.offset;
-    /** @type {number} */
     const size = chunk.offset + chunk.size;
-    /** @type {number} */
-    let code;
-    /** @type {string} */
-    let key;
-    /** @type {Object[]} */
     const output = [];
 
     while (ip < size) {
-      code = data[ip++] | (data[ip++] << 8);
-      key = this.GeneratorEnumeratorTable[code];
+      const code = data[ip++] | (data[ip++] << 8);
+      const key = this.GeneratorEnumeratorTable[code];
       if (!key) {
         output.push({
           type: key,

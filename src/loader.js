@@ -4,8 +4,25 @@
  * @author Logue <logue@hotmail.co.jp>
  */
 export default class Loader {
+  // Constants
   /** キャッシュの名前空間 */
   static CACHE_NAME = 'wml';
+  static FETCH_METHOD = 'GET';
+  static PROGRESS_MAX = 100;
+
+  // CSS classes
+  static CLASS_ALERT_WARNING = 'alert alert-warning';
+  static CLASS_ALERT_INFO = 'alert alert-info';
+  static CLASS_ALERT_DANGER = 'alert alert-danger';
+  static CLASS_PROGRESS = 'progress';
+  static CLASS_PROGRESS_BAR = 'progress-bar';
+  static CLASS_PROGRESS_BAR_ANIMATED = 'progress-bar progress-bar-striped progress-bar-animated';
+
+  // Messages
+  static MSG_LOADING = 'Now Loading...';
+  static MSG_INITIALIZING = 'Initializing...';
+  static MSG_ERROR = 'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
+
   /**
    * コンストラクタ
    *
@@ -20,44 +37,77 @@ export default class Loader {
     this.cache = cache;
     this.callback = callback;
 
-    /** @type {HTMLDivElement} */
-    this.alert = document.createElement('div');
-    this.alert.className = 'alert alert-warning';
-
-    /** @type {HTMLParagraphElement} */
-    this.message = document.createElement('p');
-    this.message.innerText = 'Now Loading...';
-
-    /** @type {HTMLDivElement} */
-    this.progressOuter = document.createElement('div');
-    this.progressOuter.className = 'progress';
-    this.progressOuter.role = 'progressbar';
-    this.progressOuter.ariaLabel = 'Loading Progress';
-    this.progressOuter.ariaValueMin = '0';
-    this.progressOuter.ariaValueNow = '0';
-    this.progressOuter.ariaValueMax = '100';
-
-    /** @type {HTMLDivElement} */
-    this.progress = document.createElement('div');
-    this.progress.className = 'progress-bar';
-
-    this.progressOuter.appendChild(this.progress);
-    this.alert.appendChild(this.message);
-    this.alert.appendChild(this.progressOuter);
-
+    this.createUIElements();
     placeholder.appendChild(this.alert);
   }
 
   /**
+   * Create UI elements for loading progress
+   * @private
+   */
+  createUIElements() {
+    this.alert = this.createElement('div', Loader.CLASS_ALERT_WARNING);
+    this.message = this.createElement('p');
+    this.message.innerText = Loader.MSG_LOADING;
+
+    this.progressOuter = this.createProgressBar();
+    this.progress = this.createElement('div', Loader.CLASS_PROGRESS_BAR);
+
+    this.progressOuter.appendChild(this.progress);
+    this.alert.appendChild(this.message);
+    this.alert.appendChild(this.progressOuter);
+  }
+
+  /**
+   * Create a DOM element with optional class name
+   * @private
+   * @param {string} tagName Element tag name
+   * @param {string} [className] Optional class name
+   * @returns {HTMLElement}
+   */
+  createElement(tagName, className = '') {
+    const element = document.createElement(tagName);
+    if (className) {
+      element.className = className;
+    }
+    return element;
+  }
+
+  /**
+   * Create progress bar element
+   * @private
+   * @returns {HTMLDivElement}
+   */
+  createProgressBar() {
+    const progressOuter = this.createElement('div', Loader.CLASS_PROGRESS);
+    progressOuter.role = 'progressbar';
+    progressOuter.ariaLabel = 'Loading Progress';
+    progressOuter.ariaValueMin = '0';
+    progressOuter.ariaValueNow = '0';
+    progressOuter.ariaValueMax = Loader.PROGRESS_MAX.toString();
+    return progressOuter;
+  }
+
+  /**
    * ダウンロード中のハンドラ
-   * @param {number} current
-   * @param {number} total
+   * @param {number} current 現在のダウンロード済みバイト数
+   * @param {number} total 総バイト数
    * @private
    */
   onProgress(current, total) {
-    const percentCompleted = Math.floor((current / total) * 100);
-    this.progress.style.width = `${percentCompleted}%`;
-    this.progress.innerText = `${percentCompleted}%`;
+    const percentCompleted = Math.floor((current / total) * Loader.PROGRESS_MAX);
+    this.updateProgress(percentCompleted);
+  }
+
+  /**
+   * Update progress bar
+   * @private
+   * @param {number} percent Progress percentage (0-100)
+   */
+  updateProgress(percent) {
+    this.progress.style.width = `${percent}%`;
+    this.progress.innerText = `${percent}%`;
+    this.progressOuter.ariaValueNow = percent.toString();
   }
 
   /**
@@ -67,11 +117,10 @@ export default class Loader {
    * @private
    */
   onComplete(buffer) {
-    this.alert.className = 'alert alert-info';
-    this.message.innerText = 'Initializing...';
-    this.progress.className =
-      'progress-bar progress-bar-striped progress-bar-animated';
-    this.progress.style.width = '100%';
+    this.alert.className = Loader.CLASS_ALERT_INFO;
+    this.message.innerText = Loader.MSG_INITIALIZING;
+    this.progress.className = Loader.CLASS_PROGRESS_BAR_ANIMATED;
+    this.updateProgress(Loader.PROGRESS_MAX);
     // コールバック実行
     this.callback(new Uint8Array(buffer));
   }
@@ -83,10 +132,12 @@ export default class Loader {
    * @private
    */
   onError(error = undefined) {
+    if (error) {
+      console.error('[Loader] Error occurred:', error);
+    }
     requestAnimationFrame(() => {
-      this.alert.className = 'alert alert-danger';
-      this.message.innerText =
-        'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
+      this.alert.className = Loader.CLASS_ALERT_DANGER;
+      this.message.innerText = Loader.MSG_ERROR;
       this.progressOuter.style.display = 'none';
     });
   }
@@ -96,69 +147,123 @@ export default class Loader {
    * @public
    */
   async fetch() {
-    /** @type {Cache} */
-    const cache = await window.caches.open(Loader.CACHE_NAME);
-    /** @type {Response} */
-    const cached = await cache.match(this.url);
+    try {
+      const cache = await window.caches.open(Loader.CACHE_NAME);
+      const cached = await this.loadFromCache(cache);
 
-    if (this.cache && cached) {
-      // キャッシュが存在する場合、キャッシュの値を返す
-      this.onComplete(new Uint8Array(await cached.arrayBuffer()));
-      return;
-    }
-
-    /** @type {void | Response} キャッシュがない場合Fetchで取得 */
-    const response = await fetch(this.url, {
-      method: 'GET',
-    }).catch(e => this.onError(e));
-
-    if (!response || (response && !response.ok)) {
-      return;
-    }
-
-    /** @type {Response} キャッシュ用レスポンス */
-    const cloned = response.clone();
-
-    /** @type {number} ファイルの容量 */
-    const contentLength = parseInt(response.headers.get('Content-Length'));
-
-    /** @type {ReadableStreamDefaultReader<Uint8Array>} ファイルリーダー */
-    const reader = cloned.body.getReader();
-
-    /** @type {number} 読み込まれたチャンクの長さ */
-    let receivedLength = 0;
-
-    /** @type {Uint8Array[]} 受信したバイナリチャンクの配列(本文を構成します) */
-    const chunks = [];
-
-    while (true) {
-      // 最後のチャンクも場合、done は true。
-      // value はチャンクバイトの Uint8Array
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
+      if (cached) {
+        this.onComplete(cached);
+        return;
       }
-      chunks.push(value);
-      receivedLength += value.length;
 
-      this.message.innerText = `Now Loading... (${receivedLength} of ${contentLength} byte)`;
+      await this.loadFromNetwork(cache);
+    } catch (error) {
+      this.onError(error);
+    }
+  }
 
-      // Content lengthヘッダーが出力されている場合プログレスバーを表示
-      this.onProgress(receivedLength, contentLength);
+  /**
+   * Load data from cache
+   * @private
+   * @param {Cache} cache Cache storage
+   * @returns {Promise<Uint8Array | null>}
+   */
+  async loadFromCache(cache) {
+    if (!this.cache) {
+      return null;
     }
 
-    /** @type {Uint8Array} 全チャンク */
-    const chunksAll = new Uint8Array(receivedLength);
-    /** @type {number} 現在の読み込んだチャンク位置 */
-    let position = 0;
-    for (const chunk of chunks) {
-      chunksAll.set(chunk, position);
-      position += chunk.length;
+    const cached = await cache.match(this.url);
+    if (cached) {
+      return new Uint8Array(await cached.arrayBuffer());
     }
+    return null;
+  }
+
+  /**
+   * Load data from network
+   * @private
+   * @param {Cache} cache Cache storage for storing the response
+   */
+  async loadFromNetwork(cache) {
+    const response = await fetch(this.url, {
+      method: Loader.FETCH_METHOD,
+    }).catch(e => {
+      this.onError(e);
+      return null;
+    });
+
+    if (!response || !response.ok) {
+      this.onError(new Error(`Failed to fetch: ${response?.status} ${response?.statusText}`));
+      return;
+    }
+
+    const cloned = response.clone();
+    const contentLength = parseInt(response.headers.get('Content-Length') || '0', 10);
+
+    const data = await this.readResponseBody(cloned, contentLength);
 
     // キャッシュへ保存
     await cache.put(this.url, response);
     // 完了時のイベントを実行
-    this.onComplete(chunksAll);
+    this.onComplete(data);
+  }
+
+  /**
+   * Read response body with progress tracking
+   * @private
+   * @param {Response} response Response object
+   * @param {number} contentLength Total content length in bytes
+   * @returns {Promise<Uint8Array>}
+   */
+  async readResponseBody(response, contentLength) {
+    const reader = response.body.getReader();
+    let receivedLength = 0;
+    const chunks = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+
+      chunks.push(value);
+      receivedLength += value.length;
+
+      this.updateLoadingMessage(receivedLength, contentLength);
+
+      if (contentLength > 0) {
+        this.onProgress(receivedLength, contentLength);
+      }
+    }
+
+    return this.mergeChunks(chunks, receivedLength);
+  }
+
+  /**
+   * Update loading message with current progress
+   * @private
+   * @param {number} received Bytes received
+   * @param {number} total Total bytes
+   */
+  updateLoadingMessage(received, total) {
+    this.message.innerText = `${Loader.MSG_LOADING} (${received} of ${total} byte)`;
+  }
+
+  /**
+   * Merge all chunks into a single Uint8Array
+   * @private
+   * @param {Uint8Array[]} chunks Array of chunks
+   * @param {number} totalLength Total length of all chunks
+   * @returns {Uint8Array}
+   */
+  mergeChunks(chunks, totalLength) {
+    const result = new Uint8Array(totalLength);
+    let position = 0;
+    for (const chunk of chunks) {
+      result.set(chunk, position);
+      position += chunk.length;
+    }
+    return result;
   }
 }

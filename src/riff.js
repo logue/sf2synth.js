@@ -4,13 +4,21 @@
  * @author imaya
  */
 export class Riff {
+  // Constants
+  static CHUNK_ID_SIZE = 4;
+  static CHUNK_SIZE_BYTES = 4;
+  static SHIFT_8_BITS = 8;
+  static SHIFT_16_BITS = 16;
+  static SHIFT_24_BITS = 24;
+  static UNSIGNED_32_BIT_MASK = 0;
+
   /**
-   * @param {ArrayBuffer} input Input buffer.
+   * @param {Uint8Array | ArrayBuffer} input Input buffer.
    * @param {Object} [optParams] Option parameters.
    */
   constructor(input, optParams = {}) {
-    /** @type {ArrayBuffer} */
-    this.input = input;
+    /** @type {Uint8Array} */
+    this.input = input instanceof Uint8Array ? input : new Uint8Array(input);
     /** @type {number} */
     this.ip = optParams.index || 0;
     /** @type {number} */
@@ -38,36 +46,62 @@ export class Riff {
     }
   }
 
+  /**
+   * Read 4-byte chunk ID
+   * @private
+   * @param {Uint8Array} data Data array
+   * @param {number} offset Offset position
+   * @returns {string} Chunk ID
+   */
+  readChunkId(data, offset) {
+    return String.fromCharCode(
+      data[offset],
+      data[offset + 1],
+      data[offset + 2],
+      data[offset + 3]
+    );
+  }
+
+  /**
+   * Read 32-bit unsigned integer
+   * @private
+   * @param {Uint8Array} data Data array
+   * @param {number} offset Offset position
+   * @returns {number} 32-bit unsigned integer
+   */
+  readUInt32(data, offset) {
+    if (this.bigEndian) {
+      return (
+        (data[offset] << Riff.SHIFT_24_BITS) |
+        (data[offset + 1] << Riff.SHIFT_16_BITS) |
+        (data[offset + 2] << Riff.SHIFT_8_BITS) |
+        data[offset + 3]
+      ) >>> Riff.UNSIGNED_32_BIT_MASK;
+    }
+    return (
+      data[offset] |
+      (data[offset + 1] << Riff.SHIFT_8_BITS) |
+      (data[offset + 2] << Riff.SHIFT_16_BITS) |
+      (data[offset + 3] << Riff.SHIFT_24_BITS)
+    ) >>> Riff.UNSIGNED_32_BIT_MASK;
+  }
+
   /** @returns {void} */
   parseChunk() {
-    /** @type {ArrayBuffer} */
     const input = this.input;
-    /** @type {number} */
     let ip = this.ip;
-    /** @type {number} */
-    let size;
 
-    this.chunkList.push(
-      new RiffChunk(
-        String.fromCharCode(input[ip++], input[ip++], input[ip++], input[ip++]),
-        (size = this.bigEndian
-          ? ((input[ip++] << 24) |
-              (input[ip++] << 16) |
-              (input[ip++] << 8) |
-              input[ip++]) >>>
-            0
-          : (input[ip++] |
-              (input[ip++] << 8) |
-              (input[ip++] << 16) |
-              (input[ip++] << 24)) >>>
-            0),
-        ip
-      )
-    );
+    const chunkId = this.readChunkId(input, ip);
+    ip += Riff.CHUNK_ID_SIZE;
+
+    const size = this.readUInt32(input, ip);
+    ip += Riff.CHUNK_SIZE_BYTES;
+
+    this.chunkList.push(new RiffChunk(chunkId, size, ip));
 
     ip += size;
 
-    // padding
+    // Apply padding if necessary (align to 2-byte boundary)
     if (this.padding && ((ip - this.offset) & 1) === 1) {
       ip++;
     }
