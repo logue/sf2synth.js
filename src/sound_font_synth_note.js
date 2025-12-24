@@ -143,6 +143,28 @@ export default class SynthesizerNote {
   }
 
   /**
+   * Ensure value is finite, otherwise return default
+   * @private
+   * @param {number} value Value to validate
+   * @param {number} defaultValue Default value if not finite
+   * @returns {number} Validated finite value
+   */
+  ensureFinite(value, defaultValue = 0) {
+    return Number.isFinite(value) ? value : defaultValue;
+  }
+
+  /**
+   * Ensure value is finite and positive for exponential ramps
+   * @private
+   * @param {number} value Value to validate
+   * @param {number} defaultValue Default value if not finite or non-positive
+   * @returns {number} Validated positive finite value
+   */
+  ensurePositiveFinite(value, defaultValue = 0.001) {
+    return Number.isFinite(value) && value > 0 ? value : defaultValue;
+  }
+
+  /**
    * Calculate envelope timing parameters
    * @private
    * @returns {Object} Envelope timing parameters
@@ -258,7 +280,7 @@ export default class SynthesizerNote {
    * @private
    * @param {number} pan Pan position (-1 to 1)
    */
-  setupPanner(pan) {
+  setupPanner(pan = 0) {
     const { panner } = this;
     panner.panningModel = 'equalpower';
     panner.distanceModel = 'inverse';
@@ -276,25 +298,33 @@ export default class SynthesizerNote {
     const { instrument, velocity, volume } = this;
     const { now, volDelay, volHold, volDecay } = timing;
 
-    const calculatedVolume = Math.max(
-      0,
-      volume *
-        (velocity / SynthesizerNote.MIDI_MAX_VALUE) *
-        (1 - instrument.initialAttenuation / 1000)
+    const calculatedVolume = this.ensureFinite(
+      Math.max(
+        0,
+        volume *
+          (velocity / SynthesizerNote.MIDI_MAX_VALUE) *
+          (1 - instrument.initialAttenuation / 1000)
+      ),
+      0
+    );
+
+    const sustainValue = this.ensureFinite(
+      calculatedVolume * (1 - instrument.volSustain),
+      0
     );
 
     const outputGain = this.outputGainNode.gain;
-    outputGain.setValueAtTime(0, now);
-    outputGain.setValueAtTime(0, volDelay);
+    outputGain.setValueAtTime(0, this.ensureFinite(now, 0));
+    outputGain.setValueAtTime(0, this.ensureFinite(volDelay, 0));
     outputGain.setTargetAtTime(
       calculatedVolume,
-      volDelay,
-      instrument.volAttack
+      this.ensureFinite(volDelay, 0),
+      this.ensureFinite(instrument.volAttack, 0.001)
     );
-    outputGain.setValueAtTime(calculatedVolume, volHold);
+    outputGain.setValueAtTime(calculatedVolume, this.ensureFinite(volHold, 0));
     outputGain.linearRampToValueAtTime(
-      calculatedVolume * (1 - instrument.volSustain),
-      volDecay
+      sustainValue,
+      this.ensureFinite(volDecay, 0)
     );
   }
 
@@ -308,32 +338,48 @@ export default class SynthesizerNote {
     const { now, modDelay, modHold, modDecay } = timing;
     const { modulator } = this;
 
-    const baseFreq = instrument.initialFilterFc;
-    const peekFreq = baseFreq + instrument.modEnvToFilterFc;
-    const sustainFreq =
-      baseFreq + (peekFreq - baseFreq) * (1 - instrument.modSustain);
+    const baseFreq = this.ensurePositiveFinite(instrument.initialFilterFc, 350);
+    const peekFreq = this.ensurePositiveFinite(
+      baseFreq + instrument.modEnvToFilterFc,
+      baseFreq
+    );
+    const sustainFreq = this.ensurePositiveFinite(
+      baseFreq + (peekFreq - baseFreq) * (1 - instrument.modSustain),
+      baseFreq
+    );
 
-    modulator.Q.setValueAtTime(
+    const qValue = this.ensurePositiveFinite(
       SynthesizerNote.DEFAULT_Q_VALUE **
         (instrument.initialFilterQ / SynthesizerNote.Q_DIVISOR),
-      now
+      1
     );
+
+    modulator.Q.setValueAtTime(qValue, this.ensureFinite(now, 0));
     modulator.frequency.value = baseFreq;
     modulator.type = 'lowpass';
     modulator.frequency.setTargetAtTime(
-      baseFreq / SynthesizerNote.MIDI_MAX_VALUE,
-      this.ctx.currentTime,
+      this.ensurePositiveFinite(
+        baseFreq / SynthesizerNote.MIDI_MAX_VALUE,
+        0.001
+      ),
+      this.ensureFinite(this.ctx.currentTime, 0),
       0.5
     );
-    modulator.frequency.setValueAtTime(baseFreq, now);
-    modulator.frequency.setValueAtTime(baseFreq, modDelay);
+    modulator.frequency.setValueAtTime(baseFreq, this.ensureFinite(now, 0));
+    modulator.frequency.setValueAtTime(
+      baseFreq,
+      this.ensureFinite(modDelay, 0)
+    );
     modulator.frequency.setTargetAtTime(
       peekFreq,
-      modDelay,
-      instrument.modAttack
+      this.ensureFinite(modDelay, 0),
+      this.ensureFinite(instrument.modAttack, 0.001)
     );
-    modulator.frequency.setValueAtTime(peekFreq, modHold);
-    modulator.frequency.exponentialRampToValueAtTime(sustainFreq, modDecay);
+    modulator.frequency.setValueAtTime(peekFreq, this.ensureFinite(modHold, 0));
+    modulator.frequency.exponentialRampToValueAtTime(
+      sustainFreq,
+      this.ensureFinite(modDecay, 0)
+    );
   }
 
   /**
@@ -445,7 +491,7 @@ export default class SynthesizerNote {
    */
   release() {
     const { instrument, outputGainNode: output, ctx, modulator } = this;
-    const now = ctx.currentTime;
+    const now = this.ensureFinite(ctx.currentTime, 0);
     const release = instrument.releaseTime - SynthesizerNote.MIDI_CENTER_VALUE;
 
     if (!this.audioBuffer) {
@@ -462,20 +508,32 @@ export default class SynthesizerNote {
     }
 
     // Calculate release times
-    const volEndTimeTmp = instrument.volRelease * output.gain.value;
-    const volEndTime =
-      now +
-      volEndTimeTmp *
-        (1 + release / (release < 0 ? SynthesizerNote.MIDI_CENTER_VALUE : 63));
+    const volEndTimeTmp = this.ensureFinite(
+      instrument.volRelease * output.gain.value,
+      0.1
+    );
+    const releaseMultiplier = this.ensureFinite(
+      1 + release / (release < 0 ? SynthesizerNote.MIDI_CENTER_VALUE : 63),
+      1
+    );
+    const volEndTime = this.ensureFinite(
+      now + volEndTimeTmp * releaseMultiplier,
+      now + 0.1
+    );
 
-    const baseFreq = instrument.initialFilterFc;
-    const peekFreq = baseFreq + instrument.modEnvToFilterFc;
-    const modEndTime =
-      now +
-      instrument.modRelease *
-        (baseFreq === peekFreq
-          ? 1
-          : (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq));
+    const baseFreq = this.ensurePositiveFinite(instrument.initialFilterFc, 350);
+    const peekFreq = this.ensurePositiveFinite(
+      baseFreq + instrument.modEnvToFilterFc,
+      baseFreq
+    );
+    const modEndTimeMultiplier =
+      baseFreq === peekFreq
+        ? 1
+        : (modulator.frequency.value - baseFreq) / (peekFreq - baseFreq);
+    const modEndTime = this.ensureFinite(
+      now + instrument.modRelease * this.ensureFinite(modEndTimeMultiplier, 1),
+      now + 0.1
+    );
 
     // Apply release envelope based on sample mode
     this.applySampleModeRelease(volEndTime, modEndTime, baseFreq);
@@ -496,7 +554,7 @@ export default class SynthesizerNote {
       modulator,
       ctx,
     } = this;
-    const now = ctx.currentTime;
+    const now = this.ensureFinite(ctx.currentTime, 0);
 
     const SAMPLE_MODE = {
       NO_LOOP: 0,
@@ -504,6 +562,11 @@ export default class SynthesizerNote {
       UNUSED: 2,
       LOOP_UNTIL_NOTE_OFF: 3,
     };
+
+    // Ensure times are valid before using
+    const validVolEndTime = this.ensureFinite(volEndTime, now + 0.1);
+    const validModEndTime = this.ensureFinite(modEndTime, now + 0.1);
+    const validBaseFreq = this.ensurePositiveFinite(baseFreq, 350);
 
     switch (instrument.sampleModes) {
       case SAMPLE_MODE.NO_LOOP:
@@ -517,15 +580,28 @@ export default class SynthesizerNote {
           modulator,
           bufferSource,
           now,
-          volEndTime,
-          modEndTime,
-          baseFreq
+          validVolEndTime,
+          validModEndTime,
+          validBaseFreq
         );
         if (instrument.sampleModes === SAMPLE_MODE.LOOP_UNTIL_NOTE_OFF) {
           bufferSource.loop = false;
           bufferSource.buffer = null;
         } else {
-          bufferSource.stop(volEndTime);
+          try {
+            bufferSource.stop(validVolEndTime);
+          } catch (error) {
+            console.warn(
+              '[SynthesizerNote] Failed to stop buffer source:',
+              error
+            );
+            // Fallback: try stopping immediately
+            try {
+              bufferSource.stop();
+            } catch (fallbackError) {
+              // Already stopped or in invalid state
+            }
+          }
         }
         break;
 
@@ -541,7 +617,14 @@ export default class SynthesizerNote {
 
   /**
    * Schedule release envelope
-   * @private
+   *
+   * @param {GainNode} output
+   * @param {BiquadFilterNode} modulator
+   * @param {AudioBufferSourceNode} bufferSource
+   * @param {number} now
+   * @param {number} volEndTime
+   * @param {number} modEndTime
+   * @param {number} baseFreq
    */
   scheduleRelease(
     output,
@@ -554,23 +637,32 @@ export default class SynthesizerNote {
   ) {
     // Volume release
     output.gain.cancelScheduledValues(0);
-    output.gain.setValueAtTime(output.gain.value, now);
-    output.gain.linearRampToValueAtTime(0, volEndTime);
+    output.gain.setValueAtTime(
+      this.ensureFinite(output.gain.value, 0),
+      this.ensureFinite(now, 0)
+    );
+    output.gain.linearRampToValueAtTime(0, this.ensureFinite(volEndTime, 0));
 
     // Modulation release
     modulator.frequency.cancelScheduledValues(0);
-    modulator.frequency.setValueAtTime(modulator.frequency.value, now);
-    modulator.frequency.exponentialRampToValueAtTime(baseFreq, modEndTime);
+    modulator.frequency.setValueAtTime(
+      this.ensurePositiveFinite(modulator.frequency.value, 350),
+      this.ensureFinite(now, 0)
+    );
+    modulator.frequency.exponentialRampToValueAtTime(
+      this.ensurePositiveFinite(baseFreq, 350),
+      this.ensureFinite(modEndTime, 0)
+    );
 
     // Playback rate release
     bufferSource.playbackRate.cancelScheduledValues(0);
     bufferSource.playbackRate.setValueAtTime(
-      bufferSource.playbackRate.value,
-      now
+      this.ensurePositiveFinite(bufferSource.playbackRate.value, 1),
+      this.ensureFinite(now, 0)
     );
     bufferSource.playbackRate.exponentialRampToValueAtTime(
-      this.computedPlaybackRate,
-      modEndTime
+      this.ensurePositiveFinite(this.computedPlaybackRate, 1),
+      this.ensureFinite(modEndTime, 0)
     );
   }
 
@@ -614,22 +706,35 @@ export default class SynthesizerNote {
       modEnvToPitch,
     } = this;
     const playbackRate = bufferSource.playbackRate;
-    const modAttack = startTime + instrument.modAttack;
-    const modDecay = modAttack + instrument.modDecay;
+    const modAttack = this.ensureFinite(
+      startTime + instrument.modAttack,
+      this.ctx.currentTime
+    );
+    const modDecay = this.ensureFinite(
+      modAttack + instrument.modDecay,
+      modAttack
+    );
 
-    const peekPitch =
+    const peekPitch = this.ensureFinite(
       computedPlaybackRate *
-      SynthesizerNote.SEMITONE_RATIO **
-        (modEnvToPitch * instrument.scaleTuning);
+        SynthesizerNote.SEMITONE_RATIO **
+          (modEnvToPitch * instrument.scaleTuning),
+      computedPlaybackRate
+    );
 
-    playbackRate.cancelScheduledValues(0);
-    playbackRate.setValueAtTime(computedPlaybackRate, startTime);
-    playbackRate.linearRampToValueAtTime(peekPitch, modAttack);
-    playbackRate.linearRampToValueAtTime(
+    const sustainPitch = this.ensureFinite(
       computedPlaybackRate +
         (peekPitch - computedPlaybackRate) * (1 - instrument.modSustain),
-      modDecay
+      computedPlaybackRate
     );
+
+    playbackRate.cancelScheduledValues(0);
+    playbackRate.setValueAtTime(
+      this.ensureFinite(computedPlaybackRate, 1),
+      this.ensureFinite(startTime, this.ctx.currentTime)
+    );
+    playbackRate.linearRampToValueAtTime(peekPitch, modAttack);
+    playbackRate.linearRampToValueAtTime(sustainPitch, modDecay);
   }
 
   /**
