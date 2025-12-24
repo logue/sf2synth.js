@@ -10,6 +10,7 @@
     <meta name="color-scheme" content="light dark" />
     <title>Web Midi Link</title>
     <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-2Y2FW3QEG4"
@@ -44,18 +45,6 @@
               id="file"
               type="file"
             />
-            <!--
-              <select
-                class="form-select"
-                aria-label="Load SoundFont2 file"
-                id="selector"
-              >
-                <option selected value="Yamaha XG Sound Set.sf2">
-                  Yamaha XG SoundFont.sf2
-                </option>
-                <option value="A320U.sf2">A320U.sf2</option>
-              </select>
-            -->
             <span id="fileHelp" class="form-text">
               Drag and drop the *.sf2 file here to change the sound font.
             </span>
@@ -118,150 +107,174 @@
       import qs from 'query-string';
       import SoundFont from './src/index.js';
 
-      /** sf2synth.js Option */
-      let options = {
-        ...{
-          // URL to SoundFont File
-          // url: 'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2',
-          // Show Keyboard
-          drawSynth: true,
-          // Target dom id
-          placeholder: 'placeholder',
-          // Color Mode (auto, dark, light)
-          colorMode: 'auto',
-        },
+      // Constants
+      const CSS_CLASS = {
+        DRAG_ACTIVE: 'bg-info',
+      };
+
+      const ELEMENT_IDS = {
+        FILE_INPUT: 'file',
+        DRAG_AREA: 'drag',
+        BUILD_TIME: 'build',
+        DARK_MODE_TOGGLE: 'toggleDarkMode',
+        SOUNDFONT_NAME: 'soundfont',
+      };
+
+      // Default options
+      const defaultOptions = {
+        drawSynth: true,
+        placeholder: 'placeholder',
+        colorMode: 'auto',
+      };
+
+      // Merge options from URL parameters
+      const options = {
+        ...defaultOptions,
         ...qs.parse(window.location.search),
         ...qs.parse(window.location.hash),
       };
 
-      /** @type {typeof import("./src/wml").WebMidiLink } WebMidiLink */
+      /** @type {typeof import("./src/wml").WebMidiLink} */
       const wml = new SoundFont.WebMidiLink(options);
 
+      /**
+       * Extract filename from URL
+       * @param {string} url
+       * @returns {string}
+       */
+      const extractFilename = url => {
+        const match = decodeURIComponent(url).match('.+/(.+?)([?#;].*)?$');
+        return match ? match[1] : url;
+      };
+
+      /**
+       * Update soundfont display name
+       * @param {string} name
+       */
+      const updateSoundfontName = name => {
+        document.getElementById(ELEMENT_IDS.SOUNDFONT_NAME).innerText = name;
+      };
+
+      /**
+       * Load sound font from file
+       * @param {File} file
+       */
+      const loadSoundFont = file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          updateSoundfontName(file.name);
+          const data = new Uint8Array(e.target.result);
+          wml.setupByBuffer(data);
+        };
+        reader.readAsArrayBuffer(file);
+      };
+
+      /**
+       * Setup drag area visual feedback
+       * @param {HTMLElement} element
+       */
+      const setupDragHandlers = element => {
+        const handlers = {
+          drop: event => {
+            const files = event.dataTransfer?.files;
+            if (files?.length) {
+              event.preventDefault();
+              event.stopPropagation();
+              loadSoundFont(files[0]);
+            }
+            element.classList.remove(CSS_CLASS.DRAG_ACTIVE);
+          },
+          dragover: event => {
+            event.preventDefault();
+            event.stopPropagation();
+            element.classList.add(CSS_CLASS.DRAG_ACTIVE);
+          },
+          dragleave: event => {
+            event.preventDefault();
+            event.stopPropagation();
+            element.classList.remove(CSS_CLASS.DRAG_ACTIVE);
+          },
+        };
+
+        Object.entries(handlers).forEach(([event, handler]) => {
+          element.addEventListener(event, handler, false);
+        });
+      };
+
+      /**
+       * Setup color mode watcher
+       * @param {HTMLInputElement} toggle
+       */
+      const setupColorModeWatcher = toggle => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addListener(() => {
+          // Ignore if there's an override set
+          if (document.documentElement.getAttribute('data-bs-theme')) {
+            return;
+          }
+          wml.setColorMode(options.colorMode);
+          toggle.checked = mediaQuery.matches;
+        });
+      };
+
+      // DOM Content Loaded
       document.addEventListener(
         'DOMContentLoaded',
-        event => {
-          /** @type {HTMLInputElement} File Input Form */
-          const fileInput = document.getElementById('file');
-          /** @type {HTMLDivElement} drag area */
-          const dragArea = document.getElementById('drag');
-          /** @type {HTMLTimeElement} Build Date */
-          const build = document.getElementById('build');
-          /** @type {HTMLInputElement} */
-          const toggleDarkMode = document.getElementById('toggleDarkMode');
-          /** @type {HTMLSelectElement} */
-          // const selector = document.getElementById('selector');
+        () => {
+          const fileInput = document.getElementById(ELEMENT_IDS.FILE_INPUT);
+          const dragArea = document.getElementById(ELEMENT_IDS.DRAG_AREA);
+          const buildTime = document.getElementById(ELEMENT_IDS.BUILD_TIME);
+          const darkModeToggle = document.getElementById(
+            ELEMENT_IDS.DARK_MODE_TOGGLE
+          );
 
+          // Setup load callback
           wml.setLoadCallback(() => {
-            dragArea.classList.remove('bg-info');
-            document.getElementById('soundfont').innerText = decodeURIComponent(
-              wml.getUrl()
-            ).match('.+/(.+?)([?#;].*)?$')[1];
+            dragArea.classList.remove(CSS_CLASS.DRAG_ACTIVE);
+            updateSoundfontName(extractFilename(wml.getUrl()));
           });
 
-          // Apply build time
-          build.dateTime = SoundFont.build;
-          build.innerText = new Date(SoundFont.build).toLocaleString();
+          // Display build time
+          buildTime.dateTime = SoundFont.build;
+          buildTime.innerText = new Date(SoundFont.build).toLocaleString();
 
+          // Initialize WebMidiLink
           wml.setup();
 
-          // Keep an eye out for System Light/Dark Mode Changes
-          const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-          mediaQuery.addListener(() => {
-            // Ignore change if there's an override set
-            if (document.documentElement.getAttribute('data-bs-theme')) {
-              return;
-            }
+          // Setup color mode watcher
+          setupColorModeWatcher(darkModeToggle);
 
-            // Apply color mode.
-            wml.setColorMode(options.colorMode);
-
-            // Make sure the checkbox is up-to-date
-            toggleDarkMode.checked = mediaQuery.matches;
-          });
-
-          /**
-           * Load sound font
-           *
-           * @param {File} file
-           */
-          const handleSoundFont = file => {
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(file);
-
-            reader.onload = e => {
-              document.getElementById('soundfont').innerText = file.name;
-              const data = new Uint8Array(e.target.result);
-              wml.setupByBuffer(data);
-            };
-          };
-
-          // When select SoundFont file
+          // File input change handler
           fileInput.addEventListener(
             'change',
             event => {
               event.preventDefault();
-              handleSoundFont(fileInput.files[0]);
-              fileInput.value = '';
-            },
-            false
-          );
-
-          // When SoundFont Drag and Drop.
-          dragArea.addEventListener(
-            'drop',
-            event => {
-              const dt = event.dataTransfer;
-              if (dt.files.length) {
-                event.preventDefault();
-                event.stopPropagation();
-                handleSoundFont(dt.files[0]);
+              if (fileInput.files[0]) {
+                loadSoundFont(fileInput.files[0]);
+                fileInput.value = '';
               }
-              dragArea.classList.remove('bg-info');
-            },
-            false
-          );
-          dragArea.addEventListener(
-            'dragover',
-            event => {
-              event.preventDefault();
-              event.stopPropagation();
-              dragArea.classList.add('bg-info');
-            },
-            false
-          );
-          dragArea.addEventListener(
-            'dragleave',
-            event => {
-              event.preventDefault();
-              event.stopPropagation();
-              dragArea.classList.remove('bg-info');
             },
             false
           );
 
-          // Toggle Dark mode
-          toggleDarkMode.addEventListener('change', e => {
+          // Setup drag and drop handlers
+          setupDragHandlers(dragArea);
+
+          // Dark mode toggle handler
+          darkModeToggle.addEventListener('change', e => {
             wml.setColorMode(e.target.checked ? 'dark' : 'light');
           });
-
-          /*
-          selector.addEventListener('change', () => {
-            console.log(selector.value);
-            wml.setup(
-              `https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/${selector.value}`
-            );
-          });
-          */
         },
         false
       );
 
+      // Hash change handler
       window.addEventListener(
         'hashchange',
         () => {
-          const url = qs.parse(window.location.hash);
-          if (url) {
-            wml.setup(url);
+          const urlParams = qs.parse(window.location.hash);
+          if (urlParams.url) {
+            wml.setup(urlParams.url);
           }
         },
         false

@@ -1,5 +1,5 @@
-import { writeFileSync } from 'fs';
-import { fileURLToPath, URL } from 'url';
+import { writeFileSync } from 'node:fs';
+import { fileURLToPath, URL } from 'node:url';
 
 import { defineConfig } from 'vite';
 
