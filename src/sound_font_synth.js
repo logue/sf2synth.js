@@ -257,6 +257,22 @@ export default class Synthesizer {
 
   /** @param {Uint8Array} input */
   refreshInstruments(input) {
+    // 古い参照を解放してメモリリークを防ぐ
+    if (this.parser) {
+      // 古いParserのinput参照を解放
+      this.parser.input = null;
+      this.parser = null;
+    }
+    // 古いbankSetを解放
+    if (this.bankSet) {
+      this.bankSet = null;
+    }
+    // 古いinputを解放
+    if (this.input) {
+      this.input = null;
+    }
+
+    // 新しいSoundFontをロード
     this.input = input;
     this.parser = new Parser(input, {
       sampleRate: this.ctx.sampleRate,

@@ -196,6 +196,10 @@ export default class WebMidiLink {
       this.synth = new Synthesizer(buffer);
       this.synth.start();
     } else {
+      // 音源切り替え前に全チャンネルの音を停止してリソースを解放
+      for (let ch = 0; ch < MIDI_CHANNELS; ch++) {
+        this.synth.allSoundOff(ch);
+      }
       // @ts-ignore
       this.synth.refreshInstruments(buffer);
     }
