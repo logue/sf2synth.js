@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@logue/reverb':
-        specifier: ^1.5.1
-        version: 1.5.1(@thi.ng/colored-noise@1.0.102)(@thi.ng/random@4.1.48)(@thi.ng/transducers@9.4.2)
+        specifier: ^1.5.2
+        version: 1.5.2(@thi.ng/colored-noise@1.0.102)(@thi.ng/random@4.1.48)(@thi.ng/transducers@9.4.2)
       bootstrap:
         specifier: ^5.3.8
         version: 5.3.8(@popperjs/core@2.11.8)
@@ -226,8 +226,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@logue/reverb@1.5.1':
-    resolution: {integrity: sha512-eOknFAh5L3gKEzvRryXxRT/05fNftnVOT4DsbvpA+/H6eBzokGuR6fzZyB5dImPYYQobELZdRPMq2cOKuXXuxQ==}
+  '@logue/reverb@1.5.2':
+    resolution: {integrity: sha512-SNZ9Ja94G2yhdWLBGmuaYz25ZlKq2YGthd5VbZjObDL5zT8mQ7uV/xdEHFRVD7vCUD81FPsB5OD66ICcPULlzQ==}
     engines: {node: '>=24.13.0'}
     peerDependencies:
       '@thi.ng/colored-noise': ^1
@@ -2522,7 +2522,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@logue/reverb@1.5.1(@thi.ng/colored-noise@1.0.102)(@thi.ng/random@4.1.48)(@thi.ng/transducers@9.4.2)':
+  '@logue/reverb@1.5.2(@thi.ng/colored-noise@1.0.102)(@thi.ng/random@4.1.48)(@thi.ng/transducers@9.4.2)':
     dependencies:
       '@thi.ng/colored-noise': 1.0.102
       '@thi.ng/random': 4.1.48

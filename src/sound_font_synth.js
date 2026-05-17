@@ -1,4 +1,3 @@
-// eslint-disable-next-line import-x/no-unresolved
 import Reverb from '@logue/reverb';
 
 import Parser from './sf2.js';
