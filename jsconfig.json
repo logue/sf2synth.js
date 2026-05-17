@@ -9,5 +9,6 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "types": ["node"]
   },
+  "include": ["env.d.ts", "src/**/*.js"],
   "exclude": ["node_modules"]
 }

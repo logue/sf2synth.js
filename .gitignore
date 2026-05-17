@@ -1,6 +1,3 @@
-/.yarn/*
-!/.yarn/releases
 /node_modules
 /docs/
 /dist
-/src/meta.js
