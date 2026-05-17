@@ -1,4 +1,13 @@
 /**
+ * @typedef {{
+ *   index?: number;
+ *   length?: number;
+ *   padding?: boolean;
+ *   bigEndian?: boolean;
+ * }} RiffOptions
+ */
+
+/**
  * Riff Parser class
  *
  * @author imaya
@@ -14,7 +23,7 @@ export class Riff {
 
   /**
    * @param {Uint8Array | ArrayBuffer} input Input buffer.
-   * @param {Object} [optParams] Option parameters.
+   * @param {RiffOptions} [optParams] Option parameters.
    */
   constructor(input, optParams = {}) {
     /** @type {Uint8Array} */
@@ -72,18 +81,20 @@ export class Riff {
   readUInt32(data, offset) {
     if (this.bigEndian) {
       return (
-        (data[offset] << Riff.SHIFT_24_BITS) |
-        (data[offset + 1] << Riff.SHIFT_16_BITS) |
-        (data[offset + 2] << Riff.SHIFT_8_BITS) |
-        data[offset + 3]
-      ) >>> Riff.UNSIGNED_32_BIT_MASK;
+        ((data[offset] << Riff.SHIFT_24_BITS) |
+          (data[offset + 1] << Riff.SHIFT_16_BITS) |
+          (data[offset + 2] << Riff.SHIFT_8_BITS) |
+          data[offset + 3]) >>>
+        Riff.UNSIGNED_32_BIT_MASK
+      );
     }
     return (
-      data[offset] |
-      (data[offset + 1] << Riff.SHIFT_8_BITS) |
-      (data[offset + 2] << Riff.SHIFT_16_BITS) |
-      (data[offset + 3] << Riff.SHIFT_24_BITS)
-    ) >>> Riff.UNSIGNED_32_BIT_MASK;
+      (data[offset] |
+        (data[offset + 1] << Riff.SHIFT_8_BITS) |
+        (data[offset + 2] << Riff.SHIFT_16_BITS) |
+        (data[offset + 3] << Riff.SHIFT_24_BITS)) >>>
+      Riff.UNSIGNED_32_BIT_MASK
+    );
   }
 
   /** @returns {void} */

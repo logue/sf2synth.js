@@ -16,12 +16,14 @@ export default class Loader {
   static CLASS_ALERT_DANGER = 'alert alert-danger';
   static CLASS_PROGRESS = 'progress';
   static CLASS_PROGRESS_BAR = 'progress-bar';
-  static CLASS_PROGRESS_BAR_ANIMATED = 'progress-bar progress-bar-striped progress-bar-animated';
+  static CLASS_PROGRESS_BAR_ANIMATED =
+    'progress-bar progress-bar-striped progress-bar-animated';
 
   // Messages
   static MSG_LOADING = 'Now Loading...';
   static MSG_INITIALIZING = 'Initializing...';
-  static MSG_ERROR = 'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
+  static MSG_ERROR =
+    'An error occurred while loading SoundFont. See the console log for details. In addition, it may be cured by deleting the cache of the browser.';
 
   /**
    * コンストラクタ
@@ -95,7 +97,9 @@ export default class Loader {
    * @private
    */
   onProgress(current, total) {
-    const percentCompleted = Math.floor((current / total) * Loader.PROGRESS_MAX);
+    const percentCompleted = Math.floor(
+      (current / total) * Loader.PROGRESS_MAX
+    );
     this.updateProgress(percentCompleted);
   }
 
@@ -194,12 +198,19 @@ export default class Loader {
     });
 
     if (!response || !response.ok) {
-      this.onError(new Error(`Failed to fetch: ${response?.status} ${response?.statusText}`));
+      this.onError(
+        new Error(
+          `Failed to fetch: ${response?.status} ${response?.statusText}`
+        )
+      );
       return;
     }
 
     const cloned = response.clone();
-    const contentLength = parseInt(response.headers.get('Content-Length') || '0', 10);
+    const contentLength = parseInt(
+      response.headers.get('Content-Length') || '0',
+      10
+    );
 
     const data = await this.readResponseBody(cloned, contentLength);
 

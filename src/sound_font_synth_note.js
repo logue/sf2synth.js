@@ -1,4 +1,65 @@
 /**
+ * @typedef {{
+ *   channel: number;
+ *   key: number;
+ *   velocity: number;
+ *   sample: Int16Array;
+ *   basePlaybackRate: number;
+ *   loopStart: number;
+ *   loopEnd: number;
+ *   sampleRate: number;
+ *   volume: number;
+ *   panpot: number;
+ *   pitchBend: number;
+ *   pitchBendSensitivity: number;
+ *   modEnvToPitch: number;
+ *   expression: number;
+ *   modulation: number;
+ *   cutOffFrequency: number;
+ *   harmonicContent: number;
+ *   reverb: import('@logue/reverb').default;
+ *   volDelay: number;
+ *   modDelay: number;
+ *   volAttack: number;
+ *   modAttack: number;
+ *   volHold: number;
+ *   modHold: number;
+ *   volDecay: number;
+ *   modDecay: number;
+ *   releaseTime: number;
+ *   volRelease: number;
+ *   modRelease: number;
+ *   start: number;
+ *   end: number;
+ *   pan: number;
+ *   sampleModes: number;
+ *   initialAttenuation: number;
+ *   volSustain: number;
+ *   modSustain: number;
+ *   initialFilterFc: number;
+ *   modEnvToFilterFc: number;
+ *   initialFilterQ: number;
+ *   mute: boolean;
+ *   scaleTuning: number;
+ *   freqVibLFO: number;
+ * }} SynthInstrument
+ */
+
+/**
+ * @typedef {{
+ *   now: number;
+ *   volDelay: number;
+ *   modDelay: number;
+ *   volAttack: number;
+ *   modAttack: number;
+ *   volHold: number;
+ *   modHold: number;
+ *   volDecay: number;
+ *   modDecay: number;
+ * }} EnvelopeTiming
+ */
+
+/**
  * SynthesizerNote Class
  *
  * @author imaya
@@ -15,56 +76,14 @@ export default class SynthesizerNote {
   /**
    * @param {AudioContext} ctx
    * @param {AudioNode} destination
-   * @param {{
-   *   channel: number;
-   *   key: number;
-   *   velocity: number;
-   *   sample: Uint8Array;
-   *   basePlaybackRate: number;
-   *   loopStart: number;
-   *   loopEnd: number;
-   *   sampleRate: number;
-   *   volume: number;
-   *   panpot: number;
-   *   pitchBend: number;
-   *   pitchBendSensitivity: number;
-   *   modEnvToPitch: number;
-   *   expression: number;
-   *   modulation: number;
-   *   cutOffFrequency: number;
-   *   hermonicContent: number;
-   *   reverb: import('@logue/reverb').default;
-   *   volDelay: number;
-   *   modDelay: number;
-   *   volAttack: number;
-   *   modAttack: number;
-   *   volHold: number;
-   *   modHold: number;
-   *   volDecay: number;
-   *   modDecay: number;
-   *   releaseTime: number;
-   *   volRelease: number;
-   *   modRelease: number;
-   *   start: number;
-   *   end: number;
-   *   pan: number;
-   *   sampleModes: number;
-   *   initialAttenuation: number;
-   *   volSustain:number;
-   *   modSustain:number;
-   *   initialFilterFc :number;
-   *   modEnvToFilterFc:number;
-   *   initialFilterQ: number;
-   *   mute: number;
-   *   scaleTuning: number;
-   * }} instrument
+   * @param {SynthInstrument} instrument
    */
   constructor(ctx, destination, instrument) {
     /** @type {AudioContext} */
     this.ctx = ctx;
     /** @type {AudioNode} */
     this.destination = destination;
-    /** @type {Object} */
+    /** @type {SynthInstrument} */
     this.instrument = instrument;
 
     // Instrument properties
@@ -85,7 +104,7 @@ export default class SynthesizerNote {
       expression,
       modulation,
       cutOffFrequency,
-      hermonicContent,
+      harmonicContent,
       reverb,
     } = instrument;
 
@@ -105,7 +124,7 @@ export default class SynthesizerNote {
     this.expression = expression;
     this.modulation = modulation;
     this.cutOffFrequency = cutOffFrequency;
-    this.hermonicContent = hermonicContent;
+    this.harmonicContent = harmonicContent;
     this.reverb = reverb;
 
     // state
@@ -167,7 +186,7 @@ export default class SynthesizerNote {
   /**
    * Calculate envelope timing parameters
    * @private
-   * @returns {Object} Envelope timing parameters
+   * @returns {EnvelopeTiming} Envelope timing parameters
    */
   calculateEnvelopeTiming() {
     const { instrument } = this;
@@ -292,7 +311,7 @@ export default class SynthesizerNote {
   /**
    * Setup volume envelope (DAHDSR)
    * @private
-   * @param {Object} timing Envelope timing parameters
+   * @param {EnvelopeTiming} timing Envelope timing parameters
    */
   setupVolumeEnvelope(timing) {
     const { instrument, velocity, volume } = this;
@@ -331,7 +350,7 @@ export default class SynthesizerNote {
   /**
    * Setup modulation envelope for filter frequency
    * @private
-   * @param {Object} timing Envelope timing parameters
+   * @param {EnvelopeTiming} timing Envelope timing parameters
    */
   setupModulationEnvelope(timing) {
     const { instrument } = this;

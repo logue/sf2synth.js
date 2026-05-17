@@ -1,6 +1,26 @@
 import Loader from './loader.js';
 import Synthesizer from './sound_font_synth.js';
 
+/**
+ * @typedef {{
+ *   drawSynth?: boolean;
+ *   cache?: boolean;
+ *   targetOrigin?: string;
+ *   colorMode?: 'dark' | 'light' | 'auto';
+ *   url?: string;
+ *   placeholder?: string;
+ * }} WebMidiLinkOptions
+ */
+
+/**
+ * @typedef {{
+ *   drawSynth: boolean;
+ *   cache: boolean;
+ *   targetOrigin: string;
+ *   colorMode: 'dark' | 'light' | 'auto';
+ * }} ResolvedWebMidiLinkOptions
+ */
+
 // MIDI定数
 const MIDI_CHANNELS = 16;
 const MIDI_NOTE_OFF = 0x80;
@@ -55,7 +75,7 @@ const READY_DISPLAY_TIME = 3000;
  * @author imaya
  */
 export default class WebMidiLink {
-  /** @param {object} option */
+  /** @param {WebMidiLinkOptions} option */
   constructor(option = {}) {
     this._initializeChannelData();
     this._initializeOptions(option);
@@ -89,10 +109,10 @@ export default class WebMidiLink {
   /**
    * オプションの初期化
    * @private
-   * @param {object} option
+   * @param {WebMidiLinkOptions} option
    */
   _initializeOptions(option) {
-    /** @type {object} */
+    /** @type {ResolvedWebMidiLinkOptions} */
     this.option = {
       /** @type {boolean} Display synthsizer Web UI */
       drawSynth: option.drawSynth ?? true,
@@ -787,7 +807,7 @@ export default class WebMidiLink {
     const ret = [];
     let i = 0;
     for (const msg of messages) {
-      let str = '';
+      let str;
       switch (i) {
         case 0:
           // 青

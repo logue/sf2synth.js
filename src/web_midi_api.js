@@ -30,13 +30,16 @@ export default class WebMidiApi extends WebMidiLink {
   onReady() {
     // コールバック実行
     super.callback();
+    if (!this.midi) {
+      throw new Error('Web MIDI API is not supported in this environment.');
+    }
     // Web MIDI APIを待ち受け
-    this.midi.inputs.forEach(
-      (
-        /** @type {{ onmidimessage: (msg: MIDIMessageEvent) => void; }} */ input
-      ) =>
-        (input.onmidimessage = msg =>
-          super.processMidiMessage(Array.from(msg.data)))
-    );
+    this.midi.inputs.forEach(input => {
+      input.onmidimessage = msg => {
+        if (msg.data) {
+          super.processMidiMessage(Array.from(msg.data));
+        }
+      };
+    });
   }
 }

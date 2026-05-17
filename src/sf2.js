@@ -1,5 +1,75 @@
 import { Riff } from './riff.js';
 
+/** @typedef {import('./riff.js').RiffChunk} RiffChunk */
+/** @typedef {import('./riff.js').RiffOptions} RiffOptions */
+/**
+ * @typedef {{
+ *   parserOption?: RiffOptions;
+ *   sampleRate?: number;
+ * }} ParserOptions
+ */
+/**
+ * @typedef {{
+ *   presetName: string;
+ *   preset: number;
+ *   bank: number;
+ *   presetBagIndex: number;
+ *   library: number;
+ *   genre: number;
+ *   morphology: number;
+ * }} PresetHeader
+ */
+/** @typedef {{ presetGeneratorIndex: number; presetModulatorIndex: number; }} PresetZone */
+/** @typedef {{ instrumentName: string; instrumentBagIndex: number; }} InstrumentHeader */
+/** @typedef {{ instrumentGeneratorIndex: number; instrumentModulatorIndex: number; }} InstrumentZone */
+/**
+ * @typedef {{
+ *   sampleName: string;
+ *   start: number;
+ *   end: number;
+ *   startLoop: number;
+ *   endLoop: number;
+ *   sampleRate: number;
+ *   originalPitch: number;
+ *   pitchCorrection: number;
+ *   sampleLink: number;
+ *   sampleType: number;
+ * }} SampleHeader
+ */
+/** @typedef {{ amount: number }} GeneratorAmount */
+/** @typedef {{ amount: null; lo: number; hi: number }} GeneratorRange */
+/** @typedef {{ code: number; amount: number; lo: number; hi: number }} GeneratorCodeRange */
+/** @typedef {GeneratorAmount | GeneratorRange | GeneratorCodeRange} GeneratorValue */
+/** @typedef {{ type: string; value: GeneratorValue }} GeneratorEntry */
+/**
+ * @typedef {{
+ *   [key: string]: GeneratorValue | GeneratorValue[] | undefined;
+ *   unknown: GeneratorValue[];
+ *   keyRange: GeneratorRange;
+ * }} ModGen
+ */
+/** @typedef {{ sample: Int16Array<ArrayBufferLike>; multiply: number; }} AdjustedSampleData */
+/**
+ * @typedef {{
+ *   generator: ModGen;
+ *   generatorSequence: GeneratorEntry[];
+ *   modulator: ModGen;
+ *   modulatorSequence: GeneratorEntry[];
+ * }} ZoneInfo
+ */
+/** @typedef {{ name: string; info: ZoneInfo[]; }} InstrumentDefinition */
+/**
+ * @typedef {{
+ *   name: string;
+ *   info: ZoneInfo[];
+ *   header: PresetHeader;
+ *   instrument: number | null;
+ * }} PresetDefinition
+ */
+/** @typedef {{ generator: ModGen; generatorInfo: GeneratorEntry[]; }} GeneratorBundle */
+/** @typedef {{ modulator: ModGen; modulatorInfo: GeneratorEntry[]; }} ModulatorBundle */
+/** @typedef {{ modgen: ModGen; modgenInfo: GeneratorEntry[]; }} ModGenBundle */
+
 /**
  * SoundFont Parser Class
  *
@@ -22,39 +92,43 @@ export default class Parser {
 
   /**
    * @param {Uint8Array} input
-   * @param {Object} [optParams]
+   * @param {ParserOptions} [optParams]
    */
   constructor(input, optParams = {}) {
     /** @type {Uint8Array} */
     this.input = input;
-    /** @type {object} */
+    /** @type {RiffOptions} */
     this.parserOption = optParams.parserOption || {};
     /** @type {number} */
     this.sampleRate = optParams.sampleRate || 22050; // よくわからんが、OSで指定されているサンプルレートを入れないと音が切れ切れになる。
 
-    /** @type {object[]} */
+    /** @type {PresetHeader[]} */
     this.presetHeader = [];
-    /** @type {object[]} */
+    /** @type {PresetZone[]} */
     this.presetZone = [];
-    /** @type {object[]} */
+    /** @type {GeneratorEntry[]} */
     this.presetZoneModulator = [];
-    /** @type {object[]} */
+    /** @type {GeneratorEntry[]} */
     this.presetZoneGenerator = [];
-    /** @type {object[]} */
+    /** @type {InstrumentHeader[]} */
     this.instrument = [];
-    /** @type {object[]} */
+    /** @type {InstrumentZone[]} */
     this.instrumentZone = [];
-    /** @type {object[]} */
+    /** @type {GeneratorEntry[]} */
     this.instrumentZoneModulator = [];
-    /** @type {object[]} */
+    /** @type {GeneratorEntry[]} */
     this.instrumentZoneGenerator = [];
-    /** @type {object[]} */
+    /** @type {SampleHeader[]} */
     this.sampleHeader = [];
+    /** @type {Int16Array<ArrayBufferLike>[]} */
+    this.sample = [];
+    /** @type {RiffChunk | undefined} */
+    this.samplingData = undefined;
     /** @type {string[]} */
     this.GeneratorEnumeratorTable = Object.keys(Parser.getGeneratorTable());
   }
 
-  /** @return {Record<string, number?>} ジェネレータとデフォルト値 */
+  /** @return {Record<string, number | null | undefined>} ジェネレータとデフォルト値 */
   static getGeneratorTable() {
     return Object.freeze({
       /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
@@ -139,19 +213,19 @@ export default class Parser {
       keynumToVolEnvHold: 0,
       /** @type {number} キー(ノートNo)によるアンプ用エンベロープのディケイ時間への影響 */
       keynumToVolEnvDecay: 0,
-      /** @type {number} 割り当てるインストルメント(楽器) */
+      /** @type {number | null} 割り当てるインストルメント(楽器) */
       instrument: null,
       /** @type {undefined} 予約済み1 */
       reserved1: undefined, // 42
-      /** @type {number} マッピングするキー(ノートNo)の範囲 */
+      /** @type {number | null} マッピングするキー(ノートNo)の範囲 */
       keyRange: null,
-      /** @type {number} マッピングするベロシティの範囲 */
+      /** @type {number | null} マッピングするベロシティの範囲 */
       velRange: null,
       /** @type {number} サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(上位16bit） */
       startloopAddrsCoarseOffset: 0,
-      /** @type {number} どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
+      /** @type {number | null} どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
       keynum: null,
-      /** @type {number} どのベロシティでも強制的に指定したベロシティに変更する */
+      /** @type {number | null} どのベロシティでも強制的に指定したベロシティに変更する */
       velocity: null,
       /** @type {number} 調整する音量 */
       initialAttenuation: 0,
@@ -163,7 +237,7 @@ export default class Parser {
       coarseTune: 0,
       /** @type {number} cent単位での音程の調整 */
       fineTune: 0,
-      /** @type {number} 割り当てるサンプル(音声波形) */
+      /** @type {number | null} 割り当てるサンプル(音声波形) */
       sampleID: null,
       /** @type {number} サンプル(音声波形)をループさせるか等のフラグ */
       sampleModes: 0,
@@ -171,9 +245,9 @@ export default class Parser {
       reserved3: undefined, // 55
       /** @type {number} キー(ノートNo)が+1されるごとに音程を何centあげるかの音階情報 */
       scaleTuning: 100,
-      /** @type {number} 同時に音を鳴らさないようにするための排他ID(ハイハットのOpen、Close等に使用) */
+      /** @type {number | null} 同時に音を鳴らさないようにするための排他ID(ハイハットのOpen、Close等に使用) */
       exclusiveClass: null,
-      /** @type {number} サンプル(音声波形)の音程の上書き情報 */
+      /** @type {number | null} サンプル(音声波形)の音程の上書き情報 */
       overridingRootKey: null,
       /** @type {undefined} 未使用5 */
       unuded5: undefined, // 59
@@ -207,7 +281,9 @@ export default class Parser {
    */
   validateChunkType(chunk, expectedType) {
     if (chunk.type !== expectedType) {
-      throw new Error(`invalid chunk type: expected '${expectedType}', got '${chunk.type}'`);
+      throw new Error(
+        `invalid chunk type: expected '${expectedType}', got '${chunk.type}'`
+      );
     }
   }
 
@@ -220,17 +296,24 @@ export default class Parser {
    */
   validateSignature(signature, expected) {
     if (signature !== expected) {
-      throw new Error(`invalid signature: expected '${expected}', got '${signature}'`);
+      throw new Error(
+        `invalid signature: expected '${expected}', got '${signature}'`
+      );
     }
   }
 
   /** @export */
   parse() {
-    const parser = new Riff(/** @type {ArrayBuffer} */ (this.input.buffer), this.parserOption);
+    const parser = new Riff(
+      /** @type {ArrayBuffer} */ (this.input.buffer),
+      this.parserOption
+    );
 
     parser.parse();
     if (parser.chunkList.length !== Parser.EXPECTED_RIFF_CHUNKS) {
-      throw new Error(`wrong chunk length: expected ${Parser.EXPECTED_RIFF_CHUNKS}, got ${parser.chunkList.length}`);
+      throw new Error(
+        `wrong chunk length: expected ${Parser.EXPECTED_RIFF_CHUNKS}, got ${parser.chunkList.length}`
+      );
     }
 
     const chunk = parser.getChunk(0);
@@ -239,6 +322,7 @@ export default class Parser {
     }
 
     this.parseRiffChunk(chunk);
+    // @ts-ignore Release parsed source buffer reference after parsing.
     this.input = null;
   }
 
@@ -253,10 +337,15 @@ export default class Parser {
     ip += Parser.CHUNK_ID_SIZE;
     this.validateSignature(signature, 'sfbk');
 
-    const parser = new Riff(data, { index: ip, length: chunk.size - Parser.CHUNK_ID_SIZE });
+    const parser = new Riff(data, {
+      index: ip,
+      length: chunk.size - Parser.CHUNK_ID_SIZE,
+    });
     parser.parse();
     if (parser.getNumberOfChunks() !== Parser.EXPECTED_SFBK_CHUNKS) {
-      throw new Error(`invalid sfbk structure: expected ${Parser.EXPECTED_SFBK_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`);
+      throw new Error(
+        `invalid sfbk structure: expected ${Parser.EXPECTED_SFBK_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`
+      );
     }
 
     // INFO-list
@@ -286,7 +375,10 @@ export default class Parser {
     ip += Parser.CHUNK_ID_SIZE;
     this.validateSignature(signature, 'INFO');
 
-    const parser = new Riff(data, { index: ip, length: chunk.size - Parser.CHUNK_ID_SIZE });
+    const parser = new Riff(data, {
+      index: ip,
+      length: chunk.size - Parser.CHUNK_ID_SIZE,
+    });
     parser.parse();
   }
 
@@ -301,10 +393,15 @@ export default class Parser {
     ip += Parser.CHUNK_ID_SIZE;
     this.validateSignature(signature, 'sdta');
 
-    const parser = new Riff(data, { index: ip, length: chunk.size - Parser.CHUNK_ID_SIZE });
+    const parser = new Riff(data, {
+      index: ip,
+      length: chunk.size - Parser.CHUNK_ID_SIZE,
+    });
     parser.parse();
     if (parser.chunkList.length !== Parser.EXPECTED_SDTA_CHUNKS) {
-      throw new Error(`invalid sdta structure: expected ${Parser.EXPECTED_SDTA_CHUNKS} chunk, got ${parser.chunkList.length}`);
+      throw new Error(
+        `invalid sdta structure: expected ${Parser.EXPECTED_SDTA_CHUNKS} chunk, got ${parser.chunkList.length}`
+      );
     }
     this.samplingData =
       /** @type {{ type: string; size: number; offset: number }} */
@@ -322,11 +419,16 @@ export default class Parser {
     ip += Parser.CHUNK_ID_SIZE;
     this.validateSignature(signature, 'pdta');
 
-    const parser = new Riff(data, { index: ip, length: chunk.size - Parser.CHUNK_ID_SIZE });
+    const parser = new Riff(data, {
+      index: ip,
+      length: chunk.size - Parser.CHUNK_ID_SIZE,
+    });
     parser.parse();
 
     if (parser.getNumberOfChunks() !== Parser.EXPECTED_PDTA_CHUNKS) {
-      throw new Error(`invalid pdta chunk: expected ${Parser.EXPECTED_PDTA_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`);
+      throw new Error(
+        `invalid pdta chunk: expected ${Parser.EXPECTED_PDTA_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`
+      );
     }
 
     this.parsePhdr(
@@ -364,14 +466,14 @@ export default class Parser {
 
     const data = this.input;
     let ip = chunk.offset;
+    /** @type {PresetHeader[]} */
     const presetHeader = (this.presetHeader = []);
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
       presetHeader.push({
-        presetName: String.fromCharCode.apply(
-          null,
-          data.subarray(ip, (ip += 20))
+        presetName: String.fromCharCode(
+          ...Array.from(data.subarray(ip, (ip += 20)))
         ),
         preset: data[ip++] | (data[ip++] << 8),
         bank: data[ip++] | (data[ip++] << 8),
@@ -404,6 +506,7 @@ export default class Parser {
 
     const data = this.input;
     let ip = chunk.offset;
+    /** @type {PresetZone[]} */
     const presetZone = (this.presetZone = []);
     const size = chunk.offset + chunk.size;
 
@@ -433,14 +536,14 @@ export default class Parser {
 
     const data = this.input;
     let ip = chunk.offset;
+    /** @type {InstrumentHeader[]} */
     const instrument = (this.instrument = []);
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
       instrument.push({
-        instrumentName: String.fromCharCode.apply(
-          null,
-          data.subarray(ip, (ip += 20))
+        instrumentName: String.fromCharCode(
+          ...Array.from(data.subarray(ip, (ip += 20)))
         ),
         instrumentBagIndex: data[ip++] | (data[ip++] << 8),
       });
@@ -453,6 +556,7 @@ export default class Parser {
 
     const data = this.input;
     let ip = chunk.offset;
+    /** @type {InstrumentZone[]} */
     const instrumentZone = (this.instrumentZone = []);
     const size = chunk.offset + chunk.size;
 
@@ -485,11 +589,12 @@ export default class Parser {
    */
   readUInt32LE(data, offset) {
     return (
-      (data[offset] << 0) |
-      (data[offset + 1] << 8) |
-      (data[offset + 2] << 16) |
-      (data[offset + 3] << 24)
-    ) >>> 0;
+      ((data[offset] << 0) |
+        (data[offset + 1] << 8) |
+        (data[offset + 2] << 16) |
+        (data[offset + 3] << 24)) >>>
+      0
+    );
   }
 
   /**
@@ -509,14 +614,20 @@ export default class Parser {
 
     const data = this.input;
     let ip = chunk.offset;
+    /** @type {Int16Array<ArrayBufferLike>[]} */
     const samples = (this.sample = []);
+    /** @type {SampleHeader[]} */
     const sampleHeader = (this.sampleHeader = []);
     const size = chunk.offset + chunk.size;
 
+    const samplingData = this.samplingData;
+    if (!samplingData) {
+      throw new Error('sampling data not found');
+    }
+
     while (ip < size) {
-      const sampleName = String.fromCharCode.apply(
-        null,
-        data.subarray(ip, ip + Parser.NAME_SIZE)
+      const sampleName = String.fromCharCode(
+        ...Array.from(data.subarray(ip, ip + Parser.NAME_SIZE))
       );
       ip += Parser.NAME_SIZE;
 
@@ -538,11 +649,12 @@ export default class Parser {
       const sampleType = this.readUInt16LE(data, ip);
       ip += 2;
 
+      /** @type {Int16Array<ArrayBufferLike>} */
       let sample = new Int16Array(
         new Uint8Array(
           data.subarray(
-            this.samplingData.offset + start * 2,
-            this.samplingData.offset + end * 2
+            samplingData.offset + start * 2,
+            samplingData.offset + end * 2
           )
         ).buffer
       );
@@ -578,7 +690,7 @@ export default class Parser {
   /**
    * @param {Int16Array} sample
    * @param {number} sampleRate
-   * @return {object}
+   * @return {AdjustedSampleData}
    */
   adjustSampleData(sample, sampleRate) {
     /** @type {Int16Array} */
@@ -613,7 +725,7 @@ export default class Parser {
 
   /**
    * @param {import('./riff.js').RiffChunk} chunk
-   * @return {Object[]}
+   * @return {GeneratorEntry[]}
    */
   parseModulator(chunk) {
     const data = this.input;
@@ -632,7 +744,7 @@ export default class Parser {
       if (!key) {
         // Amount
         output.push({
-          type: key,
+          type: key ?? 'unknown',
           value: {
             code,
             amount: data[ip] | (((data[ip + 1] << 8) << 16) >> 16),
@@ -684,7 +796,7 @@ export default class Parser {
 
   /**
    * @param {import('./riff.js').RiffChunk} chunk
-   * @return {Object[]}
+   * @return {GeneratorEntry[]}
    */
   parseGenerator(chunk) {
     const data = this.input;
@@ -697,7 +809,7 @@ export default class Parser {
       const key = this.GeneratorEnumeratorTable[code];
       if (!key) {
         output.push({
-          type: key,
+          type: key ?? 'unknown',
           value: {
             code,
             amount: data[ip] | (((data[ip + 1] << 8) << 16) >> 16),
@@ -739,23 +851,23 @@ export default class Parser {
     return output;
   }
 
-  /** @return {object[]} */
+  /** @return {InstrumentDefinition[]} */
   createInstrument() {
-    /** @type {Object[]} */
+    /** @type {InstrumentHeader[]} */
     const instrument = this.instrument;
-    /** @type {Object[]} */
+    /** @type {InstrumentZone[]} */
     const zone = this.instrumentZone;
-    /** @type {Object[]} */
+    /** @type {InstrumentDefinition[]} */
     const output = [];
     /** @type {number} */
     let bagIndex;
     /** @type {number} */
     let bagIndexEnd;
-    /** @type {Object[]} */
+    /** @type {ZoneInfo[]} */
     let zoneInfo;
-    /** @type {{ generator: Object; generatorInfo: Object[] }} */
+    /** @type {GeneratorBundle} */
     let instrumentGenerator;
-    /** @type {{ modulator: Object; modulatorInfo: Object[] }} */
+    /** @type {ModulatorBundle} */
     let instrumentModulator;
     /** @type {number} */
     let i;
@@ -796,25 +908,25 @@ export default class Parser {
     return output;
   }
 
-  /** @return {object[]} */
+  /** @return {PresetDefinition[]} */
   createPreset() {
-    /** @type {Object[]} */
+    /** @type {PresetHeader[]} */
     const preset = this.presetHeader;
-    /** @type {Object[]} */
+    /** @type {PresetZone[]} */
     const zone = this.presetZone;
-    /** @type {Object[]} */
+    /** @type {PresetDefinition[]} */
     const output = [];
     /** @type {number} */
     let bagIndex;
     /** @type {number} */
     let bagIndexEnd;
-    /** @type {Object[]} */
+    /** @type {ZoneInfo[]} */
     let zoneInfo;
-    /** @type {number} */
-    let instrument;
-    /** @type {{ generator: Object; generatorInfo: Object[] }} */
+    /** @type {number | null} */
+    let instrument = null;
+    /** @type {GeneratorBundle} */
     let presetGenerator;
-    /** @type {{ modulator: Object; modulatorInfo: Object[] }} */
+    /** @type {ModulatorBundle} */
     let presetModulator;
     /** @type {number} */
     let i;
@@ -845,9 +957,13 @@ export default class Parser {
 
         instrument =
           presetGenerator.generator.instrument !== undefined
-            ? presetGenerator.generator.instrument.amount
+            ? /** @type {GeneratorAmount} */ (
+                presetGenerator.generator.instrument
+              ).amount
             : presetModulator.modulator.instrument !== undefined
-              ? presetModulator.modulator.instrument.amount
+              ? /** @type {GeneratorAmount} */ (
+                  presetModulator.modulator.instrument
+                ).amount
               : null;
       }
 
@@ -865,9 +981,9 @@ export default class Parser {
   /**
    *
    * @private
-   * @param {Object[]} zone
+   * @param {InstrumentZone[]} zone
    * @param {number} index
-   * @returns {{ generator: Object; generatorInfo: Object[] }}
+   * @returns {GeneratorBundle}
    */
   createInstrumentGenerator_(zone, index) {
     const modgen = this.createBagModGen_(
@@ -888,14 +1004,14 @@ export default class Parser {
   /**
    *
    * @private
-   * @param {Object[]} zone
+   * @param {InstrumentZone[]} zone
    * @param {number} index
-   * @returns {{ modulator: Object; modulatorInfo: Object[] }}
+   * @returns {ModulatorBundle}
    */
   createInstrumentModulator_(zone, index) {
     const modgen = this.createBagModGen_(
       zone,
-      zone[index].presetModulatorIndex,
+      zone[index].instrumentModulatorIndex,
       zone[index + 1]
         ? zone[index + 1].instrumentModulatorIndex
         : this.instrumentZoneModulator.length,
@@ -911,9 +1027,9 @@ export default class Parser {
   /**
    *
    * @private
-   * @param {Object[]} zone
+   * @param {PresetZone[]} zone
    * @param {number} index
-   * @returns {{ generator: Object; generatorInfo: Object[] }}
+   * @returns {GeneratorBundle}
    */
   createPresetGenerator_(zone, index) {
     const modgen = this.createBagModGen_(
@@ -934,12 +1050,12 @@ export default class Parser {
   /**
    *
    * @private
-   * @param {Object[]} zone
+   * @param {PresetZone[]} zone
    * @param {number} index
-   * @returns {{ modulator: Object; modulatorInfo: Object[] }}
+   * @returns {ModulatorBundle}
    */
   createPresetModulator_(zone, index) {
-    /** @type {{ modgen: Object; modgenInfo: Object[] }} */
+    /** @type {ModGenBundle} */
     const modgen = this.createBagModGen_(
       zone,
       zone[index].presetModulatorIndex,
@@ -958,16 +1074,16 @@ export default class Parser {
   /**
    *
    * @private
-   * @param {Object[]} _zone
+   * @param {InstrumentZone[] | PresetZone[]} _zone
    * @param {number} indexStart
    * @param {number} indexEnd
-   * @param {Array} zoneModGen
-   * @returns {{ modgen: Object; modgenInfo: Object[] }}
+   * @param {GeneratorEntry[]} zoneModGen
+   * @returns {ModGenBundle}
    */
   createBagModGen_(_zone, indexStart, indexEnd, zoneModGen) {
-    /** @type {Object[]} */
+    /** @type {GeneratorEntry[]} */
     const modgenInfo = [];
-    /** @type {Object} */
+    /** @type {ModGen} */
     const modgen = {
       unknown: [],
       keyRange: {
@@ -976,7 +1092,7 @@ export default class Parser {
         lo: 0,
       },
     }; // TODO
-    /** @type {Object} */
+    /** @type {GeneratorEntry} */
     let info;
     /** @type {number} */
     let i;

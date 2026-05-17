@@ -2,9 +2,9 @@ name: NodeJS with Vite
 
 on:
   push:
-    branches: ["develop"]
+    branches: ['develop']
   pull_request:
-    branches: ["develop"]
+    branches: ['develop']
 
 jobs:
   cache-and-install:
@@ -22,7 +22,7 @@ jobs:
       - name: Install Node.js ⚡️
         uses: actions/setup-node@v6
         with:
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Build 🔧
         run: |
