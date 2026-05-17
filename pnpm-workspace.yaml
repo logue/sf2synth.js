@@ -1,4 +1,10 @@
 allowBuilds:
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - ajv@8.18.0
+  - flatted@3.4.2
+  - brace-expansion@1.1.13
+  - picomatch@4.0.4
+  - fast-uri@3.1.2
 onlyBuiltDependencies:
   - esbuild
