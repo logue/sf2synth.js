@@ -1,74 +1,95 @@
-import { Riff } from './riff.js';
+import { GeneratorTable } from './interfaces/GeneratorTable';
+import { Riff, RiffOptions, RiffChunk } from './Riff';
 
-/** @typedef {import('./riff.js').RiffChunk} RiffChunk */
-/** @typedef {import('./riff.js').RiffOptions} RiffOptions */
-/**
- * @typedef {{
- *   parserOption?: RiffOptions;
- *   sampleRate?: number;
- * }} ParserOptions
- */
-/**
- * @typedef {{
- *   presetName: string;
- *   preset: number;
- *   bank: number;
- *   presetBagIndex: number;
- *   library: number;
- *   genre: number;
- *   morphology: number;
- * }} PresetHeader
- */
-/** @typedef {{ presetGeneratorIndex: number; presetModulatorIndex: number; }} PresetZone */
-/** @typedef {{ instrumentName: string; instrumentBagIndex: number; }} InstrumentHeader */
-/** @typedef {{ instrumentGeneratorIndex: number; instrumentModulatorIndex: number; }} InstrumentZone */
-/**
- * @typedef {{
- *   sampleName: string;
- *   start: number;
- *   end: number;
- *   startLoop: number;
- *   endLoop: number;
- *   sampleRate: number;
- *   originalPitch: number;
- *   pitchCorrection: number;
- *   sampleLink: number;
- *   sampleType: number;
- * }} SampleHeader
- */
-/** @typedef {{ amount: number }} GeneratorAmount */
-/** @typedef {{ amount: null; lo: number; hi: number }} GeneratorRange */
-/** @typedef {{ code: number; amount: number; lo: number; hi: number }} GeneratorCodeRange */
-/** @typedef {GeneratorAmount | GeneratorRange | GeneratorCodeRange} GeneratorValue */
-/** @typedef {{ type: string; value: GeneratorValue }} GeneratorEntry */
-/**
- * @typedef {{
- *   [key: string]: GeneratorValue | GeneratorValue[] | undefined;
- *   unknown: GeneratorValue[];
- *   keyRange: GeneratorRange;
- * }} ModGen
- */
-/** @typedef {{ sample: Int16Array<ArrayBufferLike>; multiply: number; }} AdjustedSampleData */
-/**
- * @typedef {{
- *   generator: ModGen;
- *   generatorSequence: GeneratorEntry[];
- *   modulator: ModGen;
- *   modulatorSequence: GeneratorEntry[];
- * }} ZoneInfo
- */
-/** @typedef {{ name: string; info: ZoneInfo[]; }} InstrumentDefinition */
-/**
- * @typedef {{
- *   name: string;
- *   info: ZoneInfo[];
- *   header: PresetHeader;
- *   instrument: number | null;
- * }} PresetDefinition
- */
-/** @typedef {{ generator: ModGen; generatorInfo: GeneratorEntry[]; }} GeneratorBundle */
-/** @typedef {{ modulator: ModGen; modulatorInfo: GeneratorEntry[]; }} ModulatorBundle */
-/** @typedef {{ modgen: ModGen; modgenInfo: GeneratorEntry[]; }} ModGenBundle */
+export interface ParserOptions {
+  parserOption?: RiffOptions;
+  sampleRate?: number;
+}
+
+export interface PresetHeader {
+  presetName: string;
+  preset: number;
+  bank: number;
+  presetBagIndex: number;
+  library: number;
+  genre: number;
+  morphology: number;
+}
+
+export interface PresetZone {
+  presetGeneratorIndex: number;
+  presetModulatorIndex: number;
+}
+
+export interface InstrumentHeader {
+  instrumentName: string;
+  instrumentBagIndex: number;
+}
+
+export interface InstrumentZone {
+  instrumentGeneratorIndex: number;
+  instrumentModulatorIndex: number;
+}
+
+export interface SampleHeader {
+  sampleName: string;
+  start: number;
+  end: number;
+  startLoop: number;
+  endLoop: number;
+  sampleRate: number;
+  originalPitch: number;
+  pitchCorrection: number;
+  sampleLink: number;
+  sampleType: number;
+}
+
+export type GeneratorAmount = { amount: number };
+export type GeneratorRange = { amount: null; lo: number; hi: number };
+export type GeneratorCodeRange = {
+  code: number;
+  amount: number;
+  lo: number;
+  hi: number;
+};
+export type GeneratorValue =
+  | GeneratorAmount
+  | GeneratorRange
+  | GeneratorCodeRange;
+
+export type GeneratorEntry = { type: string; value: GeneratorValue };
+export type ModGen = {
+  [key: string]: GeneratorValue | GeneratorValue[] | undefined;
+  unknown: GeneratorValue[];
+  keyRange: GeneratorRange;
+  amount?: GeneratorAmount;
+};
+export type AdjustedSampleData = {
+  sample: Int16Array;
+  multiply: number;
+};
+export type ZoneInfo = {
+  generator: ModGen;
+  generatorSequence: GeneratorEntry[];
+  modulator: ModGen;
+  modulatorSequence: GeneratorEntry[];
+};
+export type InstrumentDefinition = { name: string; info: ZoneInfo[] };
+export type PresetDefinition = {
+  name: string;
+  info: ZoneInfo[];
+  header: PresetHeader;
+  instrument: number | null;
+};
+export type GeneratorBundle = {
+  generator: ModGen;
+  generatorInfo: GeneratorEntry[];
+};
+export type ModulatorBundle = {
+  modulator: ModGen;
+  modulatorInfo: GeneratorEntry[];
+};
+export type ModGenBundle = { modgen: ModGen; modgenInfo: GeneratorEntry[] };
 
 /**
  * SoundFont Parser Class
@@ -77,24 +98,42 @@ import { Riff } from './riff.js';
  */
 export default class Parser {
   // Constants
-  static CHUNK_ID_SIZE = 4;
-  static EXPECTED_RIFF_CHUNKS = 1;
-  static EXPECTED_SFBK_CHUNKS = 3;
-  static EXPECTED_PDTA_CHUNKS = 9;
-  static EXPECTED_SDTA_CHUNKS = 1;
-  static PRESET_HEADER_SIZE = 38;
-  static INSTRUMENT_HEADER_SIZE = 22;
-  static NAME_SIZE = 20;
-  static SAMPLE_HEADER_SIZE = 46;
-  static BAG_SIZE = 4;
-  static MODULATOR_SIZE = 10;
-  static GENERATOR_SIZE = 4;
+  static readonly CHUNK_ID_SIZE = 4;
+  static readonly EXPECTED_RIFF_CHUNKS = 1;
+  static readonly EXPECTED_SFBK_CHUNKS = 3;
+  static readonly EXPECTED_PDTA_CHUNKS = 9;
+  static readonly EXPECTED_SDTA_CHUNKS = 1;
+  static readonly PRESET_HEADER_SIZE = 38;
+  static readonly INSTRUMENT_HEADER_SIZE = 22;
+  static readonly NAME_SIZE = 20;
+  static readonly SAMPLE_HEADER_SIZE = 46;
+  static readonly BAG_SIZE = 4;
+  static readonly MODULATOR_SIZE = 10;
+  static readonly GENERATOR_SIZE = 4;
+
+  public input: Uint8Array;
+  private readonly parserOption: RiffOptions;
+  private readonly sampleRate: number = 22050;
+  private presetHeader: PresetHeader[] = [];
+  private presetZone: PresetZone[] = [];
+  private presetZoneModulator: GeneratorEntry[] = [];
+  private presetZoneGenerator: GeneratorEntry[] = [];
+  private instrument: InstrumentHeader[] = [];
+  private instrumentZone: InstrumentZone[] = [];
+  private instrumentZoneModulator: GeneratorEntry[] = [];
+  private instrumentZoneGenerator: GeneratorEntry[] = [];
+  public sampleHeader: SampleHeader[] = [];
+  public sample: Int16Array<ArrayBufferLike>[] = [];
+  public samplingData:
+    | { type: string; size: number; offset: number }
+    | undefined;
+  public readonly GeneratorEnumeratorTable: string[];
 
   /**
-   * @param {Uint8Array} input
-   * @param {ParserOptions} [optParams]
+   * @param input Input buffer containing SoundFont data.
+   * @param optParams Optional parameters for parsing.
    */
-  constructor(input, optParams = {}) {
+  constructor(input: Uint8Array, optParams: Partial<ParserOptions> = {}) {
     /** @type {Uint8Array} */
     this.input = input;
     /** @type {RiffOptions} */
@@ -128,130 +167,130 @@ export default class Parser {
     this.GeneratorEnumeratorTable = Object.keys(Parser.getGeneratorTable());
   }
 
-  /** @return {Record<string, number | null | undefined>} ジェネレータとデフォルト値 */
-  static getGeneratorTable() {
+  /** ジェネレータとデフォルト値 */
+  static getGeneratorTable(): GeneratorTable {
     return Object.freeze({
-      /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
+      /**  サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
       startAddrsOffset: 0,
-      /** @type {number} サンプルヘッダの音声波形データ終了位置に加算されるオフセット(下位16bit） */
+      /** サンプルヘッダの音声波形データ終了位置に加算されるオフセット(下位16bit） */
       endAddrsOffset: 0,
-      /** @type {number} サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(下位16bit） */
+      /** サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(下位16bit） */
       startloopAddrsOffset: 0,
-      /** @type {number} サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(下位16bit） */
+      /** サンプルヘッダの音声波形データループ終了位置に加算されるオフセット(下位16bit） */
       endloopAddrsOffset: 0,
-      /** @type {number} サンプルヘッダの音声波形データ開始位置に加算されるオフセット(上位16bit） */
+      /** サンプルヘッダの音声波形データ開始位置に加算されるオフセット(上位16bit） */
       startAddrsCoarseOffset: 0,
-      /** @type {number} LFOによるピッチの揺れ幅 */
+      /** LFOによるピッチの揺れ幅 */
       modLfoToPitch: 0,
-      /** @type {number} モジュレーションホイール用LFOからピッチに対しての影響量 */
+      /** モジュレーションホイール用LFOからピッチに対しての影響量 */
       vibLfoToPitch: 0,
-      /** @type {number} フィルタ・ピッチ用エンベロープからピッチに対しての影響量 */
+      /** フィルタ・ピッチ用エンベロープからピッチに対しての影響量 */
       modEnvToPitch: 0,
-      /** @type {number} フィルタのカットオフ周波数 */
+      /** フィルタのカットオフ周波数 */
       initialFilterFc: 13500,
-      /** @type {number} フィルターのQ値(レゾナンス) */
+      /** フィルターのQ値(レゾナンス) */
       initialFilterQ: 0,
-      /** @type {number} LFOによるフィルターカットオフ周波数の揺れ幅 */
+      /** LFOによるフィルターカットオフ周波数の揺れ幅 */
       modLfoToFilterFc: 0,
-      /** @type {number} フィルタ・ピッチ用エンベロープからフィルターカットオフに対しての影響量 */
+      /** フィルタ・ピッチ用エンベロープからフィルターカットオフに対しての影響量 */
       modEnvToFilterFc: 0,
-      /** @type {number} サンプルヘッダの音声波形データ終了位置に加算されるオフセット(上位16bit） */
+      /** サンプルヘッダの音声波形データ終了位置に加算されるオフセット(上位16bit） */
       endAddrsCoarseOffset: 0,
-      /** @type {number} LFOによるボリュームの揺れ幅 */
+      /** LFOによるボリュームの揺れ幅 */
       modLfoToVolume: 0,
-      /** @type {undefined} 未使用1 */
+      /** 未使用1 */
       unused1: undefined, // 14
-      /** @type {number} コーラスエフェクトのセンドレベル */
+      /** コーラスエフェクトのセンドレベル */
       chorusEffectsSend: 0,
-      /** @type {number} リバーブエフェクトのセンドレベル */
+      /** リバーブエフェクトのセンドレベル */
       reverbEffectsSend: 0,
-      /** @type {number} パンの位置 */
+      /** パンの位置 */
       pan: 0,
-      /** @type {undefined} 未使用2 */
+      /** 未使用2 */
       unused2: undefined,
-      /** @type {undefined} 未使用3 */
+      /** 未使用3 */
       unused3: undefined,
-      /** @type {undefined} 未使用4 */
+      /** 未使用4 */
       unused4: undefined,
-      /** @type {number} LFOの揺れが始まるまでの時間 */
+      /** LFOの揺れが始まるまでの時間 */
       delayModLFO: -12000,
-      /** @type {number} LFOの揺れの周期 */
+      /** LFOの揺れの周期 */
       freqModLFO: 0,
-      /** @type {number} ホイールの揺れが始まるまでの時間 */
+      /** ホイールの揺れが始まるまでの時間 */
       delayVibLFO: -12000,
-      /** @type {number} ホイールの揺れの周期 */
+      /** ホイールの揺れの周期 */
       freqVibLFO: 0,
-      /** @type {number} フィルタ・ピッチ用エンベロープのディレイ(アタックが始まるまでの時間) */
+      /** フィルタ・ピッチ用エンベロープのディレイ(アタックが始まるまでの時間) */
       delayModEnv: -12000,
-      /** @type {number} フィルタ・ピッチ用エンベロープのアタック時間 */
+      /** フィルタ・ピッチ用エンベロープのアタック時間 */
       attackModEnv: -12000,
-      /** @type {number} フィルタ・ピッチ用エンベロープのホールド時間(アタックが終わってからディケイが始まるまでの時間） */
+      /** フィルタ・ピッチ用エンベロープのホールド時間(アタックが終わってからディケイが始まるまでの時間） */
       holdModEnv: -12000,
-      /** @type {number} フィルタ・ピッチ用エンベロープのディケイ時間 */
+      /** フィルタ・ピッチ用エンベロープのディケイ時間 */
       decayModEnv: -12000,
-      /** @type {number} フィルタ・ピッチ用エンベロープのサステイン量 */
+      /** フィルタ・ピッチ用エンベロープのサステイン量 */
       sustainModEnv: 0,
-      /** @type {number} フィルタ・ピッチ用エンベロープのリリース時間 */
+      /** フィルタ・ピッチ用エンベロープのリリース時間 */
       releaseModEnv: -12000,
-      /** @type {number} キー(ノートNo)によるフィルタ・ピッチ用エンベロープのホールド時間への影響 */
+      /** キー(ノートNo)によるフィルタ・ピッチ用エンベロープのホールド時間への影響 */
       keynumToModEnvHold: 0,
-      /** @type {number} キー(ノートNo)によるフィルタ・ピッチ用エンベロープのディケイ時間への影響 */
+      /** キー(ノートNo)によるフィルタ・ピッチ用エンベロープのディケイ時間への影響 */
       keynumToModEnvDecay: 0,
-      /** @type {number} アンプ用エンベロープのディレイ(アタックが始まるまでの時間) */
+      /** アンプ用エンベロープのディレイ(アタックが始まるまでの時間) */
       delayVolEnv: -12000,
-      /** @type {number} アンプ用エンベロープのアタック時間 */
+      /** アンプ用エンベロープのアタック時間 */
       attackVolEnv: -12000,
-      /** @type {number} アンプ用エンベロープのホールド時間(アタックが終わってからディケイが始まるまでの時間） */
+      /** アンプ用エンベロープのホールド時間(アタックが終わってからディケイが始まるまでの時間） */
       holdVolEnv: -12000,
-      /** @type {number} アンプ用エンベロープのディケイ時間 */
+      /** アンプ用エンベロープのディケイ時間 */
       decayVolEnv: -12000,
-      /** @type {number} アンプ用エンベロープのサステイン量 */
+      /** アンプ用エンベロープのサステイン量 */
       sustainVolEnv: 0,
-      /** @type {number} アンプ用エンベロープのリリース時間 */
+      /** アンプ用エンベロープのリリース時間 */
       releaseVolEnv: -12000,
-      /** @type {number} キー(ノートNo)によるアンプ用エンベロープのホールド時間への影響 */
+      /** キー(ノートNo)によるアンプ用エンベロープのホールド時間への影響 */
       keynumToVolEnvHold: 0,
-      /** @type {number} キー(ノートNo)によるアンプ用エンベロープのディケイ時間への影響 */
+      /** キー(ノートNo)によるアンプ用エンベロープのディケイ時間への影響 */
       keynumToVolEnvDecay: 0,
-      /** @type {number | null} 割り当てるインストルメント(楽器) */
+      /** 割り当てるインストルメント(楽器) */
       instrument: null,
-      /** @type {undefined} 予約済み1 */
+      /**  予約済み1 */
       reserved1: undefined, // 42
-      /** @type {number | null} マッピングするキー(ノートNo)の範囲 */
+      /** マッピングするキー(ノートNo)の範囲 */
       keyRange: null,
-      /** @type {number | null} マッピングするベロシティの範囲 */
+      /** マッピングするベロシティの範囲 */
       velRange: null,
-      /** @type {number} サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(上位16bit） */
+      /**  サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(上位16bit） */
       startloopAddrsCoarseOffset: 0,
-      /** @type {number | null} どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
+      /** どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
       keynum: null,
-      /** @type {number | null} どのベロシティでも強制的に指定したベロシティに変更する */
+      /** どのベロシティでも強制的に指定したベロシティに変更する */
       velocity: null,
-      /** @type {number} 調整する音量 */
+      /**  調整する音量 */
       initialAttenuation: 0,
-      /** @type {undefined} 予約済み2 */
+      /** 予約済み2 */
       reserved2: undefined, // 49
-      /** @type {number} サンプルヘッダの音声波形データループ終了位置に加算されるオフセット(上位16bit） */
+      /**  サンプルヘッダの音声波形データループ終了位置に加算されるオフセット(上位16bit） */
       endloopAddrsCoarseOffset: 0,
-      /** @type {number} 半音単位での音程の調整 */
+      /**  半音単位での音程の調整 */
       coarseTune: 0,
-      /** @type {number} cent単位での音程の調整 */
+      /**  cent単位での音程の調整 */
       fineTune: 0,
-      /** @type {number | null} 割り当てるサンプル(音声波形) */
+      /** 割り当てるサンプル(音声波形) */
       sampleID: null,
-      /** @type {number} サンプル(音声波形)をループさせるか等のフラグ */
+      /**  サンプル(音声波形)をループさせるか等のフラグ */
       sampleModes: 0,
-      /** @type {undefined} 予約済み3 */
+      /** 予約済み3 */
       reserved3: undefined, // 55
-      /** @type {number} キー(ノートNo)が+1されるごとに音程を何centあげるかの音階情報 */
+      /**  キー(ノートNo)が+1されるごとに音程を何centあげるかの音階情報 */
       scaleTuning: 100,
-      /** @type {number | null} 同時に音を鳴らさないようにするための排他ID(ハイハットのOpen、Close等に使用) */
+      /** 同時に音を鳴らさないようにするための排他ID(ハイハットのOpen、Close等に使用) */
       exclusiveClass: null,
-      /** @type {number | null} サンプル(音声波形)の音程の上書き情報 */
+      /** サンプル(音声波形)の音程の上書き情報 */
       overridingRootKey: null,
-      /** @type {undefined} 未使用5 */
+      /** 未使用5 */
       unuded5: undefined, // 59
-      /** @type {undefined} 最後を示すオペレータ */
+      /** 最後を示すオペレータ */
       endOper: undefined,
     });
   }
@@ -259,12 +298,12 @@ export default class Parser {
   /**
    * Read 4-character signature from data
    * @private
-   * @param {Uint8Array} data Data array
-   * @param {number} offset Offset position
-   * @returns {string} Signature string
+   * @param data Data array
+   * @param  offset Offset position
+   * @returns  Signature string
    */
-  readSignature(data, offset) {
-    return String.fromCharCode(
+  private readSignature(data: Uint8Array, offset: number): string {
+    return String.fromCodePoint(
       data[offset],
       data[offset + 1],
       data[offset + 2],
@@ -275,11 +314,11 @@ export default class Parser {
   /**
    * Validate chunk type
    * @private
-   * @param {import('./riff.js').RiffChunk} chunk Chunk to validate
-   * @param {string} expectedType Expected chunk type
-   * @throws {Error} If chunk type doesn't match
+   * @param chunk Chunk to validate
+   * @param  expectedType Expected chunk type
+   * @throws If chunk type doesn't match
    */
-  validateChunkType(chunk, expectedType) {
+  private validateChunkType(chunk: RiffChunk, expectedType: string): void {
     if (chunk.type !== expectedType) {
       throw new Error(
         `invalid chunk type: expected '${expectedType}', got '${chunk.type}'`
@@ -289,12 +328,11 @@ export default class Parser {
 
   /**
    * Validate signature
-   * @private
-   * @param {string} signature Actual signature
-   * @param {string} expected Expected signature
-   * @throws {Error} If signature doesn't match
+   * @param signature Actual signature
+   * @param expected Expected signature
+   * @throws If signature doesn't match
    */
-  validateSignature(signature, expected) {
+  private validateSignature(signature: string, expected: string): void {
     if (signature !== expected) {
       throw new Error(
         `invalid signature: expected '${expected}', got '${signature}'`
@@ -302,10 +340,9 @@ export default class Parser {
     }
   }
 
-  /** @export */
-  parse() {
+  public parse() {
     const parser = new Riff(
-      /** @type {ArrayBuffer} */ (this.input.buffer),
+      this.input.buffer as ArrayBuffer,
       this.parserOption
     );
 
@@ -316,18 +353,13 @@ export default class Parser {
       );
     }
 
-    const chunk = parser.getChunk(0);
-    if (chunk === null) {
-      throw new Error('chunk not found');
-    }
-
-    this.parseRiffChunk(chunk);
+    this.parseRiffChunk(parser.getChunk(0));
     // @ts-ignore Release parsed source buffer reference after parsing.
     this.input = null;
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parseRiffChunk(chunk) {
+  /** @param {import('./Riff').RiffChunk} chunk */
+  private parseRiffChunk(chunk: import('./Riff').RiffChunk): void {
     const data = this.input;
     let ip = chunk.offset;
 
@@ -349,23 +381,14 @@ export default class Parser {
     }
 
     // INFO-list
-    this.parseInfoList(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(0))
-    );
-
+    this.parseInfoList(parser.getChunk(0));
     // sdta-list
-    this.parseSdtaList(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(1))
-    );
-
+    this.parseSdtaList(parser.getChunk(1));
     // pdta-list
-    this.parsePdtaList(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(2))
-    );
+    this.parsePdtaList(parser.getChunk(2));
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parseInfoList(chunk) {
+  private parseInfoList(chunk: RiffChunk): void {
     const data = this.input;
     let ip = chunk.offset;
 
@@ -382,8 +405,7 @@ export default class Parser {
     parser.parse();
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parseSdtaList(chunk) {
+  parseSdtaList(chunk: RiffChunk) {
     const data = this.input;
     let ip = chunk.offset;
 
@@ -403,13 +425,10 @@ export default class Parser {
         `invalid sdta structure: expected ${Parser.EXPECTED_SDTA_CHUNKS} chunk, got ${parser.chunkList.length}`
       );
     }
-    this.samplingData =
-      /** @type {{ type: string; size: number; offset: number }} */
-      (parser.getChunk(0));
+    this.samplingData = parser.getChunk(0)!;
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parsePdtaList(chunk) {
+  parsePdtaList(chunk: RiffChunk) {
     const data = this.input;
     let ip = chunk.offset;
 
@@ -431,50 +450,29 @@ export default class Parser {
       );
     }
 
-    this.parsePhdr(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(0))
-    );
-    this.parsePbag(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(1))
-    );
-    this.parsePmod(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(2))
-    );
-    this.parsePgen(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(3))
-    );
-    this.parseInst(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(4))
-    );
-    this.parseIbag(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(5))
-    );
-    this.parseImod(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(6))
-    );
-    this.parseIgen(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(7))
-    );
-    this.parseShdr(
-      /** @type {import('./riff.js').RiffChunk} */ (parser.getChunk(8))
-    );
+    this.parsePhdr(parser.getChunk(0));
+    this.parsePbag(parser.getChunk(1));
+    this.parsePmod(parser.getChunk(2));
+    this.parsePgen(parser.getChunk(3));
+    this.parseInst(parser.getChunk(4));
+    this.parseIbag(parser.getChunk(5));
+    this.parseImod(parser.getChunk(6));
+    this.parseIgen(parser.getChunk(7));
+    this.parseShdr(parser.getChunk(8));
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parsePhdr(chunk) {
+  parsePhdr(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'phdr');
 
     const data = this.input;
     let ip = chunk.offset;
-    /** @type {PresetHeader[]} */
-    const presetHeader = (this.presetHeader = []);
+    const presetHeader: PresetHeader[] = (this.presetHeader = []);
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
+      const presetNameBytes = data.subarray(ip, (ip += 20));
       presetHeader.push({
-        presetName: String.fromCharCode(
-          ...Array.from(data.subarray(ip, (ip += 20)))
-        ),
+        presetName: String.fromCodePoint(...Array.from(presetNameBytes)),
         preset: data[ip++] | (data[ip++] << 8),
         bank: data[ip++] | (data[ip++] << 8),
         presetBagIndex: data[ip++] | (data[ip++] << 8),
@@ -500,14 +498,12 @@ export default class Parser {
     }
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parsePbag(chunk) {
+  parsePbag(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'pbag');
 
     const data = this.input;
     let ip = chunk.offset;
-    /** @type {PresetZone[]} */
-    const presetZone = (this.presetZone = []);
+    const presetZone: PresetZone[] = (this.presetZone = []);
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
@@ -518,46 +514,42 @@ export default class Parser {
     }
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parsePmod(chunk) {
+  parsePmod(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'pmod');
     this.presetZoneModulator = this.parseModulator(chunk);
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parsePgen(chunk) {
+  parsePgen(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'pgen');
     this.presetZoneGenerator = this.parseGenerator(chunk);
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parseInst(chunk) {
+  parseInst(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'inst');
 
     const data = this.input;
     let ip = chunk.offset;
-    /** @type {InstrumentHeader[]} */
-    const instrument = (this.instrument = []);
+    const instrument: InstrumentHeader[] = (this.instrument = []);
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
+      const nameEnd = ip + 20;
+      ip = nameEnd;
       instrument.push({
-        instrumentName: String.fromCharCode(
-          ...Array.from(data.subarray(ip, (ip += 20)))
+        instrumentName: String.fromCodePoint(
+          ...Array.from(data.subarray(ip - 20, nameEnd))
         ),
         instrumentBagIndex: data[ip++] | (data[ip++] << 8),
       });
     }
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parseIbag(chunk) {
+  parseIbag(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'ibag');
 
     const data = this.input;
     let ip = chunk.offset;
-    /** @type {InstrumentZone[]} */
-    const instrumentZone = (this.instrumentZone = []);
+    const instrumentZone: InstrumentZone[] = (this.instrumentZone = []);
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
@@ -568,14 +560,12 @@ export default class Parser {
     }
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parseImod(chunk) {
+  parseImod(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'imod');
     this.instrumentZoneModulator = this.parseModulator(chunk);
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parseIgen(chunk) {
+  parseIgen(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'igen');
     this.instrumentZoneGenerator = this.parseGenerator(chunk);
   }
@@ -587,7 +577,7 @@ export default class Parser {
    * @param {number} offset Offset position
    * @returns {number} 32-bit unsigned integer
    */
-  readUInt32LE(data, offset) {
+  readUInt32LE(data: Uint8Array, offset: number): number {
     return (
       ((data[offset] << 0) |
         (data[offset + 1] << 8) |
@@ -604,20 +594,17 @@ export default class Parser {
    * @param {number} offset Offset position
    * @returns {number} 16-bit unsigned integer
    */
-  readUInt16LE(data, offset) {
+  readUInt16LE(data: Uint8Array, offset: number): number {
     return data[offset] | (data[offset + 1] << 8);
   }
 
-  /** @param {import('./riff.js').RiffChunk} chunk */
-  parseShdr(chunk) {
+  parseShdr(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'shdr');
 
     const data = this.input;
     let ip = chunk.offset;
-    /** @type {Int16Array<ArrayBufferLike>[]} */
-    const samples = (this.sample = []);
-    /** @type {SampleHeader[]} */
-    const sampleHeader = (this.sampleHeader = []);
+    const samples: Int16Array[] = (this.sample = []);
+    const sampleHeader: SampleHeader[] = (this.sampleHeader = []);
     const size = chunk.offset + chunk.size;
 
     const samplingData = this.samplingData;
@@ -626,7 +613,7 @@ export default class Parser {
     }
 
     while (ip < size) {
-      const sampleName = String.fromCharCode(
+      const sampleName = String.fromCodePoint(
         ...Array.from(data.subarray(ip, ip + Parser.NAME_SIZE))
       );
       ip += Parser.NAME_SIZE;
@@ -649,7 +636,6 @@ export default class Parser {
       const sampleType = this.readUInt16LE(data, ip);
       ip += 2;
 
-      /** @type {Int16Array<ArrayBufferLike>} */
       let sample = new Int16Array(
         new Uint8Array(
           data.subarray(
@@ -687,21 +673,11 @@ export default class Parser {
     }
   }
 
-  /**
-   * @param {Int16Array} sample
-   * @param {number} sampleRate
-   * @return {AdjustedSampleData}
-   */
-  adjustSampleData(sample, sampleRate) {
-    /** @type {Int16Array} */
-    let newSample;
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
-    /** @type {number} */
-    let j;
-    /** @type {number} */
+  adjustSampleData(sample: Int16Array, sampleRate: number): AdjustedSampleData {
+    let newSample: Int16Array;
+    let i: number;
+    let il: number;
+    let j: number;
     let multiply = 1;
 
     // buffer
@@ -723,15 +699,11 @@ export default class Parser {
     };
   }
 
-  /**
-   * @param {import('./riff.js').RiffChunk} chunk
-   * @return {GeneratorEntry[]}
-   */
-  parseModulator(chunk) {
+  parseModulator(chunk: RiffChunk): GeneratorEntry[] {
     const data = this.input;
     let ip = chunk.offset;
     const size = chunk.offset + chunk.size;
-    const output = [];
+    const output: GeneratorEntry[] = [];
 
     while (ip < size) {
       // Src  Oper
@@ -794,15 +766,11 @@ export default class Parser {
     return output;
   }
 
-  /**
-   * @param {import('./riff.js').RiffChunk} chunk
-   * @return {GeneratorEntry[]}
-   */
-  parseGenerator(chunk) {
+  parseGenerator(chunk: RiffChunk): GeneratorEntry[] {
     const data = this.input;
     let ip = chunk.offset;
     const size = chunk.offset + chunk.size;
-    const output = [];
+    const output: GeneratorEntry[] = [];
 
     while (ip < size) {
       const code = data[ip++] | (data[ip++] << 8);
@@ -851,32 +819,19 @@ export default class Parser {
     return output;
   }
 
-  /** @return {InstrumentDefinition[]} */
-  createInstrument() {
-    /** @type {InstrumentHeader[]} */
-    const instrument = this.instrument;
-    /** @type {InstrumentZone[]} */
-    const zone = this.instrumentZone;
-    /** @type {InstrumentDefinition[]} */
-    const output = [];
-    /** @type {number} */
-    let bagIndex;
-    /** @type {number} */
-    let bagIndexEnd;
-    /** @type {ZoneInfo[]} */
-    let zoneInfo;
-    /** @type {GeneratorBundle} */
-    let instrumentGenerator;
-    /** @type {ModulatorBundle} */
-    let instrumentModulator;
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
-    /** @type {number} */
-    let j;
-    /** @type {number} */
-    let jl;
+  createInstrument(): InstrumentDefinition[] {
+    const instrument: InstrumentHeader[] = this.instrument;
+    const zone: InstrumentZone[] = this.instrumentZone;
+    const output: InstrumentDefinition[] = [];
+    let bagIndex: number;
+    let bagIndexEnd: number;
+    let zoneInfo: ZoneInfo[];
+    let instrumentGenerator: GeneratorBundle;
+    let instrumentModulator: ModulatorBundle;
+    let i: number;
+    let il: number;
+    let j: number;
+    let jl: number;
 
     // instrument -> instrument bag -> generator / modulator
     for (i = 0, il = instrument.length; i < il; ++i) {
@@ -908,34 +863,20 @@ export default class Parser {
     return output;
   }
 
-  /** @return {PresetDefinition[]} */
-  createPreset() {
-    /** @type {PresetHeader[]} */
-    const preset = this.presetHeader;
-    /** @type {PresetZone[]} */
-    const zone = this.presetZone;
-    /** @type {PresetDefinition[]} */
-    const output = [];
-    /** @type {number} */
-    let bagIndex;
-    /** @type {number} */
-    let bagIndexEnd;
-    /** @type {ZoneInfo[]} */
-    let zoneInfo;
-    /** @type {number | null} */
-    let instrument = null;
-    /** @type {GeneratorBundle} */
-    let presetGenerator;
-    /** @type {ModulatorBundle} */
-    let presetModulator;
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
-    /** @type {number} */
-    let j;
-    /** @type {number} */
-    let jl;
+  createPreset(): PresetDefinition[] {
+    const preset: PresetHeader[] = this.presetHeader;
+    const zone: PresetZone[] = this.presetZone;
+    const output: PresetDefinition[] = [];
+    let bagIndex: number;
+    let bagIndexEnd: number;
+    let zoneInfo: ZoneInfo[];
+    let instrument: number | null = null;
+    let presetGenerator: GeneratorBundle;
+    let presetModulator: ModulatorBundle;
+    let i: number;
+    let il: number;
+    let j: number;
+    let jl: number;
 
     // preset -> preset bag -> generator / modulator
     for (i = 0, il = preset.length; i < il; ++i) {
@@ -955,16 +896,13 @@ export default class Parser {
           modulatorSequence: presetModulator.modulatorInfo,
         });
 
-        instrument =
-          presetGenerator.generator.instrument !== undefined
-            ? /** @type {GeneratorAmount} */ (
-                presetGenerator.generator.instrument
-              ).amount
-            : presetModulator.modulator.instrument !== undefined
-              ? /** @type {GeneratorAmount} */ (
-                  presetModulator.modulator.instrument
-                ).amount
-              : null;
+        if (presetGenerator.generator.instrument !== undefined) {
+          instrument = presetGenerator.generator.instrument.amount;
+        } else if (presetModulator.modulator.instrument !== undefined) {
+          instrument = presetModulator.modulator.instrument.amount;
+        } else {
+          instrument = null;
+        }
       }
 
       output.push({
@@ -978,14 +916,10 @@ export default class Parser {
     return output;
   }
 
-  /**
-   *
-   * @private
-   * @param {InstrumentZone[]} zone
-   * @param {number} index
-   * @returns {GeneratorBundle}
-   */
-  createInstrumentGenerator_(zone, index) {
+  private createInstrumentGenerator_(
+    zone: InstrumentZone[],
+    index: number
+  ): GeneratorBundle {
     const modgen = this.createBagModGen_(
       zone,
       zone[index].instrumentGeneratorIndex,
@@ -1001,14 +935,10 @@ export default class Parser {
     };
   }
 
-  /**
-   *
-   * @private
-   * @param {InstrumentZone[]} zone
-   * @param {number} index
-   * @returns {ModulatorBundle}
-   */
-  createInstrumentModulator_(zone, index) {
+  private createInstrumentModulator_(
+    zone: InstrumentZone[],
+    index: number
+  ): ModulatorBundle {
     const modgen = this.createBagModGen_(
       zone,
       zone[index].instrumentModulatorIndex,
@@ -1024,14 +954,10 @@ export default class Parser {
     };
   }
 
-  /**
-   *
-   * @private
-   * @param {PresetZone[]} zone
-   * @param {number} index
-   * @returns {GeneratorBundle}
-   */
-  createPresetGenerator_(zone, index) {
+  private createPresetGenerator_(
+    zone: PresetZone[],
+    index: number
+  ): GeneratorBundle {
     const modgen = this.createBagModGen_(
       zone,
       zone[index].presetGeneratorIndex,
@@ -1047,14 +973,10 @@ export default class Parser {
     };
   }
 
-  /**
-   *
-   * @private
-   * @param {PresetZone[]} zone
-   * @param {number} index
-   * @returns {ModulatorBundle}
-   */
-  createPresetModulator_(zone, index) {
+  private createPresetModulator_(
+    zone: PresetZone[],
+    index: number
+  ): ModulatorBundle {
     /** @type {ModGenBundle} */
     const modgen = this.createBagModGen_(
       zone,
@@ -1071,20 +993,16 @@ export default class Parser {
     };
   }
 
-  /**
-   *
-   * @private
-   * @param {InstrumentZone[] | PresetZone[]} _zone
-   * @param {number} indexStart
-   * @param {number} indexEnd
-   * @param {GeneratorEntry[]} zoneModGen
-   * @returns {ModGenBundle}
-   */
-  createBagModGen_(_zone, indexStart, indexEnd, zoneModGen) {
+  private createBagModGen_(
+    _zone: InstrumentZone[] | PresetZone[],
+    indexStart: number,
+    indexEnd: number,
+    zoneModGen: GeneratorEntry[]
+  ): ModGenBundle {
     /** @type {GeneratorEntry[]} */
-    const modgenInfo = [];
+    const modgenInfo: GeneratorEntry[] = [];
     /** @type {ModGen} */
-    const modgen = {
+    const modgen: ModGen = {
       unknown: [],
       keyRange: {
         amount: null,
@@ -1092,11 +1010,8 @@ export default class Parser {
         lo: 0,
       },
     }; // TODO
-    /** @type {GeneratorEntry} */
-    let info;
-    /** @type {number} */
-    let i;
-    /** @type {number} */
+    let info: GeneratorEntry;
+    let i: number;
     let il;
 
     for (i = indexStart, il = indexEnd; i < il; ++i) {
@@ -1106,7 +1021,12 @@ export default class Parser {
       if (info.type === 'unknown') {
         modgen.unknown.push(info.value);
       } else {
-        modgen[info.type] = info.value;
+        (
+          modgen as Record<
+            string,
+            GeneratorValue | GeneratorValue[] | undefined
+          >
+        )[info.type] = info.value;
       }
     }
 

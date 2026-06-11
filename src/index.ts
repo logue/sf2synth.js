@@ -8,11 +8,11 @@
  * }} SoundFontType
  */
 
-import Meta from './meta.js';
-import Parser from './sf2.js';
-import WebMidiApi from './web_midi_api.js';
-import WebMidiLink from './wml.js';
-import './wml.scss';
+import Meta from './Meta';
+import Parser from './SF2';
+import WebMidiApi from './WebMidiApi';
+import WebMidiLink from './WebMidiLink';
+import './WebMidiLink.scss';
 
 /** @type {SoundFontType} */
 const SoundFont = {

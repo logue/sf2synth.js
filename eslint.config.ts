@@ -28,7 +28,7 @@ export default [
   pluginJs.configs.recommended,
   importPlugin.flatConfigs.recommended,
   {
-    files: ['**/*.{js,mjs,cjs}'],
+    files: ['**/*.{js,mjs,cjs,ts}'],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 'latest',

@@ -1,63 +1,61 @@
-/**
- * @typedef {{
- *   channel: number;
- *   key: number;
- *   velocity: number;
- *   sample: Int16Array;
- *   basePlaybackRate: number;
- *   loopStart: number;
- *   loopEnd: number;
- *   sampleRate: number;
- *   volume: number;
- *   panpot: number;
- *   pitchBend: number;
- *   pitchBendSensitivity: number;
- *   modEnvToPitch: number;
- *   expression: number;
- *   modulation: number;
- *   cutOffFrequency: number;
- *   harmonicContent: number;
- *   reverb: import('@logue/reverb').default;
- *   volDelay: number;
- *   modDelay: number;
- *   volAttack: number;
- *   modAttack: number;
- *   volHold: number;
- *   modHold: number;
- *   volDecay: number;
- *   modDecay: number;
- *   releaseTime: number;
- *   volRelease: number;
- *   modRelease: number;
- *   start: number;
- *   end: number;
- *   pan: number;
- *   sampleModes: number;
- *   initialAttenuation: number;
- *   volSustain: number;
- *   modSustain: number;
- *   initialFilterFc: number;
- *   modEnvToFilterFc: number;
- *   initialFilterQ: number;
- *   mute: boolean;
- *   scaleTuning: number;
- *   freqVibLFO: number;
- * }} SynthInstrument
- */
+import Reverb from '@logue/reverb';
 
-/**
- * @typedef {{
- *   now: number;
- *   volDelay: number;
- *   modDelay: number;
- *   volAttack: number;
- *   modAttack: number;
- *   volHold: number;
- *   modHold: number;
- *   volDecay: number;
- *   modDecay: number;
- * }} EnvelopeTiming
- */
+interface SynthInstrument {
+  channel: number;
+  key: number;
+  velocity: number;
+  sample: Int16Array;
+  basePlaybackRate: number;
+  loopStart: number;
+  loopEnd: number;
+  sampleRate: number;
+  volume: number;
+  panpot: number;
+  pitchBend: number;
+  pitchBendSensitivity: number;
+  modEnvToPitch: number;
+  expression: number;
+  modulation: number;
+  cutOffFrequency: number;
+  harmonicContent: number;
+  reverb: Reverb;
+  volDelay: number;
+  modDelay: number;
+  volAttack: number;
+  modAttack: number;
+  volHold: number;
+  modHold: number;
+  volDecay: number;
+  modDecay: number;
+  releaseTime: number;
+  volRelease: number;
+  modRelease: number;
+  start: number;
+  end: number;
+  pan: number;
+  sampleModes: number;
+  initialAttenuation: number;
+  volSustain: number;
+  modSustain: number;
+  initialFilterFc: number;
+  modEnvToFilterFc: number;
+  initialFilterQ: number;
+  mute: boolean;
+  scaleTuning: number;
+  freqVibLFO: number;
+}
+
+interface EnvelopeTiming {
+  now: number;
+  volDelay: number;
+  modDelay: number;
+  volAttack: number;
+  modAttack: number;
+  volHold: number;
+  modHold: number;
+  volDecay: number;
+  modDecay: number;
+}
 
 /**
  * SynthesizerNote Class
@@ -67,23 +65,57 @@
  */
 export default class SynthesizerNote {
   // Constants
-  static SEMITONE_RATIO = 1.0594630943592953; // 2^(1/12)
-  static MIDI_CENTER_VALUE = 64;
-  static MIDI_MAX_VALUE = 127;
-  static CENTS_PER_OCTAVE = 1200;
-  static DEFAULT_Q_VALUE = 10;
-  static Q_DIVISOR = 200;
-  /**
-   * @param {AudioContext} ctx
-   * @param {AudioNode} destination
-   * @param {SynthInstrument} instrument
-   */
-  constructor(ctx, destination, instrument) {
-    /** @type {AudioContext} */
+  static readonly SEMITONE_RATIO = 1.0594630943592953; // 2^(1/12)
+  static readonly MIDI_CENTER_VALUE = 64;
+  static readonly MIDI_MAX_VALUE = 127;
+  static readonly CENTS_PER_OCTAVE = 1200;
+  static readonly DEFAULT_Q_VALUE = 10;
+  static readonly Q_DIVISOR = 200;
+
+  private readonly ctx: AudioContext;
+  private readonly destination: AudioNode;
+  private readonly instrument: SynthInstrument;
+
+  // Instrument properties
+  private readonly channel: number;
+  private readonly key: number;
+  private readonly velocity: number;
+  private readonly buffer: Int16Array;
+  private readonly playbackRate: number;
+  private readonly loopStart: number;
+  private readonly loopEnd: number;
+  private readonly sampleRate: number;
+  private readonly volume: number;
+  private readonly panpot: number;
+  private readonly pitchBend: number;
+  private readonly pitchBendSensitivity: number;
+  private readonly modEnvToPitch: number;
+  private expression: number;
+  private readonly modulation: number;
+  private readonly cutOffFrequency: number;
+  private readonly harmonicContent: number;
+  private readonly reverb: Reverb;
+
+  private startTime: number;
+  private computedPlaybackRate: number;
+  private noteOffState: boolean;
+  private audioBuffer: AudioBuffer | null;
+  private bufferSource: AudioBufferSourceNode;
+  private panner: PannerNode;
+  private outputGainNode: GainNode;
+  private expressionGainNode: GainNode;
+  private filter: BiquadFilterNode;
+  private modulator: BiquadFilterNode;
+  private lfo: OscillatorNode | null;
+  private lfoDepth: GainNode | null;
+
+  constructor(
+    ctx: AudioContext,
+    destination: AudioNode,
+    instrument: SynthInstrument
+  ) {
     this.ctx = ctx;
-    /** @type {AudioNode} */
     this.destination = destination;
-    /** @type {SynthInstrument} */
     this.instrument = instrument;
 
     // Instrument properties
@@ -128,67 +160,55 @@ export default class SynthesizerNote {
     this.reverb = reverb;
 
     // state
-    /** @type {number} */
     this.startTime = ctx.currentTime;
-    /** @type {number} */
-    this.computedPlaybackRate = this.playbackRate | 0;
-    /** @type {boolean} */
+    this.computedPlaybackRate = this.playbackRate;
     this.noteOffState = false;
 
     // ---------------------------------------------------------------------------
     // audio node
     // ---------------------------------------------------------------------------
 
-    /** @type {AudioBuffer} */
     this.audioBuffer = null;
-    /** @type {AudioBufferSourceNode} */
     this.bufferSource = ctx.createBufferSource();
-    /** @type {PannerNode} */
     this.panner = ctx.createPanner();
-    /** @type {GainNode} */
     this.outputGainNode = ctx.createGain();
-    /** @type {GainNode} */
     this.expressionGainNode = ctx.createGain();
-    /** @type {BiquadFilterNode} */
     this.filter = ctx.createBiquadFilter();
-    /** @type {BiquadFilterNode} */
     this.modulator = ctx.createBiquadFilter();
 
     // Vibrato (LFO) nodes
-    /** @type {OscillatorNode|null} */
     this.lfo = null;
-    /** @type {GainNode|null} */
     this.lfoDepth = null;
   }
 
   /**
    * Ensure value is finite, otherwise return default
-   * @private
-   * @param {number} value Value to validate
-   * @param {number} defaultValue Default value if not finite
-   * @returns {number} Validated finite value
+   * @param value Value to validate
+   * @param defaultValue Default value if not finite
+   * @returns Validated finite value
    */
-  ensureFinite(value, defaultValue = 0) {
+  private ensureFinite(value: number, defaultValue = 0): number {
     return Number.isFinite(value) ? value : defaultValue;
   }
 
   /**
    * Ensure value is finite and positive for exponential ramps
-   * @private
-   * @param {number} value Value to validate
-   * @param {number} defaultValue Default value if not finite or non-positive
-   * @returns {number} Validated positive finite value
+   * @param  value Value to validate
+   * @param defaultValue Default value if not finite or non-positive
+   * @returns Validated positive finite value
    */
-  ensurePositiveFinite(value, defaultValue = 0.001) {
+  private ensurePositiveFinite(
+    value: number,
+    defaultValue: number = 0.001
+  ): number {
     return Number.isFinite(value) && value > 0 ? value : defaultValue;
   }
 
   /**
    * Calculate envelope timing parameters
-   * @private
-   * @returns {EnvelopeTiming} Envelope timing parameters
+   * @returns Envelope timing parameters
    */
-  calculateEnvelopeTiming() {
+  private calculateEnvelopeTiming(): EnvelopeTiming {
     const { instrument } = this;
     const now = this.ctx.currentTime || 0;
 
@@ -219,10 +239,8 @@ export default class SynthesizerNote {
 
   /**
    * Setup audio buffer from sample data
-   * @private
-   * @returns {AudioBuffer}
    */
-  setupAudioBuffer() {
+  private setupAudioBuffer(): AudioBuffer {
     const { instrument, sampleRate, buffer: sampleBuffer } = this;
     const sample = sampleBuffer.subarray(
       0,
@@ -244,7 +262,7 @@ export default class SynthesizerNote {
     const startTime = instrument.start / this.sampleRate;
     // TODO: ドラムパートのPanが変化した場合、その計算をしなければならない
     // http://cpansearch.perl.org/src/PJB/MIDI-SoundFont-1.08/doc/sfspec21.html#8.4.6
-    const pan = instrument.pan !== 0 ? instrument.pan : this.panpot;
+    const pan = instrument.pan === 0 ? this.panpot : instrument.pan;
 
     // Setup audio buffer
     this.audioBuffer = this.setupAudioBuffer();
@@ -296,10 +314,9 @@ export default class SynthesizerNote {
 
   /**
    * Setup panner node for spatial positioning
-   * @private
-   * @param {number} pan Pan position (-1 to 1)
+   * @param pan Pan position (-1 to 1)
    */
-  setupPanner(pan = 0) {
+  private setupPanner(pan: number = 0) {
     const { panner } = this;
     panner.panningModel = 'equalpower';
     panner.distanceModel = 'inverse';
@@ -310,10 +327,9 @@ export default class SynthesizerNote {
 
   /**
    * Setup volume envelope (DAHDSR)
-   * @private
-   * @param {EnvelopeTiming} timing Envelope timing parameters
+   * @param timing Envelope timing parameters
    */
-  setupVolumeEnvelope(timing) {
+  private setupVolumeEnvelope(timing: EnvelopeTiming) {
     const { instrument, velocity, volume } = this;
     const { now, volDelay, volHold, volDecay } = timing;
 
@@ -349,10 +365,9 @@ export default class SynthesizerNote {
 
   /**
    * Setup modulation envelope for filter frequency
-   * @private
-   * @param {EnvelopeTiming} timing Envelope timing parameters
+   * @param  timing Envelope timing parameters
    */
-  setupModulationEnvelope(timing) {
+  private setupModulationEnvelope(timing: EnvelopeTiming) {
     const { instrument } = this;
     const { now, modDelay, modHold, modDecay } = timing;
     const { modulator } = this;
@@ -403,9 +418,8 @@ export default class SynthesizerNote {
 
   /**
    * Setup vibrato (LFO) for modulation
-   * @private
    */
-  setupVibrato() {
+  private setupVibrato() {
     const { instrument, modulation } = this;
 
     // Only setup vibrato if modulation is enabled
@@ -460,7 +474,7 @@ export default class SynthesizerNote {
    * Connect audio nodes in the signal chain
    * @private
    */
-  connectAudioNodes() {
+  private connectAudioNodes() {
     const {
       bufferSource,
       modulator,
@@ -483,10 +497,10 @@ export default class SynthesizerNote {
 
   /**
    * Convert SoundFont amount to frequency
-   * @param {number} val Amount value (cents)
-   * @return {number} Frequency in Hz
+   * @param val Amount value (cents)
+   * @return Frequency in Hz
    */
-  amountToFreq(val) {
+  private amountToFreq(val: number): number {
     const A440_REF = 440;
     const CENTS_OFFSET = 6900;
     return (
@@ -560,12 +574,15 @@ export default class SynthesizerNote {
 
   /**
    * Apply release envelope based on sample mode
-   * @private
-   * @param {number} volEndTime Volume release end time
-   * @param {number} modEndTime Modulation release end time
-   * @param {number} baseFreq Base frequency
+   * @param volEndTime Volume release end time
+   * @param  modEndTime Modulation release end time
+   * @param baseFreq Base frequency
    */
-  applySampleModeRelease(volEndTime, modEndTime, baseFreq) {
+  private applySampleModeRelease(
+    volEndTime: number,
+    modEndTime: number,
+    baseFreq: number
+  ) {
     const {
       instrument,
       bufferSource,
@@ -636,23 +653,15 @@ export default class SynthesizerNote {
 
   /**
    * Schedule release envelope
-   *
-   * @param {GainNode} output
-   * @param {BiquadFilterNode} modulator
-   * @param {AudioBufferSourceNode} bufferSource
-   * @param {number} now
-   * @param {number} volEndTime
-   * @param {number} modEndTime
-   * @param {number} baseFreq
    */
-  scheduleRelease(
-    output,
-    modulator,
-    bufferSource,
-    now,
-    volEndTime,
-    modEndTime,
-    baseFreq
+  private scheduleRelease(
+    output: GainNode,
+    modulator: BiquadFilterNode,
+    bufferSource: AudioBufferSourceNode,
+    now: number,
+    volEndTime: number,
+    modEndTime: number,
+    baseFreq: number
   ) {
     // Volume release
     output.gain.cancelScheduledValues(0);
@@ -760,7 +769,7 @@ export default class SynthesizerNote {
    * Update expression (volume) value
    * @param {number} expression Expression value (0-127)
    */
-  updateExpression(expression) {
+  updateExpression(expression: number) {
     this.expression = expression;
     this.expressionGainNode.gain.value =
       expression / SynthesizerNote.MIDI_MAX_VALUE;
@@ -768,9 +777,9 @@ export default class SynthesizerNote {
 
   /**
    * Update pitch bend value
-   * @param {number} pitchBend Pitch bend value (-8192 to 8191)
+   * @param pitchBend Pitch bend value (-8192 to 8191)
    */
-  updatePitchBend(pitchBend) {
+  updatePitchBend(pitchBend: number) {
     const PITCH_BEND_RANGE = 8192;
     const PITCH_BEND_MAX = 8191;
     const bendRange = pitchBend < 0 ? PITCH_BEND_RANGE : PITCH_BEND_MAX;

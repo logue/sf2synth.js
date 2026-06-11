@@ -69,7 +69,7 @@ export default defineConfig(async ({ mode, command }) => {
         mode === 'docs'
           ? undefined
           : {
-              entry: fileURLToPath(new URL('./src/index.js', import.meta.url)),
+              entry: fileURLToPath(new URL('./src/Index.ts', import.meta.url)),
               name: 'SoundFont',
               formats: ['es', 'umd', 'iife'],
               fileName: format => `sf2synth.${format}.js`,
