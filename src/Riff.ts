@@ -1,9 +1,4 @@
-export interface RiffOptions {
-  index?: number;
-  length?: number;
-  padding?: boolean;
-  bigEndian?: boolean;
-}
+import { RiffOptions } from './interfaces/RiffOptions';
 
 /**
  * Riff Parser class
@@ -33,13 +28,22 @@ export class Riff {
    * @param {Uint8Array | ArrayBuffer} input Input buffer.
    * @param {RiffOptions} [optParams] Option parameters.
    */
-  constructor(input: Uint8Array | ArrayBuffer, optParams: RiffOptions = {}) {
+  constructor(
+    input: Uint8Array | ArrayBufferLike,
+    optParams: RiffOptions = {}
+  ) {
+    if (input === undefined || input === null) {
+      throw new TypeError(
+        'Riff constructor requires a Uint8Array or ArrayBufferLike input.'
+      );
+    }
+
     /** @type {Uint8Array} */
     this.input = input instanceof Uint8Array ? input : new Uint8Array(input);
     /** @type {number} */
     this.ip = optParams.index || 0;
     /** @type {number} */
-    this.length = optParams.length || input.byteLength - this.ip;
+    this.length = optParams.length ?? input.byteLength - this.ip;
     /** @type {RiffChunk[]} */
     this.chunkList = [];
     /** @type {number} */

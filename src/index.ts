@@ -1,26 +1,16 @@
-/**
- * @typedef {{
- *   version: string;
- *   build: string;
- *   WebMidiLink: typeof WebMidiLink;
- *   WebMidiApi: typeof WebMidiApi;
- *   Parser: typeof Parser;
- * }} SoundFontType
- */
-
+import { SoundFontSynth } from './interfaces/SoundFontSynth';
 import Meta from './Meta';
-import Parser from './SF2';
+import Parser from './SoundFontParser';
 import WebMidiApi from './WebMidiApi';
 import WebMidiLink from './WebMidiLink';
 import './WebMidiLink.scss';
 
-/** @type {SoundFontType} */
-const SoundFont = {
+const SoundFont: SoundFontSynth = {
   version: Meta.version,
   build: Meta.date,
   WebMidiLink,
   WebMidiApi,
   Parser,
-};
+} as const;
 
 export default SoundFont;

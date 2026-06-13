@@ -17,7 +17,7 @@ export default class WebMidiApi extends WebMidiLink {
 
   /**
    * @inheritdoc
-   * @param {string} url
+   * @param url
    */
   async setup(url: string) {
     this.midi = await globalThis.navigator.requestMIDIAccess({ sysex: true });

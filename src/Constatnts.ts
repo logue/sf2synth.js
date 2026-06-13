@@ -1,0 +1,2 @@
+export const SEMITONE_RATIO = 1.0594630943592953; // 2^(1/12)
+export const CENTS_PER_OCTAVE = 1200;

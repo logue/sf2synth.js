@@ -27,7 +27,7 @@ export default class Loader {
 
   private readonly url: string;
   private readonly cache: boolean;
-  private readonly callback: (data: Uint8Array) => void;
+  private readonly callback: (data: ArrayBuffer | Uint8Array) => void;
   private alert: HTMLDivElement = document.createElement('div');
   private message: HTMLParagraphElement = document.createElement('p');
   private progressOuter: HTMLDivElement = document.createElement('div');
@@ -46,7 +46,7 @@ export default class Loader {
     url: string,
     placeholder: HTMLElement,
     cache: boolean,
-    callback: (data: Uint8Array) => void
+    callback: (data: ArrayBuffer | Uint8Array) => void
   ) {
     this.url = url;
     this.cache = cache;
@@ -58,9 +58,8 @@ export default class Loader {
 
   /**
    * Create UI elements for loading progress
-   * @private
    */
-  createUIElements() {
+  private createUIElements() {
     this.alert = this.createElement(
       'div',
       Loader.CLASS_ALERT_WARNING
@@ -81,11 +80,11 @@ export default class Loader {
 
   /**
    * Create a DOM element with optional class name
-   * @param {string} tagName Element tag name
-   * @param {string} [className] Optional class name
-   * @returns {HTMLElement}
+   * @param  tagName Element tag name
+   * @param  [className] Optional class name
+   * @returns Created HTMLElement
    */
-  createElement(tagName: string, className: string = ''): HTMLElement {
+  private createElement(tagName: string, className: string = ''): HTMLElement {
     const element = document.createElement(tagName);
     if (className) {
       element.className = className;
@@ -95,10 +94,8 @@ export default class Loader {
 
   /**
    * Create progress bar element
-   * @private
-   * @returns {HTMLDivElement}
    */
-  createProgressBar(): HTMLDivElement {
+  private createProgressBar(): HTMLDivElement {
     const progressOuter = this.createElement(
       'div',
       Loader.CLASS_PROGRESS
@@ -116,7 +113,7 @@ export default class Loader {
    * @param current Bytes received
    * @param total Total bytes
    */
-  onProgress(current: number, total: number) {
+  private onProgress(current: number, total: number) {
     const percentCompleted = Math.floor(
       (current / total) * Loader.PROGRESS_MAX
     );
@@ -127,7 +124,7 @@ export default class Loader {
    * Update progress bar and message
    * @param percent Progress percentage (0-100)
    */
-  updateProgress(percent: number) {
+  private updateProgress(percent: number) {
     this.progress.style.width = `${percent}%`;
     this.progress.innerText = `${percent}%`;
     this.progressOuter.ariaValueNow = percent.toString();
@@ -144,7 +141,12 @@ export default class Loader {
     this.progress.className = Loader.CLASS_PROGRESS_BAR_ANIMATED;
     this.updateProgress(Loader.PROGRESS_MAX);
     // Execute callback
-    this.callback(new Uint8Array(buffer));
+    // Provide an ArrayBuffer view to callers to match expected type
+    const ab = buffer.buffer.slice(
+      buffer.byteOffset,
+      buffer.byteOffset + buffer.byteLength
+    );
+    this.callback(ab as ArrayBuffer);
   }
 
   /**
@@ -184,11 +186,9 @@ export default class Loader {
 
   /**
    * Load data from cache
-   * @private
-   * @param {Cache} cache Cache storage
-   * @returns {Promise<Uint8Array | null>}
+   * @param cache Cache storage
    */
-  async loadFromCache(cache: Cache): Promise<Uint8Array | null> {
+  private async loadFromCache(cache: Cache): Promise<Uint8Array | null> {
     if (!this.cache) {
       return null;
     }

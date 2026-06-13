@@ -1,49 +1,6 @@
 import Reverb from '@logue/reverb';
-
-interface SynthInstrument {
-  channel: number;
-  key: number;
-  velocity: number;
-  sample: Int16Array;
-  basePlaybackRate: number;
-  loopStart: number;
-  loopEnd: number;
-  sampleRate: number;
-  volume: number;
-  panpot: number;
-  pitchBend: number;
-  pitchBendSensitivity: number;
-  modEnvToPitch: number;
-  expression: number;
-  modulation: number;
-  cutOffFrequency: number;
-  harmonicContent: number;
-  reverb: Reverb;
-  volDelay: number;
-  modDelay: number;
-  volAttack: number;
-  modAttack: number;
-  volHold: number;
-  modHold: number;
-  volDecay: number;
-  modDecay: number;
-  releaseTime: number;
-  volRelease: number;
-  modRelease: number;
-  start: number;
-  end: number;
-  pan: number;
-  sampleModes: number;
-  initialAttenuation: number;
-  volSustain: number;
-  modSustain: number;
-  initialFilterFc: number;
-  modEnvToFilterFc: number;
-  initialFilterQ: number;
-  mute: boolean;
-  scaleTuning: number;
-  freqVibLFO: number;
-}
+import type { SynthInstrument } from './interfaces/SynthesizerInterface';
+import { CENTS_PER_OCTAVE, SEMITONE_RATIO } from './Constatnts';
 
 interface EnvelopeTiming {
   now: number;
@@ -65,10 +22,8 @@ interface EnvelopeTiming {
  */
 export default class SynthesizerNote {
   // Constants
-  static readonly SEMITONE_RATIO = 1.0594630943592953; // 2^(1/12)
   static readonly MIDI_CENTER_VALUE = 64;
   static readonly MIDI_MAX_VALUE = 127;
-  static readonly CENTS_PER_OCTAVE = 1200;
   static readonly DEFAULT_Q_VALUE = 10;
   static readonly Q_DIVISOR = 200;
 
@@ -94,7 +49,8 @@ export default class SynthesizerNote {
   private readonly modulation: number;
   private readonly cutOffFrequency: number;
   private readonly harmonicContent: number;
-  private readonly reverb: Reverb;
+  private readonly reverb: Reverb | undefined;
+  private readonly onEnded?: () => void;
 
   private startTime: number;
   private computedPlaybackRate: number;
@@ -112,7 +68,8 @@ export default class SynthesizerNote {
   constructor(
     ctx: AudioContext,
     destination: AudioNode,
-    instrument: SynthInstrument
+    instrument: SynthInstrument,
+    onEnded?: () => void
   ) {
     this.ctx = ctx;
     this.destination = destination;
@@ -139,25 +96,37 @@ export default class SynthesizerNote {
       harmonicContent,
       reverb,
     } = instrument;
+    // Validate required fields and provide safe defaults for optional ones
+    if (
+      typeof channel !== 'number' ||
+      typeof key !== 'number' ||
+      typeof velocity !== 'number' ||
+      !(sample instanceof Int16Array) ||
+      typeof sampleRate !== 'number'
+    ) {
+      throw new Error('[SynthesizerNote] Invalid instrument data provided');
+    }
 
     this.channel = channel;
     this.key = key;
     this.velocity = velocity;
     this.buffer = sample;
-    this.playbackRate = basePlaybackRate;
-    this.loopStart = loopStart;
-    this.loopEnd = loopEnd;
+    this.playbackRate = basePlaybackRate ?? 1;
+    this.loopStart = loopStart ?? 0;
+    this.loopEnd = loopEnd ?? 0;
     this.sampleRate = sampleRate;
-    this.volume = volume;
-    this.panpot = panpot;
-    this.pitchBend = pitchBend;
-    this.pitchBendSensitivity = pitchBendSensitivity;
-    this.modEnvToPitch = modEnvToPitch;
-    this.expression = expression;
-    this.modulation = modulation;
-    this.cutOffFrequency = cutOffFrequency;
-    this.harmonicContent = harmonicContent;
+    this.volume = volume ?? 1;
+    this.panpot = panpot ?? SynthesizerNote.MIDI_CENTER_VALUE;
+    this.pitchBend = pitchBend ?? 0;
+    this.pitchBendSensitivity =
+      pitchBendSensitivity ?? SynthesizerNote.MIDI_CENTER_VALUE;
+    this.modEnvToPitch = modEnvToPitch ?? 0;
+    this.expression = expression ?? SynthesizerNote.MIDI_MAX_VALUE;
+    this.modulation = modulation ?? 0;
+    this.cutOffFrequency = cutOffFrequency ?? 0;
+    this.harmonicContent = harmonicContent ?? SynthesizerNote.MIDI_CENTER_VALUE;
     this.reverb = reverb;
+    this.onEnded = onEnded;
 
     // state
     this.startTime = ctx.currentTime;
@@ -241,14 +210,18 @@ export default class SynthesizerNote {
    * Setup audio buffer from sample data
    */
   private setupAudioBuffer(): AudioBuffer {
-    const { instrument, sampleRate, buffer: sampleBuffer } = this;
-    const sample = sampleBuffer.subarray(
-      0,
-      sampleBuffer.length + instrument.end
+    const { sampleRate, buffer: sampleBuffer } = this;
+    const audioBuffer = this.ctx.createBuffer(
+      1,
+      sampleBuffer.length,
+      sampleRate
     );
-    const audioBuffer = this.ctx.createBuffer(1, sample.length, sampleRate);
     const channelData = audioBuffer.getChannelData(0);
-    channelData.set(sample);
+
+    for (let i = 0, il = sampleBuffer.length; i < il; ++i) {
+      channelData[i] = sampleBuffer[i] / 32768;
+    }
+
     return audioBuffer;
   }
 
@@ -302,11 +275,15 @@ export default class SynthesizerNote {
     // ---------------------------------------------------------------------------
     this.connectAudioNodes();
 
-    if (!instrument.mute) {
-      this.connect();
-    }
-
-    this.expressionGainNode.connect(this.outputGainNode);
+    // cleanup when the source finishes playing
+    bufferSource.onended = () => {
+      try {
+        this.disconnect();
+      } catch (_error) {
+        // ignore cleanup failures
+      }
+      this.onEnded?.();
+    };
 
     // fire
     bufferSource.start(0, startTime);
@@ -365,7 +342,7 @@ export default class SynthesizerNote {
 
   /**
    * Setup modulation envelope for filter frequency
-   * @param  timing Envelope timing parameters
+   * @param timing Envelope timing parameters
    */
   private setupModulationEnvelope(timing: EnvelopeTiming) {
     const { instrument } = this;
@@ -472,7 +449,6 @@ export default class SynthesizerNote {
 
   /**
    * Connect audio nodes in the signal chain
-   * @private
    */
   private connectAudioNodes() {
     const {
@@ -503,29 +479,32 @@ export default class SynthesizerNote {
   private amountToFreq(val: number): number {
     const A440_REF = 440;
     const CENTS_OFFSET = 6900;
-    return (
-      2 ** ((val - CENTS_OFFSET) / SynthesizerNote.CENTS_PER_OCTAVE) * A440_REF
-    );
+    return 2 ** ((val - CENTS_OFFSET) / CENTS_PER_OCTAVE) * A440_REF;
   }
 
   /** Note off */
-  noteOff() {
+  noteOff(): void {
     this.noteOffState = true;
   }
 
-  /** @return {boolean} */
-  isNoteOff() {
+  isNoteOff(): boolean {
     return this.noteOffState;
+  }
+
+  /** Get note key (public accessor) */
+  getKey(): number {
+    return this.key;
   }
 
   /**
    * Release the note
-   * @return {void}
    */
-  release() {
+  release(): void {
     const { instrument, outputGainNode: output, ctx, modulator } = this;
     const now = this.ensureFinite(ctx.currentTime, 0);
-    const release = instrument.releaseTime - SynthesizerNote.MIDI_CENTER_VALUE;
+    const release =
+      (instrument.releaseTime ?? SynthesizerNote.MIDI_CENTER_VALUE) -
+      SynthesizerNote.MIDI_CENTER_VALUE;
 
     if (!this.audioBuffer) {
       return;
@@ -607,6 +586,7 @@ export default class SynthesizerNote {
     switch (instrument.sampleModes) {
       case SAMPLE_MODE.NO_LOOP:
         bufferSource.loop = false;
+        bufferSource.stop(validVolEndTime);
         break;
 
       case SAMPLE_MODE.CONTINUOUS_LOOP:
@@ -696,12 +676,17 @@ export default class SynthesizerNote {
 
   /** Connect AudioContext */
   connect() {
-    this.reverb.connect(this.outputGainNode).connect(this.destination);
+    if (this.reverb) {
+      this.reverb.connect(this.outputGainNode).connect(this.destination);
+      return;
+    }
+
+    this.outputGainNode.connect(this.destination);
   }
 
   /** Disconnect AudioContext */
   disconnect() {
-    this.outputGainNode.disconnect(0);
+    this.outputGainNode.disconnect();
 
     // Clean up LFO nodes
     if (this.lfo) {
@@ -745,8 +730,7 @@ export default class SynthesizerNote {
 
     const peekPitch = this.ensureFinite(
       computedPlaybackRate *
-        SynthesizerNote.SEMITONE_RATIO **
-          (modEnvToPitch * instrument.scaleTuning),
+        SEMITONE_RATIO ** (modEnvToPitch * instrument.scaleTuning),
       computedPlaybackRate
     );
 
@@ -767,7 +751,7 @@ export default class SynthesizerNote {
 
   /**
    * Update expression (volume) value
-   * @param {number} expression Expression value (0-127)
+   * @param expression Expression value (0-127)
    */
   updateExpression(expression: number) {
     this.expression = expression;
@@ -786,7 +770,7 @@ export default class SynthesizerNote {
 
     this.computedPlaybackRate =
       this.playbackRate *
-      SynthesizerNote.SEMITONE_RATIO **
+      SEMITONE_RATIO **
         ((pitchBend / bendRange) *
           this.pitchBendSensitivity *
           this.instrument.scaleTuning);

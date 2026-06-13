@@ -6,6 +6,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "skipLibCheck": true,
     "types": ["node"]
   },
   "include": ["env.d.ts", "src/**/*.ts"],

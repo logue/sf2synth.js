@@ -1,5 +1,5 @@
 import Loader from './Loader';
-import Synthesizer from './SoundFontSynth';
+import Synthesizer from './Synthesizer';
 import { WebMidiLinkOptions } from './interfaces/WebMidiLinkOptions';
 
 /**
@@ -138,9 +138,18 @@ export default class WebMidiLink {
 
     const loader = new Loader(
       this.option.url,
-      this.placeholder,
+      this.placeholder!,
       this.option.cache,
-      (/** @type {ArrayBuffer} */ buffer) => this.setupByBuffer(buffer)
+      (buffer: ArrayBuffer | Uint8Array) => {
+        const ab =
+          buffer instanceof Uint8Array
+            ? buffer.buffer.slice(
+                buffer.byteOffset,
+                buffer.byteOffset + buffer.byteLength
+              )
+            : buffer;
+        this.setupByBuffer(ab as ArrayBuffer);
+      }
     );
     await loader.fetch();
   }
@@ -159,9 +168,9 @@ export default class WebMidiLink {
    */
   private setupByBuffer(buffer: ArrayBuffer) {
     this.clearPlaceholder();
-    this.setupSynthesizer(buffer);
+    this.setupSynthesizer(new Uint8Array(buffer));
     this.renderUI();
-    this.synth.init();
+    this.synth?.init();
     this.onReady();
   }
 
@@ -177,7 +186,7 @@ export default class WebMidiLink {
   /**
    * シンセサイザのセットアップまたはリロード
    */
-  private setupSynthesizer(buffer: ArrayBuffer) {
+  private setupSynthesizer(buffer: Uint8Array) {
     if (!this.synth) {
       // @ts-ignore
       this.synth = new Synthesizer(buffer);
@@ -240,7 +249,7 @@ export default class WebMidiLink {
     // @ts-ignore
     window.addEventListener('message', this.messageHandler, false);
     // ホスト側に準備完了通知を送信
-    this.window.postMessage('link,ready', this.option.targetOrigin);
+    this.window.postMessage('link,ready', this.option.targetOrigin as any);
   }
 
   /**
@@ -290,15 +299,15 @@ export default class WebMidiLink {
     switch (command) {
       case 'reqpatch':
         // TODO: dummy data
-        this.window.postMessage('link,patch', targetOrigin);
+        (this.window as any).postMessage('link,patch', targetOrigin);
         break;
       case 'setpatch':
       case 'ready':
-        this.window.postMessage('link,ready', targetOrigin);
+        (this.window as any).postMessage('link,ready', targetOrigin);
         break;
       case 'progress':
         // ※この命令は、WebMidiLinkの仕様に含まれていません。
-        this.window.postMessage('link,progress', targetOrigin);
+        (this.window as any).postMessage('link,progress', targetOrigin);
         break;
       default:
         console.error('unknown link message:', command);
@@ -321,6 +330,10 @@ export default class WebMidiLink {
     const channel = message[0] & 0x0f;
     const synth = this.synth;
     const status = message[0] & 0xf0;
+
+    if (!synth) {
+      return;
+    }
 
     // http://amei.or.jp/midistandardcommittee/MIDI1.0.pdf
     switch (status) {
@@ -351,10 +364,10 @@ export default class WebMidiLink {
           case 0x05: // Portament Time
             break;
           case WebMidiLink.CC.DATA_ENTRY_MSB: // Data Entry(MSB): Bn 06 dd
-            this._handleDataEntryMsb(channel, value);
+            this.handleDataEntryMsb(channel, value);
             break;
           case WebMidiLink.CC.DATA_ENTRY_LSB: // Data Entry(LSB): Bn 26 dd
-            this._handleDataEntryLsb(channel, value);
+            this.handleDataEntryLsb(channel, value);
             break;
 
           case WebMidiLink.CC.VOLUME: // Volume Change: Bn 07 dd
@@ -458,21 +471,21 @@ export default class WebMidiLink {
           device === 0x09
         ) {
           // General MIDI
-          this._handleGMMessage(message, model);
+          this.handleGMMessage(message, model);
         } else if (manufacturerId === WebMidiLink.MANUFACTURER.REALTIME) {
           // Realtime
-          this._handleRealtimeMessage(message, model);
+          this.handleRealtimeMessage(message, model);
         } else if (manufacturerId === WebMidiLink.MANUFACTURER.PRIVATE) {
           // smfplayer / sf2synth固有命令
-          this._handlePrivateMessage(message);
+          this.handlePrivateMessage(message);
         }
 
         if (model === 0x42) {
           // Roland GS
-          this._handleGSMessage(message);
+          this.handleGSMessage(message);
         } else if (model === 0x4c) {
           // YAMAHA XG
-          this._handleXGMessage(message);
+          this.handleXGMessage(message);
         }
         break;
       }
@@ -488,6 +501,7 @@ export default class WebMidiLink {
    */
   handleDataEntryMsb(channel: number, value: number) {
     const synth = this.synth;
+    if (!synth) return;
     if (this.rpnMode) {
       // RPN
       if (this.RpnMsb[channel] === 0 && this.RpnLsb[channel] === 0) {
@@ -508,6 +522,7 @@ export default class WebMidiLink {
    */
   private handleDataEntryLsb(channel: number, value: number) {
     const synth = this.synth;
+    if (!synth) return;
     if (this.rpnMode) {
       // RPN
       if (this.RpnMsb[channel] === 0 && this.RpnLsb[channel] === 0) {
@@ -526,6 +541,7 @@ export default class WebMidiLink {
    */
   private handleGMMessage(message: number[], model: number) {
     const synth = this.synth;
+    if (!synth) return;
     // http://amei.or.jp/midistandardcommittee/Recommended_Practice/GM2_japanese.pdf
     switch (model) {
       case 0x01:
@@ -552,9 +568,11 @@ export default class WebMidiLink {
    * Realtimeメッセージの処理
    */
   private handleRealtimeMessage(message: number[], model: number) {
+    const synth = this.synth;
+    if (!synth) return;
     if (model === 0x01) {
       // master volume: F0 7F 7F 04 01 [value] [value] F7
-      this.synth.setMasterVolume(message[4] + (message[5] << 7));
+      synth.setMasterVolume(message[4] + (message[5] << 7));
     } else {
       // @ts-ignore
       console.log('\x1b[34mRealtime\x1b[0m: ' + this.dumpMessage(message));
@@ -597,6 +615,7 @@ export default class WebMidiLink {
     // (DeviceID = 10, ModelID = 42, CommandID = 12)
 
     const synth = this.synth;
+    if (!synth) return;
     const GsPart = message[6] - 0x0f;
     const GsKey = message[7];
     const GsValue = message[8];
@@ -604,7 +623,7 @@ export default class WebMidiLink {
     switch (GsKey) {
       case 0x00:
         // TEXT INSERT FOR SC (ASCII code)
-        this._handleGSTextMessage(message, GsPart);
+        this.handleGSTextMessage(message, GsPart);
         break;
       case 0x04:
         // GS Master Volume
@@ -612,7 +631,7 @@ export default class WebMidiLink {
         break;
       case 0x15:
         // GS Drum part
-        this._handleGSDrumPart(GsPart, GsValue);
+        this.handleGSDrumPart(GsPart, GsValue);
         break;
       case 0x19:
         console.info('\x1b[31mGS Volume On/Off\x1b[0m: ' + GsPart, GsValue);
@@ -649,11 +668,13 @@ export default class WebMidiLink {
     // F0 41 10 45 12 10 [page] 00 [...value] [checksum] F7
     // ex. F0 41 10 45 12 10 00 00 [48 65 6C 6C 6F] 21 F7 = Hello
 
+    const synth = this.synth;
+    if (!synth) return;
     if (GsPart === 0x00) {
       // ページが0x00の場合、LCDに表示するメッセージとする
       // @ts-ignore
       const msg = message.slice(8, -2); // Remove checksum and F7
-      this.synth.processMidiMessage(msg);
+      synth.processMidiMessage(msg);
     } else {
       // GS音源のLCDの16x16のビットマップ画像
       // @ts-ignore
@@ -672,6 +693,7 @@ export default class WebMidiLink {
   private handleGSDrumPart(GsPart: number, GsValue: number) {
     // GS Drum part: F0 41 10 42 12 40 1[part no] [Map] [checksum] F7
     const synth = this.synth;
+    if (!synth) return;
     if (GsPart === 0) {
       synth.setPercussionPart(9, GsValue !== 0x00);
     } else if (GsPart >= 10) {
@@ -693,6 +715,7 @@ export default class WebMidiLink {
     // https://jp.yamaha.com/files/download/other_assets/1/316861/MU100J1.pdf
 
     const synth = this.synth;
+    if (!synth) return;
     const XgKey = message[4];
     const XgPart = message[5];
 
