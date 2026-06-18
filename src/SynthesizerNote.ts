@@ -1,18 +1,7 @@
 import Reverb from '@logue/reverb';
 import type { SynthInstrument } from './interfaces/SynthesizerInterface';
+import type { EnvelopeTiming } from './types/EnvelopeTiming';
 import { CENTS_PER_OCTAVE, SEMITONE_RATIO } from './Constatnts';
-
-interface EnvelopeTiming {
-  now: number;
-  volDelay: number;
-  modDelay: number;
-  volAttack: number;
-  modAttack: number;
-  volHold: number;
-  modHold: number;
-  volDecay: number;
-  modDecay: number;
-}
 
 /**
  * SynthesizerNote Class
@@ -26,6 +15,15 @@ export default class SynthesizerNote {
   static readonly MIDI_MAX_VALUE = 127;
   static readonly DEFAULT_Q_VALUE = 10;
   static readonly Q_DIVISOR = 200;
+  static readonly PITCH_BEND_RANGE = 8192;
+  static readonly PITCH_BEND_MAX = 8191;
+
+  static readonly SAMPLE_MODE = {
+    NO_LOOP: 0,
+    CONTINUOUS_LOOP: 1,
+    UNUSED: 2,
+    LOOP_UNTIL_NOTE_OFF: 3,
+  };
 
   private readonly ctx: AudioContext;
   private readonly destination: AudioNode;
@@ -104,7 +102,7 @@ export default class SynthesizerNote {
       !(sample instanceof Int16Array) ||
       typeof sampleRate !== 'number'
     ) {
-      throw new Error('[SynthesizerNote] Invalid instrument data provided');
+      throw new TypeError('[SynthesizerNote] Invalid instrument data provided');
     }
 
     this.channel = channel;
@@ -162,7 +160,7 @@ export default class SynthesizerNote {
 
   /**
    * Ensure value is finite and positive for exponential ramps
-   * @param  value Value to validate
+   * @param value Value to validate
    * @param defaultValue Default value if not finite or non-positive
    * @returns Validated positive finite value
    */
@@ -219,7 +217,7 @@ export default class SynthesizerNote {
     const channelData = audioBuffer.getChannelData(0);
 
     for (let i = 0, il = sampleBuffer.length; i < il; ++i) {
-      channelData[i] = sampleBuffer[i] / 32768;
+      channelData[i] = sampleBuffer[i] / 32768; // 32,768 is the max value for 16-bit signed audio
     }
 
     return audioBuffer;
@@ -229,6 +227,14 @@ export default class SynthesizerNote {
   noteOn() {
     const { instrument } = this;
     const timing = this.calculateEnvelopeTiming();
+
+    console.debug(
+      '[SynthesizerNote] noteOn: channel=%d key=%d velocity=%d sampleLen=%d',
+      this.channel,
+      this.key,
+      this.velocity,
+      this.buffer?.length ?? 0
+    );
 
     const loopStart = instrument.loopStart / this.sampleRate;
     const loopEnd = instrument.loopEnd / this.sampleRate;
@@ -243,7 +249,8 @@ export default class SynthesizerNote {
     // Configure buffer source
     const { bufferSource } = this;
     bufferSource.buffer = this.audioBuffer;
-    bufferSource.loop = instrument.sampleModes !== 0;
+    bufferSource.loop =
+      instrument.sampleModes !== SynthesizerNote.SAMPLE_MODE.NO_LOOP;
     bufferSource.loopStart = loopStart;
     bufferSource.loopEnd = loopEnd;
     this.updatePitchBend(this.pitchBend);
@@ -464,11 +471,34 @@ export default class SynthesizerNote {
     modulator.connect(panner);
     panner.connect(expressionGainNode);
 
+    console.debug(
+      '[SynthesizerNote] connectAudioNodes: instrument.mute=',
+      !!instrument.mute
+    );
     if (!instrument.mute) {
       this.connect();
+      console.debug(
+        '[SynthesizerNote] connectAudioNodes: connected outputGainNode to destination'
+      );
+    } else {
+      console.debug(
+        '[SynthesizerNote] connectAudioNodes: skipped destination connect because instrument is muted'
+      );
     }
 
     expressionGainNode.connect(outputGainNode);
+    console.debug(
+      '[SynthesizerNote] connectAudioNodes: expressionGain=',
+      expressionGainNode.gain.value,
+      'outputGain=',
+      outputGainNode.gain.value,
+      'pannerPosX=',
+      panner.positionX?.value ?? 'n/a',
+      'pannerPosY=',
+      panner.positionY?.value ?? 'n/a',
+      'pannerPosZ=',
+      panner.positionZ?.value ?? 'n/a'
+    );
   }
 
   /**
@@ -476,7 +506,7 @@ export default class SynthesizerNote {
    * @param val Amount value (cents)
    * @return Frequency in Hz
    */
-  private amountToFreq(val: number): number {
+  public amountToFreq(val: number): number {
     const A440_REF = 440;
     const CENTS_OFFSET = 6900;
     return 2 ** ((val - CENTS_OFFSET) / CENTS_PER_OCTAVE) * A440_REF;
@@ -571,26 +601,19 @@ export default class SynthesizerNote {
     } = this;
     const now = this.ensureFinite(ctx.currentTime, 0);
 
-    const SAMPLE_MODE = {
-      NO_LOOP: 0,
-      CONTINUOUS_LOOP: 1,
-      UNUSED: 2,
-      LOOP_UNTIL_NOTE_OFF: 3,
-    };
-
     // Ensure times are valid before using
     const validVolEndTime = this.ensureFinite(volEndTime, now + 0.1);
     const validModEndTime = this.ensureFinite(modEndTime, now + 0.1);
     const validBaseFreq = this.ensurePositiveFinite(baseFreq, 350);
 
     switch (instrument.sampleModes) {
-      case SAMPLE_MODE.NO_LOOP:
+      case SynthesizerNote.SAMPLE_MODE.NO_LOOP:
         bufferSource.loop = false;
         bufferSource.stop(validVolEndTime);
         break;
 
-      case SAMPLE_MODE.CONTINUOUS_LOOP:
-      case SAMPLE_MODE.LOOP_UNTIL_NOTE_OFF:
+      case SynthesizerNote.SAMPLE_MODE.CONTINUOUS_LOOP:
+      case SynthesizerNote.SAMPLE_MODE.LOOP_UNTIL_NOTE_OFF:
         this.scheduleRelease(
           output,
           modulator,
@@ -600,7 +623,10 @@ export default class SynthesizerNote {
           validModEndTime,
           validBaseFreq
         );
-        if (instrument.sampleModes === SAMPLE_MODE.LOOP_UNTIL_NOTE_OFF) {
+        if (
+          instrument.sampleModes ===
+          SynthesizerNote.SAMPLE_MODE.LOOP_UNTIL_NOTE_OFF
+        ) {
           bufferSource.loop = false;
           bufferSource.buffer = null;
         } else {
@@ -621,7 +647,7 @@ export default class SynthesizerNote {
         }
         break;
 
-      case SAMPLE_MODE.UNUSED:
+      case SynthesizerNote.SAMPLE_MODE.UNUSED:
         throw new Error('[SynthesizerNote] Detected unused sampleModes');
 
       default:
@@ -675,7 +701,7 @@ export default class SynthesizerNote {
   }
 
   /** Connect AudioContext */
-  connect() {
+  public connect() {
     if (this.reverb) {
       this.reverb.connect(this.outputGainNode).connect(this.destination);
       return;
@@ -685,7 +711,7 @@ export default class SynthesizerNote {
   }
 
   /** Disconnect AudioContext */
-  disconnect() {
+  public disconnect() {
     this.outputGainNode.disconnect();
 
     // Clean up LFO nodes
@@ -710,7 +736,7 @@ export default class SynthesizerNote {
   /**
    * Calculate and schedule playback rate envelope
    */
-  schedulePlaybackRate() {
+  private schedulePlaybackRate() {
     const {
       bufferSource,
       computedPlaybackRate,
@@ -753,7 +779,7 @@ export default class SynthesizerNote {
    * Update expression (volume) value
    * @param expression Expression value (0-127)
    */
-  updateExpression(expression: number) {
+  public updateExpression(expression: number) {
     this.expression = expression;
     this.expressionGainNode.gain.value =
       expression / SynthesizerNote.MIDI_MAX_VALUE;
@@ -763,10 +789,11 @@ export default class SynthesizerNote {
    * Update pitch bend value
    * @param pitchBend Pitch bend value (-8192 to 8191)
    */
-  updatePitchBend(pitchBend: number) {
-    const PITCH_BEND_RANGE = 8192;
-    const PITCH_BEND_MAX = 8191;
-    const bendRange = pitchBend < 0 ? PITCH_BEND_RANGE : PITCH_BEND_MAX;
+  public updatePitchBend(pitchBend: number) {
+    const bendRange =
+      pitchBend < 0
+        ? SynthesizerNote.PITCH_BEND_RANGE
+        : SynthesizerNote.PITCH_BEND_MAX;
 
     this.computedPlaybackRate =
       this.playbackRate *

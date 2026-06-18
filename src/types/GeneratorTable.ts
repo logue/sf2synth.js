@@ -1,5 +1,5 @@
-export interface GeneratorTable {
-  /**  サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
+export type GeneratorTable = {
+  /** サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
   startAddrsOffset: number;
   /** サンプルヘッダの音声波形データ終了位置に加算されるオフセット(下位16bit） */
   endAddrsOffset: number;
@@ -89,36 +89,103 @@ export interface GeneratorTable {
   keyRange: number | null;
   /** マッピングするベロシティの範囲 */
   velRange: number | null;
-  /**  サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(上位16bit） */
+  /** サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(上位16bit） */
   startloopAddrsCoarseOffset: number;
-  /**  どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
+  /** どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
   keynum: number | null;
   /** どのベロシティでも強制的に指定したベロシティに変更する */
   velocity: number | null;
-  /**  調整する音量 */
+  /** 調整する音量 */
   initialAttenuation: number;
   /** 予約済み2 */
   reserved2: undefined; // 49
-  /**  サンプルヘッダの音声波形データループ終了位置に加算されるオフセット(上位16bit） */
+  /** サンプルヘッダの音声波形データループ終了位置に加算されるオフセット(上位16bit） */
   endloopAddrsCoarseOffset: number;
-  /**  半音単位での音程の調整 */
+  /** 半音単位での音程の調整 */
   coarseTune: number;
-  /**  cent単位での音程の調整 */
+  /** cent単位での音程の調整 */
   fineTune: number;
-  /**  割り当てるサンプル(音声波形) */
+  /** 割り当てるサンプル(音声波形) */
   sampleID: number | null;
-  /**  サンプル(音声波形)をループさせるか等のフラグ */
+  /** サンプル(音声波形)をループさせるか等のフラグ */
   sampleModes: number;
   /** 予約済み3 */
   reserved3: undefined; // 55
-  /**  キー(ノートNo)が+1されるごとに音程を何centあげるかの音階情報 */
+  /** キー(ノートNo)が+1されるごとに音程を何centあげるかの音階情報 */
   scaleTuning: number;
   /** 同時に音を鳴らさないようにするための排他ID(ハイハットのOpen、Close等に使用) */
   exclusiveClass: number | null;
   /** サンプル(音声波形)の音程の上書き情報 */
   overridingRootKey: number | null;
   /** 未使用5 */
-  unuded5: undefined; // 59
+  unused5: undefined; // 59
   /** 最後を示すオペレータ */
   endOper: undefined;
-}
+};
+
+export type GeneratorKey = keyof GeneratorTable;
+
+/** デフォルト値 */
+export const defaultGeneratorTable: GeneratorTable = {
+  startAddrsOffset: 0,
+  endAddrsOffset: 0,
+  startloopAddrsOffset: 0,
+  endloopAddrsOffset: 0,
+  startAddrsCoarseOffset: 0,
+  modLfoToPitch: 0,
+  vibLfoToPitch: 0,
+  modEnvToPitch: 0,
+  initialFilterFc: 13500,
+  initialFilterQ: 0,
+  modLfoToFilterFc: 0,
+  modEnvToFilterFc: 0,
+  endAddrsCoarseOffset: 0,
+  modLfoToVolume: 0,
+  unused1: undefined, // 14
+  chorusEffectsSend: 0,
+  reverbEffectsSend: 0,
+  pan: 0,
+  unused2: undefined,
+  unused3: undefined,
+  unused4: undefined,
+  delayModLFO: -12000,
+  freqModLFO: 0,
+  delayVibLFO: -12000,
+  freqVibLFO: 0,
+  delayModEnv: -12000,
+  attackModEnv: -12000,
+  holdModEnv: -12000,
+  decayModEnv: -12000,
+  sustainModEnv: 0,
+  releaseModEnv: -12000,
+  keynumToModEnvHold: 0,
+  keynumToModEnvDecay: 0,
+  delayVolEnv: -12000,
+  attackVolEnv: -12000,
+  holdVolEnv: -12000,
+  decayVolEnv: -12000,
+  sustainVolEnv: 0,
+  releaseVolEnv: -12000,
+  keynumToVolEnvHold: 0,
+  keynumToVolEnvDecay: 0,
+  instrument: null,
+  reserved1: undefined, // 42
+  keyRange: null,
+  velRange: null,
+  startloopAddrsCoarseOffset: 0,
+  keynum: null,
+  velocity: null,
+  initialAttenuation: 0,
+  reserved2: undefined, // 49
+  endloopAddrsCoarseOffset: 0,
+  coarseTune: 0,
+  fineTune: 0,
+  sampleID: null,
+  sampleModes: 0,
+  reserved3: undefined, // 55
+  scaleTuning: 100,
+  exclusiveClass: null,
+  overridingRootKey: null,
+  unused5: undefined, // 59
+  endOper: undefined,
+};

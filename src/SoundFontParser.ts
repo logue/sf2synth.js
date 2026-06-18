@@ -1,4 +1,4 @@
-import { GeneratorTable } from './interfaces/GeneratorTable';
+import { defaultGeneratorTable } from './types/GeneratorTable';
 import { Riff, RiffChunk } from './Riff';
 import { resolveGeneratorAmount } from './utility/resolveGeneratorAmount';
 import type { RiffOptions } from './interfaces/RiffOptions';
@@ -81,135 +81,7 @@ export default class Parser {
     this.sampleHeader = [];
     this.sample = [];
     this.samplingData = undefined;
-    this.GeneratorEnumeratorTable = Object.keys(Parser.getGeneratorTable());
-  }
-
-  /** ジェネレータとデフォルト値 */
-  static getGeneratorTable(): GeneratorTable {
-    return Object.freeze({
-      /** サンプルヘッダの音声波形データ開始位置に加算されるオフセット(下位16bit） */
-      startAddrsOffset: 0,
-      /** サンプルヘッダの音声波形データ終了位置に加算されるオフセット(下位16bit） */
-      endAddrsOffset: 0,
-      /** サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(下位16bit） */
-      startloopAddrsOffset: 0,
-      /** サンプルヘッダの音声波形データループ終了位置に加算されるオフセット(下位16bit） */
-      endloopAddrsOffset: 0,
-      /** サンプルヘッダの音声波形データ開始位置に加算されるオフセット(上位16bit） */
-      startAddrsCoarseOffset: 0,
-      /** LFOによるピッチの揺れ幅 */
-      modLfoToPitch: 0,
-      /** モジュレーションホイール用LFOからピッチに対しての影響量 */
-      vibLfoToPitch: 0,
-      /** フィルタ・ピッチ用エンベロープからピッチに対しての影響量 */
-      modEnvToPitch: 0,
-      /** フィルタのカットオフ周波数 */
-      initialFilterFc: 13500,
-      /** フィルターのQ値(レゾナンス) */
-      initialFilterQ: 0,
-      /** LFOによるフィルターカットオフ周波数の揺れ幅 */
-      modLfoToFilterFc: 0,
-      /** フィルタ・ピッチ用エンベロープからフィルターカットオフに対しての影響量 */
-      modEnvToFilterFc: 0,
-      /** サンプルヘッダの音声波形データ終了位置に加算されるオフセット(上位16bit） */
-      endAddrsCoarseOffset: 0,
-      /** LFOによるボリュームの揺れ幅 */
-      modLfoToVolume: 0,
-      /** 未使用1 */
-      unused1: undefined, // 14
-      /** コーラスエフェクトのセンドレベル */
-      chorusEffectsSend: 0,
-      /** リバーブエフェクトのセンドレベル */
-      reverbEffectsSend: 0,
-      /** パンの位置 */
-      pan: 0,
-      /** 未使用2 */
-      unused2: undefined,
-      /** 未使用3 */
-      unused3: undefined,
-      /** 未使用4 */
-      unused4: undefined,
-      /** LFOの揺れが始まるまでの時間 */
-      delayModLFO: -12000,
-      /** LFOの揺れの周期 */
-      freqModLFO: 0,
-      /** ホイールの揺れが始まるまでの時間 */
-      delayVibLFO: -12000,
-      /** ホイールの揺れの周期 */
-      freqVibLFO: 0,
-      /** フィルタ・ピッチ用エンベロープのディレイ(アタックが始まるまでの時間) */
-      delayModEnv: -12000,
-      /** フィルタ・ピッチ用エンベロープのアタック時間 */
-      attackModEnv: -12000,
-      /** フィルタ・ピッチ用エンベロープのホールド時間(アタックが終わってからディケイが始まるまでの時間） */
-      holdModEnv: -12000,
-      /** フィルタ・ピッチ用エンベロープのディケイ時間 */
-      decayModEnv: -12000,
-      /** フィルタ・ピッチ用エンベロープのサステイン量 */
-      sustainModEnv: 0,
-      /** フィルタ・ピッチ用エンベロープのリリース時間 */
-      releaseModEnv: -12000,
-      /** キー(ノートNo)によるフィルタ・ピッチ用エンベロープのホールド時間への影響 */
-      keynumToModEnvHold: 0,
-      /** キー(ノートNo)によるフィルタ・ピッチ用エンベロープのディケイ時間への影響 */
-      keynumToModEnvDecay: 0,
-      /** アンプ用エンベロープのディレイ(アタックが始まるまでの時間) */
-      delayVolEnv: -12000,
-      /** アンプ用エンベロープのアタック時間 */
-      attackVolEnv: -12000,
-      /** アンプ用エンベロープのホールド時間(アタックが終わってからディケイが始まるまでの時間） */
-      holdVolEnv: -12000,
-      /** アンプ用エンベロープのディケイ時間 */
-      decayVolEnv: -12000,
-      /** アンプ用エンベロープのサステイン量 */
-      sustainVolEnv: 0,
-      /** アンプ用エンベロープのリリース時間 */
-      releaseVolEnv: -12000,
-      /** キー(ノートNo)によるアンプ用エンベロープのホールド時間への影響 */
-      keynumToVolEnvHold: 0,
-      /** キー(ノートNo)によるアンプ用エンベロープのディケイ時間への影響 */
-      keynumToVolEnvDecay: 0,
-      /** 割り当てるインストルメント(楽器) */
-      instrument: null,
-      /** 予約済み1 */
-      reserved1: undefined, // 42
-      /** マッピングするキー(ノートNo)の範囲 */
-      keyRange: null,
-      /** マッピングするベロシティの範囲 */
-      velRange: null,
-      /** サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(上位16bit） */
-      startloopAddrsCoarseOffset: 0,
-      /** どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
-      keynum: null,
-      /** どのベロシティでも強制的に指定したベロシティに変更する */
-      velocity: null,
-      /** 調整する音量 */
-      initialAttenuation: 0,
-      /** 予約済み2 */
-      reserved2: undefined, // 49
-      /** サンプルヘッダの音声波形データループ終了位置に加算されるオフセット(上位16bit） */
-      endloopAddrsCoarseOffset: 0,
-      /** 半音単位での音程の調整 */
-      coarseTune: 0,
-      /** cent単位での音程の調整 */
-      fineTune: 0,
-      /** 割り当てるサンプル(音声波形) */
-      sampleID: null,
-      /** サンプル(音声波形)をループさせるか等のフラグ */
-      sampleModes: 0,
-      /** 予約済み3 */
-      reserved3: undefined, // 55
-      /** キー(ノートNo)が+1されるごとに音程を何centあげるかの音階情報 */
-      scaleTuning: 100,
-      /** 同時に音を鳴らさないようにするための排他ID(ハイハットのOpen、Close等に使用) */
-      exclusiveClass: null,
-      /** サンプル(音声波形)の音程の上書き情報 */
-      overridingRootKey: null,
-      /** 未使用5 */
-      unuded5: undefined, // 59
-      /** 最後を示すオペレータ */
-      endOper: undefined,
-    });
+    this.GeneratorEnumeratorTable = Object.keys(defaultGeneratorTable);
   }
 
   /**
@@ -843,7 +715,7 @@ export default class Parser {
     zone: InstrumentZone[],
     index: number
   ): GeneratorBundle {
-    const modgen = this.createBagModGen_(
+    const modgen = this.createBagModGen(
       zone,
       zone[index].instrumentGeneratorIndex,
       zone[index + 1]
@@ -862,7 +734,7 @@ export default class Parser {
     zone: InstrumentZone[],
     index: number
   ): ModulatorBundle {
-    const modgen = this.createBagModGen_(
+    const modgen = this.createBagModGen(
       zone,
       zone[index].instrumentModulatorIndex,
       zone[index + 1]
@@ -881,7 +753,7 @@ export default class Parser {
     zone: PresetZone[],
     index: number
   ): GeneratorBundle {
-    const modgen = this.createBagModGen_(
+    const modgen = this.createBagModGen(
       zone,
       zone[index].presetGeneratorIndex,
       zone[index + 1]
@@ -900,8 +772,7 @@ export default class Parser {
     zone: PresetZone[],
     index: number
   ): ModulatorBundle {
-    /** @type {ModGenBundle} */
-    const modgen = this.createBagModGen_(
+    const modgen = this.createBagModGen(
       zone,
       zone[index].presetModulatorIndex,
       zone[index + 1]
@@ -916,8 +787,8 @@ export default class Parser {
     };
   }
 
-  private createBagModGen_(
-    _zone: InstrumentZone[] | PresetZone[],
+  private createBagModGen(
+    zone: InstrumentZone[] | PresetZone[],
     indexStart: number,
     indexEnd: number,
     zoneModGen: GeneratorEntry[]

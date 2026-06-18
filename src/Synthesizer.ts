@@ -18,6 +18,10 @@ import type {
   BankSet,
   SynthInstrument,
 } from './interfaces/SynthesizerInterface';
+import {
+  defaultGeneratorTable,
+  type GeneratorKey,
+} from './types/GeneratorTable';
 
 /**
  * Synthesizer Class
@@ -110,6 +114,12 @@ export default class Synthesizer {
     this.bankSet = [];
     this.bufferSize = Synthesizer.BUFFER_SIZE;
     this.ctx = this.getAudioContext();
+    console.info(
+      '[Synthesizer] constructor: AudioContext state=',
+      this.ctx.state,
+      'sampleRate=',
+      this.ctx.sampleRate
+    );
     this.gainMaster = this.ctx.createGain();
     this.bufSrc = this.ctx.createBufferSource();
     this.channelInstrument = new Array(Synthesizer.MIDI_CHANNELS).fill(0);
@@ -183,6 +193,12 @@ export default class Synthesizer {
       this.filter[i] = this.ctx.createBiquadFilter();
     }
 
+    console.info(
+      '[Synthesizer] created reverb and filter nodes for',
+      Synthesizer.MIDI_CHANNELS,
+      'channels'
+    );
+
     /** 表示項目 */
     this.items = [];
 
@@ -212,6 +228,7 @@ export default class Synthesizer {
       if (ctx.state === 'suspended') {
         try {
           await ctx.resume();
+          console.info('[Synthesizer] AudioContext resumed');
         } catch (error) {
           console.warn('[Synthesizer] AudioContext resume failed:', error);
         }
@@ -280,6 +297,10 @@ export default class Synthesizer {
     this.setMasterVolume(Synthesizer.MASTER_VOLUME_DEFAULT / 2);
 
     this.gainMaster.connect(this.ctx.destination);
+    console.info(
+      '[Synthesizer] init: gainMaster connected to destination, gain=',
+      this.gainMaster.gain.value
+    );
 
     if (this.element) {
       const modeElement: HTMLDivElement | null =
@@ -300,7 +321,7 @@ export default class Synthesizer {
     await this.ctx.close();
   }
 
-  private refreshInstruments(input: Uint8Array) {
+  public refreshInstruments(input: Uint8Array) {
     // 古い参照を解放してメモリリークを防ぐ
     if (this.parser) {
       // 古いParserのinput参照を解放
@@ -319,30 +340,36 @@ export default class Synthesizer {
     this.parser = new Parser(input, {
       sampleRate: this.ctx.sampleRate,
     });
+    console.info(
+      '[Synthesizer] refreshInstruments: parser created, sampleRate=',
+      this.ctx.sampleRate
+    );
     this.bankSet = this.createAllInstruments();
+    console.info(
+      '[Synthesizer] refreshInstruments: bankSet size=',
+      this.bankSet.length
+    );
   }
 
   public createAllInstruments(): BankSet {
     const parser = this.parser;
     if (!parser) {
-      throw new Error('parser is not initialized');
+      throw new Error('[Synthesizer] parser is not initialized');
     }
     parser.parse();
-    /** @type {ParsedPreset[]} */
     const presets = parser.createPreset();
-    /** @type {ParsedInstrument[]} */
     const instruments = parser.createInstrument();
-    /** @type {BankSet} */
+    console.info(
+      '[Synthesizer] createAllInstruments: presets=',
+      presets.length,
+      'instruments=',
+      instruments.length
+    );
     const banks: BankSet = [];
-    /** @type {Bank} */
     let bank: Bank;
-    /** @type {number} */
     let bankNumber: number;
-    /** @type {ParsedInstrument} */
     let instrument: ParsedInstrument;
-    /** @type {number} */
     let presetNumber: number;
-    /** @type {string} */
     let presetName: string;
 
     const programSet: string[][] = [];
@@ -391,7 +418,7 @@ export default class Synthesizer {
     info: ParsedZoneInfo,
     preset: InstrumentPreset
   ) {
-    const generator: GeneratorMap = info.generator;
+    const generator: GeneratorMap | 'reverbEffectSend' = info.generator;
 
     if (!generator.keyRange || !generator.sampleID) {
       return;
@@ -520,9 +547,7 @@ export default class Synthesizer {
         initialFilterQ:
           this.getModGenAmount(generator, 'initialFilterQ') /
           Synthesizer.FILTER_Q_DIVISOR,
-        reverbEffectSend:
-          this.getModGenAmount(generator, 'reverbEffectSend') /
-          Synthesizer.REVERB_SEND_DIVISOR,
+        reverbEffectSend: 40 / Synthesizer.REVERB_SEND_DIVISOR,
         initialAttenuation:
           this.getModGenAmount(generator, 'initialAttenuation') /
           Synthesizer.ATTENUATION_DIVISOR,
@@ -535,7 +560,10 @@ export default class Synthesizer {
     }
   }
 
-  getModGenAmount(generator: GeneratorMap, enumeratorType: string): number {
+  getModGenAmount(
+    generator: GeneratorMap,
+    enumeratorType: GeneratorKey
+  ): number {
     const raw = generator[enumeratorType] as
       | GeneratorValue
       | GeneratorValue[]
@@ -548,15 +576,33 @@ export default class Synthesizer {
     }
 
     // Fall back to default value from the generator table
-    return Number((Parser.getGeneratorTable() as any)[enumeratorType] ?? 0);
+    return Number(defaultGeneratorTable[enumeratorType] ?? 0);
   }
 
   /**
    * Start Tone Generator
    */
   start() {
-    this.connect();
-    this.bufSrc.start(0);
+    console.info(
+      '[Synthesizer] start(): AudioContext state=',
+      this.ctx.state,
+      'bufSrc.buffer=',
+      !!this.bufSrc.buffer
+    );
+    // Starting the internal buffer source is optional — notes create their
+    // own BufferSource nodes. Only start if a buffer is assigned to avoid
+    // InvalidStateError when bufSrc.buffer is null.
+    try {
+      if (this.bufSrc.buffer) {
+        this.connect();
+        this.bufSrc.start(0);
+        console.info('[Synthesizer] bufSrc started');
+      }
+    } catch (error) {
+      console.warn('[Synthesizer] bufSrc start failed:', error);
+    }
+
+    // Always ensure master volume is set so note playback has expected level
     this.setMasterVolume(Synthesizer.MASTER_VOLUME_MAX);
   }
 
@@ -571,6 +617,7 @@ export default class Synthesizer {
   /** Connect root AudioContext */
   connect() {
     this.bufSrc.connect(this.gainMaster);
+    console.debug('[Synthesizer] bufSrc -> gainMaster connected');
   }
 
   /** Disconnect root AudioContext */
@@ -1138,6 +1185,13 @@ export default class Synthesizer {
 
     // Create and start note
     const runtimeInstrument: SynthInstrument = instrumentKey;
+    console.debug(
+      '[Synthesizer] noteOn: channel=%d key=%d velocity=%d bank=%d',
+      channel,
+      key,
+      velocity,
+      bankIndex
+    );
     const note: SynthesizerNote = new SynthesizerNote(
       this.ctx,
       this.gainMaster,
@@ -1162,7 +1216,7 @@ export default class Synthesizer {
    * @param channel NoteOff するチャンネル.
    * @param key NoteOff するキー.
    */
-  private noteOff(channel: number, key: number) {
+  public noteOff(channel: number, key: number) {
     let i: number;
     let il: number;
     const currentNoteOn: SynthesizerNote[] = this.currentNoteOn[channel];
@@ -1620,8 +1674,7 @@ export default class Synthesizer {
    *
    * @param channel NoteOff するチャンネル.
    */
-  allNoteOff(channel: number) {
-    /** @type {SynthesizerNote[]} */
+  public allNoteOff(channel: number) {
     const currentNoteOn = this.currentNoteOn[channel];
 
     // ホールドを解除
@@ -1638,11 +1691,9 @@ export default class Synthesizer {
    *
    * @param channel 音を消すチャンネル.
    */
-  allSoundOff(channel: number) {
-    /** @type {SynthesizerNote[]} */
+  public allSoundOff(channel: number) {
     const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {SynthesizerNote | undefined} */
-    let note;
+    let note: SynthesizerNote | undefined;
 
     while (currentNoteOn.length > 0) {
       note = currentNoteOn.shift();

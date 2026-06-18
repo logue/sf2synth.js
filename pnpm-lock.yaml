@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@logue/reverb':
         specifier: ^1.5.2
-        version: 1.5.2(@thi.ng/colored-noise@1.0.102)(@thi.ng/random@4.1.48)(@thi.ng/transducers@9.4.2)
+        version: 1.5.2(@thi.ng/colored-noise@1.0.102)(@thi.ng/random@4.1.52)(@thi.ng/transducers@9.4.2)
       bootstrap:
         specifier: ^5.3.8
         version: 5.3.8(@popperjs/core@2.11.8)
@@ -82,8 +82,8 @@ importers:
         specifier: ^0.8.1
         version: 0.8.1
       vite-plugin-checker:
-        specifier: ^0.14.1
-        version: 0.14.1(eslint@10.5.0)(meow@14.1.0)(optionator@0.9.4)(stylelint@17.13.0(typescript@6.0.3))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.9.0))
+        specifier: ^0.14.4
+        version: 0.14.4(eslint@10.5.0)(meow@14.1.0)(optionator@0.9.4)(stylelint@17.13.0(typescript@6.0.3))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.9.0))
 
 packages:
 
@@ -499,10 +499,6 @@ packages:
 
   '@thi.ng/math@5.15.15':
     resolution: {integrity: sha512-7WyodmEQKMj7MLo79/KSB9QXplLLeYLTRKvV8OS5QtDAGi5JU/Jfcw41G8g/v+DxMjui4KD6Frki7Ma4rPMFNw==}
-    engines: {node: '>=18'}
-
-  '@thi.ng/random@4.1.48':
-    resolution: {integrity: sha512-9ABhSwQfFMLHLBT9FRvFi3lrdeYkupX9+ZWXQ0hwwj0/KphP2wxIMT6goGCF+yfkAB+1DylcQWbtZ79RGKpfWg==}
     engines: {node: '>=18'}
 
   '@thi.ng/random@4.1.52':
@@ -2279,8 +2275,8 @@ packages:
   vite-plugin-banner@0.8.1:
     resolution: {integrity: sha512-0+gGguHk3MH0HvzMSOCJC6fGgH4+jtY9KlKVZh+hwwE+PBkGVzY8xe657JL74vEgbeUJD37XjVqTrmve8XvZBQ==}
 
-  vite-plugin-checker@0.14.1:
-    resolution: {integrity: sha512-Mv8oQc9XYBYf+XkP/riqqQCt8lBP6Iad75PZPho1lHRrpxQI0BwX2gwE10enn4f6Hgc+PvR1F7N38KARcaJtzw==}
+  vite-plugin-checker@0.14.4:
+    resolution: {integrity: sha512-Tw0U9UgHIRiZ+Yoe4Gh0RrYoBiCVmO9j4tomVdYr0KUjUsqXMPhqW8ouoSWmOzGp5Iimipbl3bNXZcK7OeP7Qg==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       '@biomejs/biome': '>=2.4.12'
@@ -2543,10 +2539,10 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@logue/reverb@1.5.2(@thi.ng/colored-noise@1.0.102)(@thi.ng/random@4.1.48)(@thi.ng/transducers@9.4.2)':
+  '@logue/reverb@1.5.2(@thi.ng/colored-noise@1.0.102)(@thi.ng/random@4.1.52)(@thi.ng/transducers@9.4.2)':
     dependencies:
       '@thi.ng/colored-noise': 1.0.102
-      '@thi.ng/random': 4.1.48
+      '@thi.ng/random': 4.1.52
       '@thi.ng/transducers': 9.4.2
 
   '@napi-rs/wasm-runtime@1.1.5(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
@@ -2712,7 +2708,7 @@ snapshots:
   '@thi.ng/colored-noise@1.0.102':
     dependencies:
       '@thi.ng/binary': 3.6.15
-      '@thi.ng/random': 4.1.48
+      '@thi.ng/random': 4.1.52
 
   '@thi.ng/compare@2.5.14':
     dependencies:
@@ -2731,11 +2727,6 @@ snapshots:
     dependencies:
       '@thi.ng/api': 8.12.26
 
-  '@thi.ng/random@4.1.48':
-    dependencies:
-      '@thi.ng/api': 8.12.26
-      '@thi.ng/errors': 2.6.15
-
   '@thi.ng/random@4.1.52':
     dependencies:
       '@thi.ng/api': 8.12.26
@@ -2752,7 +2743,7 @@ snapshots:
       '@thi.ng/compose': 3.0.63
       '@thi.ng/errors': 2.6.15
       '@thi.ng/math': 5.15.15
-      '@thi.ng/random': 4.1.48
+      '@thi.ng/random': 4.1.52
       '@thi.ng/timestamp': 1.1.45
 
   '@tybys/wasm-util@0.10.2':
@@ -4600,7 +4591,7 @@ snapshots:
 
   vite-plugin-banner@0.8.1: {}
 
-  vite-plugin-checker@0.14.1(eslint@10.5.0)(meow@14.1.0)(optionator@0.9.4)(stylelint@17.13.0(typescript@6.0.3))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.9.0)):
+  vite-plugin-checker@0.14.4(eslint@10.5.0)(meow@14.1.0)(optionator@0.9.4)(stylelint@17.13.0(typescript@6.0.3))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.9.0)):
     dependencies:
       '@babel/code-frame': 7.29.7
       chokidar: 5.0.0
