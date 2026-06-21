@@ -127,10 +127,10 @@ export interface InstrumentPreset {
   [key: number]: SynthInstrument | undefined;
 }
 
-export interface Bank {
+export interface Bank extends Array<InstrumentPreset | undefined> {
   [key: number]: InstrumentPreset | undefined;
 }
 
-export interface BankSet {
+export interface BankSet extends Array<Bank | undefined> {
   [key: number]: Bank | undefined;
 }

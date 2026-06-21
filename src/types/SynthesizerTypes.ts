@@ -1,4 +1,4 @@
-import { PresetHeader } from '../interfaces/SynthesizerInterface';
+import type { PresetHeader } from '@/interfaces/SynthesizerInterface';
 
 export type GeneratorAmount = { amount: number };
 export type GeneratorRange = { amount: null; lo: number; hi: number };
@@ -48,3 +48,5 @@ export type ModulatorBundle = {
   modulatorInfo: GeneratorEntry[];
 };
 export type ModGenBundle = { modgen: ModGen; modgenInfo: GeneratorEntry[] };
+
+export type SynthesizerMode = 'GM' | 'GM2' | 'XG' | 'GS';

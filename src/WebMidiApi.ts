@@ -1,5 +1,6 @@
-import WebMidiLink from './WebMidiLink';
-import { WebMidiLinkOptions } from './interfaces/WebMidiLinkOptions';
+import type { WebMidiLinkOptions } from '@/interfaces/WebMidiLinkOptions';
+import WebMidiLink from '@/WebMidiLink';
+
 /**
  * Web MIDI API Reciever Class.
  *
@@ -32,12 +33,12 @@ export default class WebMidiApi extends WebMidiLink {
     super.callback();
     if (!this.midi) {
       throw new Error(
-        '[sf2synth] Web MIDI API is not supported in this environment.'
+        '[sf2synth] Web MIDI API is not supported in this environment.',
       );
     }
     // Web MIDI APIを待ち受け
-    this.midi.inputs.forEach(input => {
-      input.onmidimessage = msg => {
+    this.midi.inputs.forEach((input) => {
+      input.onmidimessage = (msg) => {
         if (msg.data) {
           super.processMidiMessage(Array.from(msg.data));
         }

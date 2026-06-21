@@ -1,4 +1,4 @@
-import { RiffOptions } from './interfaces/RiffOptions';
+import type { RiffOptions } from '@/interfaces/RiffOptions';
 
 /**
  * Riff Parser class
@@ -30,11 +30,11 @@ export class Riff {
    */
   constructor(
     input: Uint8Array | ArrayBufferLike,
-    optParams: RiffOptions = {}
+    optParams: RiffOptions = {},
   ) {
     if (input === undefined || input === null) {
       throw new TypeError(
-        'Riff constructor requires a Uint8Array or ArrayBufferLike input.'
+        'Riff constructor requires a Uint8Array or ArrayBufferLike input.',
       );
     }
 
@@ -76,7 +76,7 @@ export class Riff {
       data[offset],
       data[offset + 1],
       data[offset + 2],
-      data[offset + 3]
+      data[offset + 3],
     );
   }
 

@@ -1,6 +1,6 @@
-import SoundFontParser from '../SoundFontParser';
-import WebMidiApi from '../WebMidiApi';
-import WebMidiLink from '../WebMidiLink';
+import type SoundFontParser from '../SoundFontParser';
+import type WebMidiApi from '../WebMidiApi';
+import type WebMidiLink from '../WebMidiLink';
 
 export interface SoundFontSynth {
   version: string;

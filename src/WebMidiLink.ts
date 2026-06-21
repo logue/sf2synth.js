@@ -1,6 +1,6 @@
-import Loader from './Loader';
-import Synthesizer from './Synthesizer';
-import { WebMidiLinkOptions } from './interfaces/WebMidiLinkOptions';
+import type { WebMidiLinkOptions } from '@/interfaces/WebMidiLinkOptions';
+import Loader from '@/Loader';
+import Synthesizer from '@/Synthesizer';
 
 /**
  * Web MIDI API Reciever Class.
@@ -56,7 +56,7 @@ export default class WebMidiLink {
   // Ready表示時間（ミリ秒）
   static readonly READY_DISPLAY_TIME = 3000;
 
-  private readonly globalThis: any = globalThis;
+  private readonly globalThis = globalThis;
 
   private NrpnMsb: number[] = [];
   private NrpnLsb: number[] = [];
@@ -76,7 +76,7 @@ export default class WebMidiLink {
       targetOrigin: '*',
     },
   };
-  private placeholder: HTMLElement | undefined = undefined;
+  private placeholder?: HTMLElement | null = undefined;
 
   private window?: Window | Worker;
 
@@ -127,7 +127,7 @@ export default class WebMidiLink {
       this.window = this.globalThis.parent;
     } else {
       // WorkerGlobalScope であれば workerGlobal を使用
-      this.window = this.globalThis.workerGlobal || this.globalThis;
+      this.window = (this.globalThis as any).workerGlobal || this.globalThis;
     }
   }
 
@@ -152,11 +152,11 @@ export default class WebMidiLink {
           buffer instanceof Uint8Array
             ? buffer.buffer.slice(
                 buffer.byteOffset,
-                buffer.byteOffset + buffer.byteLength
+                buffer.byteOffset + buffer.byteLength,
               )
             : buffer;
         this.setupByBuffer(ab as ArrayBuffer);
-      }
+      },
     );
     await loader.fetch();
   }
@@ -201,7 +201,7 @@ export default class WebMidiLink {
       this.synth = new Synthesizer(buffer);
       console.info('[WebMidiLink] Synthesizer created');
       if (typeof window !== 'undefined') {
-        (window as any).__lastSynth = this.synth;
+        window.__lastSynth = this.synth;
       }
       this.synth.start();
       console.info('[WebMidiLink] Synthesizer.start called');
@@ -213,7 +213,7 @@ export default class WebMidiLink {
       this.synth.refreshInstruments(buffer);
       console.info('[WebMidiLink] Synthesizer.refreshInstruments called');
       if (typeof window !== 'undefined') {
-        (window as any).__lastSynth = this.synth;
+        window.__lastSynth = this.synth;
       }
     }
   }
@@ -261,7 +261,13 @@ export default class WebMidiLink {
   protected onReady() {
     // Determine appropriate target for event handling and postMessage
     const isDom = !!this.globalThis.document;
-    const target: any = isDom ? this.window : this.globalThis;
+    const target = isDom ? this.window : this.globalThis;
+
+    if (!target) {
+      throw new Error(
+        '[WebMidiLink] No valid target for WebMidiLink communication',
+      );
+    }
 
     // 一旦MIDI Link待受を解除
     if (typeof target.removeEventListener === 'function') {
@@ -271,7 +277,6 @@ export default class WebMidiLink {
     this.callback();
     // MIDI Link待ち受け開始
     if (typeof target.addEventListener === 'function') {
-      // @ts-ignore
       target.addEventListener('message', this.messageHandler, false);
     }
 
@@ -319,7 +324,7 @@ export default class WebMidiLink {
    * MIDIメッセージの処理
    */
   private handleMidiMessage(msg: string[]) {
-    this.processMidiMessage(msg.map(hex => Number.parseInt(hex, 16)));
+    this.processMidiMessage(msg.map((hex) => Number.parseInt(hex, 16)));
   }
 
   /**
@@ -558,7 +563,7 @@ export default class WebMidiLink {
         // Pitch Bend Sensitivity
         synth.pitchBendSensitivity(
           channel,
-          synth.getPitchBendSensitivity(channel) + value / 100
+          synth.getPitchBendSensitivity(channel) + value / 100,
         );
       }
     }
@@ -700,7 +705,7 @@ export default class WebMidiLink {
     } else {
       // GS音源のLCDの16x16のビットマップ画像
       console.log(
-        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message)
+        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message),
       );
     }
   }
@@ -753,7 +758,7 @@ export default class WebMidiLink {
       case 0x03:
         // Insertion Effect
         console.log(
-          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message)
+          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message),
         );
         break;
       case 0x04:
