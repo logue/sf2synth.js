@@ -22,7 +22,6 @@
       gtag('js', new Date());
       gtag('config', 'G-2Y2FW3QEG4');
     </script>
-    <link rel="stylesheet" href="/src/wml.scss" />
   </head>
 
   <body>
@@ -76,6 +75,7 @@
                   class="bi bi-github"
                   viewBox="0 0 16 16"
                 >
+                  <title>GitHub</title>
                   <path
                     d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
                   />
@@ -102,182 +102,5 @@
         </p>
       </footer>
     </div>
-    <script type="module">
-      import qs from 'query-string';
-      import SoundFont from './src/index.js';
-
-      // Constants
-      const CSS_CLASS = {
-        DRAG_ACTIVE: 'bg-info',
-      };
-
-      const ELEMENT_IDS = {
-        FILE_INPUT: 'file',
-        DRAG_AREA: 'drag',
-        BUILD_TIME: 'build',
-        DARK_MODE_TOGGLE: 'toggleDarkMode',
-        SOUNDFONT_NAME: 'soundfont',
-      };
-
-      // Default options
-      const defaultOptions = {
-        drawSynth: true,
-        placeholder: 'placeholder',
-        colorMode: 'auto',
-      };
-
-      // Merge options from URL parameters
-      const options = {
-        ...defaultOptions,
-        ...qs.parse(window.location.search),
-        ...qs.parse(window.location.hash),
-      };
-
-      /** @type {typeof import("./src/wml").WebMidiLink} */
-      const wml = new SoundFont.WebMidiLink(options);
-
-      /**
-       * Extract filename from URL
-       * @param {string} url
-       * @returns {string}
-       */
-      const extractFilename = url => {
-        const match = decodeURIComponent(url).match('.+/(.+?)([?#;].*)?$');
-        return match ? match[1] : url;
-      };
-
-      /**
-       * Update soundfont display name
-       * @param {string} name
-       */
-      const updateSoundfontName = name => {
-        document.getElementById(ELEMENT_IDS.SOUNDFONT_NAME).innerText = name;
-      };
-
-      /**
-       * Load sound font from file
-       * @param {File} file
-       */
-      const loadSoundFont = file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-          updateSoundfontName(file.name);
-          const data = new Uint8Array(e.target.result);
-          wml.setupByBuffer(data);
-        };
-        reader.readAsArrayBuffer(file);
-      };
-
-      /**
-       * Setup drag area visual feedback
-       * @param {HTMLElement} element
-       */
-      const setupDragHandlers = element => {
-        const handlers = {
-          drop: event => {
-            const files = event.dataTransfer?.files;
-            if (files?.length) {
-              event.preventDefault();
-              event.stopPropagation();
-              loadSoundFont(files[0]);
-            }
-            element.classList.remove(CSS_CLASS.DRAG_ACTIVE);
-          },
-          dragover: event => {
-            event.preventDefault();
-            event.stopPropagation();
-            element.classList.add(CSS_CLASS.DRAG_ACTIVE);
-          },
-          dragleave: event => {
-            event.preventDefault();
-            event.stopPropagation();
-            element.classList.remove(CSS_CLASS.DRAG_ACTIVE);
-          },
-        };
-
-        Object.entries(handlers).forEach(([event, handler]) => {
-          element.addEventListener(event, handler, false);
-        });
-      };
-
-      /**
-       * Setup color mode watcher
-       * @param {HTMLInputElement} toggle
-       */
-      const setupColorModeWatcher = toggle => {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        mediaQuery.addListener(() => {
-          // Ignore if there's an override set
-          if (document.documentElement.getAttribute('data-bs-theme')) {
-            return;
-          }
-          wml.setColorMode(options.colorMode);
-          toggle.checked = mediaQuery.matches;
-        });
-      };
-
-      // DOM Content Loaded
-      document.addEventListener(
-        'DOMContentLoaded',
-        () => {
-          const fileInput = document.getElementById(ELEMENT_IDS.FILE_INPUT);
-          const dragArea = document.getElementById(ELEMENT_IDS.DRAG_AREA);
-          const buildTime = document.getElementById(ELEMENT_IDS.BUILD_TIME);
-          const darkModeToggle = document.getElementById(
-            ELEMENT_IDS.DARK_MODE_TOGGLE
-          );
-
-          // Setup load callback
-          wml.setLoadCallback(() => {
-            dragArea.classList.remove(CSS_CLASS.DRAG_ACTIVE);
-            updateSoundfontName(extractFilename(wml.getUrl()));
-          });
-
-          // Display build time
-          buildTime.dateTime = SoundFont.build;
-          buildTime.innerText = new Date(SoundFont.build).toLocaleString();
-
-          // Initialize WebMidiLink
-          wml.setup();
-
-          // Setup color mode watcher
-          setupColorModeWatcher(darkModeToggle);
-
-          // File input change handler
-          fileInput.addEventListener(
-            'change',
-            event => {
-              event.preventDefault();
-              if (fileInput.files[0]) {
-                loadSoundFont(fileInput.files[0]);
-                fileInput.value = '';
-              }
-            },
-            false
-          );
-
-          // Setup drag and drop handlers
-          setupDragHandlers(dragArea);
-
-          // Dark mode toggle handler
-          darkModeToggle.addEventListener('change', e => {
-            wml.setColorMode(e.target.checked ? 'dark' : 'light');
-          });
-        },
-        false
-      );
-
-      // Hash change handler
-      window.addEventListener(
-        'hashchange',
-        () => {
-          const urlParams = qs.parse(window.location.hash);
-          if (urlParams.url) {
-            wml.setup(urlParams.url);
-          }
-        },
-        false
-      );
-    </script>
   </body>
 </html>

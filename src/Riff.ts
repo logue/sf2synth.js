@@ -1,11 +1,4 @@
-/**
- * @typedef {{
- *   index?: number;
- *   length?: number;
- *   padding?: boolean;
- *   bigEndian?: boolean;
- * }} RiffOptions
- */
+import type { RiffOptions } from '@/interfaces/RiffOptions';
 
 /**
  * Riff Parser class
@@ -14,37 +7,54 @@
  */
 export class Riff {
   // Constants
-  static CHUNK_ID_SIZE = 4;
-  static CHUNK_SIZE_BYTES = 4;
-  static SHIFT_8_BITS = 8;
-  static SHIFT_16_BITS = 16;
-  static SHIFT_24_BITS = 24;
-  static UNSIGNED_32_BIT_MASK = 0;
+  static readonly CHUNK_ID_SIZE = 4;
+  static readonly CHUNK_SIZE_BYTES = 4;
+  static readonly SHIFT_8_BITS = 8;
+  static readonly SHIFT_16_BITS = 16;
+  static readonly SHIFT_24_BITS = 24;
+  static readonly UNSIGNED_32_BIT_MASK = 0;
+
+  private readonly length: number;
+  private readonly offset: number;
+  private readonly padding: boolean = true;
+  private readonly bigEndian: boolean = false;
+
+  private ip: number = 0;
+
+  public input: Uint8Array;
+  public chunkList: RiffChunk[] = [];
 
   /**
    * @param {Uint8Array | ArrayBuffer} input Input buffer.
    * @param {RiffOptions} [optParams] Option parameters.
    */
-  constructor(input, optParams = {}) {
+  constructor(
+    input: Uint8Array | ArrayBufferLike,
+    optParams: RiffOptions = {},
+  ) {
+    if (input === undefined || input === null) {
+      throw new TypeError(
+        'Riff constructor requires a Uint8Array or ArrayBufferLike input.',
+      );
+    }
+
     /** @type {Uint8Array} */
     this.input = input instanceof Uint8Array ? input : new Uint8Array(input);
     /** @type {number} */
     this.ip = optParams.index || 0;
     /** @type {number} */
-    this.length = optParams.length || input.byteLength - this.ip;
+    this.length = optParams.length ?? input.byteLength - this.ip;
     /** @type {RiffChunk[]} */
     this.chunkList = [];
     /** @type {number} */
     this.offset = this.ip;
     /** @type {boolean} */
-    this.padding = optParams.padding !== undefined ? optParams.padding : true;
+    this.padding = optParams.padding ?? true;
     /** @type {boolean} */
-    this.bigEndian =
-      optParams.bigEndian !== undefined ? optParams.bigEndian : false;
+    this.bigEndian = optParams.bigEndian ?? false;
   }
 
-  /** @returns {void} */
-  parse() {
+  parse(): void {
     /** @type {number} */
     const length = this.length + this.offset;
 
@@ -57,28 +67,26 @@ export class Riff {
 
   /**
    * Read 4-byte chunk ID
-   * @private
-   * @param {Uint8Array} data Data array
-   * @param {number} offset Offset position
-   * @returns {string} Chunk ID
+   * @param data Data array
+   * @param offset Offset position
+   * @returns Chunk ID
    */
-  readChunkId(data, offset) {
-    return String.fromCharCode(
+  private readChunkId(data: Uint8Array, offset: number): string {
+    return String.fromCodePoint(
       data[offset],
       data[offset + 1],
       data[offset + 2],
-      data[offset + 3]
+      data[offset + 3],
     );
   }
 
   /**
    * Read 32-bit unsigned integer
-   * @private
-   * @param {Uint8Array} data Data array
-   * @param {number} offset Offset position
-   * @returns {number} 32-bit unsigned integer
+   * @param  data Data array
+   * @param offset Offset position
+   * @returns  32-bit unsigned integer
    */
-  readUInt32(data, offset) {
+  private readUInt32(data: Uint8Array, offset: number): number {
     if (this.bigEndian) {
       return (
         ((data[offset] << Riff.SHIFT_24_BITS) |
@@ -97,8 +105,7 @@ export class Riff {
     );
   }
 
-  /** @returns {void} */
-  parseChunk() {
+  parseChunk(): void {
     const input = this.input;
     let ip = this.ip;
 
@@ -121,14 +128,10 @@ export class Riff {
   }
 
   /**
-   * @param {number} index Chunk index.
-   * @returns {RiffChunk | null}
+   * @param  index Chunk index.
    */
-  getChunk(index) {
-    /** @type {RiffChunk} */
-    const chunk = this.chunkList[index];
-
-    return chunk !== undefined ? chunk : null;
+  getChunk(index: number): RiffChunk {
+    return this.chunkList[index];
   }
 
   /** @returns {number} */
@@ -143,17 +146,18 @@ export class Riff {
  * @interface
  */
 export class RiffChunk {
+  public readonly type: string;
+  public readonly size: number;
+  public readonly offset: number;
+
   /**
    * @param {string} type
    * @param {number} size
    * @param {number} offset
    */
-  constructor(type, size, offset) {
-    /** @type {string} */
+  constructor(type: string, size: number, offset: number) {
     this.type = type;
-    /** @type {number} */
     this.size = size;
-    /** @type {number} */
     this.offset = offset;
   }
 }

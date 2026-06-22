@@ -1,4 +1,5 @@
-import WebMidiLink from './wml';
+import type { WebMidiLinkOptions } from '@/interfaces/WebMidiLinkOptions';
+import WebMidiLink from '@/WebMidiLink';
 
 /**
  * Web MIDI API Reciever Class.
@@ -6,21 +7,21 @@ import WebMidiLink from './wml';
  * @author Logue <logue@hotmail.co.jp>
  */
 export default class WebMidiApi extends WebMidiLink {
+  private midi: MIDIAccess | undefined;
   /**
    * @inheritdoc
    */
-  constructor(option = {}) {
+  constructor(option: Partial<WebMidiLinkOptions> = {}) {
     super(option);
-    /** @type {MIDIAccess | undefined} */
     this.midi = undefined;
   }
 
   /**
    * @inheritdoc
-   * @param {string} url
+   * @param url
    */
-  async setup(url) {
-    this.midi = await window.navigator.requestMIDIAccess({ sysex: true });
+  async setup(url: string) {
+    this.midi = await globalThis.navigator.requestMIDIAccess({ sysex: true });
     await super.setup(url);
   }
 
@@ -31,11 +32,13 @@ export default class WebMidiApi extends WebMidiLink {
     // コールバック実行
     super.callback();
     if (!this.midi) {
-      throw new Error('Web MIDI API is not supported in this environment.');
+      throw new Error(
+        '[sf2synth] Web MIDI API is not supported in this environment.',
+      );
     }
     // Web MIDI APIを待ち受け
-    this.midi.inputs.forEach(input => {
-      input.onmidimessage = msg => {
+    this.midi.inputs.forEach((input) => {
+      input.onmidimessage = (msg) => {
         if (msg.data) {
           super.processMidiMessage(Array.from(msg.data));
         }

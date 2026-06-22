@@ -1,95 +1,24 @@
 import Reverb from '@logue/reverb';
 
-import Parser from './sf2.js';
-import SynthesizerNote from './sound_font_synth_note.js';
-
-/** @typedef {{ amount: number; lo?: number; hi?: number; }} GeneratorAmount */
-/** @typedef {{ amount: null; lo: number; hi: number; }} GeneratorRange */
-/**
- * @typedef {{
- *   [key: string]: unknown;
- *   keyRange: GeneratorRange;
- *   sampleID?: GeneratorAmount;
- * }} GeneratorMap
- */
-/** @typedef {{ generator: GeneratorMap }} ParsedZoneInfo */
-/** @typedef {{ name: string; info: ParsedZoneInfo[] }} ParsedInstrument */
-/** @typedef {{ header: { preset: number; bank: number }; name: string; instrument: number | null }} ParsedPreset */
-/** @typedef {{ sampleRate: number; pitchCorrection: number; startLoop: number; endLoop: number }} SampleHeaderInfo */
-/**
- * @typedef {{
- *   sample: Int16Array<ArrayBufferLike>;
- *   sampleRate: number;
- *   sampleModes: number;
- *   basePlaybackRate: number;
- *   modEnvToPitch: number;
- *   scaleTuning: number;
- *   start: number;
- *   end: number;
- *   loopStart: number;
- *   loopEnd: number;
- *   volDelay: number;
- *   volAttack: number;
- *   volHold: number;
- *   volDecay: number;
- *   volSustain: number;
- *   volRelease: number;
- *   modDelay: number;
- *   modAttack: number;
- *   modHold: number;
- *   modDecay: number;
- *   modSustain: number;
- *   modRelease: number;
- *   initialFilterFc: number;
- *   modEnvToFilterFc: number;
- *   initialFilterQ: number;
- *   reverbEffectSend: number;
- *   initialAttenuation: number;
- *   freqVibLFO: number;
- *   pan: number;
- *   channel?: number;
- *   key?: number;
- *   velocity?: number;
- *   panpot?: number;
- *   volume?: number;
- *   pitchBend?: number;
- *   expression?: number;
- *   pitchBendSensitivity?: number;
- *   mute?: boolean;
- *   releaseTime?: number;
- *   cutOffFrequency?: number;
- *   harmonicContent?: number;
- *   reverb?: Reverb;
- *   modulation?: number;
- * }} NoteInstrument
- */
-/**
- * @typedef {{
- *   name: string;
- *   volume?: number;
- *   [key: number]: NoteInstrument | undefined;
- * }} InstrumentPreset
- */
-/** @typedef {Array<InstrumentPreset | undefined>} Bank */
-/** @typedef {Array<Bank | undefined>} BankSet */
-/**
- * @typedef {NoteInstrument & {
- *   channel: number;
- *   key: number;
- *   velocity: number;
- *   panpot: number;
- *   volume: number;
- *   pitchBend: number;
- *   expression: number;
- *   pitchBendSensitivity: number;
- *   mute: boolean;
- *   releaseTime: number;
- *   cutOffFrequency: number;
- *   harmonicContent: number;
- *   modulation: number;
- *   reverb: Reverb;
- * }} RuntimeNoteInstrument
- */
+import { CENTS_PER_OCTAVE, SEMITONE_RATIO } from '@/Constatnts';
+import type {
+  Bank,
+  BankSet,
+  GeneratorMap,
+  InstrumentPreset,
+  ParsedInstrument,
+  ParsedZoneInfo,
+  SampleHeaderInfo,
+  SynthInstrument,
+} from '@/interfaces/SynthesizerInterface';
+import Parser from '@/SoundFontParser';
+import SynthesizerNote from '@/SynthesizerNote';
+import {
+  defaultGeneratorTable,
+  type GeneratorKey,
+} from '@/types/GeneratorTable';
+import type { GeneratorValue, SynthesizerMode } from '@/types/SynthesizerTypes';
+import { resolveGeneratorAmount } from '@/utility/resolveGeneratorAmount';
 
 /**
  * Synthesizer Class
@@ -98,182 +27,223 @@ import SynthesizerNote from './sound_font_synth_note.js';
  */
 export default class Synthesizer {
   // Constants
-  static MIDI_CHANNELS = 16;
-  static MIDI_KEYS = 128;
-  static DEFAULT_CHANNEL_VALUE = 64;
-  static DEFAULT_EXPRESSION = 127;
-  static DEFAULT_VOLUME = 100;
-  static DEFAULT_PITCH_BEND_SENSITIVITY = 2;
-  static MASTER_VOLUME_DEFAULT = 16384;
-  static MASTER_VOLUME_MAX = 16383;
-  static MASTER_VOLUME_DIVISOR = 16384;
-  static BASE_VOLUME_DIVISOR = 0xffff;
-  static DRUM_CHANNEL = 9; // 0-indexed
-  static BUFFER_SIZE = 2048;
-  static PITCH_BEND_CENTER = 8192;
-  static PERCUSSION_BANK_XG = 127;
-  static PERCUSSION_BANK_GS = 128;
-  static SFX_BANK = 64;
-  static SFX_BANK_XG = 125;
+  static readonly MIDI_CHANNELS = 16;
+  static readonly MIDI_KEYS = 128;
+  static readonly DEFAULT_CHANNEL_VALUE = 64;
+  static readonly DEFAULT_EXPRESSION = 127;
+  static readonly DEFAULT_VOLUME = 100;
+  static readonly DEFAULT_PITCH_BEND_SENSITIVITY = 2;
+  static readonly MASTER_VOLUME_DEFAULT = 16384;
+  static readonly MASTER_VOLUME_MAX = 16383;
+  static readonly MASTER_VOLUME_DIVISOR = 16384;
+  static readonly BASE_VOLUME_DIVISOR = 0xffff;
+  static readonly DRUM_CHANNEL = 9; // 0-indexed
+  static readonly BUFFER_SIZE = 2048;
+  static readonly PITCH_BEND_CENTER = 8192;
+  static readonly PERCUSSION_BANK_XG = 127;
+  static readonly PERCUSSION_BANK_GS = 128;
+  static readonly SFX_BANK = 64;
+  static readonly SFX_BANK_XG = 125;
+
+  // Constants for SoundFont calculations
+  static readonly COARSE_OFFSET_MULTIPLIER = 32768;
+  static readonly BASE_FREQUENCY_HZ = 8.176; // C-1
+  static readonly MIDDLE_C_NOTE = 60; // C4
+  static readonly ENVELOPE_SUSTAIN_DIVISOR = 1000;
+  static readonly FILTER_Q_DIVISOR = 10;
+  static readonly ATTENUATION_DIVISOR = 10;
+  static readonly REVERB_SEND_DIVISOR = 10;
+  static readonly PAN_DIVISOR = 1200;
+  static readonly MODULATION_DIVISOR = 100;
 
   // MIDI Note numbers for percussion
-  static MIDI_CLOSED_HI_HAT = 42;
-  static MIDI_PEDAL_HI_HAT = 44;
-  static MIDI_OPEN_HI_HAT = 46;
-  static MIDI_MUTE_TRIANGLE = 80;
-  static MIDI_OPEN_TRIANGLE = 81;
+  static readonly MIDI_CLOSED_HI_HAT = 42;
+  static readonly MIDI_PEDAL_HI_HAT = 44;
+  static readonly MIDI_OPEN_HI_HAT = 46;
+  static readonly MIDI_MUTE_TRIANGLE = 80;
+  static readonly MIDI_OPEN_TRIANGLE = 81;
 
-  /** @param {Uint8Array} input */
-  constructor(input) {
-    /** @type {number} */
-    let i;
-    /** @type {Uint8Array} */
+  private input: Uint8Array;
+  private parser: Parser | null;
+  private readonly bank: number = 0;
+  private bankSet: BankSet = [];
+  private readonly bufferSize: number;
+  private readonly ctx: AudioContext;
+  private readonly gainMaster: GainNode;
+  private readonly bufSrc: AudioBufferSourceNode;
+  private readonly channelInstrument: number[];
+  private readonly channelBank: number[];
+  private readonly channelVolume: number[];
+  private readonly channelPanpot: number[];
+  private readonly channelPitchBend: number[];
+  private readonly channelPitchBendSensitivity: number[];
+  private readonly channelExpression: number[];
+  private readonly channelAttack: number[];
+  private readonly channelDecay: number[];
+  private readonly channelSustain: number[];
+  private readonly channelRelease: number[];
+  private readonly channelHold: boolean[];
+  private readonly channelHarmonicContent: number[];
+  private readonly channelCutOffFrequency: number[];
+  private mode: SynthesizerMode;
+  private programSet: string[][];
+  private channelMute: boolean[];
+  private readonly currentNoteOn: SynthesizerNote[][];
+  private readonly baseVolume: number;
+  private masterVolume: number;
+  private percussionPart: boolean[];
+  private percussionVolume: number[];
+  private readonly reverb: Reverb[];
+  private readonly filter: BiquadFilterNode[];
+  private items: string[];
+  private readonly intersection: IntersectionObserver;
+  private timer?: ReturnType<typeof setTimeout>;
+  private drag: boolean;
+  private modulation: number[];
+
+  private element?: HTMLDivElement;
+
+  constructor(input: Uint8Array) {
+    let i: number;
     this.input = input;
-    /** @type {Parser?} */
     this.parser = null;
-    /** @type {number} */
     this.bank = 0;
-    /** @type {BankSet} */
     this.bankSet = [];
-    /** @type {number} */
     this.bufferSize = Synthesizer.BUFFER_SIZE;
-    /** @type {AudioContext} */
     this.ctx = this.getAudioContext();
-    /** @type {GainNode} */
+    console.info(
+      '[Synthesizer] constructor: AudioContext state=',
+      this.ctx.state,
+      'sampleRate=',
+      this.ctx.sampleRate,
+    );
     this.gainMaster = this.ctx.createGain();
-    /** @type {AudioBufferSourceNode} */
     this.bufSrc = this.ctx.createBufferSource();
-    /** @type {number[]} */
     this.channelInstrument = new Array(Synthesizer.MIDI_CHANNELS).fill(0);
-    /** @type {number[]} */
     this.channelBank = new Array(Synthesizer.MIDI_CHANNELS).fill(0);
     this.channelBank[Synthesizer.DRUM_CHANNEL] = Synthesizer.PERCUSSION_BANK_XG;
-    /** @type {number[]} */
     this.channelVolume = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_VOLUME
+      Synthesizer.DEFAULT_VOLUME,
     );
-    /** @type {number[]} */
     this.channelPanpot = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_CHANNEL_VALUE
+      Synthesizer.DEFAULT_CHANNEL_VALUE,
     );
-    /** @type {number[]} */
     this.channelPitchBend = new Array(Synthesizer.MIDI_CHANNELS).fill(0);
-    /** @type {number[]} */
     this.channelPitchBendSensitivity = new Array(
-      Synthesizer.MIDI_CHANNELS
+      Synthesizer.MIDI_CHANNELS,
     ).fill(Synthesizer.DEFAULT_PITCH_BEND_SENSITIVITY);
-    /** @type {number[]} */
     this.channelExpression = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_EXPRESSION
+      Synthesizer.DEFAULT_EXPRESSION,
     );
-    /** @type {number[]} */
     this.channelAttack = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_CHANNEL_VALUE
+      Synthesizer.DEFAULT_CHANNEL_VALUE,
     );
-    /** @type {number[]} */
     this.channelDecay = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_CHANNEL_VALUE
+      Synthesizer.DEFAULT_CHANNEL_VALUE,
     );
-    /** @type {number[]} */
-    this.channelSustin = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_CHANNEL_VALUE
+    this.channelSustain = new Array(Synthesizer.MIDI_CHANNELS).fill(
+      Synthesizer.DEFAULT_CHANNEL_VALUE,
     );
-    /** @type {number[]} */
     this.channelRelease = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_CHANNEL_VALUE
+      Synthesizer.DEFAULT_CHANNEL_VALUE,
     );
 
-    /** @type {boolean[]} */
     this.channelHold = new Array(Synthesizer.MIDI_CHANNELS).fill(false);
-    /** @type {number[]} */
     this.channelHarmonicContent = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_CHANNEL_VALUE
+      Synthesizer.DEFAULT_CHANNEL_VALUE,
     );
-    /** @type {number[]} */
     this.channelCutOffFrequency = new Array(Synthesizer.MIDI_CHANNELS).fill(
-      Synthesizer.DEFAULT_CHANNEL_VALUE
+      Synthesizer.DEFAULT_CHANNEL_VALUE,
     );
-
-    /** @type {'GM'|'GM2'|'XG'|'GS'} */
     this.mode = 'GM2';
-
-    /** @type {string[][]} */
     this.programSet = [];
-
-    /** @type {boolean[]} */
     this.channelMute = new Array(Synthesizer.MIDI_CHANNELS).fill(false);
-    /** @type {SynthesizerNote[][]} */
     this.currentNoteOn = Array.from(
       { length: Synthesizer.MIDI_CHANNELS },
-      () => []
+      () => [],
     );
-    /** @type {number} @const */
-    this.baseVolume = 1 / Synthesizer.BASE_VOLUME_DIVISOR;
-    /** @type {number} */
+    this.baseVolume = 1;
     this.masterVolume = Synthesizer.MASTER_VOLUME_DEFAULT;
 
-    /** @type {boolean[]} */
     this.percussionPart = new Array(Synthesizer.MIDI_CHANNELS).fill(false);
     this.percussionPart[Synthesizer.DRUM_CHANNEL] = true;
 
-    /** @type {number[]} */
     this.percussionVolume = new Array(Synthesizer.MIDI_KEYS).fill(
-      Synthesizer.DEFAULT_EXPRESSION
+      Synthesizer.DEFAULT_EXPRESSION,
     );
 
-    /** @type {string[][]} */
     this.programSet = [];
 
-    /** @type {Reverb[]} リバーブエフェクト（チャンネル毎に用意する） */
+    /** リバーブエフェクト（チャンネル毎に用意する） */
     this.reverb = [];
 
-    /** @type {number[]} モジュレーション（ビブラート） */
+    /** モジュレーション（ビブラート） */
     this.modulation = new Array(Synthesizer.MIDI_CHANNELS).fill(0);
 
-    /** @type {BiquadFilterNode[]} フィルタ */
+    /** フィルタ */
     this.filter = [];
 
     for (i = 0; i < Synthesizer.MIDI_CHANNELS; ++i) {
-      // @ts-ignore
       this.reverb[i] = new Reverb(this.ctx, { noise: 'violet' });
       // フィルタを定義
       this.filter[i] = this.ctx.createBiquadFilter();
     }
 
-    /** @type {string[]} 表示項目 */
-    this.items = [];
-
-    /** @type {IntersectionObserver} 交差していない */
-    this.intersection = new IntersectionObserver(
-      entries =>
-        entries.forEach(entry => {
-          // @ts-ignore
-          entry.target.dataset.isIntersecting = entry.isIntersecting;
-        }),
-      {}
+    console.info(
+      '[Synthesizer] created reverb and filter nodes for',
+      Synthesizer.MIDI_CHANNELS,
+      'channels',
     );
 
-    /** @type {NodeJS.Timeout | undefined} タイマーのスレッド */
+    /** 表示項目 */
+    this.items = [];
+
+    /** 交差していない */
+    this.intersection = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          (entry.target as HTMLElement).dataset.isIntersecting =
+            entry.isIntersecting ? 'true' : 'false';
+        }),
+      {},
+    );
+
+    /** タイマーのスレッド */
     this.timer = undefined;
-    /** @type {boolean} */
+    /** ドラッグ中かどうか */
     this.drag = false;
   }
 
-  /** @return {AudioContext} */
-  getAudioContext() {
-    /** @type {AudioContext} */
+  private getAudioContext(): AudioContext {
     const ctx = new AudioContext();
 
-    // Defreeze AudioContext for iOS.
-    const initAudioContext = () => {
-      document.removeEventListener('touchstart', initAudioContext);
-      /** @type {AudioBufferSourceNode} wake up AudioContext */
-      const emptySource = ctx.createBufferSource();
-      emptySource.start();
-      emptySource.stop();
+    const resumeAudioContext = async () => {
+      document.removeEventListener('touchstart', resumeAudioContext);
+      document.removeEventListener('pointerdown', resumeAudioContext);
+      document.removeEventListener('mousedown', resumeAudioContext);
+      if (ctx.state === 'suspended') {
+        try {
+          await ctx.resume();
+          console.info('[Synthesizer] AudioContext resumed');
+        } catch (error) {
+          console.warn('[Synthesizer] AudioContext resume failed:', error);
+        }
+      }
     };
 
-    document.addEventListener('touchstart', initAudioContext);
+    // Defreeze AudioContext for iOS and desktop mouse gestures.
+    document.addEventListener('touchstart', resumeAudioContext, {
+      once: true,
+      passive: true,
+    });
+    document.addEventListener('pointerdown', resumeAudioContext, {
+      once: true,
+      passive: true,
+    });
+    document.addEventListener('mousedown', resumeAudioContext, {
+      once: true,
+      passive: true,
+    });
 
     return ctx;
   }
@@ -281,9 +251,9 @@ export default class Synthesizer {
   /**
    * System Reset
    *
-   * @param {'GM'|'GM2'|'XG'|'GS'} mode 音源モード
+   * @param mode 音源モード
    */
-  init(mode = 'GM') {
+  public init(mode: SynthesizerMode = 'GM') {
     this.gainMaster.disconnect();
 
     this.refreshInstruments(this.input);
@@ -303,7 +273,7 @@ export default class Synthesizer {
       this.bankSelectLsb(i, i === 9 ? 127 : 0);
       this.attackTime(i, 64);
       this.decayTime(i, 64);
-      this.sustinTime(i, 64);
+      this.sustainTime(i, 64);
       this.releaseTime(i, 64);
       this.harmonicContent(i, 64);
       this.cutOffFrequency(i, 64);
@@ -323,30 +293,33 @@ export default class Synthesizer {
     this.setMasterVolume(Synthesizer.MASTER_VOLUME_DEFAULT / 2);
 
     this.gainMaster.connect(this.ctx.destination);
+    console.info(
+      '[Synthesizer] init: gainMaster connected to destination, gain=',
+      this.gainMaster.gain.value,
+    );
 
     if (this.element) {
-      /** @type {HTMLDivElement | null} */
-      const modeElement = this.element.querySelector('.header .keys div');
+      const modeElement: HTMLDivElement | null =
+        this.element.querySelector('.header .keys div');
       if (modeElement) {
         modeElement.innerText = mode + ' Mode';
       }
-      /** @type {NodeListOf<HTMLSelectElement>} */
-      const bankSelectElement = this.element.querySelectorAll(
-        '.instrument .bank > select'
-      );
+      const bankSelectElement: NodeListOf<HTMLSelectElement> =
+        this.element.querySelectorAll('.instrument .bank > select');
 
-      bankSelectElement.forEach(element => (element.disabled = mode === 'GM'));
+      bankSelectElement.forEach(
+        (element) => (element.disabled = mode === 'GM'),
+      );
       this.element.dataset.mode = mode;
     }
   }
 
   /** Close AudioContext */
-  async close() {
+  public async close() {
     await this.ctx.close();
   }
 
-  /** @param {Uint8Array} input */
-  refreshInstruments(input) {
+  public refreshInstruments(input: Uint8Array) {
     // 古い参照を解放してメモリリークを防ぐ
     if (this.parser) {
       // 古いParserのinput参照を解放
@@ -365,37 +338,41 @@ export default class Synthesizer {
     this.parser = new Parser(input, {
       sampleRate: this.ctx.sampleRate,
     });
+    console.info(
+      '[Synthesizer] refreshInstruments: parser created, sampleRate=',
+      this.ctx.sampleRate,
+    );
     this.bankSet = this.createAllInstruments();
+    console.info(
+      '[Synthesizer] refreshInstruments: bankSet size=',
+      this.bankSet.length,
+    );
   }
 
-  /** @returns {BankSet} */
-  createAllInstruments() {
+  public createAllInstruments(): BankSet {
     const parser = this.parser;
     if (!parser) {
-      throw new Error('parser is not initialized');
+      throw new Error('[Synthesizer] parser is not initialized');
     }
     parser.parse();
-    /** @type {ParsedPreset[]} */
     const presets = parser.createPreset();
-    /** @type {ParsedInstrument[]} */
     const instruments = parser.createInstrument();
-    /** @type {BankSet} */
-    const banks = [];
-    /** @type {Bank} */
-    let bank;
-    /** @type {number} */
-    let bankNumber;
-    /** @type {ParsedInstrument} */
-    let instrument;
-    /** @type {number} */
-    let presetNumber;
-    /** @type {string} */
-    let presetName;
+    console.info(
+      '[Synthesizer] createAllInstruments: presets=',
+      presets.length,
+      'instruments=',
+      instruments.length,
+    );
+    const banks: BankSet = [];
+    let bank: Bank;
+    let bankNumber: number;
+    let instrument: ParsedInstrument;
+    let presetNumber: number;
+    let presetName: string;
 
-    /** @type {string[][]} */
-    const programSet = [];
+    const programSet: string[][] = [];
 
-    presets.forEach(preset => {
+    presets.forEach((preset) => {
       presetNumber = preset.header.preset;
       bankNumber = preset.header.bank;
       presetName = preset.name.replace(/\0*$/, '');
@@ -419,12 +396,8 @@ export default class Synthesizer {
         return;
       }
 
-      instrument.info.forEach(info =>
-        this.createNoteInfo(
-          parser,
-          /** @type {ParsedZoneInfo} */ (info),
-          presetEntry
-        )
+      instrument.info.forEach((info: ParsedZoneInfo) =>
+        this.createNoteInfo(parser, info, presetEntry),
       );
 
       if (!programSet[bankNumber]) {
@@ -438,27 +411,12 @@ export default class Synthesizer {
     return banks;
   }
 
-  // Constants for SoundFont calculations
-  static SEMITONE_RATIO = 1.0594630943592953; // 2^(1/12)
-  static CENTS_PER_OCTAVE = 1200;
-  static COARSE_OFFSET_MULTIPLIER = 32768;
-  static BASE_FREQUENCY_HZ = 8.176; // C-1
-  static MIDDLE_C_NOTE = 60; // C4
-  static ENVELOPE_SUSTAIN_DIVISOR = 1000;
-  static FILTER_Q_DIVISOR = 10;
-  static ATTENUATION_DIVISOR = 10;
-  static REVERB_SEND_DIVISOR = 10;
-  static PAN_DIVISOR = 1200;
-  static MODULATION_DIVISOR = 100;
-
-  /**
-   * @param {Parser} parser
-   * @param {ParsedZoneInfo} info
-   * @param {InstrumentPreset} preset
-   */
-  createNoteInfo(parser, info, preset) {
-    /** @type {GeneratorMap} */
-    const generator = info.generator;
+  public createNoteInfo(
+    parser: Parser,
+    info: ParsedZoneInfo,
+    preset: InstrumentPreset,
+  ) {
+    const generator: GeneratorMap | 'reverbEffectSend' = info.generator;
 
     if (!generator.keyRange || !generator.sampleID) {
       return;
@@ -467,38 +425,38 @@ export default class Synthesizer {
     // デフォルト値
     // https://www.utsbox.com/?p=2390
 
-    /** @type {number} 33: DelayVolEnv */
-    const volDelay = this.getModGenAmount(generator, 'delayVolEnv');
-    /** @type {number} 34: AttackVolEnv */
-    const volAttack = this.getModGenAmount(generator, 'attackVolEnv');
-    /** @type {number} 35: HoldVolEnv */
-    const volHold = this.getModGenAmount(generator, 'holdVolEnv');
-    /** @type {number} 36: DecayVolEnv */
-    const volDecay = this.getModGenAmount(generator, 'decayVolEnv');
-    /** @type {number} 37: SustainVolEnv */
-    const volSustain = this.getModGenAmount(generator, 'sustainVolEnv');
-    /** @type {number} 38: ReleaseVolEnv */
-    const volRelease = this.getModGenAmount(generator, 'releaseVolEnv');
-    /** @type {number} 25: DelayModEnv */
-    const modDelay = this.getModGenAmount(generator, 'delayModEnv');
-    /** @type {number} 26: AttackModEnv */
-    const modAttack = this.getModGenAmount(generator, 'attackModEnv');
-    /** @type {number} 27: HoldModEnv */
-    const modHold = this.getModGenAmount(generator, 'holdModEnv');
-    /** @type {number} 28: DecayModEnv */
-    const modDecay = this.getModGenAmount(generator, 'decayModEnv');
-    /** @type {number} 29: SustainModEnv */
-    const modSustain = this.getModGenAmount(generator, 'sustainModEnv');
-    /** @type {number} 30: ReleaseModEnv */
-    const modRelease = this.getModGenAmount(generator, 'releaseModEnv');
-    /** @type {number} 56: ScaleTuning */
-    const scale = this.getModGenAmount(generator, 'scaleTuning') / 100;
-    /** @type {number} */
-    const tune =
+    /** 33: DelayVolEnv */
+    const volDelay: number = this.getModGenAmount(generator, 'delayVolEnv');
+    /** 34: AttackVolEnv */
+    const volAttack: number = this.getModGenAmount(generator, 'attackVolEnv');
+    /** 35: HoldVolEnv */
+    const volHold: number = this.getModGenAmount(generator, 'holdVolEnv');
+    /** 36: DecayVolEnv */
+    const volDecay: number = this.getModGenAmount(generator, 'decayVolEnv');
+    /** 37: SustainVolEnv */
+    const volSustain: number = this.getModGenAmount(generator, 'sustainVolEnv');
+    /** 38: ReleaseVolEnv */
+    const volRelease: number = this.getModGenAmount(generator, 'releaseVolEnv');
+    /** 25: DelayModEnv */
+    const modDelay: number = this.getModGenAmount(generator, 'delayModEnv');
+    /** 26: AttackModEnv */
+    const modAttack: number = this.getModGenAmount(generator, 'attackModEnv');
+    /** 27: HoldModEnv */
+    const modHold: number = this.getModGenAmount(generator, 'holdModEnv');
+    /** 28: DecayModEnv */
+    const modDecay: number = this.getModGenAmount(generator, 'decayModEnv');
+    /** 29: SustainModEnv */
+    const modSustain: number = this.getModGenAmount(generator, 'sustainModEnv');
+    /** 30: ReleaseModEnv */
+    const modRelease: number = this.getModGenAmount(generator, 'releaseModEnv');
+    /** 56: ScaleTuning */
+    const scale: number = this.getModGenAmount(generator, 'scaleTuning') / 100;
+
+    const tune: number =
       this.getModGenAmount(generator, 'coarseTune') +
       this.getModGenAmount(generator, 'fineTune') / 100;
-    /** @type {number} */
-    const sampleModes = this.getModGenAmount(generator, 'sampleModes');
+
+    const sampleModes: number = this.getModGenAmount(generator, 'sampleModes');
 
     for (
       let i = generator.keyRange.lo, il = generator.keyRange.hi;
@@ -508,17 +466,15 @@ export default class Synthesizer {
       if (preset[i]) {
         continue;
       }
-      /** @type {number} */
-      const sampleId = this.getModGenAmount(generator, 'sampleID');
-      /** @type {SampleHeaderInfo} */
-      const sampleHeader = parser.sampleHeader[sampleId];
+      const sampleId: number = this.getModGenAmount(generator, 'sampleID');
+      const sampleHeader: SampleHeaderInfo = parser.sampleHeader[sampleId];
 
       preset[i] = {
         sample: parser.sample[sampleId],
         sampleRate: sampleHeader.sampleRate,
         sampleModes,
         basePlaybackRate:
-          Synthesizer.SEMITONE_RATIO **
+          SEMITONE_RATIO **
           ((i -
             this.getModGenAmount(generator, 'overridingRootKey') +
             tune +
@@ -546,99 +502,120 @@ export default class Synthesizer {
           this.getModGenAmount(generator, 'endloopAddrsCoarseOffset') *
             Synthesizer.COARSE_OFFSET_MULTIPLIER +
           this.getModGenAmount(generator, 'endloopAddrsOffset'),
-        volDelay: 2 ** (volDelay / Synthesizer.CENTS_PER_OCTAVE),
-        volAttack: 2 ** (volAttack / Synthesizer.CENTS_PER_OCTAVE),
+        volDelay: 2 ** (volDelay / CENTS_PER_OCTAVE),
+        volAttack: 2 ** (volAttack / CENTS_PER_OCTAVE),
         volHold:
-          2 ** (volHold / Synthesizer.CENTS_PER_OCTAVE) *
+          2 ** (volHold / CENTS_PER_OCTAVE) *
           2 **
             (((Synthesizer.MIDDLE_C_NOTE - i) *
               this.getModGenAmount(generator, 'keynumToVolEnvHold')) /
-              Synthesizer.CENTS_PER_OCTAVE),
+              CENTS_PER_OCTAVE),
         volDecay:
-          2 ** (volDecay / Synthesizer.CENTS_PER_OCTAVE) *
+          2 ** (volDecay / CENTS_PER_OCTAVE) *
           2 **
             (((Synthesizer.MIDDLE_C_NOTE - i) *
               this.getModGenAmount(generator, 'keynumToVolEnvDecay')) /
-              Synthesizer.CENTS_PER_OCTAVE),
+              CENTS_PER_OCTAVE),
         volSustain: volSustain / Synthesizer.ENVELOPE_SUSTAIN_DIVISOR,
-        volRelease: 2 ** (volRelease / Synthesizer.CENTS_PER_OCTAVE),
-        modDelay: 2 ** (modDelay / Synthesizer.CENTS_PER_OCTAVE),
-        modAttack: 2 ** (modAttack / Synthesizer.CENTS_PER_OCTAVE),
+        volRelease: 2 ** (volRelease / CENTS_PER_OCTAVE),
+        modDelay: 2 ** (modDelay / CENTS_PER_OCTAVE),
+        modAttack: 2 ** (modAttack / CENTS_PER_OCTAVE),
         modHold:
-          2 ** (modHold / Synthesizer.CENTS_PER_OCTAVE) *
+          2 ** (modHold / CENTS_PER_OCTAVE) *
           2 **
             (((Synthesizer.MIDDLE_C_NOTE - i) *
               this.getModGenAmount(generator, 'keynumToModEnvHold')) /
-              Synthesizer.CENTS_PER_OCTAVE),
+              CENTS_PER_OCTAVE),
         modDecay:
-          2 ** (modDecay / Synthesizer.CENTS_PER_OCTAVE) *
+          2 ** (modDecay / CENTS_PER_OCTAVE) *
           2 **
             (((Synthesizer.MIDDLE_C_NOTE - i) *
               this.getModGenAmount(generator, 'keynumToModEnvDecay')) /
-              Synthesizer.CENTS_PER_OCTAVE),
+              CENTS_PER_OCTAVE),
         modSustain: modSustain / Synthesizer.ENVELOPE_SUSTAIN_DIVISOR,
-        modRelease: 2 ** (modRelease / Synthesizer.CENTS_PER_OCTAVE),
+        modRelease: 2 ** (modRelease / CENTS_PER_OCTAVE),
         initialFilterFc:
           Synthesizer.BASE_FREQUENCY_HZ *
           2 **
             (this.getModGenAmount(generator, 'initialFilterFc') /
-              Synthesizer.CENTS_PER_OCTAVE),
+              CENTS_PER_OCTAVE),
         modEnvToFilterFc:
           this.getModGenAmount(generator, 'modEnvToFilterFc') /
           Synthesizer.MODULATION_DIVISOR,
         initialFilterQ:
           this.getModGenAmount(generator, 'initialFilterQ') /
           Synthesizer.FILTER_Q_DIVISOR,
-        reverbEffectSend:
-          this.getModGenAmount(generator, 'reverbEffectSend') /
-          Synthesizer.REVERB_SEND_DIVISOR,
+        reverbEffectSend: 40 / Synthesizer.REVERB_SEND_DIVISOR,
         initialAttenuation:
           this.getModGenAmount(generator, 'initialAttenuation') /
           Synthesizer.ATTENUATION_DIVISOR,
         freqVibLFO:
           Synthesizer.BASE_FREQUENCY_HZ *
           2 **
-            (this.getModGenAmount(generator, 'freqVibLFO') /
-              Synthesizer.CENTS_PER_OCTAVE),
+            (this.getModGenAmount(generator, 'freqVibLFO') / CENTS_PER_OCTAVE),
         pan: this.getModGenAmount(generator, 'pan') / Synthesizer.PAN_DIVISOR,
       };
     }
   }
 
-  /**
-   * @param {GeneratorMap} generator
-   * @param {string} enumeratorType
-   * @return {number}
-   */
-  getModGenAmount(generator, enumeratorType) {
-    const value = /** @type {GeneratorAmount | undefined} */ (
-      generator[enumeratorType]
-    );
-    if (value && typeof value.amount === 'number') {
-      return value.amount;
+  getModGenAmount(
+    generator: GeneratorMap,
+    enumeratorType: GeneratorKey,
+  ): number {
+    const raw = generator[enumeratorType] as
+      | GeneratorValue
+      | GeneratorValue[]
+      | undefined;
+
+    // Try to resolve the amount from the generator value
+    const amount = resolveGeneratorAmount(raw);
+    if (amount !== null) {
+      return amount;
     }
-    return Number(Parser.getGeneratorTable()[enumeratorType] ?? 0);
+
+    // Fall back to default value from the generator table
+    return Number(defaultGeneratorTable[enumeratorType] ?? 0);
   }
 
   /**
    * Start Tone Generator
    */
   start() {
-    this.connect();
-    this.bufSrc.start(0);
+    console.info(
+      '[Synthesizer] start(): AudioContext state=',
+      this.ctx.state,
+      'bufSrc.buffer=',
+      !!this.bufSrc.buffer,
+    );
+    // Starting the internal buffer source is optional — notes create their
+    // own BufferSource nodes. Only start if a buffer is assigned to avoid
+    // InvalidStateError when bufSrc.buffer is null.
+    try {
+      if (this.bufSrc.buffer) {
+        this.connect();
+        this.bufSrc.start(0);
+        console.info('[Synthesizer] bufSrc started');
+      }
+    } catch (error) {
+      console.warn('[Synthesizer] bufSrc start failed:', error);
+    }
+
+    // Always ensure master volume is set so note playback has expected level
     this.setMasterVolume(Synthesizer.MASTER_VOLUME_MAX);
   }
 
-  /** @param {number} volume */
-  setMasterVolume(volume) {
+  setMasterVolume(volume: number) {
     this.masterVolume = volume;
-    this.gainMaster.gain.value =
-      this.baseVolume * (volume / Synthesizer.MASTER_VOLUME_DIVISOR);
+    this.gainMaster.gain.value = Math.min(
+      1,
+      Math.max(0, volume / Synthesizer.MASTER_VOLUME_DIVISOR),
+    );
   }
 
   /** Connect root AudioContext */
   connect() {
     this.bufSrc.connect(this.gainMaster);
+    console.debug('[Synthesizer] bufSrc -> gainMaster connected');
   }
 
   /** Disconnect root AudioContext */
@@ -646,18 +623,12 @@ export default class Synthesizer {
     this.bufSrc.disconnect(this.gainMaster);
     this.bufSrc.buffer = null;
   }
-
-  /** @return {HTMLDivElement} */
-  drawSynth() {
-    /** @type {Document} */
-    const doc = window.document;
-    /** @type {HTMLDivElement} */
-    const wrapper = (this.element = doc.createElement('div'));
+  drawSynth(): HTMLDivElement {
+    const doc: Document = window.document;
+    const wrapper: HTMLDivElement = (this.element = doc.createElement('div'));
     wrapper.className = 'synthesizer';
-    /** @type {HTMLDivElement} */
-    const instElem = doc.createElement('div');
+    const instElem: HTMLDivElement = doc.createElement('div');
     instElem.className = 'instrument';
-    /** @type {string[]} */
     this.items = [
       'mute',
       'bank',
@@ -670,14 +641,12 @@ export default class Synthesizer {
       'reverbDepth',
       'keys',
     ];
-    /** @type {string} */
-    const eventStart = 'ontouchstart' in window ? 'touchstart' : 'mousedown';
-    /** @type {string} */
-    const eventEnd = 'ontouchend' in window ? 'touchend' : 'mouseup';
+    const eventStart: string =
+      'ontouchstart' in window ? 'touchstart' : 'mousedown';
+    const eventEnd: string = 'ontouchend' in window ? 'touchend' : 'mouseup';
 
     for (let channel = 0; channel < Synthesizer.MIDI_CHANNELS; channel++) {
-      /** @type {HTMLDivElement} */
-      const channelElem = doc.createElement('div');
+      const channelElem: HTMLDivElement = doc.createElement('div');
       channelElem.className = 'channel';
       // ホールドを無効化する処理
       channelElem.addEventListener(eventStart, () => {
@@ -687,17 +656,16 @@ export default class Synthesizer {
         if (!Object.hasOwn(this.items, item)) {
           continue;
         }
-        /** @type {HTMLDivElement} */
-        const itemElem = doc.createElement('div');
+        const itemElem: HTMLDivElement = doc.createElement('div');
         itemElem.className = this.items[item];
 
         switch (this.items[item]) {
           case 'mute': {
-            /** @type {HTMLDivElement | null} */
-            const checkboxElement = doc.createElement('div');
+            const checkboxElement: HTMLDivElement = doc.createElement('div');
             checkboxElement.className = 'form-check form-check-inline';
-            /** @type {HTMLInputElement | null} */
-            const checkbox = doc.createElement('input');
+            const checkbox: HTMLInputElement = doc.createElement(
+              'input',
+            ) as HTMLInputElement;
             checkbox.ariaLabel = `Ch.${channel + 1} Mute`;
             checkbox.setAttribute('type', 'checkbox');
             checkbox.className = 'form-check-input';
@@ -705,15 +673,14 @@ export default class Synthesizer {
             checkbox.value = channel.toString();
             checkbox.addEventListener(
               'change',
-              event => {
-                // @ts-ignore
-                this.mute(channel, event.target.checked);
+              (event: Event) => {
+                const target = event.target as HTMLInputElement;
+                this.mute(channel, target.checked);
               },
-              false
+              false,
             );
             checkboxElement.appendChild(checkbox);
-            /** @type {HTMLLabelElement} */
-            const labelElem = doc.createElement('label');
+            const labelElem: HTMLLabelElement = doc.createElement('label');
 
             labelElem.className = 'form-check-label';
             labelElem.textContent = (channel + 1).toString();
@@ -723,40 +690,42 @@ export default class Synthesizer {
             break;
           }
           case 'bank': {
-            /** @type {HTMLSelectElement} Bank select */
-            const bankSelect = doc.createElement('select');
+            /**  Bank select */
+            const bankSelect: HTMLSelectElement = doc.createElement('select');
             bankSelect.ariaLabel = `Ch.${channel + 1} Bank Select`;
             bankSelect.className = 'form-select form-select-sm bank-select';
             bankSelect.addEventListener(
               'change',
-              ((synth, ch) => event => {
-                /** @type {HTMLSelectElement | null} */
-                const program = channelElem.querySelector('.program select');
+              ((synth, ch) => (event) => {
+                const program = channelElem.querySelector(
+                  '.program select',
+                ) as HTMLSelectElement | null;
                 if (!program) {
                   return;
                 }
-                // console.log(ch, event.target.value, program);
-                // @ts-ignore
-                synth.bankChange(ch, event.target.value);
+                synth.bankChange(
+                  ch,
+                  Number((event.target as HTMLSelectElement).value),
+                );
                 synth.programChange(ch, Number.parseInt(program.value));
               })(this, channel),
-              false
+              false,
             );
             itemElem.appendChild(bankSelect);
             break;
           }
           case 'program': {
-            /** @type {HTMLSelectElement} Program change */
-            const select = doc.createElement('select');
+            /** Program change */
+            const select: HTMLSelectElement = doc.createElement('select');
             select.className = 'form-select form-select-sm';
             select.ariaLabel = `Ch.${channel + 1} Program Change`;
             select.addEventListener(
               'change',
-              ((synth, ch) => event => {
-                // @ts-ignore
-                synth.programChange(ch, event.target.value);
+              ((synth, ch) => (event: Event) => {
+                const target = event.target as HTMLSelectElement;
+                synth.programChange(ch, Number.parseInt(target.value));
               })(this, channel),
-              false
+              false,
             );
             itemElem.appendChild(select);
             break;
@@ -771,15 +740,14 @@ export default class Synthesizer {
           }
           case 'expression': {
             /** @type {HTMLElement} */
-            const expressionElem = document.createElement('var');
+            const expressionElem: HTMLElement = document.createElement('var');
             expressionElem.ariaLabel = `Ch.${channel + 1} Expression`;
             expressionElem.innerText = '127';
             itemElem.appendChild(expressionElem);
             break;
           }
           case 'pitchBendSensitivity': {
-            /** @type {HTMLElement} */
-            const pitchSensElem = document.createElement('var');
+            const pitchSensElem: HTMLElement = document.createElement('var');
             pitchSensElem.ariaLabel = `Ch.${
               channel + 1
             } Pitch Bend Sensitivity`;
@@ -788,16 +756,14 @@ export default class Synthesizer {
             break;
           }
           case 'reverbDepth': {
-            /** @type {HTMLElement} */
-            const reverbDepthElem = document.createElement('var');
+            const reverbDepthElem: HTMLElement = document.createElement('var');
             reverbDepthElem.ariaLabel = `Ch.${channel + 1} Reverb Depth`;
             reverbDepthElem.innerText = '40';
             itemElem.appendChild(reverbDepthElem);
             break;
           }
           case 'panpot': {
-            /** @type {HTMLDivElement} */
-            const panpotOuter = doc.createElement('div');
+            const panpotOuter: HTMLDivElement = doc.createElement('div');
             panpotOuter.role = 'progressbar';
             panpotOuter.ariaLabel = `Ch.${channel + 1} Panpod`;
             panpotOuter.ariaValueMin = '0';
@@ -812,8 +778,7 @@ export default class Synthesizer {
             break;
           }
           case 'pitchBend': {
-            /** @type {HTMLDivElement} */
-            const pitchOuter = doc.createElement('div');
+            const pitchOuter: HTMLDivElement = doc.createElement('div');
             pitchOuter.className = 'progress';
             pitchOuter.role = 'progressbar';
             pitchOuter.ariaLabel = `Ch.${channel + 1} Pitch Bend`;
@@ -821,8 +786,7 @@ export default class Synthesizer {
             pitchOuter.ariaValueNow = '0';
             pitchOuter.ariaValueMax = '8192';
             pitchOuter.className = 'progress';
-            /** @type {HTMLDivElement} */
-            const pitch = doc.createElement('div');
+            const pitch: HTMLDivElement = doc.createElement('div');
             // 黄色
             pitch.className = 'progress-bar progress-bar-animated';
             pitchOuter.appendChild(pitch);
@@ -832,10 +796,8 @@ export default class Synthesizer {
           case 'keys': {
             // 鍵盤の描画
             for (let key = 0; key < 127; key++) {
-              /** @type {HTMLDivElement} */
-              const keyElem = doc.createElement('div');
-              /** @type {number} */
-              const n = key % 12;
+              const keyElem: HTMLDivElement = doc.createElement('div');
+              const n: number = key % 12;
               // 白鍵と黒鍵の色分け
               keyElem.className =
                 'key ' + ([1, 3, 6, 8, 10].includes(n) ? 'semitone' : 'tone');
@@ -844,35 +806,35 @@ export default class Synthesizer {
               // イベント割当
               keyElem.addEventListener(
                 eventStart,
-                ((synth, ch, k) => event => {
+                ((synth, ch, k) => (event) => {
                   event.preventDefault();
                   synth.drag = true;
                   synth.noteOn(ch, k, 127);
-                })(this, channel, key)
+                })(this, channel, key),
               );
               keyElem.addEventListener(
                 'mouseover',
-                ((synth, ch, k) => event => {
+                ((synth, ch, k) => (event) => {
                   event.preventDefault();
                   if (synth.drag) {
                     synth.noteOn(ch, k, 127);
                   }
-                })(this, channel, key)
+                })(this, channel, key),
               );
               keyElem.addEventListener(
                 'mouseout',
-                ((synth, ch, k) => event => {
+                ((synth, ch, k) => (event) => {
                   event.preventDefault();
                   synth.noteOff(ch, k);
-                })(this, channel, key)
+                })(this, channel, key),
               );
               keyElem.addEventListener(
                 eventEnd,
-                ((synth, ch, k) => event => {
+                ((synth, ch, k) => (event) => {
                   event.preventDefault();
                   synth.drag = false;
                   synth.noteOff(ch, k);
-                })(this, channel, key)
+                })(this, channel, key),
               );
             }
             break;
@@ -896,15 +858,13 @@ export default class Synthesizer {
       'Rev.',
       '',
     ];
-    /** @type {HTMLDivElement} */
-    const headerElem = doc.createElement('div');
+    const headerElem: HTMLDivElement = doc.createElement('div');
     headerElem.className = 'header';
     for (const item in this.items) {
       if (!Object.hasOwn(this.items, item)) {
         continue;
       }
-      /** @type {HTMLDivElement} */
-      const itemElem = doc.createElement('div');
+      const itemElem: HTMLDivElement = doc.createElement('div');
       itemElem.className = this.items[item];
       itemElem.textContent = itemName[item];
       if (this.items[item] === 'keys') {
@@ -919,20 +879,22 @@ export default class Synthesizer {
     wrapper.appendChild(instElem);
 
     // ヘッダー行のリサイズ
-    const ro = new ResizeObserver(_entries => {
-      this.items.forEach(item => {
-        /** @type {HTMLElement | null} */
-        const headerItem = wrapper.querySelector(`.header .${item}`);
-        /** @type {HTMLElement | null} */
-        const channelItem = wrapper.querySelector(`.channel .${item}`);
+    const ro = new ResizeObserver((_entries) => {
+      this.items.forEach((item) => {
+        const headerItem: HTMLElement | null = wrapper.querySelector(
+          `.header .${item}`,
+        );
+        const channelItem: HTMLElement | null = wrapper.querySelector(
+          `.channel .${item}`,
+        );
         if (!headerItem || !channelItem) {
           return;
         }
 
         headerItem.style.width = channelItem.offsetWidth + 'px';
       });
-      /** @type {HTMLElement | null} */
-      const keysItem = wrapper.querySelector('.header .keys');
+      const keysItem: HTMLElement | null =
+        wrapper.querySelector('.header .keys');
       if (!keysItem) {
         return;
       }
@@ -947,25 +909,22 @@ export default class Synthesizer {
 
   /**
    * シンセサイザーのDOMの更新
-   *
-   * @param {number} channel
-   * @param {number} key
-   * @param {number | null} velocity
    */
-  updateSynthElement(channel, key, velocity = 100) {
+  private updateSynthElement(
+    channel: number,
+    key: number,
+    velocity: number | null = 100,
+  ) {
     if (!this.element) {
       return;
     }
-    /** @type {NodeListOf<HTMLDivElement>} */
-    const channelElems = this.element.querySelectorAll(
-      '.instrument > .channel'
-    );
+    const channelElems: NodeListOf<HTMLDivElement> =
+      this.element.querySelectorAll('.instrument > .channel');
 
     if (channelElems[channel].dataset.isIntersecting) {
-      /** @type {HTMLDivElement | null} */
-      const keyElem = channelElems[channel].querySelector(
-        `.key:nth-child(${key + 1})`
-      );
+      const keyElem: HTMLDivElement | null = channelElems[
+        channel
+      ].querySelector(`.key:nth-child(${key + 1})`);
       if (!keyElem) {
         return;
       }
@@ -984,27 +943,28 @@ export default class Synthesizer {
 
   /**
    * Get channel element from the instrument panel
-   * @private
-   * @param {number} channel Channel number
-   * @returns {Element | null}
+   * @param channel Channel number
    */
-  getChannelElement(channel) {
+  private getChannelElement(channel: number): HTMLDivElement | null {
     if (!this.element) {
       return null;
     }
     return (
-      this.element.querySelectorAll('.instrument > .channel')[channel] || null
+      (this.element.querySelectorAll('.instrument > .channel')[
+        channel
+      ] as HTMLDivElement) || null
     );
   }
 
   /**
    * Get a specific element from a channel
-   * @private
-   * @param {number} channel Channel number
-   * @param {string} selector CSS selector
-   * @returns {Element | null}
+   * @param channel Channel number
+   * @param  selector CSS selector
    */
-  getChannelChildElement(channel, selector) {
+  private getChannelChildElement(
+    channel: number,
+    selector: string,
+  ): HTMLElement | null {
     const channelElem = this.getChannelElement(channel);
     return channelElem ? channelElem.querySelector(selector) : null;
   }
@@ -1012,16 +972,16 @@ export default class Synthesizer {
   /**
    * バンクセレクタの選択ボックスの処理
    *
-   * @param {number} channel
+   * @param channel Channel number
    */
-  updateBankSelect(channel) {
+  updateBankSelect(channel: number) {
     const bankElement = this.getChannelChildElement(channel, '.bank > select');
     if (!bankElement) {
       return;
     }
 
     while (bankElement.firstChild) {
-      bankElement.removeChild(bankElement.firstChild);
+      bankElement.firstChild.remove();
     }
 
     for (const bankNo in this.programSet) {
@@ -1041,27 +1001,26 @@ export default class Synthesizer {
   /**
    * プログラムチェンジの選択ボックスの処理
    *
-   * @param {number} channel
+   * @param channel Channel number
    */
-  updateProgramSelect(channel) {
+  private updateProgramSelect(channel: number) {
     const dom = this.getChannelElement(channel);
     if (!dom) {
       return;
     }
 
-    /** @type {number} */
-    const bankIndex = this.channelBank[channel];
-    /** @type {HTMLSelectElement | null} */
-    const bankElement = dom.querySelector('.bank > select');
-    /** @type {HTMLSelectElement | null} */
-    const programElement = dom.querySelector('.program > select');
+    const bankIndex: number = this.channelBank[channel];
+    const bankElement: HTMLSelectElement | null =
+      dom.querySelector('.bank > select');
+    const programElement: HTMLSelectElement | null =
+      dom.querySelector('.program > select');
     if (!bankElement || !programElement) {
       return;
     }
 
     bankElement.value = this.channelBank[channel].toString();
     while (programElement.firstChild) {
-      programElement.removeChild(programElement.firstChild);
+      programElement.firstChild.remove();
     }
 
     for (const programNo in this.programSet[bankIndex]) {
@@ -1069,8 +1028,7 @@ export default class Synthesizer {
         continue;
       }
       // TODO: 存在しないプログラムの場合、現状では空白になってしまう
-      /** @type {HTMLOptionElement} */
-      const option = document.createElement('option');
+      const option: HTMLOptionElement = document.createElement('option');
       option.value = programNo;
       option.textContent = `${('000' + (Number.parseInt(programNo) + 1)).slice(-3)}:${
         this.programSet[bankIndex][programNo]
@@ -1084,22 +1042,17 @@ export default class Synthesizer {
 
   /**
    * Get the appropriate instrument for the given channel and key
-   * @private
-   * @param {number} channel Channel number
-   * @returns {InstrumentPreset | null}
+   * @param channel Channel number
    */
-  getInstrumentForChannel(channel) {
-    /** @type {number} */
-    const bankIndex = this.channelBank[channel];
+  private getInstrumentForChannel(channel: number): InstrumentPreset | null {
+    const bankIndex: number = this.channelBank[channel];
 
     // Select bank: prefer current bank, fallback to bank 0
     // Exception: SFX (Bank 64) should not sound
     // Percussion (Bank 127~128) should use Standard Kit from bank 0
-    /** @type {Bank} */
-    const bank = this.bankSet[bankIndex] ?? this.bankSet[0] ?? [];
+    const bank: Bank = this.bankSet[bankIndex] ?? this.bankSet[0] ?? [];
 
-    /** @type {InstrumentPreset | null | undefined} */
-    let instrument;
+    let instrument: InstrumentPreset | null | undefined = null;
 
     if (typeof bank[this.channelInstrument[channel]] === 'object') {
       // Instrument exists
@@ -1123,12 +1076,11 @@ export default class Synthesizer {
 
   /**
    * Calculate panpot value
-   * @private
-   * @param {number} channel Channel number
-   * @returns {number} Normalized panpot value (-1 to 1)
+   * @param channel Channel number
+   * @returns Normalized panpot value (-1 to 1)
    */
-  calculatePanpot(channel) {
-    let panpot =
+  private calculatePanpot(channel: number): number {
+    const panpot =
       this.channelPanpot[channel] === 0
         ? Math.floor(Math.random() * Synthesizer.DEFAULT_EXPRESSION)
         : this.channelPanpot[channel] - Synthesizer.DEFAULT_CHANNEL_VALUE;
@@ -1137,13 +1089,17 @@ export default class Synthesizer {
 
   /**
    * Handle percussion-specific note off logic
-   * @private
-   * @param {number} channel Channel number
-   * @param {number} key MIDI key number
-   * @param {number} bankIndex Bank index
-   * @param {InstrumentPreset} instrument Instrument object
+   * @param channel Channel number
+   * @param key MIDI key number
+   * @param bankIndex Bank index
+   * @param instrument Instrument object
    */
-  handlePercussionExclusiveNotes(channel, key, bankIndex, instrument) {
+  private handlePercussionExclusiveNotes(
+    channel: number,
+    key: number,
+    bankIndex: number,
+    instrument: InstrumentPreset,
+  ) {
     if (bankIndex < Synthesizer.PERCUSSION_BANK_XG) {
       return;
     }
@@ -1170,11 +1126,19 @@ export default class Synthesizer {
   /**
    * ノートオン
    *
-   * @param {number} channel NoteOn するチャンネル.
-   * @param {number} key NoteOn するキー.
-   * @param {number} velocity 強さ.
+   * @param channel NoteOn するチャンネル.
+   * @param key NoteOn するキー.
+   * @param velocity 強さ.
    */
-  noteOn(channel, key, velocity = 100) {
+  public async noteOn(channel: number, key: number, velocity = 100) {
+    if (this.ctx.state === 'suspended') {
+      try {
+        await this.ctx.resume();
+      } catch (error) {
+        console.warn('[Synthesizer] AudioContext resume failed:', error);
+      }
+    }
+
     const bankIndex = this.channelBank[channel];
     const instrument = this.getInstrumentForChannel(channel);
 
@@ -1184,13 +1148,12 @@ export default class Synthesizer {
         bankIndex,
         this.channelInstrument[channel],
         channel,
-        key
+        key,
       );
       return;
     }
 
-    /** @type {NoteInstrument} */
-    const instrumentKey = instrument[key];
+    const instrumentKey: SynthInstrument = instrument[key];
     const panpot = this.calculatePanpot(channel);
 
     // Create note information
@@ -1205,7 +1168,7 @@ export default class Synthesizer {
       pitchBendSensitivity: Math.round(
         Number.isFinite(this.channelPitchBendSensitivity[channel])
           ? this.channelPitchBendSensitivity[channel]
-          : Synthesizer.DEFAULT_PITCH_BEND_SENSITIVITY
+          : Synthesizer.DEFAULT_PITCH_BEND_SENSITIVITY,
       ),
       mute: this.channelMute[channel],
       releaseTime: this.channelRelease[channel],
@@ -1219,14 +1182,25 @@ export default class Synthesizer {
     this.handlePercussionExclusiveNotes(channel, key, bankIndex, instrument);
 
     // Create and start note
-    const runtimeInstrument = /** @type {RuntimeNoteInstrument} */ (
-      instrumentKey
+    const runtimeInstrument: SynthInstrument = instrumentKey;
+    console.debug(
+      '[Synthesizer] noteOn: channel=%d key=%d velocity=%d bank=%d',
+      channel,
+      key,
+      velocity,
+      bankIndex,
     );
-    /** @type {SynthesizerNote} */
-    const note = new SynthesizerNote(
+    const note: SynthesizerNote = new SynthesizerNote(
       this.ctx,
       this.gainMaster,
-      runtimeInstrument
+      runtimeInstrument,
+      () => {
+        const notes = this.currentNoteOn[channel];
+        const index = notes.indexOf(note);
+        if (index >= 0) {
+          notes.splice(index, 1);
+        }
+      },
     );
     note.noteOn();
     this.currentNoteOn[channel].push(note);
@@ -1237,24 +1211,19 @@ export default class Synthesizer {
   /**
    * ノートオフ
    *
-   * @param {number} channel NoteOff するチャンネル.
-   * @param {number} key NoteOff するキー.
+   * @param channel NoteOff するチャンネル.
+   * @param key NoteOff するキー.
    */
-  noteOff(channel, key) {
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
-    /** @type {SynthesizerNote[]} */
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {SynthesizerNote} */
-    let note;
-    /** @type {boolean} */
-    const hold = this.channelHold[channel];
+  public noteOff(channel: number, key: number) {
+    let i: number;
+    let il: number;
+    const currentNoteOn: SynthesizerNote[] = this.currentNoteOn[channel];
+    let note: SynthesizerNote;
+    const hold: boolean = this.channelHold[channel];
 
     for (i = 0, il = currentNoteOn.length; i < il; ++i) {
       note = currentNoteOn[i];
-      if (note.key === key) {
+      if (note.getKey() === key) {
         note.noteOff();
         // hold している時は NoteOff にはするがリリースはしない
         if (!hold) {
@@ -1271,21 +1240,17 @@ export default class Synthesizer {
   /**
    * ホールド（ダンパーペダル）
    *
-   * @param {number} channel ホールドするチャンネル
-   * @param {number} value 値
+   * @param channel ホールドするチャンネル
+   * @param value 値
    */
-  hold(channel, value) {
-    /** @type {SynthesizerNote[]} */
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {boolean} 0以外はonである。 */
-    const hold = (this.channelHold[channel] =
+  public hold(channel: number, value: number) {
+    const currentNoteOn: SynthesizerNote[] = this.currentNoteOn[channel];
+    /**  0以外はonである。 */
+    const hold: boolean = (this.channelHold[channel] =
       value > Synthesizer.DEFAULT_CHANNEL_VALUE);
-    /** @type {SynthesizerNote} */
-    let note;
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
+    let note: SynthesizerNote;
+    let i: number;
+    let il: number;
 
     if (!hold) {
       for (i = 0, il = currentNoteOn.length; i < il; ++i) {
@@ -1312,10 +1277,10 @@ export default class Synthesizer {
   /**
    * バンクセレクトMSB（GS音源/GM Level2用）
    *
-   * @param {number} channel チャンネルのバンクセレクトMSB
-   * @param {number} value 値
+   * @param channel チャンネルのバンクセレクトMSB
+   * @param value 値
    */
-  bankSelectMsb(channel, value) {
+  public bankSelectMsb(channel: number, value: number) {
     // 125より値が大きい場合、パーカッションとして処理
     this.percussionPart[channel] = value >= Synthesizer.SFX_BANK_XG;
 
@@ -1362,10 +1327,10 @@ export default class Synthesizer {
   /**
    * バンクセレクトLSB（XG音源）
    *
-   * @param {number} channel チャンネルのバンクセレクトLSB
-   * @param {number} value 値
+   * @param channel チャンネルのバンクセレクトLSB
+   * @param value 値
    */
-  bankSelectLsb(channel, value) {
+  public bankSelectLsb(channel: number, value: number) {
     // XG音源以外は処理しない
     if (this.mode !== 'XG') {
       return;
@@ -1382,16 +1347,17 @@ export default class Synthesizer {
   /**
    * プログラムチェンジ
    *
-   * @param {number} channel 音色を変更するチャンネル.
-   * @param {number} instrument 音色番号.
+   * @param channel 音色を変更するチャンネル.
+   * @param instrument 音色番号.
    */
-  programChange(channel, instrument) {
+  public programChange(channel: number, instrument: number) {
     this.channelInstrument[channel] = instrument;
 
     this.bankChange(channel, this.channelBank[channel]);
-    const select = /** @type {HTMLSelectElement | null} */ (
-      this.getChannelChildElement(channel, '.program > select')
-    );
+    const select: HTMLSelectElement | null = this.getChannelChildElement(
+      channel,
+      '.program > select',
+    ) as HTMLSelectElement | null;
     if (select) {
       select.value = instrument.toString();
     }
@@ -1400,10 +1366,10 @@ export default class Synthesizer {
   /**
    * バンクセレクト
    *
-   * @param {number} channel 音色を変更するチャンネル.
-   * @param {number} bank バンク・セレクト.
+   * @param channel 音色を変更するチャンネル.
+   * @param bank バンク・セレクト.
    */
-  bankChange(channel, bank) {
+  public bankChange(channel: number, bank: number) {
     /** パーカッションバンク */
     const percussionBank =
       this.mode === 'XG' || this.mode === 'GM'
@@ -1427,9 +1393,11 @@ export default class Synthesizer {
     }
     // }
 
-    const bankSelect = /** @type {HTMLSelectElement | null} */ (
-      this.getChannelChildElement(channel, '.bank > select')
-    );
+    const bankSelect =
+      /** @type {HTMLSelectElement | null} */ this.getChannelChildElement(
+        channel,
+        '.bank > select',
+      ) as HTMLSelectElement | null;
     if (bankSelect) {
       bankSelect.value = bank.toString();
     }
@@ -1440,12 +1408,13 @@ export default class Synthesizer {
   /**
    * ボリューム
    *
-   * @param {number} channel 音量を変更するチャンネル.
-   * @param {number} volume 音量(0-127).
+   * @param channel 音量を変更するチャンネル.
+   * @param volume 音量(0-127).
    */
-  volumeChange(channel, volume = 100) {
-    const volumeVariable = /** @type {HTMLElement | null} */ (
-      this.getChannelChildElement(channel, '.volume var')
+  public volumeChange(channel: number, volume: number = 100) {
+    const volumeVariable: HTMLElement | null = this.getChannelChildElement(
+      channel,
+      '.volume var',
     );
     if (volumeVariable) {
       volumeVariable.innerText = volume.toString();
@@ -1457,23 +1426,21 @@ export default class Synthesizer {
   /**
    * エクスプレッション
    *
-   * @param {number} channel 音量を変更するチャンネル.
-   * @param {number} expression 音量(0-127).
+   * @param channel 音量を変更するチャンネル.
+   * @param expression 音量(0-127).
    */
-  expression(channel, expression = 127) {
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
-    /** @type {SynthesizerNote[]} */
-    const currentNoteOn = this.currentNoteOn[channel];
+  public expression(channel: number, expression: number = 127) {
+    let i: number;
+    let il: number;
+    const currentNoteOn: SynthesizerNote[] = this.currentNoteOn[channel];
 
     for (i = 0, il = currentNoteOn.length; i < il; ++i) {
       currentNoteOn[i].updateExpression(expression);
     }
 
-    const expressionVariable = /** @type {HTMLElement | null} */ (
-      this.getChannelChildElement(channel, '.expression var')
+    const expressionVariable: HTMLElement | null = this.getChannelChildElement(
+      channel,
+      '.expression var',
     );
     if (expressionVariable) {
       expressionVariable.innerText = expression.toString();
@@ -1485,16 +1452,18 @@ export default class Synthesizer {
   /**
    * パンポット
    *
-   * @param {number} channel Panpot を変更するチャンネル.
-   * @param {number} panpot Panpot(0-127).
+   * @param channel Panpot を変更するチャンネル.
+   * @param panpot Panpot(0-127).
    */
-  panpotChange(channel, panpot = 64) {
+  public panpotChange(channel: number, panpot: number = 64) {
     this.channelPanpot[channel] = panpot;
     const dom = this.getChannelChildElement(channel, '.panpot');
     if (dom) {
       dom.ariaValueNow = panpot.toString();
       /** @type {HTMLDivElement | null} */
-      const progressBar = dom.querySelector('.progress-bar');
+      const progressBar = dom.querySelector(
+        '.progress-bar',
+      ) as HTMLDivElement | null;
       if (!progressBar) {
         return;
       }
@@ -1512,21 +1481,16 @@ export default class Synthesizer {
   /**
    * ピッチベンド
    *
-   * @param {number} channel ピッチベンドを変更するチャンネル.
-   * @param {number} lowerByte
-   * @param {number} higherByte
+   * @param channel ピッチベンドを変更するチャンネル.
+   * @param lowerByte
+   * @param higherByte
    */
-  pitchBend(channel, lowerByte, higherByte) {
-    /** @type {number} */
-    const bend = (lowerByte & 0x7f) | ((higherByte & 0x7f) << 7);
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
-    /** @type {import('./sound_font_synth_note.js').default[]} */
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {number} */
-    const calculated = bend - Synthesizer.PITCH_BEND_CENTER;
+  public pitchBend(channel: number, lowerByte: number, higherByte: number) {
+    const bend: number = (lowerByte & 0x7f) | ((higherByte & 0x7f) << 7);
+    let i: number;
+    let il: number;
+    const currentNoteOn: SynthesizerNote[] = this.currentNoteOn[channel];
+    const calculated: number = bend - Synthesizer.PITCH_BEND_CENTER;
 
     for (i = 0, il = currentNoteOn.length; i < il; ++i) {
       currentNoteOn[i].updatePitchBend(calculated);
@@ -1535,16 +1499,15 @@ export default class Synthesizer {
     this.channelPitchBend[channel] = bend;
 
     if (this.element) {
-      /** @type {HTMLDivElement | null} */
-      const dom = this.element
-        .querySelectorAll('.instrument > .channel')
-        [channel].querySelector('.pitchBend');
+      const dom: HTMLDivElement | null =
+        this.getChannelDom(channel)!.querySelector('.pitchBend');
       if (!dom) {
         return;
       }
       dom.ariaValueNow = bend.toString();
-      /** @type {HTMLDivElement | null} */
-      const progressBar = dom.querySelector('.progress-bar');
+      const progressBar: HTMLDivElement | null = dom.querySelector(
+        '.progress-bar',
+      ) as HTMLDivElement | null;
       if (!progressBar) {
         return;
       }
@@ -1561,20 +1524,20 @@ export default class Synthesizer {
   /**
    * ピッチベンド・センシビリティ
    *
-   * @param {number} channel Pitch bend sensitivity を変更するチャンネル.
-   * @param {number} sensitivity
+   * @param channel Pitch bend sensitivity を変更するチャンネル.
+   * @param sensitivity
    */
-  pitchBendSensitivity(channel, sensitivity = 2) {
+  public pitchBendSensitivity(channel: number, sensitivity: number = 2) {
     // Ensure sensitivity is a valid finite number
-    const validSensitivity = Number.isFinite(sensitivity)
+    const validSensitivity: number = Number.isFinite(sensitivity)
       ? sensitivity
       : Synthesizer.DEFAULT_PITCH_BEND_SENSITIVITY;
 
     if (this.element) {
-      /** @type {HTMLElement | null} */
-      const pitchBendSensitivityVariable = this.element
-        .querySelectorAll('.instrument > .channel')
-        [channel].querySelector('.pitchBendSensitivity > var');
+      const pitchBendSensitivityVariable: HTMLElement | null =
+        this.getChannelDom(channel)!.querySelector(
+          '.pitchBendSensitivity > var',
+        );
       if (!pitchBendSensitivityVariable) {
         return;
       }
@@ -1586,78 +1549,76 @@ export default class Synthesizer {
   /**
    * アタックタイム
    *
-   * @param {number} channel
-   * @param {number} attackTime
+   * @param channel
+   * @param attackTime
    */
-  attackTime(channel, attackTime) {
+  public attackTime(channel: number, attackTime: number) {
     this.channelAttack[channel] = attackTime;
   }
 
   /**
    * ディケイタイム
    *
-   * @param {number} channel
-   * @param {number} decayTime
+   * @param channel
+   * @param decayTime
    */
-  decayTime(channel, decayTime) {
+  public decayTime(channel: number, decayTime: number) {
     this.channelDecay[channel] = decayTime;
   }
 
   /**
    * サスティンタイム
    *
-   * @param {number} channel
-   * @param {number} sustinTime
+   * @param channel
+   * @param sustainTime
    */
-  sustinTime(channel, sustinTime) {
-    this.channelSustin[channel] = sustinTime;
+  public sustainTime(channel: number, sustainTime: number) {
+    this.channelSustain[channel] = sustainTime;
   }
 
   /**
    * リリースタイム
    *
-   * @param {number} channel
-   * @param {number} releaseTime
+   * @param channel
+   * @param releaseTime
    */
-  releaseTime(channel, releaseTime) {
+  public releaseTime(channel: number, releaseTime: number) {
     this.channelRelease[channel] = releaseTime;
   }
 
   /**
    * ハーモニックコンテント（ブライトネス）
    *
-   * @param {number} channel
-   * @param {number} value
+   * @param channel
+   * @param value
    */
-  harmonicContent(channel, value = 64) {
+  public harmonicContent(channel: number, value: number = 64) {
     this.channelHarmonicContent[channel] = value;
   }
 
   /**
    * カットオフフリクエンシー
    *
-   * @param {number} channel
-   * @param {number} value
+   * @param channel
+   * @param  value
    */
-  cutOffFrequency(channel, value = 64) {
+  public cutOffFrequency(channel: number, value: number = 64) {
     this.channelCutOffFrequency[channel] = value;
   }
 
   /**
    * リバーブエフェクト
    *
-   * @param {number} channel
-   * @param {number} depth
+   * @param  channel
+   * @param  depth
    */
-  reverbDepth(channel, depth = 40) {
+  public reverbDepth(channel: number, depth: number = 40) {
     // リバーブ深度は、ドライ／ウェット比とする。
     this.reverb[channel].mix(depth / 127);
 
     if (this.element) {
-      /** @type {HTMLElement | null} */
-      const reverbVariable = this.element
-        .querySelectorAll('.instrument > .channel')
-        [channel].querySelector('.reverbDepth var');
+      const reverbVariable: HTMLElement | null =
+        this.getChannelDom(channel)!.querySelector('.reverbDepth var');
       if (!reverbVariable) {
         return;
       }
@@ -1668,14 +1629,14 @@ export default class Synthesizer {
   /**
    * モジュレーション（ビブラート）デプス
    *
-   * @param {number} channel
-   * @param {number} depth
+   * @param channel
+   * @param depth
    */
-  modulationDepth(channel, depth = 0) {
+  public modulationDepth(channel: number, depth: number = 0) {
     if (this.element) {
-      const dom = this.element
-        .querySelectorAll('.instrument > .channel')
-        [channel].querySelector('.pitchBend .progress-bar');
+      const dom = this.getChannelDom(channel)?.querySelector(
+        '.pitchBend .progress-bar',
+      );
       if (!dom) {
         return;
       }
@@ -1691,28 +1652,26 @@ export default class Synthesizer {
   }
 
   /**
-   * @param {number} channel Pitch bend sensitivity を取得するチャンネル.
-   * @return {number}
+   * @param channel Pitch bend sensitivity を取得するチャンネル.
    */
-  getPitchBendSensitivity(channel) {
+  public getPitchBendSensitivity(channel: number): number {
     return this.channelPitchBendSensitivity[channel];
   }
 
   /**
-   * @param {number} key
-   * @param {number} volume
+   * @param key
+   * @param volume
    */
-  drumInstrumentLevel(key, volume) {
+  public drumInstrumentLevel(key: number, volume: number) {
     this.percussionVolume[key] = volume;
   }
 
   /**
    * オールノートオフ
    *
-   * @param {number} channel NoteOff するチャンネル.
+   * @param channel NoteOff するチャンネル.
    */
-  allNoteOff(channel) {
-    /** @type {SynthesizerNote[]} */
+  public allNoteOff(channel: number) {
     const currentNoteOn = this.currentNoteOn[channel];
 
     // ホールドを解除
@@ -1720,27 +1679,25 @@ export default class Synthesizer {
 
     // 再生中の音をすべて止める
     while (currentNoteOn.length > 0) {
-      this.noteOff(channel, currentNoteOn[0].key);
+      this.noteOff(channel, currentNoteOn[0].getKey());
     }
   }
 
   /**
    * オールサウンドオフ
    *
-   * @param {number} channel 音を消すチャンネル.
+   * @param channel 音を消すチャンネル.
    */
-  allSoundOff(channel) {
-    /** @type {SynthesizerNote[]} */
+  public allSoundOff(channel: number) {
     const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {SynthesizerNote | undefined} */
-    let note;
+    let note: SynthesizerNote | undefined;
 
     while (currentNoteOn.length > 0) {
       note = currentNoteOn.shift();
       if (!note) {
         continue;
       }
-      this.noteOff(channel, note.key);
+      this.noteOff(channel, note.getKey());
       note.release();
       note.disconnect();
     }
@@ -1752,9 +1709,9 @@ export default class Synthesizer {
   /**
    * リセットオールコントロール
    *
-   * @param {number} channel リセットするチャンネル
+   * @param channel リセットするチャンネル
    */
-  resetAllControl(channel) {
+  public resetAllControl(channel: number) {
     // 実装不十分では？
     this.allNoteOff(channel);
     this.expression(channel, 127);
@@ -1764,16 +1721,13 @@ export default class Synthesizer {
   /**
    * ミュート
    *
-   * @param {number} channel ミュートの設定を変更するチャンネル.
-   * @param {boolean} mute ミュートにするなら true.
+   * @param channel ミュートの設定を変更するチャンネル.
+   * @param mute ミュートにするなら true.
    */
-  mute(channel, mute) {
-    /** @type {SynthesizerNote[]} */
-    const currentNoteOn = this.currentNoteOn[channel];
-    /** @type {number} */
-    let i;
-    /** @type {number} */
-    let il;
+  public mute(channel: number, mute: boolean) {
+    const currentNoteOn: SynthesizerNote[] = this.currentNoteOn[channel];
+    let i: number;
+    let il: number;
 
     this.channelMute[channel] = mute;
 
@@ -1791,10 +1745,10 @@ export default class Synthesizer {
   /**
    * パーカッションチャネルにする
    *
-   * @param {number} channel パーカッションチャネルとしてセットするチャンネル
-   * @param {boolean} sw パーカッションチャネルか通常かのスイッチ
+   * @param channel パーカッションチャネルとしてセットするチャンネル
+   * @param sw パーカッションチャネルか通常かのスイッチ
    */
-  setPercussionPart(channel, sw) {
+  public setPercussionPart(channel: number, sw: boolean) {
     // XG/GMは127、GS/GM2は128をパーカッションバンクとする
     this.channelBank[channel] =
       this.mode === 'XG' || this.mode === 'GM'
@@ -1807,24 +1761,31 @@ export default class Synthesizer {
 
   /**
    * MIDI音源のメッセージ欄に送られるsysExを解析
-   *
-   * @param {number[]} message
    */
-  processMidiMessage(message) {
+  public processMidiMessage(message: number[]) {
     clearTimeout(this.timer);
     if (!this.element) {
       return;
     }
-    /** @type {HTMLElement | null} */
-    const dom = this.element.querySelector('.header .keys code');
+    const dom: HTMLElement | null =
+      this.element.querySelector('.header .keys code');
     if (!dom) {
       return;
     }
-    dom.innerText = message.map(e => String.fromCharCode(e)).join('');
+    dom.innerText = message.map((e) => String.fromCodePoint(e)).join('');
 
     // 10秒後に削除
     this.timer = setTimeout(() => {
       dom.innerText = '';
     }, 50000);
+  }
+
+  private getChannelDom(channel: number): HTMLDivElement | null {
+    if (!this.element) {
+      return null;
+    }
+    const channelElems: NodeListOf<HTMLDivElement> =
+      this.element.querySelectorAll('.instrument > .channel');
+    return channelElems[channel] || null;
   }
 }

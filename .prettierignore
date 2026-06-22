@@ -1,5 +1,4 @@
-.yarn/
-.husky/
-.vscode/
-dist/
-docs/
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

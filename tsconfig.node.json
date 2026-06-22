@@ -1,0 +1,19 @@
+{
+  "extends": "@tsconfig/node-lts/tsconfig.json",
+  "include": [
+    "env.d.ts",
+    "rsbuild.config.*",
+    "rslib.config.*",
+    "rslint.config.*",
+    "package.json"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "types": ["node"]
+  }
+}
