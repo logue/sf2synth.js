@@ -1,4 +1,6 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath, URL } from 'node:url';
+
 import { pluginSass } from '@rsbuild/plugin-sass';
 import { defineConfig } from '@rslib/core';
 
@@ -27,43 +29,65 @@ const bannerText = `/**
 `;
 
 export default defineConfig({
+  source: {
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+      __BUILD_DATE__: JSON.stringify(buildDate),
+    },
+    entry: {
+      index: './src/index.ts',
+    },
+  },
   plugins: [pluginSass()],
+  output: {
+    target: 'web',
+    emitCss: true,
+    distPath: {
+      root: 'dist',
+      css: '.',
+    },
+    filename: {
+      css: 'sf2synth.css',
+    },
+    injectStyles: false,
+  },
   lib: [
     {
       format: 'esm',
-      syntax: 'es2021',
+      syntax: 'esnext',
       dts: true,
+      bundle: true,
       banner: {
         js: bannerText,
       },
       output: {
         filename: {
-          js: 'index.es.js',
+          js: 'sf2synth.es.js',
         },
         sourceMap: true,
       },
     },
     {
       format: 'umd',
-      syntax: 'es2021',
+      syntax: 'esnext',
       umdName: 'sf2synth',
+      bundle: true,
       banner: {
         js: bannerText,
       },
       output: {
         filename: {
-          js: 'index.umd.js',
+          js: 'sf2synth.umd.js',
         },
         cleanDistPath: false,
         minify: true,
         sourceMap: true,
       },
+      redirect: {
+        style: {
+          extension: false,
+        },
+      },
     },
   ],
-  source: {
-    define: {
-      __APP_VERSION__: JSON.stringify(pkg.version),
-      __BUILD_DATE__: JSON.stringify(buildDate),
-    },
-  },
 });

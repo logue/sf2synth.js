@@ -1,12 +1,6 @@
-/**
- * @typedef {{
- *   version: string;
- *   date: string;
- * }} MetaType
- */
+import { MetaInterface } from './interfaces/MetaInterface';
 
-/** @type {MetaType} */
-const meta = {
+const meta: MetaInterface = {
   version: __APP_VERSION__,
   date: __BUILD_DATE__,
 };

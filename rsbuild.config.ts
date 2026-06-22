@@ -18,16 +18,22 @@ const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as {
 const buildDate = new Date().toISOString();
 
 export default defineConfig({
-  plugins: [pluginSass()],
-  output: {
-    distPath: {
-      root: 'docs',
-    },
-  },
   source: {
+    entry: {
+      index: './src/main.ts',
+    },
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
       __BUILD_DATE__: JSON.stringify(buildDate),
+    },
+  },
+  plugins: [pluginSass()],
+  html: {
+    template: './index.html',
+  },
+  output: {
+    distPath: {
+      root: 'docs',
     },
   },
 });

@@ -41,15 +41,20 @@
   ],
   "main": "dist/sf2synth.umd.js",
   "module": "dist/sf2synth.es.js",
-  "jsdelivr": "dist/sf2synth.iife.js",
-  "unpkg": "dist/sf2synth.iife.js",
-  "style": "dist/sf2synth.css",
+  "browser": "dist/sf2synth.umd.js",
+  "types": "dist/sf2synth.d.ts",
   "exports": {
     ".": {
       "import": "./dist/sf2synth.es.js",
-      "style": "./dist/sf2synth.css"
+      "types": "./dist/sf2synth.d.ts",
+      "require": "./dist/sf2synth.umd.js",
+      "default": "./dist/sf2synth.es.js"
     },
-    "./dist/style.css": "./dist/sf2synth.css",
+    "./umd": {
+      "default": "./dist/sf2synth.umd.js"
+    },
+    "./package.json": "./package.json",
+    "./dist/sf2synth.css": "./dist/sf2synth.css",
     "./dist/Yamaha XG Sound Set.sf2": "./dist/Yamaha XG Sound Set.sf2",
     "./dist/Yamaha XG Sound Set Ver.2.0.sf2": "./dist/Yamaha XG Sound Set Ver.2.0.sf2",
     "./dist/SoundFont Copyright.txt": "./dist/SoundFont Copyright.txt",
@@ -61,14 +66,16 @@
   },
   "packageManager": "pnpm@11.8.0",
   "scripts": {
-    "dev:docs": "rsbuild",
+    "dev": "rsbuild",
     "dev:lib": "rslib --watch",
-    "build": "rslib",
-    "build:docs": "rsbuild",
+    "skills:update": "npx skills update",
+    "lint": "run-s lint:*",
+    "lint:rslint": "rslint --fix .",
+    "lint:biome": "biome format --write",
+    "lint:prettier": "prettier \"./**/*.{yaml,css,sass,scss,htm,html,md}\" -w -u",
+    "build:docs": "rsbuild build",
+    "build": "rslib build",
     "preview": "rsbuild preview",
-    "check": "biome check --write",
-    "lint": "rslint",
-    "format": "prettier --write .",
     "version": "auto-changelog -p && git add CHANGELOG.md",
     "prepare": "husky install"
   },
@@ -87,10 +94,10 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
     "prettier": "^3.8.4",
+    "npm-run-all2": "^9.0.2",
     "typescript": "^6.0.3"
   },
   "lint-staged": {
-    "*.{js,ts,json,htm,html,md}": "pnpm run format",
-    "*": "prettier -w -u"
+    "*.{js,ts,json,htm,html,md}": "pnpm run lint"
   }
 }

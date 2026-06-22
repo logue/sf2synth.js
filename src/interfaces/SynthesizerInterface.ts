@@ -2,7 +2,7 @@ import type Reverb from '@logue/reverb';
 import type {
   GeneratorAmount,
   GeneratorRange,
-} from '../types/SoundFontSynthTypes';
+} from '../types/SynthesizerTypes';
 import type { RiffOptions } from './RiffOptions';
 
 export interface ParserOptions {

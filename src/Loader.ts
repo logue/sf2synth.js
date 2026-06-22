@@ -1,6 +1,6 @@
 /**
- * @classdesc File Loader Class
- * @private
+ * File Loader Class
+ *
  * @author Logue <logue@hotmail.co.jp>
  */
 export default class Loader {
@@ -36,17 +36,17 @@ export default class Loader {
   /**
    * コンストラクタ
    *
-   * @constructor
-   * @param  url
-   * @param  placeholder
-   * @param  cache
-   * @param {Function} callback
+
+   * @param url File url
+   * @param placeholder placeholder DOM
+   * @param cache use cache
+   * @param callback callback function
    */
   constructor(
     url: string,
     placeholder: HTMLElement,
     cache: boolean,
-    callback: (data: ArrayBuffer | Uint8Array) => void,
+    callback: (data: ArrayBuffer | Uint8Array) => void
   ) {
     this.url = url;
     this.cache = cache;
@@ -62,7 +62,7 @@ export default class Loader {
   private createUIElements() {
     this.alert = this.createElement(
       'div',
-      Loader.CLASS_ALERT_WARNING,
+      Loader.CLASS_ALERT_WARNING
     ) as HTMLDivElement;
     this.message = this.createElement('p') as HTMLParagraphElement;
     this.message.innerText = Loader.MSG_LOADING;
@@ -70,7 +70,7 @@ export default class Loader {
     this.progressOuter = this.createProgressBar();
     this.progress = this.createElement(
       'div',
-      Loader.CLASS_PROGRESS_BAR,
+      Loader.CLASS_PROGRESS_BAR
     ) as HTMLDivElement;
 
     this.progressOuter.appendChild(this.progress);
@@ -80,8 +80,8 @@ export default class Loader {
 
   /**
    * Create a DOM element with optional class name
-   * @param  tagName Element tag name
-   * @param  [className] Optional class name
+   * @param tagName Element tag name
+   * @param className Optional class name
    * @returns Created HTMLElement
    */
   private createElement(tagName: string, className: string = ''): HTMLElement {
@@ -98,7 +98,7 @@ export default class Loader {
   private createProgressBar(): HTMLDivElement {
     const progressOuter = this.createElement(
       'div',
-      Loader.CLASS_PROGRESS,
+      Loader.CLASS_PROGRESS
     ) as HTMLDivElement;
     progressOuter.role = 'progressbar';
     progressOuter.ariaLabel = 'Loading Progress';
@@ -115,7 +115,7 @@ export default class Loader {
    */
   private onProgress(current: number, total: number) {
     const percentCompleted = Math.floor(
-      (current / total) * Loader.PROGRESS_MAX,
+      (current / total) * Loader.PROGRESS_MAX
     );
     this.updateProgress(percentCompleted);
   }
@@ -144,7 +144,7 @@ export default class Loader {
     // Provide an ArrayBuffer view to callers to match expected type
     const ab = buffer.buffer.slice(
       buffer.byteOffset,
-      buffer.byteOffset + buffer.byteLength,
+      buffer.byteOffset + buffer.byteLength
     );
     this.callback(ab as ArrayBuffer);
   }
@@ -170,7 +170,7 @@ export default class Loader {
    */
   async fetch() {
     try {
-      const cache = await window.caches.open(Loader.CACHE_NAME);
+      const cache = await caches.open(Loader.CACHE_NAME);
       const cached = await this.loadFromCache(cache);
 
       if (cached) {
@@ -207,7 +207,7 @@ export default class Loader {
   private async loadFromNetwork(cache: Cache) {
     const response = await fetch(this.url, {
       method: Loader.FETCH_METHOD,
-    }).catch((e) => {
+    }).catch(e => {
       this.onError(e);
       return null;
     });
@@ -215,8 +215,8 @@ export default class Loader {
     if (!response?.ok) {
       this.onError(
         new Error(
-          `Failed to fetch: ${response?.status} ${response?.statusText}`,
-        ),
+          `Failed to fetch: ${response?.status} ${response?.statusText}`
+        )
       );
       return;
     }
@@ -224,7 +224,7 @@ export default class Loader {
     const cloned = response.clone();
     const contentLength = Number.parseInt(
       response.headers.get('Content-Length') || '0',
-      10,
+      10
     );
 
     const data = await this.readResponseBody(cloned, contentLength);
@@ -242,7 +242,7 @@ export default class Loader {
    */
   private async readResponseBody(
     response: Response,
-    contentLength: number,
+    contentLength: number
   ): Promise<Uint8Array> {
     const reader = response.body!.getReader();
     let receivedLength = 0;

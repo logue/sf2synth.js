@@ -1,6 +1,7 @@
-import type { WebMidiLinkOptions } from '@/interfaces/WebMidiLinkOptions';
 import Loader from '@/Loader';
 import Synthesizer from '@/Synthesizer';
+
+import type { WebMidiLinkOptions } from '@/interfaces/WebMidiLinkOptions';
 
 /**
  * Web MIDI API Reciever Class.
@@ -122,12 +123,14 @@ export default class WebMidiLink {
     if (this.globalThis.opener) {
       this.window = this.globalThis.opener;
     } else if (this.globalThis.parent === this.globalThis.window) {
-      this.window = this.globalThis;
+      this.window = this.globalThis as unknown as Window;
     } else if (this.globalThis.parent) {
       this.window = this.globalThis.parent;
     } else {
       // WorkerGlobalScope であれば workerGlobal を使用
-      this.window = (this.globalThis as any).workerGlobal || this.globalThis;
+      this.window =
+        (this.globalThis as any).workerGlobal ||
+        (this.globalThis as unknown as Window);
     }
   }
 
@@ -148,15 +151,8 @@ export default class WebMidiLink {
       this.placeholder!,
       this.option.cache,
       (buffer: ArrayBuffer | Uint8Array) => {
-        const ab =
-          buffer instanceof Uint8Array
-            ? buffer.buffer.slice(
-                buffer.byteOffset,
-                buffer.byteOffset + buffer.byteLength,
-              )
-            : buffer;
-        this.setupByBuffer(ab as ArrayBuffer);
-      },
+        this.setupByBuffer(buffer);
+      }
     );
     await loader.fetch();
   }
@@ -169,12 +165,19 @@ export default class WebMidiLink {
   }
 
   /**
-   * Setup SoundFont by ArrayBuffer.
+   * Setup SoundFont by ArrayBuffer or Uint8Array.
    */
-  private setupByBuffer(buffer: ArrayBuffer) {
+  public setupByBuffer(buffer: ArrayBuffer | Uint8Array) {
+    const ab =
+      buffer instanceof Uint8Array
+        ? buffer.buffer.slice(
+            buffer.byteOffset,
+            buffer.byteOffset + buffer.byteLength
+          )
+        : buffer;
     this.clearPlaceholder();
-    console.info('[WebMidiLink] setupByBuffer: byteLength=', buffer.byteLength);
-    this.setupSynthesizer(new Uint8Array(buffer));
+    console.info('[WebMidiLink] setupByBuffer: byteLength=', ab.byteLength);
+    this.setupSynthesizer(new Uint8Array(ab));
     this.renderUI();
     this.synth?.init();
     this.onReady();
@@ -265,7 +268,7 @@ export default class WebMidiLink {
 
     if (!target) {
       throw new Error(
-        '[WebMidiLink] No valid target for WebMidiLink communication',
+        '[WebMidiLink] No valid target for WebMidiLink communication'
       );
     }
 
@@ -324,7 +327,7 @@ export default class WebMidiLink {
    * MIDIメッセージの処理
    */
   private handleMidiMessage(msg: string[]) {
-    this.processMidiMessage(msg.map((hex) => Number.parseInt(hex, 16)));
+    this.processMidiMessage(msg.map(hex => Number.parseInt(hex, 16)));
   }
 
   /**
@@ -563,7 +566,7 @@ export default class WebMidiLink {
         // Pitch Bend Sensitivity
         synth.pitchBendSensitivity(
           channel,
-          synth.getPitchBendSensitivity(channel) + value / 100,
+          synth.getPitchBendSensitivity(channel) + value / 100
         );
       }
     }
@@ -705,7 +708,7 @@ export default class WebMidiLink {
     } else {
       // GS音源のLCDの16x16のビットマップ画像
       console.log(
-        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message),
+        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message)
       );
     }
   }
@@ -758,7 +761,7 @@ export default class WebMidiLink {
       case 0x03:
         // Insertion Effect
         console.log(
-          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message),
+          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message)
         );
         break;
       case 0x04:

@@ -1,7 +1,7 @@
 export interface WebMidiLinkOptions {
   /** Display synthsizer Web UI */
   drawSynth: boolean;
-  /**  Use Cache API */
+  /** Use Cache API */
   cache: boolean;
   /** Color mode */
   colorMode: 'dark' | 'light' | 'auto';
