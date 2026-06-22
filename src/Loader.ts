@@ -140,13 +140,7 @@ export default class Loader {
     this.message.innerText = Loader.MSG_INITIALIZING;
     this.progress.className = Loader.CLASS_PROGRESS_BAR_ANIMATED;
     this.updateProgress(Loader.PROGRESS_MAX);
-    // Execute callback
-    // Provide an ArrayBuffer view to callers to match expected type
-    const ab = buffer.buffer.slice(
-      buffer.byteOffset,
-      buffer.byteOffset + buffer.byteLength
-    );
-    this.callback(ab as ArrayBuffer);
+    this.callback(buffer);
   }
 
   /**

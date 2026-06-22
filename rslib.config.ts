@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs';
-import { fileURLToPath, URL } from 'node:url';
 
 import { pluginSass } from '@rsbuild/plugin-sass';
 import { defineConfig } from '@rslib/core';
@@ -21,7 +20,7 @@ const bannerText = `/**
  * ${pkg.name}
  *
  * @description ${pkg.description}
- * @author iyama, Logue
+ * @author imaya, Logue
  * @license ${pkg.license}
  * @version ${pkg.version}
  * @see {@link ${pkg.homepage}}
@@ -87,6 +86,22 @@ export default defineConfig({
         style: {
           extension: false,
         },
+      },
+    },
+    {
+      format: 'iife',
+      syntax: 'esnext',
+      bundle: true,
+      banner: {
+        js: bannerText,
+      },
+      output: {
+        filename: {
+          js: 'sf2synth.iife.js',
+        },
+        cleanDistPath: false,
+        minify: true,
+        sourceMap: true,
       },
     },
   ],

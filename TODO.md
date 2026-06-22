@@ -6,4 +6,4 @@
 - Support for resonance and cut-off frequency instructions.
 - ~~Externalize sound font mapping.~~
 - ~~Fix panpod, expression~~
-- Support Modulation(Vibrate)
+- ~~Support Modulation(Vibrate)~~
