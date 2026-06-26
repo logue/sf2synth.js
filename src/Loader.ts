@@ -46,7 +46,7 @@ export default class Loader {
     url: string,
     placeholder: HTMLElement,
     cache: boolean,
-    callback: (data: ArrayBuffer | Uint8Array) => void
+    callback: (data: ArrayBuffer | Uint8Array) => void,
   ) {
     this.url = url;
     this.cache = cache;
@@ -62,7 +62,7 @@ export default class Loader {
   private createUIElements() {
     this.alert = this.createElement(
       'div',
-      Loader.CLASS_ALERT_WARNING
+      Loader.CLASS_ALERT_WARNING,
     ) as HTMLDivElement;
     this.message = this.createElement('p') as HTMLParagraphElement;
     this.message.innerText = Loader.MSG_LOADING;
@@ -70,7 +70,7 @@ export default class Loader {
     this.progressOuter = this.createProgressBar();
     this.progress = this.createElement(
       'div',
-      Loader.CLASS_PROGRESS_BAR
+      Loader.CLASS_PROGRESS_BAR,
     ) as HTMLDivElement;
 
     this.progressOuter.appendChild(this.progress);
@@ -98,7 +98,7 @@ export default class Loader {
   private createProgressBar(): HTMLDivElement {
     const progressOuter = this.createElement(
       'div',
-      Loader.CLASS_PROGRESS
+      Loader.CLASS_PROGRESS,
     ) as HTMLDivElement;
     progressOuter.role = 'progressbar';
     progressOuter.ariaLabel = 'Loading Progress';
@@ -115,7 +115,7 @@ export default class Loader {
    */
   private onProgress(current: number, total: number) {
     const percentCompleted = Math.floor(
-      (current / total) * Loader.PROGRESS_MAX
+      (current / total) * Loader.PROGRESS_MAX,
     );
     this.updateProgress(percentCompleted);
   }
@@ -201,7 +201,7 @@ export default class Loader {
   private async loadFromNetwork(cache: Cache) {
     const response = await fetch(this.url, {
       method: Loader.FETCH_METHOD,
-    }).catch(e => {
+    }).catch((e) => {
       this.onError(e);
       return null;
     });
@@ -209,8 +209,8 @@ export default class Loader {
     if (!response?.ok) {
       this.onError(
         new Error(
-          `Failed to fetch: ${response?.status} ${response?.statusText}`
-        )
+          `Failed to fetch: ${response?.status} ${response?.statusText}`,
+        ),
       );
       return;
     }
@@ -218,7 +218,7 @@ export default class Loader {
     const cloned = response.clone();
     const contentLength = Number.parseInt(
       response.headers.get('Content-Length') || '0',
-      10
+      10,
     );
 
     const data = await this.readResponseBody(cloned, contentLength);
@@ -236,7 +236,7 @@ export default class Loader {
    */
   private async readResponseBody(
     response: Response,
-    contentLength: number
+    contentLength: number,
   ): Promise<Uint8Array> {
     const reader = response.body!.getReader();
     let receivedLength = 0;

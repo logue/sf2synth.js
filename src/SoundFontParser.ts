@@ -1,4 +1,5 @@
 import type { RiffOptions } from '@/interfaces/RiffOptions';
+import type { RiffChunk } from '@/interfaces/RiffChunk';
 import type {
   InstrumentHeader,
   InstrumentZone,
@@ -7,7 +8,7 @@ import type {
   PresetZone,
   SampleHeader,
 } from '@/interfaces/SynthesizerInterface';
-import { Riff, type RiffChunk } from '@/Riff';
+import { Riff } from '@/Riff';
 import { defaultGeneratorTable } from '@/types/GeneratorTable';
 import type {
   AdjustedSampleData,
@@ -46,12 +47,12 @@ export default class Parser {
   public input: Uint8Array | null;
   private readonly parserOption: RiffOptions;
   private readonly sampleRate: number = 22050;
-  private presetHeader: PresetHeader[] = [];
+  private readonly presetHeader: PresetHeader[] = [];
   private presetZone: PresetZone[] = [];
   private presetZoneModulator: GeneratorEntry[] = [];
   private presetZoneGenerator: GeneratorEntry[] = [];
   private instrument: InstrumentHeader[] = [];
-  private instrumentZone: InstrumentZone[] = [];
+  private readonly instrumentZone: InstrumentZone[] = [];
   private instrumentZoneModulator: GeneratorEntry[] = [];
   private instrumentZoneGenerator: GeneratorEntry[] = [];
   public sampleHeader: SampleHeader[] = [];
@@ -95,7 +96,7 @@ export default class Parser {
       data[offset],
       data[offset + 1],
       data[offset + 2],
-      data[offset + 3],
+      data[offset + 3]
     );
   }
 
@@ -108,7 +109,7 @@ export default class Parser {
   private validateChunkType(chunk: RiffChunk, expectedType: string): void {
     if (chunk.type !== expectedType) {
       throw new Error(
-        `invalid chunk type: expected '${expectedType}', got '${chunk.type}'`,
+        `invalid chunk type: expected '${expectedType}', got '${chunk.type}'`
       );
     }
   }
@@ -122,7 +123,7 @@ export default class Parser {
   private validateSignature(signature: string, expected: string): void {
     if (signature !== expected) {
       throw new Error(
-        `invalid signature: expected '${expected}', got '${signature}'`,
+        `invalid signature: expected '${expected}', got '${signature}'`
       );
     }
   }
@@ -137,7 +138,7 @@ export default class Parser {
       input instanceof Uint8Array
         ? (input.buffer as ArrayBuffer).slice(
             input.byteOffset,
-            input.byteOffset + input.byteLength,
+            input.byteOffset + input.byteLength
           )
         : input;
 
@@ -146,7 +147,7 @@ export default class Parser {
     parser.parse();
     if (parser.chunkList.length !== Parser.EXPECTED_RIFF_CHUNKS) {
       throw new Error(
-        `wrong chunk length: expected ${Parser.EXPECTED_RIFF_CHUNKS}, got ${parser.chunkList.length}`,
+        `wrong chunk length: expected ${Parser.EXPECTED_RIFF_CHUNKS}, got ${parser.chunkList.length}`
       );
     }
 
@@ -172,7 +173,7 @@ export default class Parser {
     parser.parse();
     if (parser.getNumberOfChunks() !== Parser.EXPECTED_SFBK_CHUNKS) {
       throw new Error(
-        `invalid sfbk structure: expected ${Parser.EXPECTED_SFBK_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`,
+        `invalid sfbk structure: expected ${Parser.EXPECTED_SFBK_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`
       );
     }
 
@@ -218,7 +219,7 @@ export default class Parser {
     parser.parse();
     if (parser.chunkList.length !== Parser.EXPECTED_SDTA_CHUNKS) {
       throw new Error(
-        `invalid sdta structure: expected ${Parser.EXPECTED_SDTA_CHUNKS} chunk, got ${parser.chunkList.length}`,
+        `invalid sdta structure: expected ${Parser.EXPECTED_SDTA_CHUNKS} chunk, got ${parser.chunkList.length}`
       );
     }
     this.samplingData = parser.getChunk(0)!;
@@ -242,7 +243,7 @@ export default class Parser {
 
     if (parser.getNumberOfChunks() !== Parser.EXPECTED_PDTA_CHUNKS) {
       throw new Error(
-        `invalid pdta chunk: expected ${Parser.EXPECTED_PDTA_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`,
+        `invalid pdta chunk: expected ${Parser.EXPECTED_PDTA_CHUNKS} chunks, got ${parser.getNumberOfChunks()}`
       );
     }
 
@@ -333,7 +334,7 @@ export default class Parser {
       ip = nameEnd;
       instrument.push({
         instrumentName: String.fromCodePoint(
-          ...Array.from(data.subarray(ip - 20, nameEnd)),
+          ...Array.from(data.subarray(ip - 20, nameEnd))
         ),
         instrumentBagIndex: data[ip++] | (data[ip++] << 8),
       });
@@ -408,7 +409,7 @@ export default class Parser {
 
     while (ip < size) {
       const sampleName = String.fromCodePoint(
-        ...Array.from(data.subarray(ip, ip + Parser.NAME_SIZE)),
+        ...Array.from(data.subarray(ip, ip + Parser.NAME_SIZE))
       );
       ip += Parser.NAME_SIZE;
 
@@ -434,9 +435,9 @@ export default class Parser {
         new Uint8Array(
           data.subarray(
             samplingData.offset + start * 2,
-            samplingData.offset + end * 2,
-          ),
-        ).buffer,
+            samplingData.offset + end * 2
+          )
+        ).buffer
       );
 
       startLoop -= start;
@@ -469,7 +470,7 @@ export default class Parser {
 
   private adjustSampleData(
     sample: Int16Array,
-    sampleRate: number,
+    sampleRate: number
   ): AdjustedSampleData {
     let newSample: Int16Array;
     let i: number;
@@ -713,7 +714,7 @@ export default class Parser {
 
   private createInstrumentGenerator_(
     zone: InstrumentZone[],
-    index: number,
+    index: number
   ): GeneratorBundle {
     const modgen = this.createBagModGen(
       zone,
@@ -721,7 +722,7 @@ export default class Parser {
       zone[index + 1]
         ? zone[index + 1].instrumentGeneratorIndex
         : this.instrumentZoneGenerator.length,
-      this.instrumentZoneGenerator,
+      this.instrumentZoneGenerator
     );
 
     return {
@@ -732,7 +733,7 @@ export default class Parser {
 
   private createInstrumentModulator_(
     zone: InstrumentZone[],
-    index: number,
+    index: number
   ): ModulatorBundle {
     const modgen = this.createBagModGen(
       zone,
@@ -740,7 +741,7 @@ export default class Parser {
       zone[index + 1]
         ? zone[index + 1].instrumentModulatorIndex
         : this.instrumentZoneModulator.length,
-      this.instrumentZoneModulator,
+      this.instrumentZoneModulator
     );
 
     return {
@@ -751,7 +752,7 @@ export default class Parser {
 
   private createPresetGenerator_(
     zone: PresetZone[],
-    index: number,
+    index: number
   ): GeneratorBundle {
     const modgen = this.createBagModGen(
       zone,
@@ -759,7 +760,7 @@ export default class Parser {
       zone[index + 1]
         ? zone[index + 1].presetGeneratorIndex
         : this.presetZoneGenerator.length,
-      this.presetZoneGenerator,
+      this.presetZoneGenerator
     );
 
     return {
@@ -770,7 +771,7 @@ export default class Parser {
 
   private createPresetModulator_(
     zone: PresetZone[],
-    index: number,
+    index: number
   ): ModulatorBundle {
     const modgen = this.createBagModGen(
       zone,
@@ -778,7 +779,7 @@ export default class Parser {
       zone[index + 1]
         ? zone[index + 1].presetModulatorIndex
         : this.presetZoneModulator.length,
-      this.presetZoneModulator,
+      this.presetZoneModulator
     );
 
     return {
@@ -791,7 +792,7 @@ export default class Parser {
     zone: InstrumentZone[] | PresetZone[],
     indexStart: number,
     indexEnd: number,
-    zoneModGen: GeneratorEntry[],
+    zoneModGen: GeneratorEntry[]
   ): ModGenBundle {
     const modgenInfo: GeneratorEntry[] = [];
     const modgen: ModGen = {

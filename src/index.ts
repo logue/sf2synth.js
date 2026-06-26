@@ -1,3 +1,4 @@
+/// <reference path="./env.d.ts" />
 import type { SoundFontSynth } from './interfaces/SoundFontSynth';
 import Meta from './Meta';
 import Parser from './SoundFontParser';

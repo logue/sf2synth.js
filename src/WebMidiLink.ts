@@ -152,7 +152,7 @@ export default class WebMidiLink {
       this.option.cache,
       (buffer: ArrayBuffer | Uint8Array) => {
         this.setupByBuffer(buffer);
-      }
+      },
     );
     await loader.fetch();
   }
@@ -172,7 +172,7 @@ export default class WebMidiLink {
       buffer instanceof Uint8Array
         ? buffer.buffer.slice(
             buffer.byteOffset,
-            buffer.byteOffset + buffer.byteLength
+            buffer.byteOffset + buffer.byteLength,
           )
         : buffer;
     this.clearPlaceholder();
@@ -268,7 +268,7 @@ export default class WebMidiLink {
 
     if (!target) {
       throw new Error(
-        '[WebMidiLink] No valid target for WebMidiLink communication'
+        '[WebMidiLink] No valid target for WebMidiLink communication',
       );
     }
 
@@ -327,7 +327,7 @@ export default class WebMidiLink {
    * MIDIメッセージの処理
    */
   private handleMidiMessage(msg: string[]) {
-    this.processMidiMessage(msg.map(hex => Number.parseInt(hex, 16)));
+    this.processMidiMessage(msg.map((hex) => Number.parseInt(hex, 16)));
   }
 
   /**
@@ -566,7 +566,7 @@ export default class WebMidiLink {
         // Pitch Bend Sensitivity
         synth.pitchBendSensitivity(
           channel,
-          synth.getPitchBendSensitivity(channel) + value / 100
+          synth.getPitchBendSensitivity(channel) + value / 100,
         );
       }
     }
@@ -708,7 +708,7 @@ export default class WebMidiLink {
     } else {
       // GS音源のLCDの16x16のビットマップ画像
       console.log(
-        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message)
+        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message),
       );
     }
   }
@@ -761,7 +761,7 @@ export default class WebMidiLink {
       case 0x03:
         // Insertion Effect
         console.log(
-          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message)
+          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message),
         );
         break;
       case 0x04:
@@ -823,24 +823,23 @@ export default class WebMidiLink {
    */
   public setColorMode(mode: 'dark' | 'light' | 'auto' | undefined) {
     // If running in a Worker there is no DOM to update
-    if (!this.globalThis.document) {
-      return;
-    }
-    // Mode was given
-    if (mode) {
-      if (mode === 'auto') {
-        mode = window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light';
+    if (this.window instanceof Window) {
+      // Mode was given
+      if (mode) {
+        if (mode === 'auto') {
+          mode = this.window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        // Update data-* attr on html
+        this.window.document.documentElement.dataset.bsTheme = mode;
       }
-      // Update data-* attr on html
-      window!.document.documentElement.setAttribute('data-bs-theme', mode);
-    }
-    // No mode given (e.g. reset)
-    else {
-      window!.document.documentElement.setAttribute('data-bs-theme', 'auto');
-      // Remove data-* attr from html
-      window!.document.documentElement.removeAttribute('data-bs-theme');
+      // No mode given (e.g. reset)
+      else {
+        this.window.document.documentElement.dataset.bsTheme = 'auto';
+        // Remove data-* attr from html
+        delete this.window!.document.documentElement.dataset.bsTheme;
+      }
     }
   }
 }

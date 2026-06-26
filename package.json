@@ -54,7 +54,7 @@
       "default": "./dist/sf2synth.umd.js"
     },
     "./package.json": "./package.json",
-    "./dist/sf2synth.css": "./dist/sf2synth.css",
+    "./dist/index.css": "./dist/index.css",
     "./dist/Yamaha XG Sound Set.sf2": "./dist/Yamaha XG Sound Set.sf2",
     "./dist/Yamaha XG Sound Set Ver.2.0.sf2": "./dist/Yamaha XG Sound Set Ver.2.0.sf2",
     "./dist/SoundFont Copyright.txt": "./dist/SoundFont Copyright.txt",
@@ -64,7 +64,7 @@
   "engines": {
     "node": ">=24.13.0"
   },
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "dev": "rsbuild",
     "dev:lib": "rslib --watch",
@@ -74,7 +74,9 @@
     "lint:biome": "biome format --write",
     "lint:prettier": "prettier \"./**/*.{yaml,css,sass,scss,htm,html,md}\" -w -u",
     "build:docs": "rsbuild build",
-    "build": "rslib build",
+    "build": "run-s build:lib build:dts",
+    "build:lib": "rslib build",
+    "build:dts": "dts-bundle-generator --project ./tsconfig.app.json --no-banner -o dist/sf2synth.d.ts src/index.ts",
     "preview": "rsbuild preview",
     "version": "auto-changelog -p && git add CHANGELOG.md",
     "prepare": "husky install"
@@ -84,17 +86,18 @@
     "bootstrap": "^5.3.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.0",
-    "@rsbuild/core": "^2.0.15",
+    "@biomejs/biome": "2.5.1",
+    "@rsbuild/core": "^2.1.0",
     "@rsbuild/plugin-sass": "^2.0.0",
     "@rslib/core": "^0.23.0",
-    "@rslint/core": "^0.6.2",
+    "@rslint/core": "^0.6.3",
     "@tsconfig/node-lts": "^24.0.0",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
+    "dts-bundle-generator": "^9.5.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
-    "prettier": "^3.8.4",
     "npm-run-all2": "^9.0.2",
+    "prettier": "^3.8.5",
     "typescript": "^6.0.3"
   },
   "lint-staged": {

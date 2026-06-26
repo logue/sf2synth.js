@@ -170,6 +170,10 @@ equires a browser that supports the Web Audio API.
 - [smfplayer.js](https://github.com/logue/smfplayer.js) - MIDI player part
 - [Reverb.js](https://github.com/logue/Reverb.js) - Used in the reverb effect of this program.
 
+## Notice
+
+- The [api-extractor](https://api-extractor.com/) used in the rsbuild stack has not yet been updated to support TS6, so [dts-bundle-generator](https://github.com/timocov/dts-bundle-generator) is used to generate the `.d.ts file.
+
 ## License
 
 Licensed under the MIT License.

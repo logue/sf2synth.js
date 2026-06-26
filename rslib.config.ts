@@ -1,3 +1,4 @@
+/** for build library use.  */
 import { readFileSync } from 'node:fs';
 
 import { pluginSass } from '@rsbuild/plugin-sass';
@@ -29,6 +30,7 @@ const bannerText = `/**
 
 export default defineConfig({
   source: {
+    tsconfigPath: './tsconfig.app.json',
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
       __BUILD_DATE__: JSON.stringify(buildDate),
@@ -54,7 +56,6 @@ export default defineConfig({
     {
       format: 'esm',
       syntax: 'esnext',
-      dts: true,
       bundle: true,
       banner: {
         js: bannerText,
@@ -86,22 +87,6 @@ export default defineConfig({
         style: {
           extension: false,
         },
-      },
-    },
-    {
-      format: 'iife',
-      syntax: 'esnext',
-      bundle: true,
-      banner: {
-        js: bannerText,
-      },
-      output: {
-        filename: {
-          js: 'sf2synth.iife.js',
-        },
-        cleanDistPath: false,
-        minify: true,
-        sourceMap: true,
       },
     },
   ],

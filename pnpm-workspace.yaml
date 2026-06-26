@@ -11,5 +11,30 @@ minimumReleaseAgeExclude:
   - vite-plugin-checker@0.14.4
   - '@rsbuild/plugin-sass@2.0.0'
   - lint-staged@17.0.8
+  - '@biomejs/biome@2.5.1'
+  - '@biomejs/cli-darwin-arm64@2.5.1'
+  - '@biomejs/cli-darwin-x64@2.5.1'
+  - '@biomejs/cli-linux-arm64-musl@2.5.1'
+  - '@biomejs/cli-linux-arm64@2.5.1'
+  - '@biomejs/cli-linux-x64-musl@2.5.1'
+  - '@biomejs/cli-linux-x64@2.5.1'
+  - '@biomejs/cli-win32-arm64@2.5.1'
+  - '@biomejs/cli-win32-x64@2.5.1'
+  - '@rsbuild/core@2.1.0'
+  - '@rspack/binding-darwin-arm64@2.1.0'
+  - '@rspack/binding-darwin-x64@2.1.0'
+  - '@rspack/binding-linux-arm64-gnu@2.1.0'
+  - '@rspack/binding-linux-arm64-musl@2.1.0'
+  - '@rspack/binding-linux-riscv64-gnu@2.1.0'
+  - '@rspack/binding-linux-riscv64-musl@2.1.0'
+  - '@rspack/binding-linux-x64-gnu@2.1.0'
+  - '@rspack/binding-linux-x64-musl@2.1.0'
+  - '@rspack/binding-wasm32-wasi@2.1.0'
+  - '@rspack/binding-win32-arm64-msvc@2.1.0'
+  - '@rspack/binding-win32-ia32-msvc@2.1.0'
+  - '@rspack/binding-win32-x64-msvc@2.1.0'
+  - '@rspack/binding@2.1.0'
+  - '@rspack/core@2.1.0'
+  - prettier@3.8.5
 onlyBuiltDependencies:
   - esbuild

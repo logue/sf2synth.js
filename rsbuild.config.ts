@@ -1,4 +1,6 @@
+/** for document site use. */
 import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import { defineConfig } from '@rsbuild/core';
 import { pluginSass } from '@rsbuild/plugin-sass';
@@ -34,6 +36,16 @@ export default defineConfig({
   output: {
     distPath: {
       root: 'docs',
+    },
+    assetPrefix: './',
+    filenameHash: true,
+  },
+  tools: {
+    htmlPlugin: undefined,
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
     },
   },
 });

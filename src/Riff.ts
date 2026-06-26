@@ -1,5 +1,5 @@
 import type { RiffOptions } from '@/interfaces/RiffOptions';
-
+import type { RiffChunk } from './interfaces/RiffChunk';
 /**
  * Riff Parser class
  *
@@ -25,38 +25,30 @@ export class Riff {
   public chunkList: RiffChunk[] = [];
 
   /**
-   * @param {Uint8Array | ArrayBuffer} input Input buffer.
-   * @param {RiffOptions} [optParams] Option parameters.
+   * @param input Input buffer.
+   * @param Option parameters.
    */
   constructor(
     input: Uint8Array | ArrayBufferLike,
-    optParams: RiffOptions = {},
+    optParams: RiffOptions = {}
   ) {
     if (input === undefined || input === null) {
       throw new TypeError(
-        'Riff constructor requires a Uint8Array or ArrayBufferLike input.',
+        'Riff constructor requires a Uint8Array or ArrayBufferLike input.'
       );
     }
 
-    /** @type {Uint8Array} */
     this.input = input instanceof Uint8Array ? input : new Uint8Array(input);
-    /** @type {number} */
     this.ip = optParams.index || 0;
-    /** @type {number} */
     this.length = optParams.length ?? input.byteLength - this.ip;
-    /** @type {RiffChunk[]} */
     this.chunkList = [];
-    /** @type {number} */
     this.offset = this.ip;
-    /** @type {boolean} */
     this.padding = optParams.padding ?? true;
-    /** @type {boolean} */
     this.bigEndian = optParams.bigEndian ?? false;
   }
 
   parse(): void {
-    /** @type {number} */
-    const length = this.length + this.offset;
+    const length: number = this.length + this.offset;
 
     this.chunkList = [];
 
@@ -76,15 +68,15 @@ export class Riff {
       data[offset],
       data[offset + 1],
       data[offset + 2],
-      data[offset + 3],
+      data[offset + 3]
     );
   }
 
   /**
    * Read 32-bit unsigned integer
-   * @param  data Data array
+   * @param data Data array
    * @param offset Offset position
-   * @returns  32-bit unsigned integer
+   * @returns 32-bit unsigned integer
    */
   private readUInt32(data: Uint8Array, offset: number): number {
     if (this.bigEndian) {
@@ -109,13 +101,13 @@ export class Riff {
     const input = this.input;
     let ip = this.ip;
 
-    const chunkId = this.readChunkId(input, ip);
+    const type = this.readChunkId(input, ip);
     ip += Riff.CHUNK_ID_SIZE;
 
     const size = this.readUInt32(input, ip);
     ip += Riff.CHUNK_SIZE_BYTES;
 
-    this.chunkList.push(new RiffChunk(chunkId, size, ip));
+    this.chunkList.push({ type, size, offset: ip });
 
     ip += size;
 
@@ -134,30 +126,7 @@ export class Riff {
     return this.chunkList[index];
   }
 
-  /** @returns {number} */
-  getNumberOfChunks() {
+  getNumberOfChunks(): number {
     return this.chunkList.length;
-  }
-}
-
-/**
- * Riff Chunk Structure
- *
- * @interface
- */
-export class RiffChunk {
-  public readonly type: string;
-  public readonly size: number;
-  public readonly offset: number;
-
-  /**
-   * @param {string} type
-   * @param {number} size
-   * @param {number} offset
-   */
-  constructor(type: string, size: number, offset: number) {
-    this.type = type;
-    this.size = size;
-    this.offset = offset;
   }
 }
