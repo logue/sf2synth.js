@@ -54,7 +54,7 @@
       "default": "./dist/sf2synth.umd.js"
     },
     "./package.json": "./package.json",
-    "./dist/index.css": "./dist/index.css",
+    "./dist/sf2synth.css": "./dist/sf2synth.css",
     "./dist/Yamaha XG Sound Set.sf2": "./dist/Yamaha XG Sound Set.sf2",
     "./dist/Yamaha XG Sound Set Ver.2.0.sf2": "./dist/Yamaha XG Sound Set Ver.2.0.sf2",
     "./dist/SoundFont Copyright.txt": "./dist/SoundFont Copyright.txt",
