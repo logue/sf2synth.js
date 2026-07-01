@@ -140,7 +140,7 @@ export default class WebMidiLink {
    * this.window が(実行時に安全な形で)Windowかどうかを判定する型ガード
    */
   private isWindow(
-    target: Window | DedicatedWorkerGlobalScope | undefined
+    target: Window | DedicatedWorkerGlobalScope | undefined,
   ): target is Window {
     return (
       globalThis.Window !== undefined && target instanceof globalThis.Window
@@ -165,7 +165,7 @@ export default class WebMidiLink {
       this.option.cache,
       (buffer: ArrayBuffer | Uint8Array) => {
         this.setupByBuffer(buffer);
-      }
+      },
     );
     await loader.fetch();
   }
@@ -185,7 +185,7 @@ export default class WebMidiLink {
       buffer instanceof Uint8Array
         ? buffer.buffer.slice(
             buffer.byteOffset,
-            buffer.byteOffset + buffer.byteLength
+            buffer.byteOffset + buffer.byteLength,
           )
         : buffer;
     this.clearPlaceholder();
@@ -214,19 +214,19 @@ export default class WebMidiLink {
   private setupSynthesizer(buffer: Uint8Array) {
     if (!this.synth) {
       this.synth = new Synthesizer(buffer);
-      console.info('[WebMidiLink] Synthesizer created');
+      // console.info('[WebMidiLink] Synthesizer created');
       if (typeof window !== 'undefined') {
         window.__lastSynth = this.synth;
       }
       this.synth.start();
-      console.info('[WebMidiLink] Synthesizer.start called');
+      // console.info('[WebMidiLink] Synthesizer.start called');
     } else {
       // 音源切り替え前に全チャンネルの音を停止してリソースを解放
       for (let ch = 0; ch < WebMidiLink.MIDI_CHANNELS; ch++) {
         this.synth.allSoundOff(ch);
       }
       this.synth.refreshInstruments(buffer);
-      console.info('[WebMidiLink] Synthesizer.refreshInstruments called');
+      // console.info('[WebMidiLink] Synthesizer.refreshInstruments called');
       if (typeof window !== 'undefined') {
         window.__lastSynth = this.synth;
       }
@@ -277,7 +277,7 @@ export default class WebMidiLink {
     const local = this.local;
     if (!target || !local) {
       throw new TypeError(
-        '[WebMidiLink] No valid target for WebMidiLink communication'
+        '[WebMidiLink] No valid target for WebMidiLink communication',
       );
     }
 
@@ -314,8 +314,6 @@ export default class WebMidiLink {
       return;
     }
 
-    console.log(msg);
-
     const type = msg.shift();
 
     switch (type) {
@@ -334,7 +332,7 @@ export default class WebMidiLink {
    * MIDIメッセージの処理
    */
   private handleMidiMessage(msg: string[]) {
-    this.processMidiMessage(msg.map(hex => Number.parseInt(hex, 16)));
+    this.processMidiMessage(msg.map((hex) => Number.parseInt(hex, 16)));
   }
 
   /**
@@ -585,7 +583,7 @@ export default class WebMidiLink {
         // Pitch Bend Sensitivity
         synth.pitchBendSensitivity(
           channel,
-          synth.getPitchBendSensitivity(channel) + value / 100
+          synth.getPitchBendSensitivity(channel) + value / 100,
         );
       }
     }
@@ -615,7 +613,7 @@ export default class WebMidiLink {
         synth.init('GM2');
         break;
       default:
-        console.log('\x1b[34mGM\x1b[0m: ' + this.dumpMessage(message));
+        console.info('\x1b[34mGM\x1b[0m: ' + this.dumpMessage(message));
     }
   }
 
@@ -629,7 +627,7 @@ export default class WebMidiLink {
       // master volume: F0 7F 7F 04 01 [value] [value] F7
       synth.setMasterVolume(message[4] + (message[5] << 7));
     } else {
-      console.log('\x1b[34mRealtime\x1b[0m: ' + this.dumpMessage(message));
+      console.info('\x1b[34mRealtime\x1b[0m: ' + this.dumpMessage(message));
     }
   }
 
@@ -703,7 +701,7 @@ export default class WebMidiLink {
         console.info('\x1b[31mGS Reset\x1b[0m');
         break;
       default:
-        console.log('\x1b[31mGS\x1b[0m: ' + this.dumpMessage(message));
+        console.info('\x1b[31mGS\x1b[0m: ' + this.dumpMessage(message));
     }
   }
 
@@ -726,8 +724,8 @@ export default class WebMidiLink {
       synth.processMidiMessage(msg);
     } else {
       // GS音源のLCDの16x16のビットマップ画像
-      console.log(
-        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message)
+      console.info(
+        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message),
       );
     }
   }
@@ -775,12 +773,12 @@ export default class WebMidiLink {
         break;
       case 0x02:
         // Effect
-        console.log('\x1b[32mXG Effect\x1b[0m: ' + this.dumpMessage(message));
+        console.info('\x1b[32mXG Effect\x1b[0m: ' + this.dumpMessage(message));
         break;
       case 0x03:
         // Insertion Effect
-        console.log(
-          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message)
+        console.info(
+          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message),
         );
         break;
       case 0x04:
@@ -795,14 +793,14 @@ export default class WebMidiLink {
       }
       case 0x07:
         // Bitmap Window
-        console.log('\x1b[32mXG Bitmap\x1b[0m: ' + this.dumpMessage(message));
+        console.info('\x1b[32mXG Bitmap\x1b[0m: ' + this.dumpMessage(message));
         break;
       case 0x08:
         // XG Drum Part
         synth.setPercussionPart(XgPart, message[8] !== 0x00);
         break;
       default:
-        console.log('\x1b[32mXG\x1b[0m: ', this.dumpMessage(message));
+        console.info('\x1b[32mXG\x1b[0m: ', this.dumpMessage(message));
     }
   }
 

@@ -228,6 +228,7 @@ export default class SynthesizerNote {
     const { instrument } = this;
     const timing = this.calculateEnvelopeTiming();
 
+    /*
     console.debug(
       '[SynthesizerNote] noteOn: channel=%d key=%d velocity=%d sampleLen=%d',
       this.channel,
@@ -235,6 +236,7 @@ export default class SynthesizerNote {
       this.velocity,
       this.buffer?.length ?? 0,
     );
+    */
 
     const loopStart = instrument.loopStart / this.sampleRate;
     const loopEnd = instrument.loopEnd / this.sampleRate;
@@ -471,22 +473,29 @@ export default class SynthesizerNote {
     modulator.connect(panner);
     panner.connect(expressionGainNode);
 
+    /*
     console.debug(
       '[SynthesizerNote] connectAudioNodes: instrument.mute=',
-      !!instrument.mute,
+      !!instrument.mute
     );
+    */
     if (!instrument.mute) {
       this.connect();
+      /*
       console.debug(
-        '[SynthesizerNote] connectAudioNodes: connected outputGainNode to destination',
+        '[SynthesizerNote] connectAudioNodes: connected outputGainNode to destination'
       );
+      */
     } else {
+      /*
       console.debug(
-        '[SynthesizerNote] connectAudioNodes: skipped destination connect because instrument is muted',
+        '[SynthesizerNote] connectAudioNodes: skipped destination connect because instrument is muted'
       );
+      */
     }
 
     expressionGainNode.connect(outputGainNode);
+    /*
     console.debug(
       '[SynthesizerNote] connectAudioNodes: expressionGain=',
       expressionGainNode.gain.value,
@@ -497,8 +506,9 @@ export default class SynthesizerNote {
       'pannerPosY=',
       panner.positionY?.value ?? 'n/a',
       'pannerPosZ=',
-      panner.positionZ?.value ?? 'n/a',
+      panner.positionZ?.value ?? 'n/a'
     );
+    */
   }
 
   /**
