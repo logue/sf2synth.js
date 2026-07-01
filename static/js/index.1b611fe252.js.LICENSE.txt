@@ -1,0 +1,10 @@
+/**
+* @logue/reverb
+*
+* @description JavaScript Reverb effect class
+* @author Logue <logue@hotmail.co.jp>
+* @copyright 2019-2026 By Masashi Yoshikawa All rights reserved.
+* @license MIT
+* @version 1.6.0
+* @see {@link https://github.com/logue/Reverb.js}
+*/
