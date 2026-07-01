@@ -57,8 +57,6 @@ export default class WebMidiLink {
   // Ready表示時間（ミリ秒）
   static readonly READY_DISPLAY_TIME = 3000;
 
-  private readonly globalThis = globalThis;
-
   private NrpnMsb: number[] = [];
   private NrpnLsb: number[] = [];
   private RpnMsb: number[] = [];
@@ -79,7 +77,10 @@ export default class WebMidiLink {
   };
   private placeholder?: HTMLElement | null = undefined;
 
-  private window?: Window | Worker;
+  /** メッセージの送信先(postMessage専用)。opener/parentの場合クロスオリジンのことがある。 */
+  private window?: Window | DedicatedWorkerGlobalScope;
+  /** 自分自身のグローバルスコープ(常に同一オリジン)。イベント購読やDOM操作はこちらを使う。 */
+  private local?: Window | DedicatedWorkerGlobalScope;
 
   constructor(option: Partial<WebMidiLinkOptions> = {}) {
     this.initializeChannelData();
@@ -107,10 +108,10 @@ export default class WebMidiLink {
   private initializeOptions(option: Partial<WebMidiLinkOptions>) {
     this.option = { ...this.option, ...option };
 
-    if (this.globalThis.document) {
+    if (globalThis.document) {
       this.placeholder = option.placeholder
-        ? this.globalThis.document.getElementById(option.placeholder)
-        : this.globalThis.document.body;
+        ? document.getElementById(option.placeholder)
+        : document.body;
     }
 
     this.setColorMode(this.option.colorMode);
@@ -120,18 +121,30 @@ export default class WebMidiLink {
    * ウィンドウの初期化
    */
   private initializeWindow() {
-    if (this.globalThis.opener) {
-      this.window = this.globalThis.opener;
-    } else if (this.globalThis.parent === this.globalThis.window) {
-      this.window = this.globalThis as unknown as Window;
-    } else if (this.globalThis.parent) {
-      this.window = this.globalThis.parent;
-    } else {
-      // WorkerGlobalScope であれば workerGlobal を使用
-      this.window =
-        (this.globalThis as any).workerGlobal ||
-        (this.globalThis as unknown as Window);
+    if (globalThis.window !== undefined) {
+      // ブラウザのメインスレッド
+      const win = globalThis.window;
+      this.local = win;
+      // 送信先: 埋め込み元(opener/parent)があればそちらを、なければ自ウィンドウを使う
+      // ※opener/parentはクロスオリジンのことがあるため、postMessage以外には使わない
+      this.window = win.opener || (win.parent === win ? win : win.parent);
+    } else if (globalThis.self !== undefined) {
+      // Worker自身のグローバルスコープ。selfは`Worker`ではなく`DedicatedWorkerGlobalScope`。
+      const self_ = globalThis.self as unknown as DedicatedWorkerGlobalScope;
+      this.local = self_;
+      this.window = self_;
     }
+  }
+
+  /**
+   * this.window が(実行時に安全な形で)Windowかどうかを判定する型ガード
+   */
+  private isWindow(
+    target: Window | DedicatedWorkerGlobalScope | undefined
+  ): target is Window {
+    return (
+      globalThis.Window !== undefined && target instanceof globalThis.Window
+    );
   }
 
   /**
@@ -152,7 +165,7 @@ export default class WebMidiLink {
       this.option.cache,
       (buffer: ArrayBuffer | Uint8Array) => {
         this.setupByBuffer(buffer);
-      },
+      }
     );
     await loader.fetch();
   }
@@ -172,11 +185,11 @@ export default class WebMidiLink {
       buffer instanceof Uint8Array
         ? buffer.buffer.slice(
             buffer.byteOffset,
-            buffer.byteOffset + buffer.byteLength,
+            buffer.byteOffset + buffer.byteLength
           )
         : buffer;
     this.clearPlaceholder();
-    console.info('[WebMidiLink] setupByBuffer: byteLength=', ab.byteLength);
+    // console.info('[WebMidiLink] setupByBuffer: byteLength=', ab.byteLength);
     this.setupSynthesizer(new Uint8Array(ab));
     this.renderUI();
     this.synth?.init();
@@ -188,11 +201,10 @@ export default class WebMidiLink {
    */
   private clearPlaceholder() {
     // If running in a Worker there is no DOM/document available
-    if (!this.globalThis.document) {
-      return;
-    }
-    while (this.placeholder?.firstChild) {
-      this.placeholder.firstChild?.remove();
+    if (this.isWindow(this.local)) {
+      while (this.placeholder?.firstChild) {
+        this.placeholder.firstChild?.remove();
+      }
     }
   }
 
@@ -226,13 +238,12 @@ export default class WebMidiLink {
    */
   private renderUI() {
     // Skip UI rendering when running in a Worker (no DOM)
-    if (!this.globalThis.document) {
-      return;
-    }
-    if (this.option.drawSynth) {
-      this.placeholder?.appendChild(this.synth!.drawSynth());
-    } else {
-      this.showReadyMessage();
+    if (this.isWindow(this.local)) {
+      if (this.option.drawSynth) {
+        this.placeholder?.appendChild(this.synth!.drawSynth());
+      } else {
+        this.showReadyMessage();
+      }
     }
   }
 
@@ -262,36 +273,30 @@ export default class WebMidiLink {
    * SoundFont Load Ready
    */
   protected onReady() {
-    // Determine appropriate target for event handling and postMessage
-    const isDom = !!this.globalThis.document;
-    const target = isDom ? this.window : this.globalThis;
-
-    if (!target) {
-      throw new Error(
-        '[WebMidiLink] No valid target for WebMidiLink communication',
+    const target = this.window;
+    const local = this.local;
+    if (!target || !local) {
+      throw new TypeError(
+        '[WebMidiLink] No valid target for WebMidiLink communication'
       );
     }
 
     // 一旦MIDI Link待受を解除
-    if (typeof target.removeEventListener === 'function') {
-      target.removeEventListener('message', this.messageHandler);
-    }
+    // ※opener/parent(target)はクロスオリジンのことがあり、addEventListener等には
+    //   アクセス許可されていないため、必ず自分自身(local)に対して行う
+    local.removeEventListener('message', this.messageHandler);
+
     // コールバック実行
     this.callback();
-    // MIDI Link待ち受け開始
-    if (typeof target.addEventListener === 'function') {
-      target.addEventListener('message', this.messageHandler, false);
-    }
 
-    // ホスト側に準備完了通知を送信
-    if (typeof target.postMessage === 'function') {
-      if (isDom) {
-        // Cast targetOrigin to any to satisfy differing TS DOM lib overloads for postMessage
-        target.postMessage('link,ready', this.option.messageOptions);
-      } else {
-        // Worker global scope: postMessage(message) without targetOrigin
-        target.postMessage('link,ready');
-      }
+    // MIDI Link待ち受け開始 — 常に自分自身で待ち受ける
+    local.addEventListener('message', this.messageHandler, false);
+
+    // ホスト側に準備完了を通知
+    if (this.isWindow(target)) {
+      target.postMessage('link,ready', this.option.messageOptions);
+    } else {
+      target.postMessage('link,ready');
     }
   }
 
@@ -308,6 +313,8 @@ export default class WebMidiLink {
       console.error('unknown message type');
       return;
     }
+
+    console.log(msg);
 
     const type = msg.shift();
 
@@ -327,7 +334,7 @@ export default class WebMidiLink {
    * MIDIメッセージの処理
    */
   private handleMidiMessage(msg: string[]) {
-    this.processMidiMessage(msg.map((hex) => Number.parseInt(hex, 16)));
+    this.processMidiMessage(msg.map(hex => Number.parseInt(hex, 16)));
   }
 
   /**
@@ -335,19 +342,31 @@ export default class WebMidiLink {
    */
   private handleLinkMessage(msg: string[]) {
     const command = msg.shift();
+    const target = this.window;
+    if (!target) {
+      return;
+    }
+
+    const post = (message: string) => {
+      if (this.isWindow(target)) {
+        target.postMessage(message, this.option.messageOptions);
+      } else {
+        target.postMessage(message);
+      }
+    };
 
     switch (command) {
       case 'reqpatch':
         // TODO: dummy data
-        this.window!.postMessage('link,patch', this.option.messageOptions);
+        post('link,patch');
         break;
       case 'setpatch':
       case 'ready':
-        this.window!.postMessage('link,ready', this.option.messageOptions);
+        post('link,ready');
         break;
       case 'progress':
         // ※この命令は、WebMidiLinkの仕様に含まれていません。
-        this.window!.postMessage('link,progress', this.option.messageOptions);
+        post('link,progress');
         break;
       default:
         console.error('unknown link message:', command);
@@ -566,7 +585,7 @@ export default class WebMidiLink {
         // Pitch Bend Sensitivity
         synth.pitchBendSensitivity(
           channel,
-          synth.getPitchBendSensitivity(channel) + value / 100,
+          synth.getPitchBendSensitivity(channel) + value / 100
         );
       }
     }
@@ -708,7 +727,7 @@ export default class WebMidiLink {
     } else {
       // GS音源のLCDの16x16のビットマップ画像
       console.log(
-        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message),
+        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message)
       );
     }
   }
@@ -761,7 +780,7 @@ export default class WebMidiLink {
       case 0x03:
         // Insertion Effect
         console.log(
-          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message),
+          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message)
         );
         break;
       case 0x04:
@@ -823,23 +842,24 @@ export default class WebMidiLink {
    */
   public setColorMode(mode: 'dark' | 'light' | 'auto' | undefined) {
     // If running in a Worker there is no DOM to update
-    if (this.window instanceof Window) {
-      // Mode was given
-      if (mode) {
-        if (mode === 'auto') {
-          mode = this.window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
-        }
-        // Update data-* attr on html
-        this.window.document.documentElement.dataset.bsTheme = mode;
+    if (!this.isWindow(this.local)) {
+      return;
+    }
+    const win = this.local;
+    // Mode was given
+    if (mode) {
+      if (mode === 'auto') {
+        mode = win.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
       }
-      // No mode given (e.g. reset)
-      else {
-        this.window.document.documentElement.dataset.bsTheme = 'auto';
-        // Remove data-* attr from html
-        delete this.window!.document.documentElement.dataset.bsTheme;
-      }
+      // Update data-* attr on html
+      win.document.documentElement.dataset.bsTheme = mode;
+    }
+    // No mode given (e.g. reset)
+    else {
+      // Remove data-* attr from html
+      delete win.document.documentElement.dataset.bsTheme;
     }
   }
 }

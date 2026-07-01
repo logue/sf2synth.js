@@ -30,11 +30,11 @@ export class Riff {
    */
   constructor(
     input: Uint8Array | ArrayBufferLike,
-    optParams: RiffOptions = {}
+    optParams: RiffOptions = {},
   ) {
     if (input === undefined || input === null) {
       throw new TypeError(
-        'Riff constructor requires a Uint8Array or ArrayBufferLike input.'
+        'Riff constructor requires a Uint8Array or ArrayBufferLike input.',
       );
     }
 
@@ -47,7 +47,7 @@ export class Riff {
     this.bigEndian = optParams.bigEndian ?? false;
   }
 
-  parse(): void {
+  public parse(): void {
     const length: number = this.length + this.offset;
 
     this.chunkList = [];
@@ -68,7 +68,7 @@ export class Riff {
       data[offset],
       data[offset + 1],
       data[offset + 2],
-      data[offset + 3]
+      data[offset + 3],
     );
   }
 
@@ -97,7 +97,7 @@ export class Riff {
     );
   }
 
-  parseChunk(): void {
+  private parseChunk(): void {
     const input = this.input;
     let ip = this.ip;
 
@@ -120,13 +120,13 @@ export class Riff {
   }
 
   /**
-   * @param  index Chunk index.
+   * @param index Chunk index.
    */
-  getChunk(index: number): RiffChunk {
+  public getChunk(index: number): RiffChunk {
     return this.chunkList[index];
   }
 
-  getNumberOfChunks(): number {
+  public getNumberOfChunks(): number {
     return this.chunkList.length;
   }
 }
