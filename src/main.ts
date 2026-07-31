@@ -1,5 +1,5 @@
-import type { WebMidiLinkOptions } from '@/interfaces/WebMidiLinkOptions';
 import SoundFont from '@/index';
+import type { WebMidiLinkOptions } from '@/types/WebMidiLinkOptions';
 
 /**
  * Main entry point (index.html) for the SoundFont Synthesizer application.

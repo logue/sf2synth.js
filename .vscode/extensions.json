@@ -1,0 +1,3 @@
+{
+  "recommendations": ["biomejs.biome", "rstack.rslint", "rstack.rstest"]
+}

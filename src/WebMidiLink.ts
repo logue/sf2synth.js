@@ -1,7 +1,6 @@
 import Loader from '@/Loader';
 import Synthesizer from '@/Synthesizer';
-
-import type { WebMidiLinkOptions } from '@/interfaces/WebMidiLinkOptions';
+import { WebMidiLinkOptions } from '@/types/WebMidiLinkOptions';
 
 /**
  * Web MIDI API Reciever Class.
@@ -51,8 +50,7 @@ export default class WebMidiLink {
   };
 
   // デフォルトSoundFont URL
-  static readonly DEFAULT_SOUNDFONT_URL =
-    'https://cdn.jsdelivr.net/npm/@logue/sf2synth@latest/dist/Yamaha XG Sound Set.sf2';
+  static readonly DEFAULT_SOUNDFONT_URL = WebMidiLinkOptions.url;
 
   // Ready表示時間（ミリ秒）
   static readonly READY_DISPLAY_TIME = 3000;
@@ -65,16 +63,7 @@ export default class WebMidiLink {
   private messageHandler!: EventListenerOrEventListenerObject;
   private rpnMode: boolean = true;
 
-  private option: WebMidiLinkOptions = {
-    drawSynth: true,
-    cache: true,
-    colorMode: 'auto',
-    url: WebMidiLink.DEFAULT_SOUNDFONT_URL,
-    placeholder: 'wml',
-    messageOptions: {
-      targetOrigin: '*',
-    },
-  };
+  private option: WebMidiLinkOptions = { ...WebMidiLinkOptions };
   private placeholder?: HTMLElement | null = undefined;
 
   /** メッセージの送信先(postMessage専用)。opener/parentの場合クロスオリジンのことがある。 */
@@ -130,9 +119,10 @@ export default class WebMidiLink {
       this.window = win.opener || (win.parent === win ? win : win.parent);
     } else if (globalThis.self !== undefined) {
       // Worker自身のグローバルスコープ。selfは`Worker`ではなく`DedicatedWorkerGlobalScope`。
-      const self_ = globalThis.self as unknown as DedicatedWorkerGlobalScope;
-      this.local = self_;
-      this.window = self_;
+      const workerSelf =
+        globalThis.self as unknown as DedicatedWorkerGlobalScope;
+      this.local = workerSelf;
+      this.window = workerSelf;
     }
   }
 
@@ -152,7 +142,7 @@ export default class WebMidiLink {
    *
    * @param url SoundFont URL
    */
-  public async setup(url?: string) {
+  public async setup(url?: string): Promise<void> {
     this.clearPlaceholder();
 
     if (url) {
@@ -180,7 +170,7 @@ export default class WebMidiLink {
   /**
    * Setup SoundFont by ArrayBuffer or Uint8Array.
    */
-  public setupByBuffer(buffer: ArrayBuffer | Uint8Array) {
+  public setupByBuffer(buffer: ArrayBuffer | Uint8Array): void {
     const ab =
       buffer instanceof Uint8Array
         ? buffer.buffer.slice(
@@ -265,14 +255,14 @@ export default class WebMidiLink {
   /**
    * Callback
    */
-  protected callback() {
+  protected callback(): void {
     // through
   }
 
   /**
    * SoundFont Load Ready
    */
-  protected onReady() {
+  protected onReady(): void {
     const target = this.window;
     const local = this.local;
     if (!target || !local) {
@@ -376,14 +366,14 @@ export default class WebMidiLink {
    *
    * @param callback コールバック関数
    */
-  public setLoadCallback(callback: () => void) {
+  public setLoadCallback(callback: () => void): void {
     this.callback = callback;
   }
 
   /**
    * MIDI信号を解析し、シンセサイザーを操作する
    */
-  protected processMidiMessage(message: number[]) {
+  protected processMidiMessage(message: number[]): void {
     const synth = this.synth;
     if (!synth) {
       return;
@@ -838,7 +828,7 @@ export default class WebMidiLink {
   /**
    * Change Color mode
    */
-  public setColorMode(mode: 'dark' | 'light' | 'auto' | undefined) {
+  public setColorMode(mode: 'dark' | 'light' | 'auto' | undefined): void {
     // If running in a Worker there is no DOM to update
     if (!this.isWindow(this.local)) {
       return;

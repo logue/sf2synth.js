@@ -1,0 +1,29 @@
+{
+  "extends": "@tsconfig/node-lts/tsconfig.json",
+  "include": ["env.d.ts", "src/**/*"],
+  "exclude": ["src/**/__tests__/*"],
+  "compilerOptions": {
+    "rootDir": "src",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "lib": ["DOM", "ESNext"],
+    "types": ["@rslib/core/types", "node"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.rslib.tsbuildinfo",
+
+    "useDefineForClassFields": true,
+    "outDir": "dist",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+
+    /* modules */
+    "module": "esnext",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+
+    /* type checking */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  }
+}

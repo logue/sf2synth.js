@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.rslib.json",
+  "include": ["src/**/__tests__/*", "env.d.ts"],
+  "exclude": [],
+  "compilerOptions": {
+    "types": ["@rstest/core/types", "node"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.rstest.tsbuildinfo",
+    "resolveJsonModule": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "js/ts.experimental.useTsgo": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.rslint": "explicit"
+  },
+  "editor.formatOnPaste": true,
+  "notebook.defaultFormatter": "biomejs.biome"
+}

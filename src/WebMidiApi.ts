@@ -1,5 +1,5 @@
-import type { WebMidiLinkOptions } from '@/interfaces/WebMidiLinkOptions';
 import WebMidiLink from '@/WebMidiLink';
+import type { WebMidiLinkOptions } from '@/types/WebMidiLinkOptions';
 
 /**
  * Web MIDI API Reciever Class.
@@ -20,7 +20,7 @@ export default class WebMidiApi extends WebMidiLink {
    * @inheritdoc
    * @param url
    */
-  async setup(url?: string) {
+  async setup(url?: string): Promise<void> {
     this.midi = await globalThis.navigator.requestMIDIAccess({ sysex: true });
     await super.setup(url);
   }
@@ -28,7 +28,7 @@ export default class WebMidiApi extends WebMidiLink {
   /**
    * @inheritdoc
    */
-  onReady() {
+  onReady(): void {
     // コールバック実行
     super.callback();
     if (!this.midi) {

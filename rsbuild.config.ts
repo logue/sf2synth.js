@@ -1,38 +1,15 @@
-/** for document site use. */
+/** For build documentation site use. */
 import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 
 import { defineConfig } from '@rsbuild/core';
-import { pluginSass } from '@rsbuild/plugin-sass';
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as {
-  name: string;
-  description: string;
-  author: {
-    name: string;
-    email: string;
-  };
-  license: string;
   version: string;
-  homepage: string;
 };
 
 const buildDate = new Date().toISOString();
 
 export default defineConfig({
-  source: {
-    entry: {
-      index: './src/main.ts',
-    },
-    define: {
-      __APP_VERSION__: JSON.stringify(pkg.version),
-      __BUILD_DATE__: JSON.stringify(buildDate),
-    },
-  },
-  plugins: [pluginSass()],
-  html: {
-    template: './index.html',
-  },
   output: {
     distPath: {
       root: 'docs',
@@ -40,12 +17,18 @@ export default defineConfig({
     assetPrefix: './',
     filenameHash: true,
   },
-  tools: {
-    htmlPlugin: undefined,
+  html: {
+    template: './index.html'
   },
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src'),
+  source: {
+    tsconfigPath: './tsconfig.rsbuild.json',
+    include: ['./src'],
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+      __BUILD_DATE__: JSON.stringify(buildDate),
+    },
+    entry: {
+      index: './src-docs/index.ts',
     },
   },
 });

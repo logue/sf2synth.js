@@ -1,5 +1,5 @@
-import type { RiffOptions } from '@/interfaces/RiffOptions';
 import type { RiffChunk } from '@/interfaces/RiffChunk';
+import type { RiffOptions } from '@/interfaces/RiffOptions';
 import type {
   InstrumentHeader,
   InstrumentZone,

@@ -2,7 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig.json",
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.rsbuild.json" },
+    { "path": "./tsconfig.rslib.json" },
+    { "path": "./tsconfig.rstest.json" }
   ]
 }
