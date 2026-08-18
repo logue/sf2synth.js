@@ -161,7 +161,9 @@ export default class Synthesizer {
     this.programSet = [];
     this.channelMute = new Array(Synthesizer.MIDI_CHANNELS).fill(false);
     this.currentNoteOn = Array.from(
-      { length: Synthesizer.MIDI_CHANNELS },
+      {
+        length: Synthesizer.MIDI_CHANNELS,
+      },
       () => [],
     );
     this.baseVolume = 1;
@@ -186,7 +188,9 @@ export default class Synthesizer {
     this.filter = [];
 
     for (i = 0; i < Synthesizer.MIDI_CHANNELS; ++i) {
-      this.reverb[i] = new Reverb(this.ctx, { noise: 'violet' });
+      this.reverb[i] = new Reverb(this.ctx, {
+        noise: 'violet',
+      });
       // フィルタを定義
       this.filter[i] = this.ctx.createBiquadFilter();
     }
@@ -402,7 +406,9 @@ export default class Synthesizer {
       banks[bankNumber] = banks[bankNumber] ?? [];
       bank = banks[bankNumber] ?? [];
       banks[bankNumber] = bank;
-      bank[presetNumber] = { name: presetName };
+      bank[presetNumber] = {
+        name: presetName,
+      };
       const presetEntry = bank[presetNumber];
       if (!presetEntry) {
         return;
@@ -627,13 +633,13 @@ export default class Synthesizer {
   }
 
   /** Connect root AudioContext */
-  private connect() {
+  public connect() {
     this.bufSrc.connect(this.gainMaster);
     // console.debug('[Synthesizer] bufSrc -> gainMaster connected');
   }
 
   /** Disconnect root AudioContext */
-  private disconnect() {
+  public disconnect() {
     this.reverb.forEach((r) => r.disconnect());
     this.bufSrc.disconnect(this.gainMaster);
     this.bufSrc.buffer = null;
@@ -815,7 +821,16 @@ export default class Synthesizer {
               const n: number = key % 12;
               // 白鍵と黒鍵の色分け
               keyElem.className =
-                'key ' + ([1, 3, 6, 8, 10].includes(n) ? 'semitone' : 'tone');
+                'key ' +
+                ([
+                  1,
+                  3,
+                  6,
+                  8,
+                  10,
+                ].includes(n)
+                  ? 'semitone'
+                  : 'tone');
               itemElem.appendChild(keyElem);
 
               // イベント割当

@@ -1,5 +1,5 @@
-export interface RiffChunk {
+export type RiffChunk = {
   type: string;
   size: number;
   offset: number;
-}
+};

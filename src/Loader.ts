@@ -238,7 +238,10 @@ export default class Loader {
     response: Response,
     contentLength: number,
   ): Promise<Uint8Array> {
-    const reader = response.body!.getReader();
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('[Loader] Read response failed.');
+    }
     let receivedLength = 0;
     const chunks: Uint8Array[] = [];
 

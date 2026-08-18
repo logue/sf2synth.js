@@ -1,5 +1,5 @@
-import type { RiffOptions } from '@/interfaces/RiffOptions';
-import type { RiffChunk } from './interfaces/RiffChunk';
+import type { RiffOptions } from '@/types/RiffOptions';
+import type { RiffChunk } from './types/RiffChunk';
 /**
  * Riff Parser class
  *
@@ -30,7 +30,7 @@ export class Riff {
    */
   constructor(
     input: Uint8Array | ArrayBufferLike,
-    optParams: RiffOptions = {},
+    optParams: Partial<RiffOptions> = {},
   ) {
     if (input === undefined || input === null) {
       throw new TypeError(
@@ -107,7 +107,11 @@ export class Riff {
     const size = this.readUInt32(input, ip);
     ip += Riff.CHUNK_SIZE_BYTES;
 
-    this.chunkList.push({ type, size, offset: ip });
+    this.chunkList.push({
+      type,
+      size,
+      offset: ip,
+    });
 
     ip += size;
 

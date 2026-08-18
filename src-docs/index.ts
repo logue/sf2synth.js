@@ -1,4 +1,6 @@
 import SoundFont from '@/index';
+import '@/WebMidiLink.scss';
+
 import type { WebMidiLinkOptions } from '@/types/WebMidiLinkOptions';
 
 /**
@@ -70,8 +72,12 @@ function updateSoundfontName(name: string): void {
 function loadSoundFont(file: File): void {
   const reader = new FileReader();
   reader.onload = (e) => {
+    const target = e.target;
+    if (!target) {
+      throw new Error('[main] loadSoundFont failure.');
+    }
     updateSoundfontName(file.name);
-    const data = new Uint8Array(e.target!.result as ArrayBuffer);
+    const data = new Uint8Array(target.result as ArrayBuffer);
     wml.setupByBuffer(data);
   };
   reader.readAsArrayBuffer(file);

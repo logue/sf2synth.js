@@ -1,5 +1,3 @@
-import type { RiffChunk } from '@/interfaces/RiffChunk';
-import type { RiffOptions } from '@/interfaces/RiffOptions';
 import type {
   InstrumentHeader,
   InstrumentZone,
@@ -10,6 +8,8 @@ import type {
 } from '@/interfaces/SynthesizerInterface';
 import { Riff } from '@/Riff';
 import { defaultGeneratorTable } from '@/types/GeneratorTable';
+import type { RiffChunk } from '@/types/RiffChunk';
+import type { RiffOptions } from '@/types/RiffOptions';
 import type {
   AdjustedSampleData,
   GeneratorBundle,
@@ -44,8 +44,8 @@ export default class Parser {
   static readonly MODULATOR_SIZE = 10;
   static readonly GENERATOR_SIZE = 4;
 
-  public input: Uint8Array | null;
-  private readonly parserOption: RiffOptions;
+  public input: Uint8Array;
+  private readonly parserOption: Partial<RiffOptions>;
   private readonly sampleRate: number = 22050;
   private readonly presetHeader: PresetHeader[] = [];
   private presetZone: PresetZone[] = [];
@@ -58,7 +58,11 @@ export default class Parser {
   public sampleHeader: SampleHeader[] = [];
   public sample: Int16Array[] = [];
   public samplingData:
-    | { type: string; size: number; offset: number }
+    | {
+        type: string;
+        size: number;
+        offset: number;
+      }
     | undefined;
   public readonly GeneratorEnumeratorTable: string[];
 
@@ -130,10 +134,6 @@ export default class Parser {
 
   public parse() {
     const input = this.input;
-    if (!input) {
-      throw new Error('soundfont input buffer is missing');
-    }
-
     const sourceBuffer =
       input instanceof Uint8Array
         ? (input.buffer as ArrayBuffer).slice(
@@ -153,7 +153,7 @@ export default class Parser {
 
     this.parseRiffChunk(parser.getChunk(0));
     // Release parsed source buffer reference after parsing.
-    this.input = null;
+    this.input = new Uint8Array();
   }
 
   private parseRiffChunk(chunk: RiffChunk): void {
@@ -186,7 +186,7 @@ export default class Parser {
   }
 
   private parseInfoList(chunk: RiffChunk): void {
-    const data = this.input!;
+    const data = this.input;
     let ip = chunk.offset;
 
     this.validateChunkType(chunk, 'LIST');
@@ -203,7 +203,7 @@ export default class Parser {
   }
 
   parseSdtaList(chunk: RiffChunk) {
-    const data = this.input!;
+    const data = this.input;
     let ip = chunk.offset;
 
     this.validateChunkType(chunk, 'LIST');
@@ -226,7 +226,10 @@ export default class Parser {
   }
 
   parsePdtaList(chunk: RiffChunk) {
-    const data = this.input!;
+    const data = this.input;
+    if (!data) {
+      throw new Error('[SoundFontParser] data is null.');
+    }
     let ip = chunk.offset;
 
     this.validateChunkType(chunk, 'LIST');
@@ -261,7 +264,11 @@ export default class Parser {
   private parsePhdr(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'phdr');
 
-    const data = this.input!;
+    const data = this.input;
+    if (!data) {
+      throw new Error('[SoundFontParser] data is null.');
+    }
+
     let ip = chunk.offset;
     const presetHeader: PresetHeader[] = this.presetHeader;
     const size = chunk.offset + chunk.size;
@@ -298,7 +305,10 @@ export default class Parser {
   private parsePbag(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'pbag');
 
-    const data = this.input!;
+    const data = this.input;
+    if (!data) {
+      throw new Error('[SoundFontParser] data is null.');
+    }
     let ip = chunk.offset;
     const presetZone: PresetZone[] = (this.presetZone = []);
     const size = chunk.offset + chunk.size;
@@ -324,9 +334,13 @@ export default class Parser {
   private parseInst(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'inst');
 
-    const data = this.input!;
+    const data = this.input;
+    if (!data) {
+      throw new Error('[SoundFontParser] data is null.');
+    }
     let ip = chunk.offset;
-    const instrument: InstrumentHeader[] = (this.instrument = []);
+    this.instrument = [];
+    const instrument: InstrumentHeader[] = this.instrument;
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
@@ -344,7 +358,7 @@ export default class Parser {
   private parseIbag(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'ibag');
 
-    const data = this.input!;
+    const data = this.input;
     let ip = chunk.offset;
     const instrumentZone: InstrumentZone[] = this.instrumentZone;
     const size = chunk.offset + chunk.size;
@@ -396,7 +410,7 @@ export default class Parser {
   parseShdr(chunk: RiffChunk) {
     this.validateChunkType(chunk, 'shdr');
 
-    const data = this.input!;
+    const data = this.input;
     let ip = chunk.offset;
     const samples: Int16Array[] = this.sample;
     const sampleHeader: SampleHeader[] = this.sampleHeader;
@@ -498,7 +512,7 @@ export default class Parser {
   }
 
   parseModulator(chunk: RiffChunk): GeneratorEntry[] {
-    const data = this.input!;
+    const data = this.input;
     let ip = chunk.offset;
     const size = chunk.offset + chunk.size;
     const output: GeneratorEntry[] = [];
@@ -565,7 +579,7 @@ export default class Parser {
   }
 
   parseGenerator(chunk: RiffChunk): GeneratorEntry[] {
-    const data = this.input!;
+    const data = this.input;
     let ip = chunk.offset;
     const size = chunk.offset + chunk.size;
     const output: GeneratorEntry[] = [];
@@ -789,7 +803,7 @@ export default class Parser {
   }
 
   private createBagModGen(
-    zone: InstrumentZone[] | PresetZone[],
+    _zone: InstrumentZone[] | PresetZone[],
     indexStart: number,
     indexEnd: number,
     zoneModGen: GeneratorEntry[],

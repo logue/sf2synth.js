@@ -58,7 +58,7 @@ export default class SynthesizerNote {
   private readonly panner: PannerNode;
   private readonly outputGainNode: GainNode;
   private readonly expressionGainNode: GainNode;
-  private filter: BiquadFilterNode;
+  private readonly filter: BiquadFilterNode;
   private readonly modulator: BiquadFilterNode;
   private lfo: OscillatorNode | null;
   private lfoDepth: GainNode | null;
@@ -554,7 +554,7 @@ export default class SynthesizerNote {
     if (this.lfo) {
       try {
         this.lfo.stop(now);
-      } catch (error) {
+      } catch (_error) {
         // LFO might already be stopped
       }
     }
@@ -650,7 +650,7 @@ export default class SynthesizerNote {
             // Fallback: try stopping immediately
             try {
               bufferSource.stop();
-            } catch (fallbackError) {
+            } catch (_fallbackError) {
               // Already stopped or in invalid state
             }
           }
@@ -728,7 +728,7 @@ export default class SynthesizerNote {
     if (this.lfo) {
       try {
         this.lfo.disconnect();
-      } catch (error) {
+      } catch (_error) {
         // Ignore disconnect errors
       }
       this.lfo = null;
@@ -736,7 +736,7 @@ export default class SynthesizerNote {
     if (this.lfoDepth) {
       try {
         this.lfoDepth.disconnect();
-      } catch (error) {
+      } catch (_error) {
         // Ignore disconnect errors
       }
       this.lfoDepth = null;

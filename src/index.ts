@@ -1,12 +1,11 @@
-/// <reference path="./env.d.ts" />
-import type { SoundFontSynth } from './interfaces/SoundFontSynth';
-import Meta from './Meta';
-import Parser from './SoundFontParser';
-import WebMidiApi from './WebMidiApi';
-import WebMidiLink from './WebMidiLink';
-import './WebMidiLink.scss';
+import Parser from '@/SoundFontParser';
+import { Meta } from '@/types/Meta';
+import type { SoundFont2Synth } from '@/types/SoundFont2Synth';
+import WebMidiApi from '@/WebMidiApi';
+import WebMidiLink from '@/WebMidiLink';
+import '@/WebMidiLink.scss';
 
-const SoundFont: SoundFontSynth = {
+const SoundFont: SoundFont2Synth = {
   version: Meta.version,
   build: Meta.date,
   WebMidiLink,

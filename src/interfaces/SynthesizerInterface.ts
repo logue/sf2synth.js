@@ -1,9 +1,6 @@
 import type Reverb from '@logue/reverb';
-import type {
-  GeneratorAmount,
-  GeneratorRange,
-} from '../types/SynthesizerTypes';
-import type { RiffOptions } from './RiffOptions';
+import type { RiffOptions } from '@/types/RiffOptions';
+import type { GeneratorAmount, GeneratorRange } from '@/types/SynthesizerTypes';
 
 export interface ParserOptions {
   parserOption?: RiffOptions;
@@ -63,7 +60,10 @@ export interface ParsedInstrument {
 }
 
 export interface ParsedPreset {
-  header: { preset: number; bank: number };
+  header: {
+    preset: number;
+    bank: number;
+  };
   name: string;
   instrument: number | null;
 }

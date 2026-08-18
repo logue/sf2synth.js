@@ -63,7 +63,9 @@ export default class WebMidiLink {
   private messageHandler!: EventListenerOrEventListenerObject;
   private rpnMode: boolean = true;
 
-  private option: WebMidiLinkOptions = { ...WebMidiLinkOptions };
+  private option: WebMidiLinkOptions = {
+    ...WebMidiLinkOptions,
+  };
   private placeholder?: HTMLElement | null = undefined;
 
   /** メッセージの送信先(postMessage専用)。opener/parentの場合クロスオリジンのことがある。 */
@@ -82,10 +84,18 @@ export default class WebMidiLink {
    */
   private initializeChannelData() {
     const emptyChannelArray = new Array(WebMidiLink.MIDI_CHANNELS).fill(0);
-    this.NrpnMsb = [...emptyChannelArray];
-    this.NrpnLsb = [...emptyChannelArray];
-    this.RpnMsb = [...emptyChannelArray];
-    this.RpnLsb = [...emptyChannelArray];
+    this.NrpnMsb = [
+      ...emptyChannelArray,
+    ];
+    this.NrpnLsb = [
+      ...emptyChannelArray,
+    ];
+    this.RpnMsb = [
+      ...emptyChannelArray,
+    ];
+    this.RpnLsb = [
+      ...emptyChannelArray,
+    ];
     this.synth = undefined;
     this.messageHandler = this.onMessage.bind(this);
     this.rpnMode = true;
@@ -95,7 +105,10 @@ export default class WebMidiLink {
    * オプションの初期化
    */
   private initializeOptions(option: Partial<WebMidiLinkOptions>) {
-    this.option = { ...this.option, ...option };
+    this.option = {
+      ...this.option,
+      ...option,
+    };
 
     if (globalThis.document) {
       this.placeholder = option.placeholder
@@ -153,7 +166,7 @@ export default class WebMidiLink {
       this.option.url,
       this.placeholder!,
       this.option.cache,
-      (buffer: ArrayBuffer | Uint8Array) => {
+      (buffer: ArrayBufferLike | Uint8Array) => {
         this.setupByBuffer(buffer);
       },
     );
@@ -170,7 +183,7 @@ export default class WebMidiLink {
   /**
    * Setup SoundFont by ArrayBuffer or Uint8Array.
    */
-  public setupByBuffer(buffer: ArrayBuffer | Uint8Array): void {
+  public setupByBuffer(buffer: ArrayBufferLike | Uint8Array): void {
     const ab =
       buffer instanceof Uint8Array
         ? buffer.buffer.slice(
@@ -229,8 +242,8 @@ export default class WebMidiLink {
   private renderUI() {
     // Skip UI rendering when running in a Worker (no DOM)
     if (this.isWindow(this.local)) {
-      if (this.option.drawSynth) {
-        this.placeholder?.appendChild(this.synth!.drawSynth());
+      if (this.option.drawSynth && this.synth) {
+        this.placeholder?.appendChild(this.synth.drawSynth());
       } else {
         this.showReadyMessage();
       }
@@ -603,7 +616,7 @@ export default class WebMidiLink {
         synth.init('GM2');
         break;
       default:
-        console.info('\x1b[34mGM\x1b[0m: ' + this.dumpMessage(message));
+        console.info(`\x1b[34mGM\x1b[0m: ${this.dumpMessage(message)}`);
     }
   }
 
@@ -617,7 +630,7 @@ export default class WebMidiLink {
       // master volume: F0 7F 7F 04 01 [value] [value] F7
       synth.setMasterVolume(message[4] + (message[5] << 7));
     } else {
-      console.info('\x1b[34mRealtime\x1b[0m: ' + this.dumpMessage(message));
+      console.info(`\x1b[34mRealtime\x1b[0m: ${this.dumpMessage(message)}`);
     }
   }
 
@@ -674,16 +687,16 @@ export default class WebMidiLink {
         this.handleGSDrumPart(GsPart, GsValue);
         break;
       case 0x19:
-        console.info('\x1b[31mGS Volume On/Off\x1b[0m: ' + GsPart, GsValue);
+        console.info(`\x1b[31mGS Volume On/Off\x1b[0m: ${GsPart}`, GsValue);
         break;
       case 0x30:
-        console.info('\x1b[31mGS Reverb\x1b[0m: ' + this.dumpMessage(message));
+        console.info(`\x1b[31mGS Reverb\x1b[0m: ${this.dumpMessage(message)}`);
         break;
       case 0x38:
-        console.info('\x1b[31mGS Chorus\x1b[0m: ' + this.dumpMessage(message));
+        console.info(`\x1b[31mGS Chorus\x1b[0m: ${this.dumpMessage(message)}`);
         break;
       case 0x45:
-        console.info('\x1b[31mGS Bitmap\x1b[0m: ' + this.dumpMessage(message));
+        console.info(`\x1b[31mGS Bitmap\x1b[0m: ${this.dumpMessage(message)}`);
         break;
       case 0x7f:
         // GS Reset
@@ -691,7 +704,7 @@ export default class WebMidiLink {
         console.info('\x1b[31mGS Reset\x1b[0m');
         break;
       default:
-        console.info('\x1b[31mGS\x1b[0m: ' + this.dumpMessage(message));
+        console.info(`\x1b[31mGS\x1b[0m: ${this.dumpMessage(message)}`);
     }
   }
 
@@ -763,12 +776,12 @@ export default class WebMidiLink {
         break;
       case 0x02:
         // Effect
-        console.info('\x1b[32mXG Effect\x1b[0m: ' + this.dumpMessage(message));
+        console.info(`\x1b[32mXG Effect\x1b[0m: ${this.dumpMessage(message)}`);
         break;
       case 0x03:
         // Insertion Effect
         console.info(
-          '\x1b[32mXG Insertion Effect\x1b[0m: ' + this.dumpMessage(message),
+          `\x1b[32mXG Insertion Effect\x1b[0m: ${this.dumpMessage(message)}`,
         );
         break;
       case 0x04:
@@ -783,14 +796,14 @@ export default class WebMidiLink {
       }
       case 0x07:
         // Bitmap Window
-        console.info('\x1b[32mXG Bitmap\x1b[0m: ' + this.dumpMessage(message));
+        console.info(`\x1b[32mXG Bitmap\x1b[0m: ${this.dumpMessage(message)}`);
         break;
       case 0x08:
         // XG Drum Part
         synth.setPercussionPart(XgPart, message[8] !== 0x00);
         break;
       default:
-        console.info('\x1b[32mXG\x1b[0m: ', this.dumpMessage(message));
+        console.info(`\x1b[32mXG\x1b[0m: ${this.dumpMessage(message)}`);
     }
   }
 
@@ -801,7 +814,7 @@ export default class WebMidiLink {
     const ret = [];
     let i = 0;
     for (const msg of messages) {
-      let str;
+      let str: string;
       switch (i) {
         case 0:
           // 青

@@ -1,7 +1,13 @@
 import type { PresetHeader } from '@/interfaces/SynthesizerInterface';
 
-export type GeneratorAmount = { amount: number };
-export type GeneratorRange = { amount: null; lo: number; hi: number };
+export type GeneratorAmount = {
+  amount: number;
+};
+export type GeneratorRange = {
+  amount: null;
+  lo: number;
+  hi: number;
+};
 export type GeneratorCodeRange = {
   code: number;
   amount: number;
@@ -13,7 +19,10 @@ export type GeneratorValue =
   | GeneratorRange
   | GeneratorCodeRange;
 
-export type GeneratorEntry = { type: string; value: GeneratorValue };
+export type GeneratorEntry = {
+  type: string;
+  value: GeneratorValue;
+};
 
 export type ModGen = {
   [key: string]: GeneratorValue | GeneratorValue[] | undefined;
@@ -32,7 +41,10 @@ export type ZoneInfo = {
   modulator: ModGen;
   modulatorSequence: GeneratorEntry[];
 };
-export type InstrumentDefinition = { name: string; info: ZoneInfo[] };
+export type InstrumentDefinition = {
+  name: string;
+  info: ZoneInfo[];
+};
 export type PresetDefinition = {
   name: string;
   info: ZoneInfo[];
@@ -47,6 +59,9 @@ export type ModulatorBundle = {
   modulator: ModGen;
   modulatorInfo: GeneratorEntry[];
 };
-export type ModGenBundle = { modgen: ModGen; modgenInfo: GeneratorEntry[] };
+export type ModGenBundle = {
+  modgen: ModGen;
+  modgenInfo: GeneratorEntry[];
+};
 
 export type SynthesizerMode = 'GM' | 'GM2' | 'XG' | 'GS';
