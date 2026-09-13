@@ -36,7 +36,6 @@ export default class Loader {
   /**
    * コンストラクタ
    *
-
    * @param url File url
    * @param placeholder placeholder DOM
    * @param cache use cache
@@ -182,16 +181,15 @@ export default class Loader {
    * Load data from cache
    * @param cache Cache storage
    */
-  private async loadFromCache(cache: Cache): Promise<Uint8Array | null> {
+  private async loadFromCache(cache: Cache): Promise<Uint8Array | undefined> {
     if (!this.cache) {
-      return null;
+      return undefined;
     }
 
     const cached = await cache.match(this.url);
     if (cached) {
       return new Uint8Array(await cached.arrayBuffer());
     }
-    return null;
   }
 
   /**
@@ -201,9 +199,9 @@ export default class Loader {
   private async loadFromNetwork(cache: Cache) {
     const response = await fetch(this.url, {
       method: Loader.FETCH_METHOD,
-    }).catch((e) => {
-      this.onError(e);
-      return null;
+    }).catch((error) => {
+      this.onError(error);
+      return undefined;
     });
 
     if (!response?.ok) {

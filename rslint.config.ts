@@ -1,34 +1,74 @@
 import {
   defineConfig,
   importPlugin,
+  js,
+  jsxA11yPlugin,
   promisePlugin,
+  reactHooksPlugin,
+  reactPlugin,
   rstestPlugin,
   ts,
   unicornPlugin,
 } from '@rslint/core';
 
+import markdownPlugin from '@eslint/markdown';
+
 const APP_FILES = [
-  '**/*.{ts,mts,tsx,js,mjs,jsx,json,jsonc,yml,yaml,vue,astro,svelte}',
+  '**/*.{ts,mts,tsx,js,mjs,jsx,json,jsonc,yml,yaml,mdx,vue,astro,svelte}',
 ];
 const TEST_FILES = [
   '**/*.{test,spec}.{ts,mts,tsx,js,mjs,jsx}',
+];
+const DOC_FILES = [
+  '**/*.{md,mdx}',
 ];
 
 export default defineConfig([
   {
     ignores: [
-      '**/dist/**',
-      '**/dist-ssr/**',
-      '**/docs/**',
+      // AI agents skill docs.
+      '**/.agents/**',
+      // Build intermediate artifacts.
+      '**/.cache/**',
+      '**/.data/**',
+      '**/.mf/**',
+      '**/.nitro/**',
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/.rstack/**',
+      // Test coverage reports.
       '**/coverage/**',
+      '**/reports',
+      '**/test-results',
+      // Built artifacts.
+      '**/demo/**',
+      '**/dist-ssr/**',
+      '**/dist/**',
+      '**/docs/**',
+      '**/storybook-static/**',
+      // Grit (Biome Rules) source artifacts.
+      '**/grit/**',
+      // Node modules.
       '**/node_modules/**',
     ],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      parserOptions: {
+        project: [
+          './tsconfig.json',
+        ],
+      },
+    },
   },
 
   // Base TypeScript recommended sets.
+  js.configs.recommended,
   ts.configs.recommended,
   promisePlugin.configs.recommended,
   unicornPlugin.configs.recommended,
+  reactPlugin.configs.recommended,
+  reactHooksPlugin.configs.recommended, // Comment out this line when using Vue.
+  jsxA11yPlugin.configs.recommended,
 
   {
     ...importPlugin.configs.recommended,
@@ -99,6 +139,12 @@ export default defineConfig([
           'newlines-between': 'always',
           pathGroups: [
             {
+              group: 'builtin',
+              pattern:
+                '{@rsbuild/**,@rsdoctor/**,@rslint/**,@rslib/*,@rspack/**,@rstest/**}',
+              position: 'before',
+            },
+            {
               group: 'internal',
               pattern: '{@/**}',
               position: 'before',
@@ -151,8 +197,17 @@ export default defineConfig([
     ],
     rules: {
       ...rstestPlugin.configs.recommended.rules,
+      // The demo data for the test code should preferably be of type `any`.
       '@typescript-eslint/no-explicit-any': 'warn',
       'import/no-relative-parent-imports': 'off',
     },
+  },
+
+  {
+    files: DOC_FILES,
+    plugins: [
+      'markdown',
+    ],
+    ...markdownPlugin.configs.recommended,
   },
 ]);

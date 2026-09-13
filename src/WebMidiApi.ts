@@ -1,4 +1,5 @@
 import type { WebMidiLinkOptions } from '@/types/WebMidiLinkOptions';
+
 import WebMidiLink from '@/WebMidiLink';
 
 /**

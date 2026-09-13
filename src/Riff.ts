@@ -1,5 +1,5 @@
-import type { RiffOptions } from '@/types/RiffOptions';
 import type { RiffChunk } from './types/RiffChunk';
+import type { RiffOptions } from '@/types/RiffOptions';
 /**
  * Riff Parser class
  *

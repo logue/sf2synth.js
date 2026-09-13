@@ -1,9 +1,12 @@
 /** For build library use */
+import { pluginSass } from '@rsbuild/plugin-sass';
+import { pluginTypeCheck } from '@rsbuild/plugin-type-check';
+import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
+import { defineConfig } from '@rslib/core';
+
 import { readFileSync } from 'node:fs';
 
-//import { pluginTypeCheck } from '@rsbuild/plugin-type-check';
-import { pluginSass } from '@rsbuild/plugin-sass';
-import { defineConfig } from '@rslib/core';
+import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
 
 /**
  * The UMD name is used for the global variable name when the library
@@ -41,7 +44,6 @@ const bannerText = `/**
 *
 * @description ${pkg.description}
 * @author ${pkg.author.name} <${pkg.author.email}>
-* @copyright 2013-2026 By Masashi Yoshikawa All rights reserved.
 * @license ${pkg.license}
 * @version ${pkg.version}
 * @see {@link ${pkg.homepage}}
@@ -50,20 +52,46 @@ const bannerText = `/**
 
 export default defineConfig({
   plugins: [
+    pluginTypeCheck(),
     pluginSass(),
-    //pluginTypeCheck(),
+    pluginModuleFederation({
+      exposes: {
+        '.': './src/index.ts',
+      },
+      name: umdName,
+      shared: {
+        react: {
+          singleton: true,
+        },
+        'react-dom': {
+          singleton: true,
+        },
+        vue: {
+          singleton: true,
+        },
+      },
+    }),
   ],
+  banner: {
+    css: bannerText,
+    dts: bannerText,
+    js: bannerText,
+  },
+  bundle: true,
+  syntax: 'esnext',
+  output: {
+    target: 'node',
+    autoExternal: true,
+  },
   lib: [
     {
-      banner: {
-        js: bannerText,
-      },
+      format: 'esm',
       dts: {
         // isolated: true,  // SWC fast_dts
         bundle: true,
+        autoExtension: true,
         tsgo: true, // Enable TypeScript 7 native compiler
       },
-      format: 'esm',
       output: {
         filename: {
           js: 'index.es.js',
@@ -72,9 +100,8 @@ export default defineConfig({
       },
     },
     {
-      banner: {
-        js: bannerText,
-      },
+      // Compatibility-only browser build. npm consumers should prefer the ESM entry
+      // above, which is the default package export and the primary distribution target.
       format: 'umd',
       output: {
         cleanDistPath: false,
@@ -82,9 +109,15 @@ export default defineConfig({
           js: 'index.umd.js',
         },
         minify: true,
-        sourceMap: true,
+        sourceMap: false,
       },
+      syntax: 'es2020',
       umdName,
+    },
+    {
+      // Module Federation
+      format: 'mf',
+      splitChunks: false,
     },
   ],
   source: {
@@ -93,5 +126,15 @@ export default defineConfig({
       __BUILD_DATE__: JSON.stringify(buildDate),
     },
     tsconfigPath: './tsconfig.rslib.json',
+  },
+  tools: {
+    rspack: {
+      plugins: [
+        process.env.RSDOCTOR === 'true' &&
+          new RsdoctorRspackPlugin({
+            // plugin options
+          }),
+      ],
+    },
   },
 });

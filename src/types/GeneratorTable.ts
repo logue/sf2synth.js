@@ -82,19 +82,19 @@ export type GeneratorTable = {
   /** キー(ノートNo)によるアンプ用エンベロープのディケイ時間への影響 */
   keynumToVolEnvDecay: number;
   /** 割り当てるインストルメント(楽器) */
-  instrument: number | null;
+  instrument?: number;
   /**  予約済み1 */
   reserved1: undefined; // 42
   /** マッピングするキー(ノートNo)の範囲 */
-  keyRange: number | null;
+  keyRange?: number;
   /** マッピングするベロシティの範囲 */
-  velRange: number | null;
+  velRange?: number;
   /** サンプルヘッダの音声波形データループ開始位置に加算されるオフセット(上位16bit） */
   startloopAddrsCoarseOffset: number;
   /** どのキー(ノートNo)でも強制的に指定したキー(ノートNo)に変更する */
-  keynum: number | null;
+  keynum?: number;
   /** どのベロシティでも強制的に指定したベロシティに変更する */
-  velocity: number | null;
+  velocity?: number;
   /** 調整する音量 */
   initialAttenuation: number;
   /** 予約済み2 */
@@ -106,7 +106,7 @@ export type GeneratorTable = {
   /** cent単位での音程の調整 */
   fineTune: number;
   /** 割り当てるサンプル(音声波形) */
-  sampleID: number | null;
+  sampleID?: number;
   /** サンプル(音声波形)をループさせるか等のフラグ */
   sampleModes: number;
   /** 予約済み3 */
@@ -114,9 +114,9 @@ export type GeneratorTable = {
   /** キー(ノートNo)が+1されるごとに音程を何centあげるかの音階情報 */
   scaleTuning: number;
   /** 同時に音を鳴らさないようにするための排他ID(ハイハットのOpen、Close等に使用) */
-  exclusiveClass: number | null;
+  exclusiveClass?: number;
   /** サンプル(音声波形)の音程の上書き情報 */
-  overridingRootKey: number | null;
+  overridingRootKey?: number;
   /** 未使用5 */
   unused5: undefined; // 59
   /** 最後を示すオペレータ */
@@ -168,24 +168,24 @@ export const defaultGeneratorTable: GeneratorTable = {
   releaseVolEnv: -12000,
   keynumToVolEnvHold: 0,
   keynumToVolEnvDecay: 0,
-  instrument: null,
+  instrument: undefined,
   reserved1: undefined, // 42
-  keyRange: null,
-  velRange: null,
+  keyRange: undefined,
+  velRange: undefined,
   startloopAddrsCoarseOffset: 0,
-  keynum: null,
-  velocity: null,
+  keynum: undefined,
+  velocity: undefined,
   initialAttenuation: 0,
   reserved2: undefined, // 49
   endloopAddrsCoarseOffset: 0,
   coarseTune: 0,
   fineTune: 0,
-  sampleID: null,
+  sampleID: undefined,
   sampleModes: 0,
   reserved3: undefined, // 55
   scaleTuning: 100,
-  exclusiveClass: null,
-  overridingRootKey: null,
+  exclusiveClass: undefined,
+  overridingRootKey: undefined,
   unused5: undefined, // 59
   endOper: undefined,
 };

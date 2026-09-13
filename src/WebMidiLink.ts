@@ -66,7 +66,7 @@ export default class WebMidiLink {
   private option: WebMidiLinkOptions = {
     ...WebMidiLinkOptions,
   };
-  private placeholder?: HTMLElement | null = undefined;
+  private placeholder?: HTMLElement;
 
   /** メッセージの送信先(postMessage専用)。opener/parentの場合クロスオリジンのことがある。 */
   private window?: Window | DedicatedWorkerGlobalScope;
@@ -112,7 +112,7 @@ export default class WebMidiLink {
 
     if (globalThis.document) {
       this.placeholder = option.placeholder
-        ? document.getElementById(option.placeholder)
+        ? (document.getElementById(option.placeholder) ?? undefined)
         : document.body;
     }
 
@@ -162,9 +162,13 @@ export default class WebMidiLink {
       this.option.url = url;
     }
 
+    if (!this.placeholder) {
+      throw new Error('[WebMidiLink] placeholder element is not available.');
+    }
+
     const loader = new Loader(
       this.option.url,
-      this.placeholder!,
+      this.placeholder,
       this.option.cache,
       (buffer: ArrayBufferLike | Uint8Array) => {
         this.setupByBuffer(buffer);
@@ -293,7 +297,9 @@ export default class WebMidiLink {
     this.callback();
 
     // MIDI Link待ち受け開始 — 常に自分自身で待ち受ける
-    local.addEventListener('message', this.messageHandler, false);
+    local.addEventListener('message', this.messageHandler, {
+      capture: false,
+    });
 
     // ホスト側に準備完了を通知
     if (this.isWindow(target)) {
@@ -728,7 +734,7 @@ export default class WebMidiLink {
     } else {
       // GS音源のLCDの16x16のビットマップ画像
       console.info(
-        '\x1b[31mGS Bitmap message\x1b[0m:' + this.dumpMessage(message),
+        `\x1b[31mGS Bitmap message\x1b[0m:${this.dumpMessage(message)}`,
       );
     }
   }
@@ -835,7 +841,7 @@ export default class WebMidiLink {
       ret.push(str + msg.toString(16).toUpperCase().padStart(2, '0'));
       i++;
     }
-    return ret.join(' ') + '\x1b[0m';
+    return `${ret.join(' ')}\x1b[0m`;
   }
 
   /**

@@ -1,8 +1,8 @@
+import type { SynthInstrument } from '@/interfaces/SynthesizerInterface';
+import type { EnvelopeTiming } from '@/types/EnvelopeTiming';
 import type Reverb from '@logue/reverb';
 
 import { CENTS_PER_OCTAVE, SEMITONE_RATIO } from '@/Constants';
-import type { SynthInstrument } from '@/interfaces/SynthesizerInterface';
-import type { EnvelopeTiming } from '@/types/EnvelopeTiming';
 
 /**
  * SynthesizerNote Class
@@ -30,13 +30,10 @@ export default class SynthesizerNote {
   private readonly instrument: SynthInstrument;
 
   // Instrument properties
-  private readonly channel: number;
   private readonly key: number;
   private readonly velocity: number;
   private readonly buffer: Int16Array;
   private readonly playbackRate: number;
-  private readonly loopStart: number;
-  private readonly loopEnd: number;
   private readonly sampleRate: number;
   private readonly volume: number;
   private readonly panpot: number;
@@ -45,23 +42,21 @@ export default class SynthesizerNote {
   private readonly modEnvToPitch: number;
   private expression: number;
   private readonly modulation: number;
-  private readonly cutOffFrequency: number;
-  private readonly harmonicContent: number;
   private readonly reverb: Reverb | undefined;
   private readonly onEnded?: () => void;
 
   private readonly startTime: number;
   private computedPlaybackRate: number;
   private noteOffState: boolean;
-  private audioBuffer: AudioBuffer | null;
+  private audioBuffer: AudioBuffer | undefined;
   private readonly bufferSource: AudioBufferSourceNode;
   private readonly panner: PannerNode;
   private readonly outputGainNode: GainNode;
   private readonly expressionGainNode: GainNode;
-  private readonly filter: BiquadFilterNode;
+  // private readonly filter: BiquadFilterNode;
   private readonly modulator: BiquadFilterNode;
-  private lfo: OscillatorNode | null;
-  private lfoDepth: GainNode | null;
+  private lfo: OscillatorNode;
+  private lfoDepth: GainNode;
 
   constructor(
     ctx: AudioContext,
@@ -80,8 +75,6 @@ export default class SynthesizerNote {
       velocity,
       sample,
       basePlaybackRate,
-      loopStart,
-      loopEnd,
       sampleRate,
       volume,
       panpot,
@@ -90,8 +83,6 @@ export default class SynthesizerNote {
       modEnvToPitch,
       expression,
       modulation,
-      cutOffFrequency,
-      harmonicContent,
       reverb,
     } = instrument;
     // Validate required fields and provide safe defaults for optional ones
@@ -105,13 +96,10 @@ export default class SynthesizerNote {
       throw new TypeError('[SynthesizerNote] Invalid instrument data provided');
     }
 
-    this.channel = channel;
     this.key = key;
     this.velocity = velocity;
     this.buffer = sample;
     this.playbackRate = basePlaybackRate ?? 1;
-    this.loopStart = loopStart ?? 0;
-    this.loopEnd = loopEnd ?? 0;
     this.sampleRate = sampleRate;
     this.volume = volume ?? 1;
     this.panpot = panpot ?? SynthesizerNote.MIDI_CENTER_VALUE;
@@ -121,8 +109,6 @@ export default class SynthesizerNote {
     this.modEnvToPitch = modEnvToPitch ?? 0;
     this.expression = expression ?? SynthesizerNote.MIDI_MAX_VALUE;
     this.modulation = modulation ?? 0;
-    this.cutOffFrequency = cutOffFrequency ?? 0;
-    this.harmonicContent = harmonicContent ?? SynthesizerNote.MIDI_CENTER_VALUE;
     this.reverb = reverb;
     this.onEnded = onEnded;
 
@@ -135,17 +121,19 @@ export default class SynthesizerNote {
     // audio node
     // ---------------------------------------------------------------------------
 
-    this.audioBuffer = null;
+    this.audioBuffer = undefined;
     this.bufferSource = ctx.createBufferSource();
     this.panner = ctx.createPanner();
     this.outputGainNode = ctx.createGain();
     this.expressionGainNode = ctx.createGain();
-    this.filter = ctx.createBiquadFilter();
     this.modulator = ctx.createBiquadFilter();
 
     // Vibrato (LFO) nodes
-    this.lfo = null;
-    this.lfoDepth = null;
+    // Create LFO oscillator
+    this.lfo = this.ctx.createOscillator();
+    // Configure LFO parameters
+    this.lfo.type = 'sine';
+    this.lfoDepth = this.ctx.createGain();
   }
 
   /**
@@ -249,8 +237,8 @@ export default class SynthesizerNote {
     this.audioBuffer = this.setupAudioBuffer();
 
     // Configure buffer source
-    const { bufferSource } = this;
-    bufferSource.buffer = this.audioBuffer;
+    const { bufferSource, audioBuffer } = this;
+    bufferSource.buffer = audioBuffer;
     bufferSource.loop =
       instrument.sampleModes !== SynthesizerNote.SAMPLE_MODE.NO_LOOP;
     bufferSource.loopStart = loopStart;
@@ -413,47 +401,20 @@ export default class SynthesizerNote {
       return;
     }
 
-    try {
-      // Create LFO oscillator
-      this.lfo = this.ctx.createOscillator();
-      this.lfoDepth = this.ctx.createGain();
+    this.lfo.frequency.value = instrument.freqVibLFO;
 
-      // Configure LFO parameters
-      this.lfo.type = 'sine';
-      this.lfo.frequency.value = instrument.freqVibLFO;
+    // Set vibrato depth based on modulation level
+    // Modulation depth controls the intensity of the vibrato
+    // Scale down the modulation to a more subtle effect (typical MIDI vibrato depth)
+    const vibratoDepth = (modulation / SynthesizerNote.MIDI_MAX_VALUE) * 0.01;
+    this.lfoDepth.gain.value = vibratoDepth;
 
-      // Set vibrato depth based on modulation level
-      // Modulation depth controls the intensity of the vibrato
-      // Scale down the modulation to a more subtle effect (typical MIDI vibrato depth)
-      const vibratoDepth = (modulation / SynthesizerNote.MIDI_MAX_VALUE) * 0.01;
-      this.lfoDepth.gain.value = vibratoDepth;
+    // Connect LFO to buffer source playback rate
+    this.lfo.connect(this.lfoDepth);
+    this.lfoDepth.connect(this.bufferSource.playbackRate);
 
-      // Connect LFO to buffer source playback rate
-      this.lfo.connect(this.lfoDepth);
-      this.lfoDepth.connect(this.bufferSource.playbackRate);
-
-      // Start the LFO
-      this.lfo.start(0);
-    } catch (error) {
-      console.warn('[SynthesizerNote] Failed to setup vibrato:', error);
-      // Clean up if setup fails
-      if (this.lfo) {
-        try {
-          this.lfo.disconnect();
-        } catch (e) {
-          // Ignore disconnect errors
-        }
-        this.lfo = null;
-      }
-      if (this.lfoDepth) {
-        try {
-          this.lfoDepth.disconnect();
-        } catch (e) {
-          // Ignore disconnect errors
-        }
-        this.lfoDepth = null;
-      }
-    }
+    // Start the LFO
+    this.lfo.start(0);
   }
 
   /**
@@ -638,6 +599,7 @@ export default class SynthesizerNote {
           SynthesizerNote.SAMPLE_MODE.LOOP_UNTIL_NOTE_OFF
         ) {
           bufferSource.loop = false;
+          // eslint-disable-next-line unicorn/no-null -- WebAudio API requires null, not undefined, to clear the buffer
           bufferSource.buffer = null;
         } else {
           try {
@@ -725,22 +687,8 @@ export default class SynthesizerNote {
     this.outputGainNode.disconnect();
 
     // Clean up LFO nodes
-    if (this.lfo) {
-      try {
-        this.lfo.disconnect();
-      } catch (_error) {
-        // Ignore disconnect errors
-      }
-      this.lfo = null;
-    }
-    if (this.lfoDepth) {
-      try {
-        this.lfoDepth.disconnect();
-      } catch (_error) {
-        // Ignore disconnect errors
-      }
-      this.lfoDepth = null;
-    }
+    this.lfo.disconnect();
+    this.lfoDepth.disconnect();
   }
 
   /**

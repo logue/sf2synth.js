@@ -1,7 +1,7 @@
+import type { WebMidiLinkOptions } from '@/types/WebMidiLinkOptions';
+
 import SoundFont from '@/index';
 import '@/WebMidiLink.scss';
-
-import type { WebMidiLinkOptions } from '@/types/WebMidiLinkOptions';
 
 /**
  * Main entry point (index.html) for the SoundFont Synthesizer application.
@@ -69,18 +69,10 @@ function updateSoundfontName(name: string): void {
 /**
  * Load sound font from file
  */
-function loadSoundFont(file: File): void {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const target = e.target;
-    if (!target) {
-      throw new Error('[main] loadSoundFont failure.');
-    }
-    updateSoundfontName(file.name);
-    const data = new Uint8Array(target.result as ArrayBuffer);
-    wml.setupByBuffer(data);
-  };
-  reader.readAsArrayBuffer(file);
+async function loadSoundFont(file: File): Promise<void> {
+  const buffer = await file.arrayBuffer();
+  updateSoundfontName(file.name);
+  wml.setupByBuffer(new Uint8Array(buffer));
 }
 
 /**
@@ -98,7 +90,9 @@ function setupDragHandlers(element: HTMLElement): void {
       }
       element.classList.remove(CSS_CLASS.DRAG_ACTIVE);
     },
-    false,
+    {
+      capture: false,
+    },
   );
 
   element.addEventListener(
@@ -108,7 +102,9 @@ function setupDragHandlers(element: HTMLElement): void {
       event.stopPropagation();
       element.classList.add(CSS_CLASS.DRAG_ACTIVE);
     },
-    false,
+    {
+      capture: false,
+    },
   );
 
   element.addEventListener(
@@ -118,7 +114,9 @@ function setupDragHandlers(element: HTMLElement): void {
       event.stopPropagation();
       element.classList.remove(CSS_CLASS.DRAG_ACTIVE);
     },
-    false,
+    {
+      capture: false,
+    },
   );
 }
 
@@ -179,7 +177,9 @@ document.addEventListener(
           fileInput.value = '';
         }
       },
-      false,
+      {
+        capture: false,
+      },
     );
 
     // Setup drag and drop handlers
@@ -191,7 +191,9 @@ document.addEventListener(
       wml.setColorMode(target.checked ? 'dark' : 'light');
     });
   },
-  false,
+  {
+    capture: false,
+  },
 );
 
 // Hash change handler
@@ -205,5 +207,7 @@ window.addEventListener(
       wml.setup(urlParams.url);
     }
   },
-  false,
+  {
+    capture: false,
+  },
 );

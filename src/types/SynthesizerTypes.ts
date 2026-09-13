@@ -4,7 +4,7 @@ export type GeneratorAmount = {
   amount: number;
 };
 export type GeneratorRange = {
-  amount: null;
+  amount: undefined;
   lo: number;
   hi: number;
 };
@@ -49,7 +49,7 @@ export type PresetDefinition = {
   name: string;
   info: ZoneInfo[];
   header: PresetHeader;
-  instrument: number | null;
+  instrument: number | undefined;
 };
 export type GeneratorBundle = {
   generator: ModGen;

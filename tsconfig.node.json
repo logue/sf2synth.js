@@ -5,6 +5,7 @@
     "rsbuild.config.*",
     "rslib.config.*",
     "rslint.config.*",
+    "rspress.config.*",
     "package.json"
   ],
   "exclude": [
@@ -14,15 +15,15 @@
   "compilerOptions": {
     "composite": true,
     "noEmit": true,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-    "resolveJsonModule": true,
-    "types": [
-      "node"
-    ],
     "paths": {
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "resolveJsonModule": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "types": [
+      "node"
+    ]
   }
 }

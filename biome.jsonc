@@ -5,15 +5,39 @@
   "files": {
     "includes": [
       "**",
-      "!!**/.rsbuild",
-      "!!**/.rslib",
-      "!!**/node_modules",
+      // AI agents skill docs.
+      "!!**/.agents",
+      // Build intermediate artifacts.
+      "!!**/.cache",
+      "!!**/.data",
+      "!!**/.mf",
+      "!!**/.nitro",
+      "!!**/.nuxt",
+      "!!**/.output",
+      "!!**/.rstack",
+      // Test coverage reports.
+      "!!**/coverage",
+      "!!**/reports",
+      "!!**/test-results",
+      // Built artifacts.
+      "!!**/demo",
+      "!!**/dist-ssr",
       "!!**/dist",
-      "!!**/docs"
+      "!!**/docs",
+      "!!**/storybook-static",
+      // Node modules.
+      "!!**/node_modules"
     ],
     // Ignore files that cannot be processed by biome.
     "ignoreUnknown": true
   },
+  "plugins": [
+    // "./node_modules/@logue/biome-plugins/grit/enforce-attribute-order.grit",
+    "./node_modules/@logue/biome-plugins/grit/enforce-pure-src.grit",
+    "./node_modules/@logue/biome-plugins/grit/prefer-union-over-enum.grit",
+    "./node_modules/@logue/biome-plugins/grit/no-null-type.grit"
+    // "./node_modules/@logue/biome-plugins/grit/vue-multi-word-filename.grit"
+  ],
   // Enable Biome's built-in version control system (VCS) support.
   "vcs": {
     "clientKind": "git",
@@ -26,10 +50,19 @@
     "enabled": true,
     "actions": {
       "source": {
+        "useSortedInterfaceMembers": "on",
+        // Remove duplicate CSS classes.
+        "noDuplicateClasses": "on",
         // Sort imports on save.
         // This is useful for keeping import statements organized
         // and consistent.
-        "organizeImports": "on"
+        "organizeImports": "off",
+        // Sort stylesheet properties.
+        "useSortedProperties": "on",
+        // Sort package.json.
+        "useSortedPackageJson": "on",
+        // Sort html(like) attributes.
+        "useSortedAttributes": "on"
       }
     }
   },
@@ -53,7 +86,7 @@
       "a11y": {
         // Because they are often used for purposes that are meaningless
         // to screen readers, such as icons.
-        "noSvgWithoutTitle": "info"
+        "noSvgWithoutTitle": "off"
       },
       "complexity": {
         // To remove the warning about processing long lines of code, uncomment the following line.
@@ -89,7 +122,10 @@
         "useVueHyphenatedAttributes": "error"
       },
       "suspicious": {
-        // The removal of the console command should be handled by the bundler.
+        // The `any` type completely destroys type safety and becomes a
+        // breeding ground for runtime errors.
+        "noExplicitAny": "warn",
+        // The removal of the console.* functions should be handled by the bundler.
         "noConsole": "off",
         // Do not use enum, use union.
         "noConstEnum": "error"
@@ -164,5 +200,26 @@
       // that may contain comments for documentation purposes.
       "allowComments": true
     }
-  }
+  },
+  "overrides": [
+    {
+      // For test code rules.
+      "includes": [
+        "./**/__tests__/*"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": "off",
+          "correctness": {
+            "noUnusedVariables": "off"
+          },
+          "suspicious": {
+            // The test code allows the `any` type to verify that
+            // an error occurs when an invalid value is entered.
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
 }

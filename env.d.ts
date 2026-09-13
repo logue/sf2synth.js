@@ -12,12 +12,12 @@ interface Window {
  * 衝突するため、WebMidiLinkが実際に使うAPIだけを手書きで宣言している。
  */
 interface DedicatedWorkerGlobalScope {
-  postMessage(message: unknown, transfer?: Transferable[]): void;
   addEventListener(
     type: 'message',
     listener: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions,
   ): void;
+  postMessage(message: unknown, transfer?: Transferable[]): void;
   removeEventListener(
     type: 'message',
     listener: EventListenerOrEventListenerObject,

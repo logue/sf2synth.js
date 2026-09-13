@@ -6,8 +6,6 @@ import type {
   PresetZone,
   SampleHeader,
 } from '@/interfaces/SynthesizerInterface';
-import { Riff } from '@/Riff';
-import { defaultGeneratorTable } from '@/types/GeneratorTable';
 import type { RiffChunk } from '@/types/RiffChunk';
 import type { RiffOptions } from '@/types/RiffOptions';
 import type {
@@ -22,6 +20,9 @@ import type {
   PresetDefinition,
   ZoneInfo,
 } from '@/types/SynthesizerTypes';
+
+import { Riff } from '@/Riff';
+import { defaultGeneratorTable } from '@/types/GeneratorTable';
 import { resolveGeneratorAmount } from '@/utility/resolveGeneratorAmount';
 
 /**
@@ -162,11 +163,11 @@ export default class Parser {
 
     this.validateChunkType(chunk, 'RIFF');
 
-    const signature = this.readSignature(data!, ip);
+    const signature = this.readSignature(data, ip);
     ip += Parser.CHUNK_ID_SIZE;
     this.validateSignature(signature, 'sfbk');
 
-    const parser = new Riff(data!, {
+    const parser = new Riff(data, {
       index: ip,
       length: chunk.size - Parser.CHUNK_ID_SIZE,
     });
@@ -222,7 +223,7 @@ export default class Parser {
         `invalid sdta structure: expected ${Parser.EXPECTED_SDTA_CHUNKS} chunk, got ${parser.chunkList.length}`,
       );
     }
-    this.samplingData = parser.getChunk(0)!;
+    this.samplingData = parser.getChunk(0);
   }
 
   parsePdtaList(chunk: RiffChunk) {
@@ -274,7 +275,8 @@ export default class Parser {
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
-      const presetNameBytes = data.subarray(ip, (ip += 20));
+      const presetNameBytes = data.subarray(ip, ip + 20);
+      ip += 20;
       presetHeader.push({
         presetName: String.fromCodePoint(...Array.from(presetNameBytes)),
         preset: data[ip++] | (data[ip++] << 8),
@@ -310,7 +312,8 @@ export default class Parser {
       throw new Error('[SoundFontParser] data is null.');
     }
     let ip = chunk.offset;
-    const presetZone: PresetZone[] = (this.presetZone = []);
+    this.presetZone = [];
+    const presetZone: PresetZone[] = this.presetZone;
     const size = chunk.offset + chunk.size;
 
     while (ip < size) {
@@ -549,7 +552,7 @@ export default class Parser {
             output.push({
               type: key,
               value: {
-                amount: null,
+                amount: undefined,
                 lo: data[ip++],
                 hi: data[ip++],
               },
@@ -611,7 +614,7 @@ export default class Parser {
           output.push({
             type: key,
             value: {
-              amount: null,
+              amount: undefined,
               lo: data[ip++],
               hi: data[ip++],
             },
@@ -682,7 +685,7 @@ export default class Parser {
     let bagIndex: number;
     let bagIndexEnd: number;
     let zoneInfo: ZoneInfo[];
-    let instrument: number | null = null;
+    let instrument: number | undefined;
     let presetGenerator: GeneratorBundle;
     let presetModulator: ModulatorBundle;
     let i: number;
@@ -812,7 +815,7 @@ export default class Parser {
     const modgen: ModGen = {
       unknown: [],
       keyRange: {
-        amount: null,
+        amount: undefined,
         hi: 127,
         lo: 0,
       },

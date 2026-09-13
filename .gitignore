@@ -1,17 +1,65 @@
+# Dependencies
+.claude/
+.pnp
+.pnp.js
+node_modules/
+
+# Build / Cache
+.cache
+.data
+.mf
+.nitro
+.nuxt
+.output
+
+# Test Report
+coverage/
+reports/
+test-results/
+
+# Production / Build output
+dist/
+docs/
+demo/
+storybook-static/
+
+# Logs
+logs
+*.log
+
+# Runtime data
+.rstack
+.rspack-profile-*
+*.pid
+*.pid.lock
+*.seed
+pids
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Lockfiles
+*.lock
+# pnpm-lock.yaml # as you need to commit this file for reproducible builds
+# pnpm-workspace.yaml # as you need to commit this file for reproducible builds
+
+# IDE
+.idea
+*.iml
+*.sublime-project
+*.sublime-workspace
+*.swo
+*.swp
+.vscode/*
+!.vscode/extensions.json
+!.vscode/mcp.json
+!.vscode/settings.json
+
 # Local
+/local
 .DS_Store
 *.local
 *.log*
-
-# Dist
-node_modules
-dist/
-storybook-static
-docs/
-
-# IDE
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-.idea
-
+Thumbs.db

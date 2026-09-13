@@ -5,19 +5,25 @@
       "source": "rstackjs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/rsbuild-best-practices/SKILL.md",
-      "computedHash": "2f1de26a27367666c49d16b114d31dbf78dc71f02b3e0784b1e3bf90f4e6e90b"
+      "computedHash": "370b2405efb009d4bc4b7f009c8ea2661a375abe59a0d873fe9af619bfc80733"
+    },
+    "rsdoctor-analysis": {
+      "source": "rstackjs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/rsdoctor-analysis/SKILL.md",
+      "computedHash": "1aa36522b3ef319f9348fe0b7d7863c8b2d0d2ee76a1f784f895d239cb02ebd2"
     },
     "rslib-best-practices": {
       "source": "rstackjs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/rslib-best-practices/SKILL.md",
-      "computedHash": "be776b5192c676c6d94f96063b9ee52d2545b9ba47dd8ae1a1afa78a2c19b507"
+      "computedHash": "ea5f0620d7c542358a73624a5a339f4d3f6290778accbfe5fc5e1dacf8a8e920"
     },
     "rstest-best-practices": {
       "source": "rstackjs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/rstest-best-practices/SKILL.md",
-      "computedHash": "f0b2092fa4696a8364b0ae15e44fa7752367bac01a2dd1b98223d01ffe001e04"
+      "computedHash": "2657c33744b26c4d2cde2c238a6ad52e92532f240f345d0f798b3252a729fcbb"
     }
   }
 }

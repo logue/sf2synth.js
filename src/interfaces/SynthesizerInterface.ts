@@ -1,19 +1,19 @@
-import type Reverb from '@logue/reverb';
 import type { RiffOptions } from '@/types/RiffOptions';
 import type { GeneratorAmount, GeneratorRange } from '@/types/SynthesizerTypes';
+import type Reverb from '@logue/reverb';
 
 export interface ParserOptions {
   parserOption?: RiffOptions;
   sampleRate?: number;
 }
 export interface PresetHeader {
-  presetName: string;
-  preset: number;
   bank: number;
-  presetBagIndex: number;
-  library: number;
   genre: number;
+  library: number;
   morphology: number;
+  preset: number;
+  presetBagIndex: number;
+  presetName: string;
 }
 
 export interface PresetZone {
@@ -22,8 +22,8 @@ export interface PresetZone {
 }
 
 export interface InstrumentHeader {
-  instrumentName: string;
   instrumentBagIndex: number;
+  instrumentName: string;
 }
 
 export interface InstrumentZone {
@@ -32,22 +32,22 @@ export interface InstrumentZone {
 }
 
 export interface SampleHeader {
-  sampleName: string;
-  start: number;
   end: number;
-  startLoop: number;
   endLoop: number;
-  sampleRate: number;
   originalPitch: number;
   pitchCorrection: number;
   sampleLink: number;
+  sampleName: string;
+  sampleRate: number;
   sampleType: number;
+  start: number;
+  startLoop: number;
 }
 
 export interface GeneratorMap {
-  [key: string]: unknown;
   keyRange: GeneratorRange;
   sampleID?: GeneratorAmount;
+  [key: string]: unknown;
 }
 
 export interface ParsedZoneInfo {
@@ -55,8 +55,8 @@ export interface ParsedZoneInfo {
 }
 
 export interface ParsedInstrument {
-  name: string;
   info: ParsedZoneInfo[];
+  name: string;
 }
 
 export interface ParsedPreset {
@@ -64,61 +64,61 @@ export interface ParsedPreset {
     preset: number;
     bank: number;
   };
-  name: string;
   instrument: number | null;
+  name: string;
 }
 
 export interface SampleHeaderInfo {
-  sampleRate: number;
-  pitchCorrection: number;
-  startLoop: number;
   endLoop: number;
+  pitchCorrection: number;
+  sampleRate: number;
+  startLoop: number;
 }
 
 export interface SynthInstrument {
-  sample: Int16Array;
-  sampleRate: number;
-  sampleModes: number;
   basePlaybackRate: number;
+  channel?: number;
+  cutOffFrequency?: number;
+  end: number;
+  expression?: number;
+  freqVibLFO: number;
+  harmonicContent?: number;
+  initialAttenuation: number;
+  initialFilterFc: number;
+  initialFilterQ: number;
+  key?: number;
+  loopEnd: number;
+  loopStart: number;
+  modAttack: number;
+  modDecay: number;
+  modDelay: number;
+  modEnvToFilterFc: number;
   modEnvToPitch: number;
+  modHold: number;
+  modRelease: number;
+  modSustain: number;
+  modulation?: number;
+  mute?: boolean;
+  pan: number;
+  panpot?: number;
+  pitchBend?: number;
+  pitchBendSensitivity?: number;
+  releaseTime?: number;
+  reverb?: Reverb;
+  reverbEffectSend: number;
+  sample: Int16Array;
+  sampleModes: number;
+  sampleRate: number;
   scaleTuning: number;
   start: number;
-  end: number;
-  loopStart: number;
-  loopEnd: number;
-  volDelay: number;
-  volAttack: number;
-  volHold: number;
-  volDecay: number;
-  volSustain: number;
-  volRelease: number;
-  modDelay: number;
-  modAttack: number;
-  modHold: number;
-  modDecay: number;
-  modSustain: number;
-  modRelease: number;
-  initialFilterFc: number;
-  modEnvToFilterFc: number;
-  initialFilterQ: number;
-  reverbEffectSend: number;
-  initialAttenuation: number;
-  freqVibLFO: number;
-  pan: number;
-  channel?: number;
-  key?: number;
   velocity?: number;
-  panpot?: number;
+  volAttack: number;
+  volDecay: number;
+  volDelay: number;
+  volHold: number;
+  volRelease: number;
+  volSustain: number;
   volume?: number;
-  pitchBend?: number;
-  expression?: number;
-  pitchBendSensitivity?: number;
-  mute?: boolean;
-  releaseTime?: number;
-  cutOffFrequency?: number;
-  harmonicContent?: number;
-  reverb?: Reverb;
-  modulation?: number;
 }
 
 export interface InstrumentPreset {
