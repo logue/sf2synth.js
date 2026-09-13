@@ -5,6 +5,6 @@
 * @author Logue <logue@hotmail.co.jp>
 * @copyright 2019-2026 By Masashi Yoshikawa All rights reserved.
 * @license MIT
-* @version 1.6.0
+* @version 1.6.2
 * @see {@link https://github.com/logue/Reverb.js}
 */
